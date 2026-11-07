@@ -243,7 +243,7 @@ Object.assign(DungeonScene.prototype, {
       "Mover: WASD ou setas (diagonal vale)\nAtaque básico: Espaço · R liga/desliga o automático · E na corda: subir\nFúria enche ao golpear e apanhar e paga as habilidades.\n" +
       Object.values(SPELLS).map(sp => `${sp.key} · ${sp.name} (nv ${sp.level})`).join("   ") +
       "\n5 e 6: poções · I: mochila · TAB: mapa · roda do mouse: zoom\nBaús pedem chave de bronze.",
-      [["Continuar", () => this.togglePause()], ["Abandonar a descida", () => { this.togglePause(); this.finish(false); }]]);
+      [["Continuar", () => this.togglePause()], ["Abandonar (conta como morte)", () => { this.togglePause(); this.finish(false); }]]);
   },
 
 
@@ -269,10 +269,23 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
+  // morte: perde experiência, equipamentos e ouro coletado, conforme as bênçãos de Magdha
+  deathPenalty() {
+    const d = Save.voc(this.vocId), b = DEATH_LOSS[Math.min(3, d.bless || 0)];
+    const xpBefore = d.xpTotal || 0;
+    d.xpTotal = Math.floor(xpBefore * (1 - b.xp));
+    const eqLost = [];
+    for (const slot of Object.keys(d.equip || {})) if (b.equip >= 1 || Math.random() < b.equip) { eqLost.push(slot); delete d.equip[slot]; }
+    const goldRaw = Math.round(this.goldRun * this.stats.greed);
+    const goldLost = Math.round(goldRaw * b.gold);
+    return { b, xpLost: Math.floor(xpBefore - d.xpTotal), eqLost: eqLost.length, goldLost, earned: goldRaw - goldLost, bless: d.bless || 0 };
+  },
+
   finish(victory) {
     if (this.finished) return;
     this.finished = true;
-    const earned = Math.round(this.goldRun * this.stats.greed);
+    const pen = victory ? null : this.deathPenalty();
+    const earned = pen ? pen.earned : Math.round(this.goldRun * this.stats.greed);
     Save.addGold(this.vocId, earned); Save.addKills(this.killsByType); Save.data.runs++;
     if (victory) {
       Save.data.cleared["karhyn_sewers:" + this.vocId] = true;
@@ -281,8 +294,9 @@ Object.assign(DungeonScene.prototype, {
     }
     Save.save();
     const v = VOCATIONS[this.vocId];
+    const penText = pen ? `\n\nMorte — bênçãos de Magdha: ${pen.bless}/3\nExperiência perdida: ${Math.round(pen.b.xp * 100)}%\nEquipamentos perdidos: ${pen.b.equip >= 1 ? "todos" : Math.round(pen.b.equip * 100) + "%"}\nOuro perdido: ${Math.round(pen.b.gold * 100)}% (${pen.goldLost})` : "";
     this.panel(victory ? "Masmorra Vencida" : "Você Caiu",
-      `Dificuldade: ${Math.round(this.diff * 100)}%\nAndar alcançado: ${this.floorN}/${FLOORS}\nNível: ${this.hero.level}\nAbates: ${this.kills}\nOuro obtido: ${earned}   (bolsa do ${v.name}: ${Save.gold(this.vocId)})` + (victory ? "" : ""),
+      `Dificuldade: ${Math.round(this.diff * 100)}%\nAndar alcançado: ${this.floorN}/${FLOORS}\nNível: ${this.hero.level}\nAbates: ${this.kills}\nOuro obtido: ${earned}   (bolsa do ${v.name}: ${Save.gold(this.vocId)})` + penText,
       [["Descer de novo", () => this.scene.restart()]]
         .concat(cityUnlocked() ? [["Voltar à cidade", () => { this.registry.set("townSpawn", "sewer"); this.scene.start("town"); }]] : [])
         .concat([["Voltar ao mapa", () => this.scene.start("map")]]));

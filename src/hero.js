@@ -318,15 +318,32 @@ Object.assign(DungeonScene.prototype, {
   // corda: E perto dela sobe um andar; do 1º andar volta à cidade levando o ouro
   useRope() {
     const h = this.hero;
+    if (this.tryAltar()) return;
     if (!this.rope || h.dead || this.finished || this.paused || this.bagOpen) return;
     if (Math.abs(h.x - this.rope.x) > 1 || Math.abs(h.y - this.rope.y) > 1) return;
-    if (this.floorN > 1) { this.floorN--; this.buildFloor(); this.msg(`Você sobe pela corda. Andar ${this.floorN}.`); return; }
+    if (this.floorN > 1) { this.floorN--; this.buildFloor("stairs"); this.msg(`Você sobe pela corda. Andar ${this.floorN}.`); return; }
     this.finished = true;
     const earned = Math.round(this.goldRun * this.stats.greed);
     Save.addGold(this.vocId, earned); Save.addKills(this.killsByType); Save.data.runs++; Save.save();
     this.registry.set("townSpawn", "sewer");
     this.cameras.main.fadeOut(400, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => this.scene.start("town"));
+  },
+
+  // estátua de Magdha: a bênção é concedida uma vez por estátua
+  tryAltar() {
+    const a = this.altar, h = this.hero;
+    if (!a || a.used || this.paused || this.bagOpen || this.finished || h.dead) return false;
+    if (Math.abs(h.x - a.x) > 1 || Math.abs(h.y - a.y) > 1) return false;
+    const d = Save.voc(this.vocId), n = d.bless || 0;
+    if (n >= 3) { this.msg("Magdha já lhe concedeu toda a sua bênção."); return true; }
+    d.bless = n + 1; a.used = true; Save.save();
+    if (this.altarImg) this.altarImg.setAlpha(0.55);
+    sfx(this, "levelup", 0.3);
+    this.floatText(h.px, h.py - 90, `Bênção ${d.bless}/3`, "#f2e2a0");
+    this.paused = true;
+    const box = this.panel("Bênção de Magdha", BLESS_TEXT[n], [["Continuar", () => { box.destroy(); this.paused = false; }]]);
+    return true;
   },
 
   // golpe de espada virado para (dx, dy): escolhe a animação de ataque da direção certa
@@ -356,7 +373,7 @@ Object.assign(DungeonScene.prototype, {
   addXp(v) {
     const h = this.hero;
     h.xp += v * this.stats.growth;
-    const d = Save.voc(this.vocId); d.xpTotal = (d.xpTotal || 0) + v * this.stats.growth; h.xpTotal = (h.xpTotal || 0) + v * this.stats.growth;
+    const d = Save.voc(this.vocId); d.xpTotal = (d.xpTotal || 0) + v * this.stats.growth; h.xpTotal = (h.xpTotal || 0) + v * this.stats.growth; Save.save();
     while (h.xp >= this.xpNext()) {
       h.xp -= this.xpNext(); h.level++; h.maxHp += 10; h.hp = h.maxHp; // subir de nível enche a vida
       this.floatText(h.px, h.py - 84, `Nível ${h.level}!`, COLORS.gold);
@@ -368,12 +385,12 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
-  promo() { const p = PROMOTION[this.vocId]; return p && this.hero.level >= p.level ? p : null; },
+  promo() { const p = PROMOTION[this.vocId]; return p && (this.hero.promoted || Save.voc(this.vocId).promoted) ? p : null; },
 
   checkPromotion() {
-    const p = this.promo(), h = this.hero;
-    if (!p || h.promoted) return;
-    h.promoted = true;
+    const p = PROMOTION[this.vocId], h = this.hero, d = Save.voc(this.vocId);
+    if (!p || d.promoted || h.level < p.level) return;
+    d.promoted = true; h.promoted = true; Save.save();
     this.msg(`Você foi promovido a ${p.name}! Regeneração ×${p.regenMult} e +${Math.round((p.dmgMult - 1) * 100)}% de dano.`);
     this.floatText(h.px, h.py - 100, p.name, COLORS.gold);
     this.fx("heal", h.px, h.py - 28, 1.2);

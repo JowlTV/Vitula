@@ -15,7 +15,16 @@ const Save = {
     if (!d.potions) d.potions = { health: 3 };       // poções guardadas na mochila
     if (!d.potionSlots) d.potionSlots = ["health", v === "knight" ? "fury" : "mana"];
     if (!d.xpTotal) d.xpTotal = 0;
+    if (d.bless == null) d.bless = 0;      // bênçãos de Magdha (0 a 3)
+    if (d.promoted == null) d.promoted = false; // título de promoção: conquistado uma vez, não se perde
+    if (!d.equip) d.equip = {};           // equipamentos vestidos (quando existirem)
     return d;
+  },
+  // nível e experiência dentro do nível, a partir da experiência total (mesma fórmula do herói)
+  levelInfo(total) {
+    let L = 1, rest = total || 0;
+    while (rest >= 8 * Math.pow(L, 1.35)) { rest -= 8 * Math.pow(L, 1.35); L++; }
+    return { level: L, xp: rest };
   },
   skill(v, id) { return this.voc(v).skills[id]; },
   gold(v) { return this.voc(v).gold; },

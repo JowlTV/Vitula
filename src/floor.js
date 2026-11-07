@@ -3,7 +3,7 @@
 Object.assign(DungeonScene.prototype, {
 
   // ---------------------------------------------------------------- andar
-  buildFloor() {
+  buildFloor(arrive = "start") {
     // libera as texturas do andar anterior (cada bloco do chão ocupa até 16 MB de vídeo)
     if (this.floorRT) { this.floorRT.destroy(); this.floorRT = null; }
     if (this.world) this.world.destroy(true);
@@ -14,7 +14,9 @@ Object.assign(DungeonScene.prototype, {
     this.lights = []; this.dusts = []; this.stairs = null; this.campRoom = undefined;
     this.explored = new Uint8Array(this.gen.w * this.gen.h);
     const last = this.floorN === FLOORS;
-    this.gen.generate(this.bot ? 1234 + this.floorN : (Math.random() * 1e9) | 0, this.floorN);
+    if (!this.seeds) this.seeds = {};
+    if (this.seeds[this.floorN] == null) this.seeds[this.floorN] = this.bot ? 1234 + this.floorN : (Math.random() * 1e9) | 0;
+    this.gen.generate(this.seeds[this.floorN], this.floorN);
     this.explored = new Uint8Array(this.gen.w * this.gen.h);
     const g = this.gen;
     // início: anel da cisterna 0 (o centro é o poço)
@@ -65,8 +67,10 @@ Object.assign(DungeonScene.prototype, {
     { const rp = this.cellPos(start.x, start.y);
       const ri = this.add.image(rp.x, rp.y + T / 2 - 4, "rope_v2").setOrigin(0.5, 1).setDepth(rp.y - 40);
       ri.setScale(T * 1.5 / ri.height); this.ents.add(ri); this.rope = { x: start.x, y: start.y }; }
+    this.placeAltar(start);
     // herói
-    this.hero.x = start.x; this.hero.y = start.y; this.hero.moveT = 0;
+    const arr = arrive === "stairs" && this.stairs ? (this.nearStairs() || start) : start;
+    this.hero.x = arr.x; this.hero.y = arr.y; this.hero.moveT = 0;
     const p = this.cellPos(start.x, start.y);
     this.hero.shadow = this.add.image(p.x, p.y, "shadow").setScale(0.75, 0.25);
     const k4 = this.anims.exists("kn_idle_down");
@@ -103,6 +107,52 @@ Object.assign(DungeonScene.prototype, {
 
 
   cellPos(x, y) { return { x: x * T + T / 2, y: y * T + T * 0.82 }; },
+
+  // célula livre ao lado da escada (para quem sobe)
+  nearStairs() {
+    const s = this.stairs;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {
+      const x = s.x + dx, y = s.y + dy;
+      if (this.walkable(x, y) && !this.occ.has(key(x, y)) && !this.spikes.has(key(x, y))) return { x, y };
+    }
+    return null;
+  },
+
+  // estátua da deusa Magdha: aparece em alguns andares, dá uma bênção por estátua (até 3)
+  placeAltar(start) {
+    this.altar = null; this.altarImg = null;
+    if (!this.altarMemo) this.altarMemo = {};
+    // o local do altar é sorteado uma vez por corrida e andar (ao voltar ao andar, a estátua continua lá)
+    if (this.altarMemo[this.floorN] === undefined) {
+      const g = this.gen, n = Save.voc(this.vocId).bless || 0;
+      let spot = null;
+      if (this.floorN >= 2 && this.floorN < FLOORS && n < 3 && Math.random() <= 0.4) {
+        const cands = [];
+        for (let y = 1; y < g.h - 1; y++) for (let x = 1; x < g.w - 1; x++) {
+          if (!this.walkable(x, y) || this.occ.has(key(x, y)) || this.spikes.has(key(x, y)) || g.isBridge(x, y) || this.doorNear(x, y)) continue;
+          // só dentro de salas e com espaço ao redor: a estátua nunca fecha um corredor
+          if (g.roomOf(x, y) < 0 || g.roomOf(x, y) === g.roomOf(start.x, start.y)) continue;
+          let open = 0; for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]]) if (this.walkable(x + dx, y + dy)) open++;
+          if (open < 8) continue;
+          if (Math.hypot(x - start.x, y - start.y) < 12) continue;
+          if (this.stairs && Math.hypot(x - this.stairs.x, y - this.stairs.y) < 4) continue;
+          cands.push({ x, y });
+        }
+        if (cands.length) { const c = Phaser.Utils.Array.GetRandom(cands); spot = { x: c.x, y: c.y, used: false }; }
+      }
+      this.altarMemo[this.floorN] = spot;
+    }
+    const a = this.altarMemo[this.floorN];
+    if (!a || a.used) return;
+    const tex = this.textures.exists("altar_magdha") ? "altar_magdha" : "pillar";
+    const p = this.cellPos(a.x, a.y);
+    const img = this.add.image(p.x, p.y + T / 2 - 4, tex).setOrigin(0.5, 1).setDepth(p.y - 40);
+    img.setScale(T * 2 / img.height);
+    this.ents.add(img);
+    this.altar = a; this.altarImg = img;
+    if (a.used) img.setAlpha(0.55);
+    this.props.set(key(a.x, a.y), { kind: "altar", spr: img });
+  },
 
   walkable(x, y) { return this.gen.isWalk(x, y) && !this.props.has(key(x, y)); },
 
