@@ -1,0 +1,131 @@
+// A masmorra: andares gerados, herói em grade em tempo real (estilo Tibia), monstros, loot, armadilhas.
+const DIRS4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+const DIRS8 = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]];
+const key = (x, y) => y * 1000 + x;
+
+class DungeonScene extends Phaser.Scene {
+  constructor() { super("dungeon"); }
+
+
+  create() {
+    // a cena é reaproveitada (descer de novo, voltar da cidade): esquece objetos e estados da visita anterior
+    for (const k of Object.keys(this)) {
+      const v = this[k];
+      if (v && typeof v === "object" && (v instanceof Phaser.GameObjects.GameObject || v instanceof Phaser.GameObjects.Layer || (v.constructor && /FX|Controller/.test(v.constructor.name)))) this[k] = null;
+    }
+    this.paused = false; this.bagOpen = false; this.pauseBox = null; this.bagBox = null; this.rope = null; this.gradeFx = null;
+    this._stamps = {};
+    this.floorN = 1;
+    const fq = new URLSearchParams(location.search).get("floor");
+    if (fq) this.floorN = Phaser.Math.Clamp(+fq, 1, FLOORS);
+    this.bot = new URLSearchParams(location.search).has("bot");
+    this.god = new URLSearchParams(location.search).has("god");
+    this.regionId = this.registry.get("region") || "karhyn_sewers";
+    this.region = REGIONS[this.regionId];
+    this.vocId = this.registry.get("vocation") || "knight";
+    this.stats = this.computeStats();
+    this.hero = { hp: this.stats.maxHp, maxHp: this.stats.maxHp, level: 1, xp: 0, dead: false, atkT: 0,
+      cds: { heal: 0, front: 0, spin: 0, aura: 0 }, facing: [1, 0], regen: 0, fury: 0, furyIdle: 0, auraT: 0, auraTick: 0 };
+    const lv = +new URLSearchParams(location.search).get("lvl");
+    if (lv) { this.hero.level = lv; this.hero.fury = this.furyMax; this.hero.promoted = !!(PROMOTION[this.vocId] && lv >= PROMOTION[this.vocId].level); }
+    this.diff = this.registry.get("difficulty") || 1;
+    this.nextWave = 120 + Phaser.Math.Between(30, 120);
+    this.goldRun = 0; this.keys = 0; this.kills = 0; this.killsByType = {};
+    this.finished = false; this.time_ = 0; this.spikeT = 0;
+    this.gen = new DungeonGen();
+    this.cameras.main.setBackgroundColor("#08070a");
+    this.cameras.main.roundPixels = true;
+    this.input.keyboard.addCapture("UP,DOWN,LEFT,RIGHT,SPACE");
+    // teclas vindas das Opções (remapeáveis)
+    const K = Phaser.Input.Keyboard.KeyCodes, kb = this.input.keyboard;
+    this.keysIn = {};
+    for (const [id] of ACTIONS) this.keysIn[id] = Settings.data.keys[id].filter(n => K[n] !== undefined).map(n => kb.addKey(K[n]));
+    const spells = Object.keys(SPELLS);
+    ["skill1", "skill2", "skill3", "skill4"].forEach((id, i) => this.keysIn[id].forEach(k => k.on("down", () => this.cast(spells[i]))));
+    this.keysIn.pause.forEach(k => k.on("down", () => this.bagOpen ? this.toggleBag() : this.togglePause()));
+    (this.keysIn.potion1 || []).forEach(k => k.on("down", () => this.usePotion(0)));
+    (this.keysIn.potion2 || []).forEach(k => k.on("down", () => this.usePotion(1)));
+    (this.keysIn.interact || []).forEach(k => k.on("down", () => this.useRope()));
+    (this.keysIn.attack || []).forEach(k => k.on("down", () => { this.hero.atkQueued = 0.35; }));
+    (this.keysIn.autoAttack || []).forEach(k => k.on("down", () => {
+      Settings.data.autoAttack = Settings.data.autoAttack === false; Settings.save();
+      this.msg(`Ataque automático ${Settings.data.autoAttack ? "ligado" : "desligado"}`);
+    }));
+    (this.keysIn.bag || []).forEach(k => k.on("down", () => this.toggleBag()));
+    this.input.keyboard.addCapture("TAB");
+    (this.keysIn.map || []).forEach(k => k.on("down", () => this.toggleBigMap()));
+    (this.keysIn.zoomIn || []).forEach(k => k.on("down", () => this.setCamZoom(this.camZoom() + 0.2)));
+    (this.keysIn.zoomOut || []).forEach(k => k.on("down", () => this.setCamZoom(this.camZoom() - 0.2)));
+    this.input.on("wheel", (_p, _o, _dx, dy) => this.setCamZoom(this.camZoom() + (dy > 0 ? -0.2 : 0.2)));
+    // câmera da interface: fixa, enxerga só a camada de UI (escuridão, HUD, painéis)
+    this.uiLayer = this.add.layer().setDepth(1000000);
+    this.uiCam = zoom2(this.cameras.add(0, 0, VIEW_W * 2, VIEW_H * 2));
+    this.cameras.main.ignore(this.uiLayer);
+    this.buildFloor();
+    this.buildHud();
+    this.msg(this.floorN < FLOORS ? `${this.region.name} — andar ${this.floorN}.` : "Último andar. Algo grande fareja você.");
+  }
+
+
+  computeStats() {
+    const s = { maxHp: 100, armor: 0, recovery: 0, moveSpeed: 1, might: 1, cooldown: 1, growth: 1, greed: 1 };
+    Object.assign(s, VOCATIONS[this.vocId].stats);
+    // compras da loja
+    const tr = Save.voc(this.vocId).trainings;
+    s.maxHp += 10 * (tr.hp || 0);
+    s.armor += tr.armor || 0;
+    s.atkSpeed = 1 + 0.05 * (tr.atkspd || 0);
+    this.furyMax = FURY_MAX + 10 * (tr.fury || 0);
+    return s;
+  }
+
+
+  // ---------------------------------------------------------------- loop
+  update(_, dtMs) {
+    // ritmo do jogo (Opções): desacelera passos, ataques, monstros, animações e efeitos juntos
+    const pace = Settings.data.speed || 0.75;
+    this.time.timeScale = pace; this.tweens.timeScale = pace; this.anims.globalTimeScale = pace;
+    if (this.finished || this.paused || this.bagOpen) return;
+    const dt = Math.min(0.05, dtMs / 1000) * pace;
+    this.time_ += dt;
+    this.updateHero(dt);
+    for (const m of this.monsters.slice()) this.updateMonster(m, dt);
+    this.updateTraps(dt);
+    if (this.time_ > this.nextWave) { this.spawnWave(); this.nextWave = this.time_ + Phaser.Math.Between(90, 180); }
+    for (const pk of this.pickups.values()) pk.spr.y = pk.baseY + Math.sin(this.time_ * 3 + pk.x) * 2;
+    this.drawDarkness(dt);
+    this.drawAim();
+    this.refreshHud(dt);
+    if (this.bot) this.botTick();
+  }
+
+
+  inputDir() {
+    if (this.botDir) return this.botDir;
+    const down = id => this.keysIn[id].some(k => k.isDown);
+    const dx = (down("right") ? 1 : 0) - (down("left") ? 1 : 0);
+    const dy = (down("down") ? 1 : 0) - (down("up") ? 1 : 0);
+    return dx || dy ? [dx, dy] : null;
+  }
+
+
+  // ---------------------------------------------------------------- bot de teste (?bot)
+  botTick() {
+    this.botDir = null;
+    const h = this.hero;
+    if (h.moveT > 0 || h.dead) return;
+    let goal = this.stairs, best = 1e9;
+    for (const m of this.monsters) {
+      let d = Math.hypot(m.x - h.x, m.y - h.y);
+      if (m.elite && !this.stairs) d = 0;
+      if (d < best && d < 9) { best = d; goal = { x: m.x, y: m.y }; }
+    }
+    if (this.adjacentMonster(h.x, h.y, h.facing)) { for (const sp of ["aura", "spin", "front"]) if (h.level >= SPELLS[sp].level && h.fury >= SPELLS[sp].fury && h.cds[sp] <= 0) { this.cast(sp); break; } return; }
+    if (h.hp < h.maxHp * 0.4 && h.level >= 3 && h.fury >= 30) this.cast("heal");
+    if (!goal) return;
+    const d = this.gen.distances(goal.x, goal.y, (x, y) => { const p = this.props.get(key(x, y)); return !p || p.kind in BREAKABLE; });
+    const here = d[h.y * this.gen.w + h.x];
+    const opts = DIRS4.filter(([dx, dy]) => { const v = d[(h.y + dy) * this.gen.w + h.x + dx]; return v >= 0 && v < here; });
+    if (opts.length) this.botDir = opts[(Math.random() * opts.length) | 0];
+  }
+}

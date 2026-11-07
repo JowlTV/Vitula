@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Vitula</title>
+<style>
+  @font-face { font-family: "Pixelify"; src: url("assets/ui/font.ttf"); }
+  html, body { margin: 0; height: 100%; background: #08070a; overflow: hidden; }
+  body { height: 100dvh; }
+  #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+  .preload { font-family: "Pixelify"; position: absolute; left: -999px; }
+</style>
+</head>
+<body>
+<div id="game"></div>
+<span class="preload">.</span><span class="preload2">.</span>
+<script src="lib/phaser.min.js"></script>
+<script src="src/data.js"></script>
+<script src="src/gen.js"></script>
+<script src="src/save.js"></script>
+<script src="src/scenes.js"></script>
+<script src="src/dungeon.js"></script>
+<script src="src/floor.js"></script>
+<script src="src/cave.js"></script>
+<script src="src/monsters.js"></script>
+<script src="src/hero.js"></script>
+<script src="src/spells.js"></script>
+<script src="src/lighting.js"></script>
+<script src="src/hud.js"></script>
+<script src="src/bag.js"></script>
+<script src="src/town.js"></script>
+<script src="src/main.js"></script>
+<script src="src/touch.js"></script>
+</body>
+</html>
