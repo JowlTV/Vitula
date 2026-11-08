@@ -13,7 +13,7 @@ Object.assign(DungeonScene.prototype, {
     const t = this.ranged ? this.rangedTarget() : (h.target && !h.target.dead ? h.target : this.adjacentMonster(h.x, h.y, h.facing));
     if (t && !t.dead) {
       const p = 0.65 + 0.35 * Math.sin(this.time_ * 10);
-      const x = t.x * T + 2, y = t.y * T + 2, w = T - 4;
+      const x = Math.round((t.px != null ? t.px : t.x * T + T / 2) - T / 2) + 2, y = Math.round((t.py != null ? t.py - T * 0.82 : t.y * T)) + 2, w = T - 4;
       g.lineStyle(3, 0x000000, 0.6).strokeRect(x + 1, y + 1, w, w);
       g.lineStyle(2, 0xe02424, p).strokeRect(x, y, w, w);
       // cantos reforçados
@@ -68,7 +68,7 @@ Object.assign(DungeonScene.prototype, {
       const [fx, fy] = h.facing;
       // "walkHold": continua andando entre um tile e outro (sem voltar ao parado por 1 quadro = mancar)
       if (h.moveT > 0) h.walkHold = 0.12; else h.walkHold = Math.max(0, (h.walkHold || 0) - dt);
-      const walking = h.walkHold > 0, atk = h.attackT > 0;
+      const walking = h.walkHold > 0, atk = h.attackT > 0 && !(this.ranged && h.moveT > 0);
       // 4 direções: baixo, cima e lado (a esquerda é o lado espelhado)
       const dir = atk ? (h.atkDir || "down") : (fx ? "side" : (fy < 0 ? "up" : "down"));
       anim = this.ap + (atk ? "attack" : walking ? "walk" : "idle") + "_" + dir;
