@@ -83,57 +83,7 @@ class TownScene extends Phaser.Scene {
     const W = TOWN_W * T, H = TOWN_H * T;
     const ct = this.textures.createCanvas("town_ground", W, H), c = ct.getContext();
     c.imageSmoothingEnabled = false;
-    c.fillStyle = c.createPattern(this.textures.get("ground_grass").getSourceImage(), "repeat"); c.fillRect(0, 0, W, H);
-    const FRAME = [-1, 15, 8, 9, 0, 11, 14, 7, 13, 4, 1, 10, 3, 2, 5, 6];
-    const layer = (tex, fill, swap = {}) => {
-      const img = this.textures.get(tex).getSourceImage(), ts = img.width / 4;
-      const on = (x, y) => x >= 0 && y >= 0 && x < TOWN_W && y < TOWN_H && fill(this.ground[y][x]);
-      for (let y = 0; y <= TOWN_H; y++) for (let x = 0; x <= TOWN_W; x++) {
-        const m = (on(x - 1, y - 1) ? 1 : 0) | (on(x, y - 1) ? 2 : 0) | (on(x - 1, y) ? 4 : 0) | (on(x, y) ? 8 : 0), f = swap[m] !== undefined ? swap[m] : FRAME[m];
-        if (f < 0) continue;
-        c.drawImage(img, (f % 4) * ts, Math.floor(f / 4) * ts, ts, ts, x * T - T / 2, y * T - T / 2, T, T);
-      }
-    };
-    layer("ts_dirt_grass", t => t === "d");
-    // paralelepípedo × grama: o quadro do miolo (6) veio com grama na geração; o miolo usa o quadro 10, que é pedra pura
-    // ruas: o mesmo calçamento em espinha de peixe que é a "parte de baixo" da calçada e da praça (quadro 12 = só calçamento),
-    // assim não há emenda entre rua, calçada e praça. (O tileset paralelepípedo × grama veio com quadros defeituosos.)
-    {
-      const sw = this.textures.get("ts_sidewalk_cobble").getSourceImage(), ts = sw.width / 4;
-      const big = document.createElement("canvas"); big.width = big.height = T; const bc = big.getContext("2d"); bc.imageSmoothingEnabled = false;
-      bc.drawImage(sw, 0, 3 * ts, ts, ts, 0, 0, T, T);
-      c.fillStyle = c.createPattern(big, "repeat");
-      const road = t => t === "c" || t === "p" || t === "s";
-      for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) if (road(this.ground[y][x])) c.fillRect(x * T, y * T, T, T);
-      // borda: tufos de grama irregulares avançando sobre a pedra, e uma sombra fina onde a pedra começa
-      const rng = new Phaser.Math.RandomDataGenerator(["karhyn-borda"]);
-      const tuft = ["#2f3a24", "#34402a", "#2a3420", "#3a4530", "#252c1c"];
-      for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) {
-        if (!road(this.ground[y][x])) continue;
-        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-          const nx = x + dx, ny = y + dy;
-          if (nx < 0 || ny < 0 || nx >= TOWN_W || ny >= TOWN_H) continue;
-          const n = this.ground[ny][nx]; if (n !== "g" && n !== "d") continue;
-          c.fillStyle = "rgba(0,0,0,0.28)";
-          if (dx) c.fillRect(x * T + (dx > 0 ? T - 3 : 0), y * T, 3, T); else c.fillRect(x * T, y * T + (dy > 0 ? T - 3 : 0), T, 3);
-          for (let i = 0; i < 14; i++) {
-            c.fillStyle = n === "d" ? "#4a3a28" : tuft[rng.between(0, 4)];
-            const a = rng.between(0, 15) * 4, b = rng.between(0, 2) * 3, w = rng.between(1, 2) * 3;
-            if (dx) c.fillRect(x * T + (dx > 0 ? T - w - b : b), y * T + a, w, 4); else c.fillRect(x * T + a, y * T + (dy > 0 ? T - w - b : b), 4, w);
-          }
-        }
-      }
-    }
-    layer("ts_sidewalk_cobble", t => t === "s");
-    layer("ts_plaza_cobble", t => t === "p");
-    // muralhas laterais: passadiço de pedra visto de cima (topo do trecho de muralha, girado)
-    const wall = this.textures.get("k2_wall").getSourceImage(), topH = Math.round(wall.height * 0.42);
-    c.fillStyle = "#1c1c20"; c.fillRect(0, 0, W, 2 * T);
-    for (const x0 of [0, W - 2 * T]) for (let y = 0; y < H; y += 2 * T) {
-      c.save(); c.translate(x0 + 2 * T, y); c.rotate(Math.PI / 2);
-      c.drawImage(wall, 0, 0, wall.width, topH, 0, 0, 2 * T, 2 * T); c.restore();
-      c.fillStyle = "rgba(0,0,0,0.25)"; c.fillRect(x0 === 0 ? 2 * T - 6 : x0, y, 6, 2 * T);
-    }
+    c.drawImage(TG.ground(this.ground, TOWN_W, TOWN_H, T), 0, 0);
     ct.refresh();
     this.world.add(this.add.image(0, 0, "town_ground").setOrigin(0).setDepth(-10));
   }
@@ -141,6 +91,9 @@ class TownScene extends Phaser.Scene {
   // coloca uma arte k2_ com a base na linha `by` (casa), a partir da coluna `bx`, com `w` casas de largura;
   // bloqueia as `fd` linhas de baixo (a pegada); `depth` opcional para ficar atrás de quem passa
   art(tex, bx, by, w, fd = 2, solid = true) {
+    // peças da cidade desenhadas em código (towngfx.js); só o lampião continua imagem
+    const kind = tex.startsWith("k2_") ? tex.slice(3) : null;
+    if (kind && TG.MAKERS[kind]) { const k = `tg_${kind}_${w}`; tex = this.textures.exists(k) ? k : TG.make(this, k, kind, w); }
     const img = this.add.image((bx + w / 2) * T, (by + 1) * T, tex).setOrigin(0.5, 1);
     img.setScale(w * T / img.width).setDepth((by + 1) * T - 2).setTint(TOWN_TINT);
     this.world.add(img); groundShadow(this, img, this.world, w > 2 ? 0.95 : 0.85, w > 2 ? 0.55 : 0.9);
@@ -174,7 +127,7 @@ class TownScene extends Phaser.Scene {
     A("temple", 21, 9, 6, 3);
     A("banner", 20.1, 9, 0.5, 1); A("banner", 27.1, 9, 0.5, 1);
     // praça: fonte, bancos, barracas
-    this.fountain = this.put("town_fountain", 23, 14, 2, 2, 176 / T, true, 6);
+    this.fountain = this.put(this.textures.exists("tg_fountain") ? "tg_fountain" : TG.make(this, "tg_fountain", "town_fountain", 2.75), 23, 14, 2, 2, 2.75, true, 2);
     A("bench", 19.3, 12, 0.85, 1); A("bench", 27.3, 12, 0.85, 1);
     A("stall_red", 18.2, 20, 1.6, 1); A("stall_green", 28.2, 20, 1.6, 1);
     // norte da rua (oeste): depósito e casas
