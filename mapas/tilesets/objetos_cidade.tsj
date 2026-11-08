@@ -1,0 +1,254 @@
+{
+ "type": "tileset",
+ "version": "1.10",
+ "tiledversion": "1.11.0",
+ "name": "objetos_cidade",
+ "tilewidth": 714,
+ "tileheight": 468,
+ "tilecount": 18,
+ "columns": 0,
+ "margin": 0,
+ "spacing": 0,
+ "grid": {
+  "orientation": "orthogonal",
+  "width": 1,
+  "height": 1
+ },
+ "tiles": [
+  {
+   "id": 0,
+   "image": "objetos/portao.png",
+   "imagewidth": 328,
+   "imageheight": 326,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "portao"
+    }
+   ]
+  },
+  {
+   "id": 1,
+   "image": "objetos/templo.png",
+   "imagewidth": 714,
+   "imageheight": 403,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "templo"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "image": "objetos/torre.png",
+   "imagewidth": 184,
+   "imageheight": 468,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "torre"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "image": "objetos/fonte.png",
+   "imagewidth": 176,
+   "imageheight": 165,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "fonte"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "image": "objetos/casa_vermelha.png",
+   "imagewidth": 280,
+   "imageheight": 350,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "casa_vermelha"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "image": "objetos/casa_palha.png",
+   "imagewidth": 300,
+   "imageheight": 308,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "casa_palha"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "image": "objetos/ferraria.png",
+   "imagewidth": 352,
+   "imageheight": 276,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "ferraria"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "image": "objetos/muralha.png",
+   "imagewidth": 176,
+   "imageheight": 176,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "muralha"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "image": "objetos/cipreste.png",
+   "imagewidth": 53,
+   "imageheight": 220,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "cipreste"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "image": "objetos/lampiao.png",
+   "imagewidth": 29,
+   "imageheight": 150,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "lampiao"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "image": "objetos/bau_deposito.png",
+   "imagewidth": 54,
+   "imageheight": 48,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "bau_deposito"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "image": "objetos/balcao_deposito.png",
+   "imagewidth": 240,
+   "imageheight": 133,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "balcao_deposito"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "image": "objetos/balcao_pocoes.png",
+   "imagewidth": 103,
+   "imageheight": 68,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "balcao_pocoes"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "image": "objetos/bancada_ferreiro.png",
+   "imagewidth": 80,
+   "imageheight": 64,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "bancada_ferreiro"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "image": "objetos/forja.png",
+   "imagewidth": 80,
+   "imageheight": 80,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "forja"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "image": "objetos/porta.png",
+   "imagewidth": 48,
+   "imageheight": 64,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "porta"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "image": "objetos/janela.png",
+   "imagewidth": 40,
+   "imageheight": 40,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "janela"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "image": "objetos/estatua_magdha.png",
+   "imagewidth": 128,
+   "imageheight": 128,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "estatua_magdha"
+    }
+   ],
+   "type": "altar"
+  }
+ ]
+}

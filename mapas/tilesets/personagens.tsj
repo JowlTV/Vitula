@@ -1,0 +1,159 @@
+{
+ "type": "tileset",
+ "version": "1.10",
+ "tiledversion": "1.11.0",
+ "name": "personagens",
+ "tilewidth": 82,
+ "tileheight": 74,
+ "tilecount": 10,
+ "columns": 0,
+ "margin": 0,
+ "spacing": 0,
+ "grid": {
+  "orientation": "orthogonal",
+  "width": 1,
+  "height": 1
+ },
+ "tiles": [
+  {
+   "id": 0,
+   "image": "personagens/inicio_heroi.png",
+   "imagewidth": 42,
+   "imageheight": 74,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "inicio_heroi"
+    }
+   ],
+   "type": "inicio_heroi"
+  },
+  {
+   "id": 1,
+   "image": "personagens/guarda_deposito.png",
+   "imagewidth": 40,
+   "imageheight": 74,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "guarda_deposito"
+    }
+   ],
+   "type": "npc"
+  },
+  {
+   "id": 2,
+   "image": "personagens/vendedora_pocoes.png",
+   "imagewidth": 42,
+   "imageheight": 74,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "vendedora_pocoes"
+    }
+   ],
+   "type": "npc"
+  },
+  {
+   "id": 3,
+   "image": "personagens/ferreiro.png",
+   "imagewidth": 37,
+   "imageheight": 74,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "ferreiro"
+    }
+   ],
+   "type": "npc"
+  },
+  {
+   "id": 4,
+   "image": "personagens/rato.png",
+   "imagewidth": 37,
+   "imageheight": 24,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "rato"
+    }
+   ],
+   "type": "area_monstros"
+  },
+  {
+   "id": 5,
+   "image": "personagens/rato_caverna.png",
+   "imagewidth": 45,
+   "imageheight": 28,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "rato_caverna"
+    }
+   ],
+   "type": "area_monstros"
+  },
+  {
+   "id": 6,
+   "image": "personagens/rato_gigante.png",
+   "imagewidth": 82,
+   "imageheight": 54,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "rato_gigante"
+    }
+   ],
+   "type": "area_monstros"
+  },
+  {
+   "id": 7,
+   "image": "personagens/morcego.png",
+   "imagewidth": 49,
+   "imageheight": 48,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "morcego"
+    }
+   ],
+   "type": "area_monstros"
+  },
+  {
+   "id": 8,
+   "image": "personagens/slime.png",
+   "imagewidth": 44,
+   "imageheight": 36,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "slime"
+    }
+   ],
+   "type": "area_monstros"
+  },
+  {
+   "id": 9,
+   "image": "personagens/esqueleto.png",
+   "imagewidth": 43,
+   "imageheight": 74,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "esqueleto"
+    }
+   ],
+   "type": "area_monstros"
+  }
+ ]
+}

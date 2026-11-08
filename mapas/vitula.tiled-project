@@ -1,0 +1,170 @@
+{
+ "automappingRulesFile": "",
+ "commands": [],
+ "compatibilityVersion": 1100,
+ "extensionsPath": "extensions",
+ "folders": [
+  "."
+ ],
+ "propertyTypes": [
+  {
+   "id": 1,
+   "name": "npc",
+   "type": "class",
+   "useAs": [
+    "object",
+    "tile"
+   ],
+   "color": "#ffd27a3c",
+   "drawFill": true,
+   "members": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": ""
+    },
+    {
+     "name": "funcao",
+     "type": "string",
+     "value": "morador"
+    },
+    {
+     "name": "dialogo",
+     "type": "string",
+     "value": ""
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "name": "passagem",
+   "type": "class",
+   "useAs": [
+    "object",
+    "tile"
+   ],
+   "color": "#ff3cc8ff",
+   "drawFill": true,
+   "members": [
+    {
+     "name": "destino_mapa",
+     "type": "string",
+     "value": "esgoto.tmj"
+    },
+    {
+     "name": "destino_x",
+     "type": "int",
+     "value": 0
+    },
+    {
+     "name": "destino_y",
+     "type": "int",
+     "value": 0
+    },
+    {
+     "name": "tipo",
+     "type": "string",
+     "value": "bueiro"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "name": "area_monstros",
+   "type": "class",
+   "useAs": [
+    "object",
+    "tile"
+   ],
+   "color": "#ffff4040",
+   "drawFill": true,
+   "members": [
+    {
+     "name": "monstros",
+     "type": "string",
+     "value": "rat"
+    },
+    {
+     "name": "quantidade",
+     "type": "int",
+     "value": 4
+    },
+    {
+     "name": "renascer_s",
+     "type": "int",
+     "value": 60
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "name": "inicio_heroi",
+   "type": "class",
+   "useAs": [
+    "object",
+    "tile"
+   ],
+   "color": "#ff40ff80",
+   "drawFill": true,
+   "members": []
+  },
+  {
+   "id": 5,
+   "name": "altar",
+   "type": "class",
+   "useAs": [
+    "object",
+    "tile"
+   ],
+   "color": "#fff2e2a0",
+   "drawFill": true,
+   "members": []
+  },
+  {
+   "id": 6,
+   "name": "luz",
+   "type": "class",
+   "useAs": [
+    "object",
+    "tile"
+   ],
+   "color": "#ffffb040",
+   "drawFill": true,
+   "members": [
+    {
+     "name": "raio",
+     "type": "int",
+     "value": 3
+    },
+    {
+     "name": "cor",
+     "type": "color",
+     "value": "#ffffb060"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "name": "zona",
+   "type": "class",
+   "useAs": [
+    "object",
+    "tile"
+   ],
+   "color": "#ff9a9aff",
+   "drawFill": true,
+   "members": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": ""
+    },
+    {
+     "name": "musica",
+     "type": "string",
+     "value": ""
+    }
+   ]
+  }
+ ]
+}

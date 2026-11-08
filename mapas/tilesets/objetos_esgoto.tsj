@@ -1,0 +1,306 @@
+{
+ "type": "tileset",
+ "version": "1.10",
+ "tiledversion": "1.11.0",
+ "name": "objetos_esgoto",
+ "tilewidth": 120,
+ "tileheight": 96,
+ "tilecount": 22,
+ "columns": 0,
+ "margin": 0,
+ "spacing": 0,
+ "grid": {
+  "orientation": "orthogonal",
+  "width": 1,
+  "height": 1
+ },
+ "tiles": [
+  {
+   "id": 0,
+   "image": "objetos/barril.png",
+   "imagewidth": 40,
+   "imageheight": 52,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "barril"
+    }
+   ]
+  },
+  {
+   "id": 1,
+   "image": "objetos/caixa.png",
+   "imagewidth": 50,
+   "imageheight": 35,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "caixa"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "image": "objetos/caixa_quebrada.png",
+   "imagewidth": 54,
+   "imageheight": 40,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "caixa_quebrada"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "image": "objetos/pilha_caixas.png",
+   "imagewidth": 60,
+   "imageheight": 60,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "pilha_caixas"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "image": "objetos/pote.png",
+   "imagewidth": 34,
+   "imageheight": 38,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "pote"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "image": "objetos/urna.png",
+   "imagewidth": 36,
+   "imageheight": 48,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "urna"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "image": "objetos/pilar.png",
+   "imagewidth": 56,
+   "imageheight": 70,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "pilar"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "image": "objetos/tocha.png",
+   "imagewidth": 22,
+   "imageheight": 60,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "tocha"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "image": "objetos/bau.png",
+   "imagewidth": 52,
+   "imageheight": 35,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "bau"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "image": "objetos/porta_madeira.png",
+   "imagewidth": 50,
+   "imageheight": 64,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "porta_madeira"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "image": "objetos/porta_pedra.png",
+   "imagewidth": 44,
+   "imageheight": 64,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "porta_pedra"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "image": "objetos/corda.png",
+   "imagewidth": 37,
+   "imageheight": 96,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "corda"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "image": "objetos/bueiro.png",
+   "imagewidth": 53,
+   "imageheight": 37,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "bueiro"
+    }
+   ],
+   "type": "passagem"
+  },
+  {
+   "id": 13,
+   "image": "objetos/ossos.png",
+   "imagewidth": 43,
+   "imageheight": 32,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "ossos"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "image": "objetos/esqueleto_chao.png",
+   "imagewidth": 44,
+   "imageheight": 28,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "esqueleto_chao"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "image": "objetos/ninho_ratos.png",
+   "imagewidth": 64,
+   "imageheight": 43,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "ninho_ratos"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "image": "objetos/lodo.png",
+   "imagewidth": 75,
+   "imageheight": 37,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "lodo"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "image": "objetos/poca.png",
+   "imagewidth": 120,
+   "imageheight": 64,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "poca"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "image": "objetos/espinhos.png",
+   "imagewidth": 58,
+   "imageheight": 58,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "espinhos"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "image": "objetos/respiro_gas.png",
+   "imagewidth": 44,
+   "imageheight": 56,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "respiro_gas"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "image": "objetos/cogumelos.png",
+   "imagewidth": 40,
+   "imageheight": 40,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "cogumelos"
+    }
+   ]
+  },
+  {
+   "id": 21,
+   "image": "objetos/pedras.png",
+   "imagewidth": 56,
+   "imageheight": 40,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "pedras"
+    }
+   ]
+  }
+ ]
+}

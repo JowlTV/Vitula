@@ -1,0 +1,467 @@
+{
+ "type": "tileset",
+ "version": "1.10",
+ "tiledversion": "1.11.0",
+ "name": "chao",
+ "image": "chao.png",
+ "imagewidth": 512,
+ "imageheight": 256,
+ "tilewidth": 64,
+ "tileheight": 64,
+ "tilecount": 30,
+ "columns": 8,
+ "margin": 0,
+ "spacing": 0,
+ "tiles": [
+  {
+   "id": 0,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "grama_1"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 1,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "grama_2"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "grama_3"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "grama_4"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "paralelepipedo_1"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "paralelepipedo_2"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "paralelepipedo_3"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "paralelepipedo_4"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "assoalho_1"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "assoalho_2"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "assoalho_3"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "assoalho_4"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "rua"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "muro_cidade"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "telhado"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "parede_deposito"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "esgoto_chao"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "esgoto_topo_parede"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "esgoto_frente_parede"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "esgoto_frente_parede_b"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "esgoto_ralo_parede"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 21,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "esgoto_canal"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 22,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "esgoto_grade"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 23,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "caverna_musgo"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 24,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "caverna_vermelha"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 25,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "caverna_topo_rocha"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 26,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "caverna_frente_parede"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 27,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "caverna_agua"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 28,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "caverna_margem"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 29,
+   "properties": [
+    {
+     "name": "nome",
+     "type": "string",
+     "value": "escada_descer"
+    },
+    {
+     "name": "solido",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  }
+ ]
+}
