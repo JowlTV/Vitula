@@ -121,8 +121,8 @@ Object.assign(DungeonScene.prototype, {
     iron(cx - 68, 40, 136, 6);
     this.furyFill = this.add.rectangle(cx - 68, 40, 136, 6, VOCATIONS[this.vocId].mana ? 0x2f5fb8 : 0xa8401a).setOrigin(0); ui.add(this.furyFill);
     this.furyText = txt(this, cx + 78, 36, VOCATIONS[this.vocId].resource || "Fúria", 12, VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#d0703a"); ui.add(this.furyText);
-    this.lvlText = txt(this, bx - 14, 6, "", 18, COLORS.gold).setOrigin(1, 0); ui.add(this.lvlText);
-    this.promoText = txt(this, bx - 14, 28, "", 12, "#e8c878").setOrigin(1, 0); ui.add(this.promoText);
+    this.lvlText = txt(this, bx - 14, 6, "", 18, COLORS.gold).setOrigin(1, 0).setVisible(false);   // o nível fica na janela de Habilidades
+    this.promoText = txt(this, bx - 14, 12, "", 12, "#e8c878").setOrigin(1, 0); ui.add(this.promoText);
     // embaixo do minimapa (canto superior direito): nome do andar pequeno, ouro e chaves
     const mg = this.gen, ms = Math.min(2, 150 / mg.w, 110 / mg.h), mR = VIEW_W - 12, mB = 14 + Math.ceil(mg.h * ms) + 8;
     this.hudFloor = txt(this, mR, mB + 2, `${this.region.name} · Andar ${this.floorN}/${FLOORS}`, 11, "#c8b890", { title: true }).setOrigin(1, 0);
