@@ -1,3 +1,4 @@
+const CHAMPION_SCALE = Math.min(2.5, 2.0);   // limite pedido: 2,5× o tamanho original
 // Monstros: criação, caminho até o herói (BFS), passos, ataques, dano e morte.
 // (métodos da DungeonScene, separados por assunto)
 Object.assign(DungeonScene.prototype, {
@@ -57,8 +58,10 @@ Object.assign(DungeonScene.prototype, {
       if (i === 0) {
         // campeão da horda: maior, avermelhado, bem mais forte, vale muito mais xp
         m.champion = true; m.hp *= 4; m.maxHp = m.hp; m.dmg *= 1.6;
-        m.spr.setScale((m.data.scale || 1) * 2.7).setTint(0xff9a8a);
+        // no máximo 2,5× o tamanho normal da criatura (antes multiplicava a escala da imagem bruta e passava de 6×)
+        m.baseScale = m.spr.scaleX; m.spr.setScale(m.baseScale * CHAMPION_SCALE).setTint(0xff9a8a);
         m.w = m.spr.displayWidth; m.h = m.spr.displayHeight;
+        m.shadow.setScale(m.w * 0.9 / 64, m.w * 0.3 / 64);
       }
     }
     this.cameras.main.shake(300, 0.004); sfx(this, "boss", 0.5);
