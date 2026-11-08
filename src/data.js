@@ -181,7 +181,8 @@ const vocScale = voc => ((VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42) * WOR
 function groundShadow(scene, spr, container, wf = 0.85, alpha = 1) {
   // a sombra fica dentro da pegada (acima da base), senão o objeto parece apoiado à frente dela
   const w = spr.displayWidth * wf, hh = Math.max(Math.min(w * 0.24, 46), 8);
-  const sh = scene.add.image(spr.x, spr.y - hh * 0.42, "shadow").setScale(w / 64, hh / 64).setAlpha(alpha).setDepth(spr.depth - 1);
+  // objetos altos em 3/4 (barraca, banco, mesa): a base fica um pouco acima da borda de baixo da imagem
+  const sh = scene.add.image(spr.x, spr.y - Math.max(hh * 0.42, Math.min(spr.displayHeight * 0.12, 18)), "shadow").setScale(w / 64, hh / 64).setAlpha(alpha).setDepth(spr.depth - 1);
   if (container) container.addAt ? container.addAt(sh, Math.max(0, container.getIndex(spr))) : container.add(sh);
   spr.once("destroy", () => sh.destroy());
   return sh;

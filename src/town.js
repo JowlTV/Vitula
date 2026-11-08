@@ -195,7 +195,7 @@ class TownScene extends Phaser.Scene {
     for (const [x, y] of [[16, 31], [28, 32], [2, 20], [45, 24], [16, 22], [31, 23]]) A("bush", x + 0.1, y, 0.8, 1);
     // lampiões (praça, avenida e ruas)
     this.lamps = [];
-    for (const [x, y] of [[17, 11], [30, 11], [17, 21], [30, 21], [22, 24], [25, 24], [19, 29], [28, 29], [8, 18], [14, 18], [33, 18], [38, 18], [20, 28], [36, 29]])
+    for (const [x, y] of [[17, 11], [30, 11], [17, 21], [30, 21], [22, 24], [25, 24], [19, 29], [28, 29], [8, 18], [14, 18], [33, 18], [38, 18], [20, 26], [36, 29]])
       this.lamps.push(A("lamp", x, y, 0.55, 1));
     // NPCs e lugares
     this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 4, y: 15, w: 2, h: 1 });
@@ -209,7 +209,9 @@ class TownScene extends Phaser.Scene {
     const mh = this.add.image(40 * T + T / 2, 30 * T + T / 2, "decor_manhole").setDepth(-5);
     mh.setScale(T * 0.9 / mh.width); this.world.add(mh);
     this.zones.push({ name: "Entrada dos Esgotos", kind: "sewer", x: 39, y: 29, w: 3, h: 2 });
-    this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 23, y: TOWN_H - 2, w: 2, h: 2, step: true });
+    // a saída é logo antes da arte do portão (que ocupa as 6 linhas de baixo): ninguém anda por cima das ameias
+    this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 23, y: TOWN_H - 7, w: 2, h: 1, step: true });
+    this.block(23, TOWN_H - 6, 2, 6);
   }
 
   npc(tex, x, y, name, kind, zone) {
@@ -225,7 +227,7 @@ class TownScene extends Phaser.Scene {
   // ------------------------------------------------------------ herói
   spawnHero() {
     const from = this.registry.get("townSpawn") || "gate", pos = this.registry.get("townPos");
-    const [x, y] = from === "here" && pos ? pos : from === "sewer" ? [40, 28] : [24, 29];
+    const [x, y] = from === "here" && pos ? pos : from === "sewer" ? [40, 28] : [24, 28];
     const h = this.hero = { x, y, px: x * T + T / 2, py: y * T + T - 4, moveT: 0, facing: from === "sewer" ? [0, 1] : [0, -1], lookLeft: false };
     h.shadow = this.add.image(h.px, h.py - 3, "shadow").setScale(0.9, 0.3);
     const ap = vocAnim(this.vocId);
