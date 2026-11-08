@@ -50,13 +50,14 @@ const MON_ANIM = {
 };
 const MONSTERS = {
   // (força −25% em vida, dano e armadura) ritmo "Tibia clássico": no nível 1 um rato leva ~15–30 s de luta e cada mordida tira ~10% da vida.
+  // −10% em vida, dano e armadura (nov/26); ratos 15% mais lentos
   // arm = armadura (desconta de cada golpe do herói)
-  rat:       { name: "Rato", tex: "m_rat", anim: "am_rat", hp: 165, arm: 2, dmg: 10, step: 0.5, atk: 2.2, xp: 14 },
-  cave_rat:  { name: "Rato da Caverna", tex: "m_cave_rat", anim: "am_cave_rat", scale: 0.7, hp: 240, arm: 3, dmg: 12, step: 0.42, atk: 2.0, xp: 22 },
-  bat:       { name: "Morcego", tex: "m_bat", anim: "am_bat", hp: 71, arm: 1, dmg: 6, step: 0.3, atk: 1.6, xp: 10, fly: true },
-  slime:     { name: "Lodo", tex: "m_slime", anim: "am_slime", hp: 225, arm: 4, dmg: 11, step: 0.8, atk: 2.2, xp: 24 },
-  skeleton:  { name: "Esqueleto", tex: "m_skeleton", anim: "am_skeleton", hp: 360, arm: 5, dmg: 15, step: 0.55, atk: 2.0, xp: 40 },
-  giant_rat: { name: "Rato Gigante", tex: "m_giant_rat", anim: "am_giant_rat", scale: 0.85, hp: 1650, arm: 6, dmg: 18, step: 0.45, atk: 1.8, xp: 300, gold: 60, elite: true },
+  rat:       { name: "Rato", tex: "m_rat", anim: "am_rat", hp: 148, arm: 1.8, dmg: 9, step: 0.59, atk: 2.2, xp: 14 },
+  cave_rat:  { name: "Rato da Caverna", tex: "m_cave_rat", anim: "am_cave_rat", scale: 0.7, hp: 216, arm: 2.7, dmg: 10.8, step: 0.49, atk: 2.0, xp: 22 },
+  bat:       { name: "Morcego", tex: "m_bat", anim: "am_bat", hp: 64, arm: 0.9, dmg: 5.4, step: 0.3, atk: 1.6, xp: 10, fly: true },
+  slime:     { name: "Lodo", tex: "m_slime", anim: "am_slime", hp: 202, arm: 3.6, dmg: 9.9, step: 0.8, atk: 2.2, xp: 24 },
+  skeleton:  { name: "Esqueleto", tex: "m_skeleton", anim: "am_skeleton", hp: 324, arm: 4.5, dmg: 13.5, step: 0.55, atk: 2.0, xp: 40 },
+  giant_rat: { name: "Rato Gigante", tex: "m_giant_rat", anim: "am_giant_rat", scale: 0.85, hp: 1485, arm: 5.4, dmg: 16.2, step: 0.53, atk: 1.8, xp: 300, gold: 60, elite: true },
 };
 
 const FLOOR_MONSTERS = {
