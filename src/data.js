@@ -164,7 +164,12 @@ const ARCHER_SPELLS = {
 };
 const vocSpells = voc => (voc === "archer" ? ARCHER_SPELLS : SPELLS);
 const vocAnim = voc => (VOCATIONS[voc] && VOCATIONS[voc].anim) || "kn_";
-const vocScale = voc => (VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42;
+// Escala do mundo: a casa tem 64 px e uma porta ocupa uma casa; personagens e criaturas ficam ~0,9 casa de altura
+// (antes ~1,25 casa: o herói passava da altura das portas e paredes).
+const WORLD_SCALE = 0.78;
+// altura alvo (px) de cada objeto da masmorra, em proporção ao herói (~60 px de corpo)
+const PROP_H = { barrel: 40, crate_intact: 32, crate_damaged: 32, chest_closed: 28, chest_open: 28, pot: 27, urn: 36, torch_stand: 62, pillar: 92 };
+const vocScale = voc => ((VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42) * WORLD_SCALE;
 
 // sombra de contato: elipse escura colada na base de um sprite (origem 0.5,1), some junto com ele
 function groundShadow(scene, spr, container, wf = 0.85, alpha = 1) {

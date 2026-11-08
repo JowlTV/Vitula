@@ -37,8 +37,8 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
-  fx(name, x, y, scale, flip = false) {
-    const s = this.add.sprite(x, y, "fx_" + name).setScale(scale).setFlipX(flip).setDepth(100001);
+  fx(name, x, y, scale, flip = false, angle = 0) {
+    const s = this.add.sprite(x, y, "fx_" + name).setScale(scale).setFlipX(flip).setAngle(angle).setDepth(100001);
     this.ents.add(s);
     s.play("fx_" + name);
     s.once("animationcomplete", () => s.destroy());

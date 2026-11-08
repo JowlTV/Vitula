@@ -118,7 +118,8 @@ class DungeonScene extends Phaser.Scene {
 
   inputDir() {
     if (this.botDir) return this.botDir;
-    const down = id => this.keysIn[id].some(k => k.isDown);
+    const down = id => (this.keysIn[id] || []).some(k => k.isDown);
+    for (const [id, d] of [["upLeft", [-1, -1]], ["upRight", [1, -1]], ["downLeft", [-1, 1]], ["downRight", [1, 1]]]) if (down(id)) return d;
     const dx = (down("right") ? 1 : 0) - (down("left") ? 1 : 0);
     const dy = (down("down") ? 1 : 0) - (down("up") ? 1 : 0);
     return dx || dy ? [dx, dy] : null;

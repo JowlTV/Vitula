@@ -222,12 +222,12 @@ class OptionsScene extends Phaser.Scene {
     // duas colunas de teclas (cabem todas as ações sem passar dos botões)
     const half = Math.ceil(ACTIONS.length / 2);
     ACTIONS.forEach(([id, label], i) => {
-      const col = i < half ? 0 : 1, y = 196 + (i % half) * 24, lx = col ? 490 : 60;
+      const col = i < half ? 0 : 1, y = 194 + (i % half) * 21, lx = col ? 490 : 60;
       txt(this, lx, y, label, 12, COLORS.text).setOrigin(0, 0.5);
       for (let slot = 0; slot < 2; slot++) {
         const x = lx + 268 + slot * 76;
-        const box = this.add.rectangle(x, y, 70, 21, 0x1a1820).setStrokeStyle(1, 0x6a5a40).setInteractive({ useHandCursor: true });
-        const t = txt(this, x, y, "", 10, COLORS.text).setOrigin(0.5);
+        const box = this.add.rectangle(x, y, 70, 19, 0x1a1820).setStrokeStyle(1, 0x6a5a40).setInteractive({ useHandCursor: true });
+        const t = txt(this, x, y, "", 10, COLORS.text, { fontFamily: "Pixelify" }).setOrigin(0.5);
         this.keyTexts[id + slot] = t;
         box.on("pointerup", () => this.listen(id, slot, t));
       }

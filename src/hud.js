@@ -232,15 +232,21 @@ Object.assign(DungeonScene.prototype, {
     const minB = txt(this, w - 24, 0, "–", 11, COLORS.text).setInteractive({ useHandCursor: true });
     const clsB = txt(this, w - 11, 0, "×", 11, COLORS.text).setInteractive({ useHandCursor: true });
     win.add([bg, bar, title, minB, clsB]);
-    const l = [], v = [];
-    for (let i = 0; i < 5; i++) { l.push(txt(this, 5, 17 + i * 14, "", 9, COLORS.dim)); v.push(txt(this, w - 5, 17 + i * 14, "", 9, COLORS.text).setOrigin(1, 0)); }
-    win.add([...l, ...v]);
-    this.skW = { win, bg, l, v, vis: true };
+    // linhas: nível, classe, experiência (barra), magic level (barra), sword/distance (barra), shield (barra)
+    const RH = 17, NR = 6, l = [], v = [], bk = [], fl = [];
+    for (let i = 0; i < NR; i++) {
+      const y = 17 + i * RH;
+      l.push(txt(this, 5, y, "", 9, COLORS.dim)); v.push(txt(this, w - 5, y, "", 9, COLORS.text).setOrigin(1, 0));
+      bk.push(this.add.rectangle(5, y + 12, w - 10, 2, 0x000000, 0.9).setOrigin(0));
+      fl.push(this.add.rectangle(5, y + 12, w - 10, 2, 0x8a7430).setOrigin(0));
+    }
+    win.add([...bk, ...fl, ...l, ...v]);
+    this.skW = { win, bg, l, v, bk, fl, vis: true };
     const save = () => { try { localStorage.setItem("vitula_sk", JSON.stringify(S)); } catch (e) {} };
     const layout = () => {
-      win.setPosition(S.x, S.y).setVisible(S.open); const h = S.min ? 14 : 17 + 5 * 14 + 3;
+      win.setPosition(S.x, S.y).setVisible(S.open); const h = S.min ? 14 : 17 + 6 * 17 + 2;
       bg.setSize(w, h); bg.input.hitArea.setSize(w, h); minB.setText(S.min ? "□" : "–");
-      [...l, ...v].forEach(t => t.setVisible(!S.min)); this.skW.vis = S.open && !S.min;
+      [...l, ...v, ...this.skW.bk, ...this.skW.fl].forEach(t => t.setVisible(!S.min)); this.skW.vis = S.open && !S.min;
     };
     const pt = p => this.uiCam.getWorldPoint(p.x, p.y); let drag = null;
     bar.on("pointerdown", p => { const q = pt(p); drag = { ox: q.x - S.x, oy: q.y - S.y }; });
@@ -337,10 +343,18 @@ Object.assign(DungeonScene.prototype, {
     const sk = id => { const s = Save.skill(this.vocId, id); return `${SKILLS[id].name} ${s.lvl} (${Math.floor(100 * s.tries / skillTriesNeeded(id, s.lvl))}%)`; };
     const ml = Save.voc(this.vocId).ml;
     if (this.skW && this.skW.vis) {
-      const one = id => { const q = Save.skill(this.vocId, id); return [`${SKILLS[id].name}`, `${q.lvl}  ${Math.floor(100 * q.tries / skillTriesNeeded(id, q.lvl))}%`]; };
-      const rows = [["Nível", String(h.level)], ["Experiência", `${Math.floor(h.xp).toLocaleString("pt-BR")} / ${Math.round(this.xpNext()).toLocaleString("pt-BR")}`], ["Magic level", String(this.mlEff())],
+      const one = id => { const q = Save.skill(this.vocId, id), f = q.tries / skillTriesNeeded(id, q.lvl); return [`${SKILLS[id].name}`, `${q.lvl}  ${Math.floor(100 * f)}%`, f, 0x5a9a4a]; };
+      const ml = Save.voc(this.vocId).ml, mlf = ml.spent / mlNeeded(this.vocId, ml.lvl);
+      const rows = [["Nível", String(h.level), null],
+        ["Classe", this.promo() ? this.promo().name : VOCATIONS[this.vocId].name, null],
+        ["Experiência", `${Math.floor(h.xp).toLocaleString("pt-BR")} / ${Math.round(this.xpNext()).toLocaleString("pt-BR")}`, h.xp / this.xpNext(), 0x8a7430],
+        ["Magic level", `${this.mlEff()}  ${Math.floor(100 * mlf)}%`, mlf, 0x4a6ab8],
         one(this.ranged ? "distance" : "sword"), one("shield")];
-      rows.forEach((r, i) => { this.skW.l[i].setText(r[0]); this.skW.v[i].setText(r[1]); });
+      rows.forEach((r, i) => {
+        const W = this.skW, on = r[2] != null;
+        W.l[i].setText(r[0]); W.v[i].setText(r[1]); W.bk[i].setVisible(on); W.fl[i].setVisible(on);
+        if (on) W.fl[i].setSize(Math.max(1, W.bk[i].width * Phaser.Math.Clamp(r[2], 0, 1)), 2).setFillStyle(r[3]);
+      });
     }
     if (this.msgT > 0) { this.msgT -= dt; this.msgText.setAlpha(Phaser.Math.Clamp(this.msgT, 0, 1)); }
   },

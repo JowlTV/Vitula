@@ -170,27 +170,27 @@ class TownScene extends Phaser.Scene {
     this.block(21, TOWN_H - 6, 2, 6); this.block(25, TOWN_H - 6, 2, 6);
     // templo de Magdha no fim da avenida, com estandartes
     A("temple", 21, 9, 6, 3);
-    A("banner", 20, 9, 0.7, 1); A("banner", 27, 9, 0.7, 1);
+    A("banner", 20.1, 9, 0.5, 1); A("banner", 27.1, 9, 0.5, 1);
     // praça: fonte, bancos, barracas
     this.fountain = this.put("town_fountain", 23, 14, 2, 2, 176 / T, true, 6);
-    A("bench", 19, 12, 1.4, 1); A("bench", 27, 12, 1.4, 1);
-    A("stall_red", 18, 20, 2, 1); A("stall_green", 28, 20, 2, 1);
+    A("bench", 19.3, 12, 0.85, 1); A("bench", 27.3, 12, 0.85, 1);
+    A("stall_red", 18.2, 20, 1.6, 1); A("stall_green", 28.2, 20, 1.6, 1);
     // norte da rua (oeste): depósito e casas
-    A("depot", 3, 14, 5, 3); A("barrels", 8, 14, 1.1, 1); A("house_red", 9, 14, 3, 3); A("crates", 12, 14, 1.1, 1); A("house_red", 13, 14, 3, 3);
+    A("depot", 3, 14, 5, 3); A("barrels", 8.15, 14, 0.8, 1); A("house_red", 9, 14, 3, 3); A("crates", 12.15, 14, 0.8, 1); A("house_red", 13, 14, 3, 3);
     // norte da rua (leste): poções, ferraria e taverna
-    A("potion_shop", 31, 14, 3, 3); A("crates", 34, 14, 1, 1); A("smithy", 35, 14, 4, 3); A("barrels", 39, 14, 1, 1); A("tavern", 40, 14, 5, 3);
-    A("tavern_table", 40, 20, 2, 1); A("tavern_table", 43, 20, 2, 1); A("barrels", 45, 19, 1, 1);
+    A("potion_shop", 31, 14, 3, 3); A("crates", 34.1, 14, 0.8, 1); A("smithy", 35, 14, 4, 3); A("barrels", 39.1, 14, 0.8, 1); A("tavern", 40, 14, 5, 3);
+    A("tavern_table", 40.3, 20, 1.3, 1); A("tavern_table", 43.3, 20, 1.3, 1); A("barrels", 45.1, 19, 0.8, 1);
     // atrás das casas do norte: casebre, torre de vigia e árvores
-    A("cottage", 4, 8, 3, 3); A("tree", 9, 8, 3, 2); A("bush", 13, 7, 1, 1); A("bush", 15, 9, 1, 1);
-    A("tree", 31, 8, 3, 2); A("bush", 35, 6, 1, 1); A("bush", 37, 9, 1, 1); A("tower", 41.35, 9, 1.7, 3);
+    A("cottage", 4, 8, 3, 3); A("tree", 9, 8, 3, 2); A("bush", 13.1, 7, 0.8, 1); A("bush", 15.1, 9, 0.8, 1);
+    A("tree", 31, 8, 3, 2); A("bush", 35.1, 6, 0.8, 1); A("bush", 37.1, 9, 0.8, 1); A("tower", 41.35, 9, 1.7, 3);
     // sul: bairro pobre (oeste) e casas + bueiro (leste)
-    A("cottage", 3, 26, 3, 3); A("cottage", 8, 26, 3, 3); A("well", 12, 25, 2, 2); A("crates", 14, 24, 1, 1);
-    A("house_red", 30, 26, 3, 3); A("house_red", 34, 26, 3, 3); A("barrels", 37, 26, 1, 1); A("house_red", 42, 26, 3, 3);
-    A("stall_red", 17, 25, 2, 1);
+    A("cottage", 3, 26, 3, 3); A("cottage", 8, 26, 3, 3); A("well", 12.3, 25, 1.4, 2); A("crates", 14.1, 24, 0.8, 1);
+    A("house_red", 30, 26, 3, 3); A("house_red", 34, 26, 3, 3); A("barrels", 37.1, 26, 0.8, 1); A("house_red", 42, 26, 3, 3);
+    A("stall_red", 17.2, 25, 1.6, 1);
     // entrada: carroça, placa e árvores junto da muralha sul
-    A("cart", 18, 31, 2, 1); A("signpost", 26, 31, 1, 1);
+    A("cart", 18.25, 31, 1.5, 1); A("signpost", 26, 31, 1, 1);
     for (const [x, y] of [[2, 31], [7, 31], [12, 31], [30, 31], [35, 31], [42, 31]]) A("tree", x, y, 3, 1);
-    for (const [x, y] of [[16, 31], [28, 32], [2, 20], [45, 24], [16, 22], [31, 23]]) A("bush", x, y, 1, 1);
+    for (const [x, y] of [[16, 31], [28, 32], [2, 20], [45, 24], [16, 22], [31, 23]]) A("bush", x + 0.1, y, 0.8, 1);
     // lampiões (praça, avenida e ruas)
     this.lamps = [];
     for (const [x, y] of [[17, 11], [30, 11], [17, 21], [30, 21], [22, 24], [25, 24], [22, 30], [25, 30], [8, 18], [14, 18], [33, 18], [38, 18], [20, 28], [36, 29]])
@@ -212,11 +212,11 @@ class TownScene extends Phaser.Scene {
 
   npc(tex, x, y, name, kind, zone) {
     const idle = tex + "_idle", anim = this.anims.exists(idle);
-    const s = (anim ? this.add.sprite(x * T + T / 2, y * T + T - 4, idle).play({ key: idle, startFrame: Phaser.Math.Between(0, 7) }) : this.add.image(x * T + T / 2, y * T + T - 4, tex)).setOrigin(0.5, 1).setScale(0.42).setTint(TOWN_TINT).setDepth(y * T + T - 4);
+    const s = (anim ? this.add.sprite(x * T + T / 2, y * T + T - 4, idle).play({ key: idle, startFrame: Phaser.Math.Between(0, 7) }) : this.add.image(x * T + T / 2, y * T + T - 4, tex)).setOrigin(0.5, 1).setScale(0.42 * WORLD_SCALE).setTint(TOWN_TINT).setDepth(y * T + T - 4);
     const sh = this.add.image(s.x, s.y - 3, "shadow").setScale(0.9, 0.3).setDepth(s.depth - 1);
     this.world.add([sh, s]);
     this.block(x, y, 1, 1);
-    if (!anim) this.tweens.add({ targets: s, scaleY: 0.42 * 1.015, duration: 1500, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+    if (!anim) this.tweens.add({ targets: s, scaleY: 0.42 * WORLD_SCALE * 1.015, duration: 1500, yoyo: true, repeat: -1, ease: "Sine.inOut" });
     this.zones.push({ name, kind, ...zone });
   }
 

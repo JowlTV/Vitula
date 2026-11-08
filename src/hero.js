@@ -80,7 +80,7 @@ Object.assign(DungeonScene.prototype, {
       h.spr.setFlipX(dir === "side" && !!(atk ? h.atkLeft : h.lookLeft));
     }
     h.attackT = Math.max(0, (h.attackT || 0) - dt);
-    if (h.spr.anims.currentAnim.key !== anim) { h.spr.play(anim, true); if (anim.startsWith(this.ap)) h.spr.setScale(this.ap === "kn_" ? (anim === "kn_hurt" || anim === "kn_cast" ? 0.38 : 0.42) : this.heroScale); }
+    if (h.spr.anims.currentAnim.key !== anim) { h.spr.play(anim, true); if (anim.startsWith(this.ap)) h.spr.setScale(this.ap === "kn_" ? (anim === "kn_hurt" || anim === "kn_cast" ? 0.38 * WORLD_SCALE : this.heroScale) : this.heroScale); }
     // ataque básico automático em quem estiver colado
     h.atkQueued = Math.max(0, (h.atkQueued || 0) - dt);
     const autoAtk = Settings.data.autoAttack !== false;
@@ -101,7 +101,8 @@ Object.assign(DungeonScene.prototype, {
         // o golpe acerta no quadro de impacto da animação (~0,2 s), não antes
         this.time.delayedCall(200, () => {
           if (t.dead || this.finished) return;
-          this.fx(this.anims.exists("fx_basic_slash") ? "basic_slash" : "slash", t.px, t.py - 22, this.anims.exists("fx_basic_slash") ? 0.9 : 0.7, t.x < h.x);
+          const sx = Math.sign(t.x - h.x), sy = Math.sign(t.y - h.y), ang = sx && sy ? 45 * sy * sx : 0;   // golpe na diagonal sai inclinado
+          this.fx(this.anims.exists("fx_basic_slash") ? "basic_slash" : "slash", t.px, t.py - 22, this.anims.exists("fx_basic_slash") ? 0.9 : 0.7, t.x < h.x, ang);
           const crit = Math.random() < 0.1;
           this.damageMonster(t, this.baseDamage() * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? 1.8 : 1));
           if (crit) { this.splat(t.px, t.py - 4, 5); }
@@ -186,7 +187,10 @@ Object.assign(DungeonScene.prototype, {
   tryMove(dx, dy) {
     const h = this.hero;
     let diag = dx !== 0 && dy !== 0;
-    if (diag && (!this.walkable(h.x + dx, h.y) || !this.walkable(h.x, h.y + dy) || this.isClosedDoor(h.x + dx, h.y) || this.isClosedDoor(h.x, h.y + dy))) {
+    // diagonal estilo Tibia: passa entre monstros e quinas; só não atravessa quando as DUAS laterais são parede/porta fechada,
+    // ou quando a casa de destino está ocupada/bloqueada
+    const sideOk = (x, y) => this.walkable(x, y) && !this.isClosedDoor(x, y);
+    if (diag && (!this.gen.isWalk(h.x + dx, h.y + dy) || (!sideOk(h.x + dx, h.y) && !sideOk(h.x, h.y + dy)))) {
       // desliza pela parede em vez de travar
       if (this.walkable(h.x + dx, h.y) && !this.occ.has(key(h.x + dx, h.y))) dy = 0;
       else if (this.walkable(h.x, h.y + dy) && !this.occ.has(key(h.x, h.y + dy))) dx = 0;
@@ -202,7 +206,7 @@ Object.assign(DungeonScene.prototype, {
       if (this.props.get(key(nx, ny)).kind in BREAKABLE) {
         this.heroSwing(dx, dy);
         const c = this.cellPos(nx, ny);
-        this.time.delayedCall(200, () => { if (!this.finished) this.fx(this.anims.exists("fx_basic_slash") ? "basic_slash" : "slash", c.x, c.y - 22, this.anims.exists("fx_basic_slash") ? 0.9 : 0.7, dx < 0); });
+        this.time.delayedCall(200, () => { if (!this.finished) this.fx(this.anims.exists("fx_basic_slash") ? "basic_slash" : "slash", c.x, c.y - 22, this.anims.exists("fx_basic_slash") ? 0.9 : 0.7, dx < 0, dx && dy ? 45 * dx * dy : 0); });
       }
       this.bumpProp(nx, ny); h.moveT = 0.18; h.moveLen = 0.18; h.fromX = h.px; h.fromY = h.py; return; }
     if (this.occ.has(key(nx, ny)) || !this.gen.isWalk(nx, ny)) return;

@@ -39,6 +39,10 @@ const ACTIONS = [
   ["down", "Andar para baixo", ["S", "DOWN"]],
   ["left", "Andar para a esquerda", ["A", "LEFT"]],
   ["right", "Andar para a direita", ["D", "RIGHT"]],
+  ["upLeft", "Diagonal: cima-esquerda", ["Q", "HOME", "NUMPAD_SEVEN"]],
+  ["upRight", "Diagonal: cima-direita", ["PAGE_UP", "NUMPAD_NINE"]],
+  ["downLeft", "Diagonal: baixo-esquerda", ["Z", "END"]],
+  ["downRight", "Diagonal: baixo-direita", ["C", "PAGE_DOWN"]],
   ["skill1", "Habilidade 1 (Golpe Frontal)", ["ONE", "NUMPAD_ONE"]],
   ["skill2", "Habilidade 2 (Exura)", ["TWO", "NUMPAD_TWO"]],
   ["skill3", "Habilidade 3 (Golpe em Área)", ["THREE", "NUMPAD_THREE"]],
@@ -64,9 +68,9 @@ const Settings = {
   save() { try { localStorage.setItem(this.key, JSON.stringify(this.data)); } catch (e) {} },
   reset() { this.data.keys = {}; this.data.music = 0.6; this.data.sfx = 0.8; this.data.speed = 0.75; this.load(); this.save(); },
   keyLabel(name) {
-    const map = { UP: "↑", DOWN: "↓", LEFT: "←", RIGHT: "→", ONE: "1", TWO: "2", THREE: "3", FOUR: "4", ESC: "Esc", SPACE: "Espaço",
+    const map = { UP: "Seta cima", DOWN: "Seta baixo", LEFT: "Seta esq.", RIGHT: "Seta dir.", ONE: "1", TWO: "2", THREE: "3", FOUR: "4", ESC: "Esc", SPACE: "Espaço",
       NUMPAD_ONE: "Num 1", NUMPAD_TWO: "Num 2", NUMPAD_THREE: "Num 3", NUMPAD_FOUR: "Num 4", SHIFT: "Shift", CTRL: "Ctrl", ENTER: "Enter",
-      NUMPAD_ADD: "Num +", NUMPAD_SUBTRACT: "Num −", NUMPAD_FIVE: "Num 5", NUMPAD_SIX: "Num 6", NUMPAD_ZERO: "Num 0", PLUS: "+", MINUS: "−", FIVE: "5", SIX: "6", TAB: "Tab" };
+      NUMPAD_ADD: "Num +", NUMPAD_SUBTRACT: "Num −", NUMPAD_FIVE: "Num 5", NUMPAD_SIX: "Num 6", NUMPAD_ZERO: "Num 0", PLUS: "+", MINUS: "−", FIVE: "5", SIX: "6", TAB: "Tab", HOME: "Home", END: "End", PAGE_UP: "PgUp", PAGE_DOWN: "PgDn", NUMPAD_SEVEN: "Num 7", NUMPAD_NINE: "Num 9" };
     return map[name] || (name.length <= 2 ? name : name.charAt(0) + name.slice(1).toLowerCase());
   },
 };

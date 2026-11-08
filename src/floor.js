@@ -366,7 +366,7 @@ Object.assign(DungeonScene.prototype, {
     this.sconceX = new Set();
     for (const sc of g.sconces) {
       if (g.isFloor(sc.x, sc.y) || !g.isFloor(sc.x, sc.y + 1) || this.doors.has(key(sc.x, sc.y))) continue;
-      const img = this.add.image(sc.x * T + T / 2, sc.y * T + T - 4, "torch_stand").setOrigin(0.5, 1).setScale(0.8).setDepth(2);
+      const img = this.add.image(sc.x * T + T / 2, sc.y * T + T - 4, "torch_stand").setOrigin(0.5, 1).setScale(PROP_H.torch_stand / 60 * 0.85).setDepth(2);
       this.world.add(img); groundShadow(this, img, this.world, 1.3, 0.7);
       this.lights.push({ x: sc.x * T + T / 2, y: sc.y * T + T - 44, r: 3.6 * T, warm: true, ph: Math.random() * 10 });
       this.sconceX.add(key(sc.x, sc.y));
@@ -567,6 +567,7 @@ Object.assign(DungeonScene.prototype, {
     if (this.props.has(k)) return;
     const p = this.cellPos(x, y);
     const spr = this.add.image(p.x, p.y + 4, kind).setOrigin(0.5, 1).setDepth(p.y);
+    if (PROP_H[kind]) spr.setScale(PROP_H[kind] / spr.height);
     this.ents.add(spr);
     groundShadow(this, spr, this.ents, kind === "torch_stand" ? 1.4 : 0.9);
     const pr = { kind, spr, hits: 0, x, y };

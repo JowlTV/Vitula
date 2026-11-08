@@ -29,7 +29,7 @@ Object.assign(DungeonScene.prototype, {
     const anim = walkKey && this.anims.exists(walkKey);
     m.spr = anim ? this.add.sprite(p.x, p.y + 4, walkKey).setOrigin(0.5, 1).play({ key: walkKey, startFrame: Phaser.Math.Between(0, 5) })
                  : this.add.image(p.x, p.y + 4, data.tex).setOrigin(0.5, 1);
-    if (ma) m.spr.setScale(ma[4]); else if (data.scale) m.spr.setScale(data.scale);
+    m.spr.setScale((ma ? ma[4] : data.scale || 1) * WORLD_SCALE);
     m.w = m.spr.displayWidth; m.h = m.spr.displayHeight;
     m.shadow = this.add.image(p.x, p.y + (m.fly ? 8 : -2), "shadow").setScale(m.w * 0.9 / 64, m.w * 0.3 / 64);
     m.bar = this.add.graphics();
@@ -229,10 +229,10 @@ Object.assign(DungeonScene.prototype, {
       if (m.champion) m.spr.setTint(0xc89088);
     } else if (this.textures.exists("corpse_" + m.kind)) {
       // arte própria do corpo: sem tinta, deitado no centro da casa
-      m.spr.setTexture("corpse_" + m.kind).setAngle(0).setOrigin(0.5, 0.5).setScale(1).clearTint().setAlpha(1);
+      m.spr.setTexture("corpse_" + m.kind).setAngle(0).setOrigin(0.5, 0.5).setScale(WORLD_SCALE).clearTint().setAlpha(1);
       m.spr.setFlipX(Math.random() < 0.5).setDepth(m.py - 30).setPosition(m.px, m.py + 4);
     } else {
-      m.spr.setAngle(m.spr.flipX ? -80 : 80).setOrigin(0.5, 0.8).setScale(0.9);
+      m.spr.setAngle(m.spr.flipX ? -80 : 80).setOrigin(0.5, 0.8).setScale(((MON_ANIM[m.kind] || [])[4] || m.data.scale || 1) * WORLD_SCALE * 0.9);
       m.spr.setTint(m.kind === "skeleton" ? 0x8a8478 : 0x6a3a34).setDepth(m.py - 30).setPosition(m.px, m.py - 6);
     }
     this.tweens.add({ targets: m.spr, alpha: 0, delay: (ttl - 1.2) * 1000, duration: 1200, onComplete: () => {
