@@ -121,7 +121,7 @@ Object.assign(DungeonScene.prototype, {
     this.furyFill = this.add.rectangle(34, 40, 136, 6, 0xa8401a).setOrigin(0); ui.add(this.furyFill);
     this.furyText = txt(this, 176, 34, VOCATIONS[this.vocId].resource || "Fúria", 14, "#d0703a"); ui.add(this.furyText);
     this.skillText = txt(this, 12, 54, "", 11, "#a8a090"); ui.add(this.skillText);
-    this.hudFloor = txt(this, VIEW_W / 2, 16, `${this.region.name} · Andar ${this.floorN}/${FLOORS}`, 22, "#c8b890").setOrigin(0.5);
+    this.hudFloor = txt(this, VIEW_W / 2 + 90, 18, `${this.region.name} · Andar ${this.floorN}/${FLOORS}`, 18, "#c8b890", { title: true }).setOrigin(0.5);
     ui.add(this.hudFloor);
     ui.add(this.add.image(VIEW_W - 92, 16, "i_gold_coin").setScale(1.4));
     this.goldText = txt(this, VIEW_W - 78, 6, "0", 15, COLORS.gold); ui.add(this.goldText);
