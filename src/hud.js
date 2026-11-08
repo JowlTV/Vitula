@@ -152,22 +152,7 @@ Object.assign(DungeonScene.prototype, {
       if ((id === "p0" || id === "p1")) { const n = txt(this, x + 4, y + 1, "", 11, COLORS.white); ui.add(n); this.potCount[id] = n; }
       else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "Nv " + this.spells[id].level, 12, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
     });
-    // battle list: até 8 monstros mais próximos, no canto direito
-    this.blX = VIEW_W - 176; this.blY = 62; this.blRows = [];
-    const blBg = this.add.rectangle(this.blX - 6, this.blY - 4, 170, 22, 0x0c0a08, 0.72).setOrigin(0).setStrokeStyle(1, 0x5a4a30); ui.add(blBg); this.blBg = blBg;
-    this.blTitle = txt(this, this.blX, this.blY - 1, "Battle List", 13, COLORS.gold); ui.add(this.blTitle);
-    for (let i = 0; i < 8; i++) {
-      const y = this.blY + 22 + i * 26;
-      const sel = this.add.rectangle(this.blX - 3, y - 2, 164, 24).setOrigin(0).setStrokeStyle(1, 0xc8402a).setVisible(false);
-      const hit = this.add.rectangle(this.blX - 3, y - 2, 164, 24, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true });
-      const name = txt(this, this.blX, y, "", 12, COLORS.text);
-      const back = this.add.rectangle(this.blX, y + 15, 150, 4, 0x000000, 0.85).setOrigin(0);
-      const fill = this.add.rectangle(this.blX, y + 15, 150, 4, 0x3fae3a).setOrigin(0);
-      const row = { sel, hit, name, back, fill, m: null };
-      hit.on("pointerdown", (p, lx, ly, ev) => { if (ev) ev.stopPropagation(); if (row.m && !row.m.dead) this.hero.target = row.m; });
-      ui.add([sel, hit, name, back, fill]); this.blRows.push(row);
-    }
-    this.blT = 0; this.refreshBattleList();
+    this.buildBattleList(ui);
     // minimapa no canto inferior direito
     this.miniX = VIEW_W - this.gen.w * 2 - 12; this.miniY = VIEW_H - this.gen.h * 2 - 12;
     this.mini = this.add.graphics(); ui.add(this.mini);
@@ -180,19 +165,77 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
+  // ---------------------------------------------------------------- battle list (janela)
+  // até 8 monstros mais próximos. Janela arrastável pela barra, minimizável (–), fechável (×; L reabre)
+  // e redimensionável pelo canto de baixo à direita. Posição e tamanho ficam salvos.
+  buildBattleList(ui) {
+    let st = {}; try { st = JSON.parse(localStorage.getItem("vitula_bl") || "{}"); } catch (e) {}
+    this.bl = Object.assign({ x: VIEW_W - 136, y: 58, w: 128, rows: 6, min: false, open: true }, st);
+    const win = this.add.container(0, 0); ui.add(win); this.blWin = win;
+    this.blBg = this.add.rectangle(0, 0, 10, 10, 0x0c0a08, 0.8).setOrigin(0).setStrokeStyle(1, 0x5a4a30).setInteractive();
+    this.blBar = this.add.rectangle(0, 0, 10, 14, 0x2a2018, 1).setOrigin(0).setInteractive({ useHandCursor: true });
+    this.blTitle = txt(this, 4, 1, "Battle List", 10, COLORS.gold);
+    this.blMinB = txt(this, 0, 0, "–", 11, COLORS.text).setInteractive({ useHandCursor: true });
+    this.blClsB = txt(this, 0, 0, "×", 11, COLORS.text).setInteractive({ useHandCursor: true });
+    this.blGrip = this.add.triangle(0, 0, 8, 0, 8, 8, 0, 8, 0x7a6440).setOrigin(0).setInteractive({ useHandCursor: true });
+    win.add([this.blBg, this.blBar, this.blTitle, this.blMinB, this.blClsB, this.blGrip]);
+    this.blRows = [];
+    for (let i = 0; i < 8; i++) {
+      const sel = this.add.rectangle(0, 0, 10, 16).setOrigin(0).setStrokeStyle(1, 0xc8402a);
+      const hit = this.add.rectangle(0, 0, 10, 16, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true });
+      const name = txt(this, 0, 0, "", 9, COLORS.text);
+      const back = this.add.rectangle(0, 0, 10, 2, 0x000000, 0.85).setOrigin(0);
+      const fill = this.add.rectangle(0, 0, 10, 2, 0x3fae3a).setOrigin(0);
+      const row = { sel, hit, name, back, fill, m: null };
+      hit.on("pointerdown", () => { if (row.m && !row.m.dead) this.hero.target = row.m; });
+      win.add([sel, hit, name, back, fill]); this.blRows.push(row);
+    }
+    const pt = p => this.uiCam.getWorldPoint(p.x, p.y);
+    let drag = null;
+    this.blBar.on("pointerdown", p => { const q = pt(p); drag = { k: "move", ox: q.x - this.bl.x, oy: q.y - this.bl.y }; });
+    this.blGrip.on("pointerdown", p => { drag = { k: "size" }; });
+    this.input.on("pointermove", p => {
+      if (!drag || !p.isDown) return; const q = pt(p);
+      if (drag.k === "move") { this.bl.x = Phaser.Math.Clamp(q.x - drag.ox, 0, VIEW_W - this.bl.w); this.bl.y = Phaser.Math.Clamp(q.y - drag.oy, 0, VIEW_H - 14); }
+      else { this.bl.w = Phaser.Math.Clamp(Math.round(q.x - this.bl.x), 90, 220); this.bl.rows = Phaser.Math.Clamp(Math.round((q.y - this.bl.y - 16) / 18), 1, 8); }
+      this.layoutBattleList();
+    });
+    this.input.on("pointerup", () => { if (drag) { drag = null; this.saveBattleList(); } });
+    this.blMinB.on("pointerdown", () => { this.bl.min = !this.bl.min; this.layoutBattleList(); this.saveBattleList(); });
+    this.blClsB.on("pointerdown", () => { this.bl.open = false; this.layoutBattleList(); this.saveBattleList(); this.msg("Battle List fechada — L para abrir"); });
+    this.input.keyboard.on("keydown-L", () => { this.bl.open = !this.bl.open; this.layoutBattleList(); this.saveBattleList(); });
+    this.blT = 0; this.layoutBattleList(); this.refreshBattleList();
+  },
+  saveBattleList() { try { localStorage.setItem("vitula_bl", JSON.stringify(this.bl)); } catch (e) {} },
+  blOwns(objs) { return !!(this.blWin && objs && objs.some(o => o.parentContainer === this.blWin)); },
+  layoutBattleList() {
+    const b = this.bl, w = b.w, h = b.min ? 14 : 16 + b.rows * 18 + 2;
+    this.blWin.setPosition(b.x, b.y).setVisible(b.open);
+    this.blBg.setSize(w, h); this.blBar.setSize(w, 14);
+    this.blBg.input && this.blBg.input.hitArea.setSize(w, h); this.blBar.input.hitArea.setSize(w, 14);
+    this.blMinB.setPosition(w - 24, 0).setText(b.min ? "□" : "–"); this.blClsB.setPosition(w - 11, 0);
+    this.blGrip.setPosition(w - 9, h - 9).setVisible(!b.min);
+    this.blRows.forEach((r, i) => {
+      const y = 16 + i * 18;
+      r.sel.setPosition(1, y - 1).setSize(w - 2, 17); r.hit.setPosition(1, y - 1).setSize(w - 2, 17); r.hit.input.hitArea.setSize(w - 2, 17);
+      r.name.setPosition(4, y - 1); r.back.setPosition(4, y + 12).setSize(w - 8, 2); r.fill.setPosition(4, y + 12);
+      r.show = !b.min && i < b.rows;
+    });
+    this.refreshBattleList();
+  },
   refreshBattleList() {
-    const h = this.hero, R = 8;
+    if (!this.bl) return;
+    const h = this.hero, R = 8, w = this.bl.w;
     const list = (this.monsters || []).filter(m => !m.dead && Math.max(Math.abs(m.x - h.x), Math.abs(m.y - h.y)) <= R)
       .map(m => ({ m, d: Math.max(Math.abs(m.x - h.x), Math.abs(m.y - h.y)) + Math.hypot(m.x - h.x, m.y - h.y) * 0.01 }))
       .sort((a, b) => a.d - b.d).slice(0, 8);
-    this.blBg.setSize(170, 22 + Math.max(1, list.length) * 26 + 2);
     this.blRows.forEach((r, i) => {
-      const e = list[i], on = !!e; r.m = on ? e.m : null;
+      const e = r.show ? list[i] : null, on = !!e; r.m = on ? e.m : null;
       r.name.setVisible(on); r.back.setVisible(on); r.fill.setVisible(on); r.hit.setVisible(on); r.sel.setVisible(on && h.target === e.m);
       if (!on) return;
       const m = e.m, f = Phaser.Math.Clamp(m.hp / m.maxHp, 0, 1);
       r.name.setText((m.champion ? "★ " : m.elite ? "◆ " : "") + (m.data.name || m.kind)).setColor(m.champion ? "#e8c060" : m.elite ? "#d89a60" : COLORS.text);
-      r.fill.setSize(Math.max(1, 150 * f), 4).setFillStyle(f > 0.6 ? 0x3fae3a : f > 0.3 ? 0xd6b23a : f > 0.1 ? 0xc2452f : 0x6e1414);
+      r.fill.setSize(Math.max(1, (w - 8) * f), 2).setFillStyle(f > 0.6 ? 0x3fae3a : f > 0.3 ? 0xd6b23a : f > 0.1 ? 0xc2452f : 0x6e1414);
     });
   },
 

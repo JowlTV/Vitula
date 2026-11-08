@@ -65,7 +65,7 @@ class DungeonScene extends Phaser.Scene {
     this.input.on("wheel", (_p, _o, _dx, dy) => this.setCamZoom(this.camZoom() + (dy > 0 ? -0.2 : 0.2)));
     // clique/toque num monstro: vira o alvo (o arqueiro atira por cima dos outros; o cavaleiro ataca esse se estiver colado)
     this.input.on("pointerdown", (p, over) => {
-      if (over && this.blRows && over.some(o => this.blRows.some(r => r.hit === o))) return;   // clique na battle list
+      if (this.blOwns(over)) return;   // clique na janela da battle list
       if (this.paused || this.bagOpen || this.finished || !this.hero || this.hero.dead) return;
       const w = this.cameras.main.getWorldPoint(p.x, p.y), tx = Math.floor(w.x / T), ty = Math.floor(w.y / T);
       // o desenho do monstro fica acima da casa dele: aceita a casa clicada e a de baixo
