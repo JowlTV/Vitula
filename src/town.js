@@ -81,10 +81,7 @@ class TownScene extends Phaser.Scene {
   // chão: grama de base + autotiles de 15 peças do SpriteCook (grade dupla), cada um sobre o anterior
   drawGround() {
     const W = TOWN_W * T, H = TOWN_H * T;
-    const ct = this.textures.createCanvas("town_ground", W, H), c = ct.getContext();
-    c.imageSmoothingEnabled = false;
-    c.drawImage(TG.ground(this.ground, TOWN_W, TOWN_H, T), 0, 0);
-    ct.refresh();
+    this.textures.addCanvas("town_ground", TG.ground(this.ground, TOWN_W, TOWN_H, T));   // sem cópia extra do canvas
     this.world.add(this.add.image(0, 0, "town_ground").setOrigin(0).setDepth(-10));
   }
 

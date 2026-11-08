@@ -404,6 +404,7 @@ const TG = (() => {
     // amplia 2× para a casa de 64 px
     const out = document.createElement("canvas"); out.width = TW * T; out.height = TH * T;
     const oc = out.getContext("2d"); oc.imageSmoothingEnabled = false; oc.drawImage(p.cv, 0, 0, out.width, out.height);
+    p.cv.width = p.cv.height = 0;   // libera a memória do rascunho já (celulares têm limite baixo de memória de canvas)
     return out;
   }
 
