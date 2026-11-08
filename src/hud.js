@@ -224,7 +224,7 @@ Object.assign(DungeonScene.prototype, {
   // janela de habilidades: nível, experiência, magic level, sword/distance e shield (arrastar, minimizar, fechar; K reabre)
   buildSkillWin(ui) {
     let st = {}; try { st = JSON.parse(localStorage.getItem("vitula_sk") || "{}"); } catch (e) {}
-    const S = this.skS = Object.assign({ x: 8, y: 60, min: false, open: true }, st), w = 128;
+    const S = this.skS = Object.assign({ x: 8, y: 60, min: false, open: true }, st), w = 160;
     const win = this.add.container(S.x, S.y); ui.add(win);
     const bg = this.add.rectangle(0, 0, w, 10, 0x0c0a08, 0.8).setOrigin(0).setStrokeStyle(1, 0x5a4a30).setInteractive();
     const bar = this.add.rectangle(0, 0, w, 14, 0x2a2018, 1).setOrigin(0).setInteractive({ useHandCursor: true });
@@ -338,7 +338,7 @@ Object.assign(DungeonScene.prototype, {
     const ml = Save.voc(this.vocId).ml;
     if (this.skW && this.skW.vis) {
       const one = id => { const q = Save.skill(this.vocId, id); return [`${SKILLS[id].name}`, `${q.lvl}  ${Math.floor(100 * q.tries / skillTriesNeeded(id, q.lvl))}%`]; };
-      const rows = [["Nível", String(h.level)], ["Experiência", `${Math.floor(h.xp)} / ${this.xpNext()}`], ["Magic level", String(this.mlEff())],
+      const rows = [["Nível", String(h.level)], ["Experiência", `${Math.floor(h.xp).toLocaleString("pt-BR")} / ${Math.round(this.xpNext()).toLocaleString("pt-BR")}`], ["Magic level", String(this.mlEff())],
         one(this.ranged ? "distance" : "sword"), one("shield")];
       rows.forEach((r, i) => { this.skW.l[i].setText(r[0]); this.skW.v[i].setText(r[1]); });
     }
