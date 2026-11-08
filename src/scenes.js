@@ -39,6 +39,10 @@ class BootScene extends Phaser.Scene {
     this.load.spritesheet("fx_basic_slash", "assets/art/fx_basic_slash.png", { frameWidth: 72, frameHeight: 72 });
     this.load.spritesheet("fx_ground_slam", "assets/art/fx_ground_slam.png", { frameWidth: 214, frameHeight: 214 });
     this.load.spritesheet("fx_front_cut", "assets/art/fx_front_cut.png", { frameWidth: 230, frameHeight: 230 });
+    // Karhyn nova (guia de estilo aprovado): prédios, objetos e autotiles de chão
+    for (const n of ["temple", "depot", "potion_shop", "smithy", "tavern", "tower", "gate", "house_red", "cottage", "wall", "wall_tower", "lamp",
+      "barrels", "crates", "stall_red", "stall_green", "bench", "tree", "bush", "cart", "signpost", "banner", "tavern_table", "well"]) this.load.image("k2_" + n, `assets/town2/k2_${n}.png`);
+    for (const n of ["ts_cobble_grass", "ts_dirt_grass", "ts_plaza_cobble", "ts_sidewalk_cobble", "ground_grass"]) this.load.image(n, `assets/town2/${n}.png`);
     this.load.image("tower_view", "assets/town/tower_view.png"); this.load.image("depot_counter", "assets/town/depot_counter.png");
     this.load.image("glow_mushrooms", "assets/art/glow_mushrooms.png");
     this.load.spritesheet("kn_death", "assets/art/kn_death.png", { frameWidth: 192, frameHeight: 192 });
@@ -75,7 +79,8 @@ class BootScene extends Phaser.Scene {
       this.anims.create({ key: k, frames: this.anims.generateFrameNumbers(k, { start: 0, end: 7 }), frameRate: fps, repeat: rep });
     for (const d of ["down", "up", "side"]) {
       this.anims.create({ key: "kn_idle_" + d, frames: this.anims.generateFrameNumbers("kn_idle_" + d, { start: 0, end: 7 }), frameRate: 6, repeat: -1 });
-      this.anims.create({ key: "kn_walk_" + d, frames: this.anims.generateFrameNumbers("kn_walk_" + d, { start: 0, end: 7 }), frameRate: 12, repeat: -1 });
+      // de lado: os quadros 2 e 3 vieram com a capa e o escudo cortados na geração; ficam de fora
+      this.anims.create({ key: "kn_walk_" + d, frames: this.anims.generateFrameNumbers("kn_walk_" + d, d === "side" ? { frames: [0, 1, 4, 5, 6, 7] } : { start: 0, end: 7 }), frameRate: d === "side" ? 9 : 12, repeat: -1 });
       this.anims.create({ key: "kn_attack_" + d, frames: this.anims.generateFrameNumbers("kn_attack_" + d, { start: 0, end: 7 }), frameRate: 19, repeat: 0 });
     }
     this.anims.create({ key: "kn_death", frames: this.anims.generateFrameNumbers("kn_death", { start: 0, end: 11 }), frameRate: 9, repeat: 0 });

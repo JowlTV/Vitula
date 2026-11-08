@@ -59,7 +59,7 @@ Object.assign(DungeonScene.prototype, {
     h.spr.setPosition(Math.round(h.px), Math.round(h.py + 4)).setDepth(h.py);
     h.shadow.setPosition(h.px, h.py).setDepth(h.py - 1);
     // a aura acompanha o herói DEPOIS do passo, sempre logo atrás dele (antes, ao subir, ficava na frente)
-    if (h.auraSpr && h.auraT > 0) h.auraSpr.setPosition(h.px, h.py - 2).setDepth(h.py - 1);
+    if (h.auraSpr && h.auraSpr.scene && h.auraT > 0) h.auraSpr.setPosition(h.px, h.py - 2).setDepth(h.py - 1);
     h.flash = Math.max(0, (h.flash || 0) - dt * 5);
     // pisca em vermelho escuro (#660000) ao apanhar
     if (h.flash > 0.55) h.spr.setTintFill(0x660000); else if (h.flash > 0) h.spr.setTint(0xb04040); else h.spr.setTint(this.ambientTint || 0xffffff);

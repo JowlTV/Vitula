@@ -23,6 +23,7 @@ Object.assign(DungeonScene.prototype, {
     const h = this.hero;
     if (h.auraT <= 0) return;
     h.auraT -= dt; h.auraTick -= dt;
+    if (!h.auraSpr || !h.auraSpr.scene) { h.auraSpr = this.add.sprite(h.px, h.py, "fx_aura").setScale(1.35, 0.75).setAlpha(0.85); this.ents.add(h.auraSpr); h.auraSpr.play("fx_aura_loop"); }
     h.auraSpr.setPosition(h.px, h.py - 2).setDepth(h.py - 2);
     if (h.auraTick <= 0) {
       h.auraTick = 0.5;
@@ -130,7 +131,8 @@ const SPELL_FX = {
 
   aura(h, sp) {
     h.auraT = sp.dur; h.auraTick = 0;
-    if (!h.auraSpr) { h.auraSpr = this.add.sprite(h.px, h.py, "fx_aura").setScale(1.35, 0.75).setAlpha(0.85); this.ents.add(h.auraSpr); }
+    // o desenho da aura some quando o andar é refeito: recria se tiver sido destruído
+    if (!h.auraSpr || !h.auraSpr.scene) { h.auraSpr = this.add.sprite(h.px, h.py, "fx_aura").setScale(1.35, 0.75).setAlpha(0.85); this.ents.add(h.auraSpr); }
     h.auraSpr.setVisible(true).play("fx_aura_loop");
     sfx(this, "explode", 0.25);
   },

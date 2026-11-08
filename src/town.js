@@ -3,7 +3,7 @@
 // avenida até o salão de colunas ao norte, praça com fonte no centro, torre de vigia, casas de enxaimel e ciprestes.
 
 const TOWN_TINT = 0xc2c6d0; // luz fria e nublada da cidade, aplicada no herói e nos NPCs
-const TOWN_W = 36, TOWN_H = 28;
+const TOWN_W = 48, TOWN_H = 36;
 // artes grandes da cidade que já chegaram do SpriteCook (as que faltam são desenhadas por código até chegarem)
 const TOWN_ART = ["town_gate", "town_hall", "town_tower", "town_fountain", "town_house_red", "town_house_thatch", "town_cypress", "town_lamp", "town_grass", "town_floor_wood", "town_depot_wall", "town_smithy", "town_cobble", "town_rampart"];
 const TOWN_FILES = ["town_street", "town_wall", "town_roof", "town_door", "town_window", "depot_chest", "smith_forge", "smith_bench",
@@ -55,89 +55,69 @@ class TownScene extends Phaser.Scene {
   block(x0, y0, w, h) { for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) this.solid.add(this.key(x, y)); }
   isSolid(x, y) { return x < 0 || y < 0 || x >= TOWN_W || y >= TOWN_H || this.solid.has(this.key(x, y)); }
 
+  // Planta (48×36): muralha em volta com portão ao sul; avenida do portão ao Templo de Magdha (norte);
+  // praça da fonte no centro; rua leste–oeste com calçada (oeste: depósito e casas; leste: poções, ferraria, taverna);
+  // rua do sul (oeste: bairro pobre de terra; leste: casas e o bueiro do esgoto).
+  // Códigos: g grama · c paralelepípedo · p pedra da praça · s calçada · d terra · w muralha
   layout() {
     const g = this.ground = [];
     for (let y = 0; y < TOWN_H; y++) { g.push([]); for (let x = 0; x < TOWN_W; x++) g[y].push("g"); }
-    const set = (x, y, t) => { if (x >= 0 && y >= 0 && x < TOWN_W && y < TOWN_H) g[y][x] = t; };
-    // muralha: 2 casas de grossura em volta, portão aberto no sul (x 17–18)
-    for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) {
-      const wall = y < 3 || y >= TOWN_H - 3 || x < 2 || x >= TOWN_W - 2;
-      if (wall && !(y >= TOWN_H - 3 && x >= 17 && x <= 18)) set(x, y, "w");
-    }
-    // avenida do portão ao salão, rua leste–oeste e praça redonda da fonte
-    for (let y = 8; y < TOWN_H; y++) for (const x of [17, 18]) if (g[y][x] !== "w") set(x, y, "c");
-    for (let x = 2; x < TOWN_W - 2; x++) for (const y of [15, 16]) set(x, y, "c");
-    for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++)
-      if (Math.hypot(x + 0.5 - 18, y + 0.5 - 16) < 4.4 && g[y][x] !== "w") set(x, y, "c");
-    // pátio do depot e do salão
-    // depot (como o DP do Tibia): sala fechada com balcão, guarda e baús em cabines
-    for (let y = 7; y <= 12; y++) for (let x = 7; x <= 12; x++) set(x, y, (y === 7 || y === 12 || x === 7 || x === 12) && !(y === 12 && x === 9) ? "h" : "f");
-    for (let y = 13; y <= 14; y++) set(9, y, "c");
-    for (let y = 8; y <= 9; y++) for (let x = 13; x <= 22; x++) set(x, y, "c");
-    // beco até a entrada do esgoto
-    for (let y = 17; y <= 23; y++) set(26, y, "c");
-    for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) if (g[y][x] === "w" || g[y][x] === "h") this.solid.add(this.key(x, y));
+    const rect = (x0, y0, x1, y1, t) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (x >= 0 && y >= 0 && x < TOWN_W && y < TOWN_H) g[y][x] = t; };
+    rect(0, 0, TOWN_W - 1, 2, "w"); rect(0, TOWN_H - 3, TOWN_W - 1, TOWN_H - 1, "w");
+    rect(0, 0, 1, TOWN_H - 1, "w"); rect(TOWN_W - 2, 0, TOWN_W - 1, TOWN_H - 1, "w");
+    rect(23, TOWN_H - 3, 24, TOWN_H - 1, "c");            // passagem do portão
+    rect(23, 10, 24, TOWN_H - 4, "c");                    // avenida
+    rect(2, 16, 45, 17, "c");                             // rua leste–oeste
+    rect(2, 15, 16, 15, "s"); rect(31, 15, 45, 15, "s");  // calçadas na frente das casas
+    rect(17, 11, 30, 21, "p");                            // praça
+    rect(22, 10, 25, 10, "p");                            // escadaria do templo
+    rect(16, 27, 45, 28, "c"); rect(2, 27, 15, 28, "d");  // rua do sul (terra no bairro pobre)
+    rect(3, 24, 14, 26, "d"); rect(39, 19, 45, 21, "c");  // terreiro do bairro pobre; pátio da taverna
+    rect(38, 29, 41, 30, "c");                            // beco do bueiro
+    for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) if (g[y][x] === "w") this.solid.add(this.key(x, y));
   }
 
-  // pisos: grama escura com variação, pedra da rua escurecida, muralha com topo e face
+  // chão: grama de base + autotiles de 15 peças do SpriteCook (grade dupla), cada um sobre o anterior
   drawGround() {
     const W = TOWN_W * T, H = TOWN_H * T;
     const ct = this.textures.createCanvas("town_ground", W, H), c = ct.getContext();
     c.imageSmoothingEnabled = false;
-    const rng = new Phaser.Math.RandomDataGenerator(["karhyn"]);
-    const grass = ["#2f3a24", "#34402a", "#2a3420", "#3a4530", "#29301f"];
-    for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) {
-      const t = this.ground[y][x], px = x * T, py = y * T;
-      if (t === "g") {
-        c.fillStyle = this.grassPat || (this.grassPat = c.createPattern(this.textures.get("town_grass").getSourceImage(), "repeat")); c.fillRect(px, py, T, T);
-      } else if (t === "c") { c.fillStyle = "#2c2824"; c.fillRect(px, py, T, T); }
-      else if (t === "f") { c.fillStyle = this.woodPat || (this.woodPat = c.createPattern(this.textures.get("town_floor_wood").getSourceImage(), "repeat")); c.fillRect(px, py, T, T); }
-    }
-    // calçamento: pedras irregulares numa grade solta pelo mundo todo (sem emendas entre casas)
-    // pedras na metade do tamanho: cabem ~3 por casa, como no resto do mapa
-    const half = document.createElement("canvas"); half.width = half.height = 88;
-    const hc = half.getContext("2d"); hc.imageSmoothingEnabled = false; hc.drawImage(this.textures.get("town_cobble").getSourceImage(), 0, 0, 88, 88);
-    const cob = c.createPattern(half, "repeat");
-    for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) if (this.ground[y][x] === "c") {
-      c.fillStyle = cob; c.fillRect(x * T, y * T, T, T); c.fillStyle = "rgba(20,18,16,0.2)"; c.fillRect(x * T, y * T, T, T);
-    }
-    // borda suave da grama sobre a pedra
-    for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) {
-      if (this.ground[y][x] !== "c") continue;
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const nx = x + dx, ny = y + dy;
-        if (nx < 0 || ny < 0 || nx >= TOWN_W || ny >= TOWN_H || this.ground[ny][nx] !== "g") continue;
-        for (let i = 0; i < 10; i++) {
-          c.fillStyle = grass[rng.between(0, 3)];
-          const a = rng.between(0, 15) * 4, b = rng.between(0, 1) * 4;
-          if (dx) c.fillRect(x * T + (dx > 0 ? T - 4 - b : b), y * T + a, 4, 4); else c.fillRect(x * T + a, y * T + (dy > 0 ? T - 4 - b : b), 4, 4);
-        }
+    c.fillStyle = c.createPattern(this.textures.get("ground_grass").getSourceImage(), "repeat"); c.fillRect(0, 0, W, H);
+    const FRAME = [-1, 15, 8, 9, 0, 11, 14, 7, 13, 4, 1, 10, 3, 2, 5, 6];
+    const layer = (tex, fill, swap = {}) => {
+      const img = this.textures.get(tex).getSourceImage(), ts = img.width / 4;
+      const on = (x, y) => x >= 0 && y >= 0 && x < TOWN_W && y < TOWN_H && fill(this.ground[y][x]);
+      for (let y = 0; y <= TOWN_H; y++) for (let x = 0; x <= TOWN_W; x++) {
+        const m = (on(x - 1, y - 1) ? 1 : 0) | (on(x, y - 1) ? 2 : 0) | (on(x - 1, y) ? 4 : 0) | (on(x, y) ? 8 : 0), f = swap[m] !== undefined ? swap[m] : FRAME[m];
+        if (f < 0) continue;
+        c.drawImage(img, (f % 4) * ts, Math.floor(f / 4) * ts, ts, ts, x * T - T / 2, y * T - T / 2, T, T);
       }
-    }
-    // muralha: passadiço de lajes no alto; face de blocos de pedra onde a casa de baixo não é muralha
-    for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) {
-      if (this.ground[y][x] === "h") {
-        // paredes do depot: reboco claro com viga escura; face onde a casa de baixo não é parede
-        const px = x * T, py = y * T, below = y + 1 < TOWN_H ? this.ground[y + 1][x] : "g";
-        if (below !== "h") {
-          c.drawImage(this.textures.get("town_depot_wall").getSourceImage(), px, py, T, T);
-          c.fillStyle = "rgba(0,0,0,0.3)"; c.fillRect(px, py + T - 4, T, 4);
-        } else { c.drawImage(this.textures.get("town_depot_wall").getSourceImage(), px, py, T, T); c.fillStyle = "rgba(12,10,8,0.62)"; c.fillRect(px, py, T, T); }
-        continue;
-      }
-      if (this.ground[y][x] !== "w") continue;
-      const px = x * T, py = y * T, below = y + 1 < TOWN_H ? this.ground[y + 1][x] : "w", below2 = y + 2 < TOWN_H ? this.ground[y + 2][x] : "w";
-      c.fillStyle = this.rampPat || (this.rampPat = c.createPattern(this.textures.get("town_rampart").getSourceImage(), "repeat"));
-      if (below !== "w") continue; // a face é pintada pela casa de cima (2 casas de altura)
-      if (below2 !== "w" && y + 1 < TOWN_H) { c.fillRect(px, py, T, 2 * T); continue; } // face da muralha norte, escala nativa
-      c.fillRect(px, py, T, T); c.fillStyle = "rgba(10,10,14,0.5)"; c.fillRect(px, py, T, T);
+    };
+    layer("ts_dirt_grass", t => t === "d");
+    // paralelepípedo × grama: o quadro do miolo (6) veio com grama na geração; o miolo usa o quadro 10, que é pedra pura
+    layer("ts_cobble_grass", t => t === "c" || t === "p" || t === "s", { 15: 10 });
+    layer("ts_sidewalk_cobble", t => t === "s");
+    layer("ts_plaza_cobble", t => t === "p");
+    // muralhas laterais: passadiço de pedra visto de cima (topo do trecho de muralha, girado)
+    const wall = this.textures.get("k2_wall").getSourceImage(), topH = Math.round(wall.height * 0.42);
+    c.fillStyle = "#1c1c20"; c.fillRect(0, 0, W, 2 * T); c.fillRect(0, H - 3 * T, W, 3 * T);
+    for (const x0 of [0, W - 2 * T]) for (let y = 0; y < H; y += 2 * T) {
+      c.save(); c.translate(x0 + 2 * T, y); c.rotate(Math.PI / 2);
+      c.drawImage(wall, 0, 0, wall.width, topH, 0, 0, 2 * T, 2 * T); c.restore();
+      c.fillStyle = "rgba(0,0,0,0.25)"; c.fillRect(x0 === 0 ? 2 * T - 6 : x0, y, 6, 2 * T);
     }
     ct.refresh();
     this.world.add(this.add.image(0, 0, "town_ground").setOrigin(0).setDepth(-10));
-    // ameias no alto da muralha norte (sombra para dar altura)
-    const sh = this.add.graphics().setDepth(-9); this.world.add(sh);
-    sh.fillStyle(0x000000, 0.28);
-    
+  }
+
+  // coloca uma arte k2_ com a base na linha `by` (casa), a partir da coluna `bx`, com `w` casas de largura;
+  // bloqueia as `fd` linhas de baixo (a pegada); `depth` opcional para ficar atrás de quem passa
+  art(tex, bx, by, w, fd = 2, solid = true) {
+    const img = this.add.image((bx + w / 2) * T, (by + 1) * T, tex).setOrigin(0.5, 1);
+    img.setScale(w * T / img.width).setDepth((by + 1) * T - 2).setTint(TOWN_TINT);
+    this.world.add(img);
+    if (solid && fd > 0) this.block(Math.floor(bx), by - fd + 1, Math.ceil(w), fd);
+    return img;
   }
 
   // ------------------------------------------------------------ peças
@@ -152,53 +132,53 @@ class TownScene extends Phaser.Scene {
   }
 
   placeThings() {
-    // muralha sul: portão com torres (passagem em x 17–18)
-    this.put("town_gate", 15, 25, 6, 1, 164 * 2 / T, false, 2 * T).setDepth(24 * T); // atrás de quem passa pelo arco
-    this.block(15, 24, 2, 1); this.block(19, 24, 2, 1);
-    // salão de colunas ao norte, torre de vigia a leste
-    this.put("town_hall", 13, 4, 10, 4, 510 * 1.4 / T);
-    this.put("town_tower", 30, 4, 3, 2, 92 * 2 / T);
-    // praça: fonte e postes de luz
-    this.fountain = this.put("town_fountain", 17, 15, 2, 2, 176 / T, true, 6);
+    const A = (t, x, y, w, fd, solid) => this.art("k2_" + t, x, y, w, fd, solid);
+    // muralha: trechos de 2 casas no norte e no sul, torres nos cantos, portão ao sul
+    for (let x = 2; x < TOWN_W - 2; x += 2) A("wall", x, 2, 2, 0);
+    for (let x = 2; x < TOWN_W - 2; x += 2) if (x < 21 || x > 25) A("wall", x, TOWN_H - 1, 2, 0);
+    for (const [x, y] of [[0, 2], [TOWN_W - 2, 2], [0, TOWN_H - 1], [TOWN_W - 2, TOWN_H - 1]]) A("wall_tower", x, y, 2, 0);
+    const gate = A("gate", 21, TOWN_H - 1, 6, 0); gate.setDepth((TOWN_H - 3) * T); // atrás de quem passa pelo arco
+    this.block(21, TOWN_H - 3, 2, 3); this.block(25, TOWN_H - 3, 2, 3);
+    // templo de Magdha no fim da avenida, com estandartes
+    A("temple", 21, 9, 6, 3);
+    A("banner", 20, 9, 0.7, 1); A("banner", 27, 9, 0.7, 1);
+    // praça: fonte, bancos, barracas
+    this.fountain = this.put("town_fountain", 23, 14, 2, 2, 176 / T, true, 6);
+    A("bench", 19, 12, 1.4, 1); A("bench", 27, 12, 1.4, 1);
+    A("stall_red", 18, 20, 2, 1); A("stall_green", 28, 20, 2, 1);
+    // norte da rua (oeste): depósito e casas
+    A("depot", 3, 14, 5, 3); A("barrels", 8, 14, 1.1, 1); A("house_red", 9, 14, 3, 3); A("crates", 12, 14, 1.1, 1); A("house_red", 13, 14, 3, 3);
+    // norte da rua (leste): poções, ferraria e taverna
+    A("potion_shop", 31, 14, 3, 3); A("crates", 34, 14, 1, 1); A("smithy", 35, 14, 4, 3); A("barrels", 39, 14, 1, 1); A("tavern", 40, 14, 5, 3);
+    A("tavern_table", 40, 20, 2, 1); A("tavern_table", 43, 20, 2, 1); A("barrels", 45, 19, 1, 1);
+    // atrás das casas do norte: casebre, torre de vigia e árvores
+    A("cottage", 4, 8, 3, 3); A("tree", 9, 8, 3, 2); A("bush", 13, 7, 1, 1); A("bush", 15, 9, 1, 1);
+    A("tree", 31, 8, 3, 2); A("bush", 35, 6, 1, 1); A("bush", 37, 9, 1, 1); A("tower", 41, 9, 2.4, 3);
+    // sul: bairro pobre (oeste) e casas + bueiro (leste)
+    A("cottage", 3, 26, 3, 3); A("cottage", 8, 26, 3, 3); A("well", 12, 25, 2, 2); A("crates", 14, 24, 1, 1);
+    A("house_red", 30, 26, 3, 3); A("house_red", 34, 26, 3, 3); A("barrels", 37, 26, 1, 1); A("house_red", 42, 26, 3, 3);
+    A("stall_red", 17, 25, 2, 1);
+    // entrada: carroça, placa e árvores junto da muralha sul
+    A("cart", 18, 31, 2, 1); A("signpost", 26, 31, 1, 1);
+    for (const [x, y] of [[2, 31], [7, 31], [12, 31], [30, 31], [35, 31], [42, 31]]) A("tree", x, y, 3, 1);
+    for (const [x, y] of [[16, 31], [28, 32], [2, 20], [45, 24], [16, 22], [31, 23]]) A("bush", x, y, 1, 1);
+    // lampiões (praça, avenida e ruas)
     this.lamps = [];
-    for (const [x, y] of [[14, 13], [21, 13], [14, 19], [21, 19], [16, 23], [19, 23], [16, 10], [19, 10]]) this.lamps.push(this.put("town_lamp", x, y, 1, 1, 0.45));
-    // casas
-    this.put("town_house_red", 3, 10, 4, 3, 140 * 2 / T);         // botica (vendedora de poções)
-    this.put("town_smithy", 27, 10, 4, 2, 176 * 2 / T);           // ferraria aberta (forja e bigorna dentro)
-    for (const [t, x, y] of [["town_house_red", 3, 18], ["town_house_thatch", 8, 19], ["town_house_red", 24, 4], ["town_house_thatch", 3, 4],
-      ["town_house_red", 29, 18], ["town_house_red", 8, 4]]) this.put(t, x, y, 4, 2, (t === "town_house_red" ? 140 : 150) * 2 / T);
-    // ciprestes junto às muralhas
-    for (const [x, y] of [[2.5, 3], [6, 7], [11, 3], [24, 3], [31, 7], [33, 3], [2, 23], [6, 23], [12, 23], [14, 21], [21, 21], [31, 23], [33, 14], [2, 14]])
-      this.put("town_cypress", Math.floor(x), y, 1, 1, 0.85);
-    // depot: baús em fila e o guarda ao lado
-    // depot: um baú no fundo da sala, guarda atrás do balcão
-    this.put("depot_chest", 9, 8, 1, 1, 0.85, true, -10);
-    this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 8, y: 9, w: 3, h: 1 });
-    // guarda atrás do balcão de madeira (feito com a textura do assoalho, mais escura na frente)
-    this.npc("npc_depot_guard", 11, 9, "Guarda do Depot", "depot", { x: 10, y: 11, w: 2, h: 1 });
-    const wood = this.textures.get("town_floor_wood").getSourceImage();
-    if (!this.textures.exists("depot_counter")) {
-      const ct = this.textures.createCanvas("depot_counter", 2 * T, 52), cc = ct.getContext(); cc.imageSmoothingEnabled = false;
-      cc.fillStyle = "#1a120c"; cc.fillRect(0, 0, 2 * T, 52);
-      cc.drawImage(wood, 0, 0, 128, 14, 2, 2, 2 * T - 4, 14); cc.fillStyle = "rgba(255,220,170,0.18)"; cc.fillRect(2, 2, 2 * T - 4, 3);
-      cc.save(); cc.translate(2 * T, 0); cc.rotate(Math.PI / 2); cc.drawImage(wood, 0, 0, 34, 2 * T - 4, 18, 2, 32, 2 * T - 4); cc.restore();
-      cc.fillStyle = "rgba(0,0,0,0.25)"; cc.fillRect(2, 18, 2 * T - 4, 32); ct.refresh();
-    }
-    this.world.add((c0 => c0.setScale(2 * T / c0.width))(this.add.image(10 * T, 10 * T + T + 2, "depot_counter").setOrigin(0, 1)).setDepth(10 * T + T - 4));
-    this.block(10, 10, 2, 1);
-    // botica: balcão na frente da casa e a vendedora atrás dele
-    this.npc("npc_potion_seller", 5, 13, "Vendedora de Poções", "potions", { x: 3, y: 15, w: 5, h: 2 });
-    this.put("potion_counter", 4, 14, 3, 1, 1.6);
-    // ferraria: forja, bancada e o ferreiro
-    this.npc("npc_smith", 29, 12, "Ferreiro", "smith", { x: 26, y: 13, w: 6, h: 4 });
-    // salão: porta (treino de atributos)
-    this.zones.push({ name: "Porta da torre", kind: "tower", x: 31, y: 6, w: 1, h: 1 });
-    this.zones.push({ name: "Templo", kind: "hall", x: 16, y: 8, w: 4, h: 1 });
-    // entrada do esgoto no fim do beco
-    const mh = this.add.image(26 * T + T / 2, 23 * T + T / 2, "decor_manhole").setDepth(-5);
+    for (const [x, y] of [[17, 11], [30, 11], [17, 21], [30, 21], [22, 24], [25, 24], [22, 30], [25, 30], [8, 18], [14, 18], [33, 18], [38, 18], [20, 28], [36, 29]])
+      this.lamps.push(A("lamp", x, y, 0.55, 1));
+    // NPCs e lugares
+    this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 4, y: 15, w: 2, h: 1 });
+    this.npc("npc_depot_guard", 7, 15, "Guarda do Depot", "depot", { x: 6, y: 15, w: 2, h: 2 });
+    this.npc("npc_potion_seller", 34, 15, "Vendedora de Poções", "potions", { x: 31, y: 15, w: 4, h: 2 });
+    this.npc("npc_smith", 37, 15, "Ferreiro", "smith", { x: 35, y: 15, w: 4, h: 2 });
+    this.zones.push({ name: "Porta da torre", kind: "tower", x: 41, y: 10, w: 3, h: 1 });
+    this.zones.push({ name: "Templo de Magdha", kind: "hall", x: 22, y: 10, w: 4, h: 1 });
+    // bueiro do esgoto no beco do sul
+    this.manhole = { x: 40, y: 30 };
+    const mh = this.add.image(40 * T + T / 2, 30 * T + T / 2, "decor_manhole").setDepth(-5);
     mh.setScale(T * 0.9 / mh.width); this.world.add(mh);
-    this.zones.push({ name: "Entrada dos Esgotos", kind: "sewer", x: 25, y: 22, w: 3, h: 2 });
-    this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 17, y: 26, w: 2, h: 2, step: true });
+    this.zones.push({ name: "Entrada dos Esgotos", kind: "sewer", x: 39, y: 29, w: 3, h: 2 });
+    this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 23, y: TOWN_H - 2, w: 2, h: 2, step: true });
   }
 
   npc(tex, x, y, name, kind, zone) {
@@ -216,7 +196,7 @@ class TownScene extends Phaser.Scene {
   // ------------------------------------------------------------ herói
   spawnHero() {
     const from = this.registry.get("townSpawn") || "gate", pos = this.registry.get("townPos");
-    const [x, y] = from === "here" && pos ? pos : from === "sewer" ? [26, 21] : [17, 23];
+    const [x, y] = from === "here" && pos ? pos : from === "sewer" ? [40, 28] : [24, 31];
     const h = this.hero = { x, y, px: x * T + T / 2, py: y * T + T - 4, moveT: 0, facing: from === "sewer" ? [0, 1] : [0, -1], lookLeft: false };
     h.shadow = this.add.image(h.px, h.py, "shadow").setScale(0.75, 0.25);
     const ap = vocAnim(this.vocId);
@@ -345,14 +325,14 @@ class TownScene extends Phaser.Scene {
     this.skyIcon = this.add.graphics(); ui.add(this.skyIcon);
     this.skyText = txt(this, VIEW_W - 44, 40, "", 12, COLORS.text).setOrigin(1, 0.5); ui.add(this.skyText);
     // minimapa: chão, construções, NPCs e o bueiro piscando
-    const S = 5, mx = VIEW_W - TOWN_W * S - 10, my = VIEW_H - TOWN_H * S - 10;
+    const S = 4, mx = VIEW_W - TOWN_W * S - 10, my = VIEW_H - TOWN_H * S - 10;
     this.mini = { S, x: mx, y: my };
     const base = this.add.graphics(); ui.add(base);
     base.fillStyle(0x000000, 0.6).fillRect(mx - 3, my - 3, TOWN_W * S + 6, TOWN_H * S + 6);
     for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) {
       const t = this.ground[y][x];
-      let c = t === "w" ? 0x55524c : t === "c" ? 0x7a746a : t === "f" || t === "h" ? 0x6a4a32 : 0x2e3a26;
-      if (t !== "w" && t !== "h" && this.solid.has(this.key(x, y))) c = 0x8a3a2a;
+      let c = t === "w" ? 0x55524c : t === "c" || t === "s" ? 0x7a746a : t === "p" ? 0x9a948a : t === "d" ? 0x6a5236 : 0x2e3a26;
+      if (t !== "w" && this.solid.has(this.key(x, y))) c = 0x8a3a2a;
       base.fillStyle(c, 1).fillRect(mx + x * S, my + y * S, S, S);
     }
     base.lineStyle(1, 0xc8a050, 0.8).strokeRect(mx - 3, my - 3, TOWN_W * S + 6, TOWN_H * S + 6);
@@ -397,7 +377,7 @@ class TownScene extends Phaser.Scene {
     const m = this.mini, g = this.miniDyn, S = m.S, h = this.hero;
     g.clear();
     const blink = 0.5 + 0.5 * Math.sin(this.time.now / 180);
-    g.fillStyle(0x7fe08a, 0.4 + 0.6 * blink).fillCircle(m.x + 26.5 * S, m.y + 23.5 * S, 4);
+    g.fillStyle(0x7fe08a, 0.4 + 0.6 * blink).fillCircle(m.x + (this.manhole.x + 0.5) * S, m.y + (this.manhole.y + 0.5) * S, 4);
     for (const z of this.zones) if (["depot", "potions", "smith", "hall", "tower"].includes(z.kind)) g.fillStyle(0xe0bc60, 1).fillRect(m.x + (z.x + z.w / 2) * S - 1, m.y + (z.y + z.h / 2) * S - 1, 3, 3);
     g.fillStyle(0xffffff, 1).fillRect(m.x + h.x * S, m.y + h.y * S, S, S);
   }
