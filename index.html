@@ -18,23 +18,31 @@
 <body>
 <div id="game"></div>
 <span class="preload">.</span><span class="preload2">.</span>
+<script>
+  // se algo der errado, mostra o erro na tela (em vez de o jogo simplesmente parar) para podermos corrigir
+  window.addEventListener("error", e => {
+    let b = document.getElementById("errbox");
+    if (!b) { b = document.createElement("div"); b.id = "errbox"; b.style.cssText = "position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;background:#2a0c0c;color:#f4d0c0;border:1px solid #a33;padding:10px;font:12px monospace;white-space:pre-wrap;max-height:40vh;overflow:auto"; document.body.appendChild(b); }
+    b.textContent = "Erro no jogo (tire um print e mande):\n" + (e.message || e) + "\n" + ((e.error && e.error.stack) || (e.filename + ":" + e.lineno));
+  });
+</script>
 <script src="lib/phaser.min.js"></script>
-<script src="src/data.js"></script>
-<script src="src/gen.js"></script>
-<script src="src/save.js"></script>
-<script src="src/scenes.js"></script>
-<script src="src/dungeon.js"></script>
-<script src="src/floor.js"></script>
-<script src="src/cave.js"></script>
-<script src="src/monsters.js"></script>
-<script src="src/hero.js"></script>
-<script src="src/spells.js"></script>
-<script src="src/lighting.js"></script>
-<script src="src/hud.js"></script>
-<script src="src/bag.js"></script>
-<script src="src/towngfx.js"></script>
-<script src="src/town.js"></script>
-<script src="src/main.js"></script>
-<script src="src/touch.js"></script>
+<script src="src/data.js?v=1794162177"></script>
+<script src="src/gen.js?v=1794162177"></script>
+<script src="src/save.js?v=1794162177"></script>
+<script src="src/scenes.js?v=1794162177"></script>
+<script src="src/dungeon.js?v=1794162177"></script>
+<script src="src/floor.js?v=1794162177"></script>
+<script src="src/cave.js?v=1794162177"></script>
+<script src="src/monsters.js?v=1794162177"></script>
+<script src="src/hero.js?v=1794162177"></script>
+<script src="src/spells.js?v=1794162177"></script>
+<script src="src/lighting.js?v=1794162177"></script>
+<script src="src/hud.js?v=1794162177"></script>
+<script src="src/bag.js?v=1794162177"></script>
+<script src="src/towngfx.js?v=1794162177"></script>
+<script src="src/town.js?v=1794162177"></script>
+<script src="src/main.js?v=1794162177"></script>
+<script src="src/touch.js?v=1794162177"></script>
 </body>
 </html>
