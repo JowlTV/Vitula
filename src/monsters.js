@@ -244,7 +244,7 @@ Object.assign(DungeonScene.prototype, {
 
   drawMonsterBar(m) {
     const g = m.bar; g.clear();
-    if (m.hp >= m.maxHp || m.dead) return;
+    if (m.dead) return;   // vida sempre visível, mesmo cheia e de longe
     const w = m.elite ? 48 : 26, f = Phaser.Math.Clamp(m.hp / m.maxHp, 0, 1);
     const x = Math.round(m.px - w / 2), y = Math.round(m.py - m.h - (m.fly ? 22 : 6));
     const col = f > 0.6 ? 0x3fae3a : f > 0.3 ? 0xd6b23a : f > 0.1 ? 0xc2452f : 0x6e1414;

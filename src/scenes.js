@@ -7,9 +7,8 @@ const ART = ["barrel", "chest_closed", "chest_open", "crate_damaged", "crate_int
 const DECOR = ["bones", "manhole", "rat_nest"];
 const SFX = ["boss", "break", "chest", "explode", "gem", "hit", "hurt", "levelup", "pickup"];
 
-// Kelmscott: títulos, cidades, nomes e destaques (size >= 20 ou opts.title); Bulletin: o resto.
-// A Kelmscott não tem acentos: as letras acentuadas caem na Bulletin.
-const FONT_TITLE = "Kelmscott, Bulletin, Pixelify", FONT_TEXT = "Bulletin, Pixelify";
+// Grenze Gotisch: títulos, cidades, nomes e destaques (size >= 20 ou opts.title); Bulletin: o resto.
+const FONT_TITLE = "\"Grenze Gotisch\", Bulletin, Pixelify", FONT_TEXT = "Bulletin, Pixelify";
 function txt(scene, x, y, s, size = 16, color = COLORS.text, opts = {}) {
   const title = opts.title !== undefined ? opts.title : size >= 20; opts = Object.assign({}, opts); delete opts.title;
   return scene.add.text(x, y, s, Object.assign({
@@ -124,7 +123,7 @@ class BootScene extends Phaser.Scene {
       const n = this.textures.get("fx_" + f).frameTotal - 1;
       this.anims.create({ key: "fx_" + f, frames: this.anims.generateFrameNumbers("fx_" + f, { start: 0, end: n - 1 }), frameRate: 18 });
     }
-    Promise.all(["20px Kelmscott", "16px Bulletin", "16px Pixelify"].map(f => document.fonts.load(f).catch(() => 0))).then(() => document.fonts.ready).then(() => { const q = new URLSearchParams(location.search); this.scene.start(q.has("town") ? "town" : q.has("play") ? "dungeon" : "title"); });
+    Promise.all(["20px \"Grenze Gotisch\"", "16px Bulletin", "16px Pixelify"].map(f => document.fonts.load(f).catch(() => 0))).then(() => document.fonts.ready).then(() => { const q = new URLSearchParams(location.search); this.scene.start(q.has("town") ? "town" : q.has("play") ? "dungeon" : "title"); });
   }
   makeRadial(key, size, stops, color = 0xffffff) {
     const c = this.textures.createCanvas(key, size, size);

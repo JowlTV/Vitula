@@ -152,6 +152,22 @@ Object.assign(DungeonScene.prototype, {
       if ((id === "p0" || id === "p1")) { const n = txt(this, x + 4, y + 1, "", 11, COLORS.white); ui.add(n); this.potCount[id] = n; }
       else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "Nv " + this.spells[id].level, 12, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
     });
+    // battle list: até 8 monstros mais próximos, no canto direito
+    this.blX = VIEW_W - 176; this.blY = 62; this.blRows = [];
+    const blBg = this.add.rectangle(this.blX - 6, this.blY - 4, 170, 22, 0x0c0a08, 0.72).setOrigin(0).setStrokeStyle(1, 0x5a4a30); ui.add(blBg); this.blBg = blBg;
+    this.blTitle = txt(this, this.blX, this.blY - 1, "Battle List", 13, COLORS.gold); ui.add(this.blTitle);
+    for (let i = 0; i < 8; i++) {
+      const y = this.blY + 22 + i * 26;
+      const sel = this.add.rectangle(this.blX - 3, y - 2, 164, 24).setOrigin(0).setStrokeStyle(1, 0xc8402a).setVisible(false);
+      const hit = this.add.rectangle(this.blX - 3, y - 2, 164, 24, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true });
+      const name = txt(this, this.blX, y, "", 12, COLORS.text);
+      const back = this.add.rectangle(this.blX, y + 15, 150, 4, 0x000000, 0.85).setOrigin(0);
+      const fill = this.add.rectangle(this.blX, y + 15, 150, 4, 0x3fae3a).setOrigin(0);
+      const row = { sel, hit, name, back, fill, m: null };
+      hit.on("pointerdown", (p, lx, ly, ev) => { if (ev) ev.stopPropagation(); if (row.m && !row.m.dead) this.hero.target = row.m; });
+      ui.add([sel, hit, name, back, fill]); this.blRows.push(row);
+    }
+    this.blT = 0; this.refreshBattleList();
     // minimapa no canto inferior direito
     this.miniX = VIEW_W - this.gen.w * 2 - 12; this.miniY = VIEW_H - this.gen.h * 2 - 12;
     this.mini = this.add.graphics(); ui.add(this.mini);
@@ -164,8 +180,25 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
+  refreshBattleList() {
+    const h = this.hero, R = 8;
+    const list = (this.monsters || []).filter(m => !m.dead && Math.max(Math.abs(m.x - h.x), Math.abs(m.y - h.y)) <= R)
+      .map(m => ({ m, d: Math.max(Math.abs(m.x - h.x), Math.abs(m.y - h.y)) + Math.hypot(m.x - h.x, m.y - h.y) * 0.01 }))
+      .sort((a, b) => a.d - b.d).slice(0, 8);
+    this.blBg.setSize(170, 22 + Math.max(1, list.length) * 26 + 2);
+    this.blRows.forEach((r, i) => {
+      const e = list[i], on = !!e; r.m = on ? e.m : null;
+      r.name.setVisible(on); r.back.setVisible(on); r.fill.setVisible(on); r.hit.setVisible(on); r.sel.setVisible(on && h.target === e.m);
+      if (!on) return;
+      const m = e.m, f = Phaser.Math.Clamp(m.hp / m.maxHp, 0, 1);
+      r.name.setText((m.champion ? "★ " : m.elite ? "◆ " : "") + (m.data.name || m.kind)).setColor(m.champion ? "#e8c060" : m.elite ? "#d89a60" : COLORS.text);
+      r.fill.setSize(Math.max(1, 150 * f), 4).setFillStyle(f > 0.6 ? 0x3fae3a : f > 0.3 ? 0xd6b23a : f > 0.1 ? 0xc2452f : 0x6e1414);
+    });
+  },
+
   refreshHud(dt) {
     const h = this.hero;
+    this.blT -= dt || 0; if (this.blT <= 0) { this.blT = 0.15; this.refreshBattleList(); }
     const hw = Math.max(1, 196 * Phaser.Math.Clamp(h.hp / h.maxHp, 0, 1));
     this.hpFill.setSize(hw, 12); this.hpShine.setSize(hw, 2);
     this.hpText.setText(`${Math.ceil(Math.max(0, h.hp))} / ${Math.round(h.maxHp)}`);
