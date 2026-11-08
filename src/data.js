@@ -115,8 +115,8 @@ const POTIONS = {
 };
 const potionOk = (id, voc) => !POTIONS[id].voc || POTIONS[id].voc.includes(voc);
 
-// promoção (como no Tibia): no nível 20 o Cavaleiro vira Elite Knight
-const PROMOTION = { knight: { level: 20, name: "Elite Knight", regenMult: 3, dmgMult: 1.15 },
+// promoção (como no Tibia): no nível 20 o Cavaleiro vira Cavaleiro de Elite
+const PROMOTION = { knight: { level: 20, name: "Cavaleiro de Elite", regenMult: 3, dmgMult: 1.15 },
   archer: { level: 20, name: "Patrulheiro Real", regenMult: 1, dmgMult: 1.15 } };
 
 // Loja de atributos (ouro da vocação). Cada compra sobe 1 nível; o preço cresce a cada nível.
@@ -129,7 +129,7 @@ const SHOP = {
 const shopCost = (id, lvl) => Math.round(SHOP[id].base * Math.pow(SHOP[id].grow, lvl) / 5) * 5;
 const SPELLS = {
   front: { name: "Golpe Frontal", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Um corte que avança pelas 3 casas à frente." },
-  heal:  { name: "Exura", key: "2", icon: "icon_exura", level: 6, fury: 30, cd: 6, desc: "Cura 15% da vida máxima + 1% por magic level." },
+  heal:  { name: "Exura", key: "2", icon: "icon_exura", level: 2, fury: 30, cd: 6, desc: "Cura 15% da vida máxima + 1% por magic level." },
   spin:  { name: "Golpe em Área", key: "3", icon: "icon_area", level: 10, fury: 40, cd: 4, desc: "Crava a espada no chão: atinge as 8 casas em volta e faz sangrar 5% da vida máxima por segundo durante 3 s." },
   aura:  { name: "Aura Sagrada", key: "4", icon: "icon_aura_v2", level: 18, fury: 60, cd: 12, dur: 5, desc: "Por 5 s: fere quem chega perto, regenera vida e ilumina uma área maior." },
 };
@@ -156,8 +156,8 @@ const BLESS_TEXT = [
 
 // Habilidades do Arqueiro (mesmas teclas 1–4; pagas com Foco).
 const ARCHER_SPELLS = {
-  pierce: { name: "Flecha Perfurante", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Uma flecha que atravessa todos os inimigos em linha reta por 5 casas." },
-  heal:   { name: "Exura", key: "2", icon: "icon_exura", level: 6, fury: 30, cd: 6, desc: "Cura 15% da vida máxima + 1% por magic level." },
+  holy:   { name: "Flecha Sagrada", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Uma flecha de luz sagrada que acerta o alvo escolhido com 2× o dano." },
+  heal:   { name: "Exura", key: "2", icon: "icon_exura", level: 2, fury: 30, cd: 6, desc: "Cura 15% da vida máxima + 1% por magic level." },
   rain:   { name: "Chuva de Flechas", key: "3", icon: "icon_area", level: 10, fury: 40, cd: 4, desc: "Uma saraivada cai sobre o alvo e as 8 casas em volta." },
   eagle:  { name: "Olho de Águia", key: "4", icon: "icon_aura_v2", level: 18, fury: 60, cd: 12, dur: 6, desc: "Por 6 s: atira duas vezes mais rápido e com +2 casas de alcance." },
 };

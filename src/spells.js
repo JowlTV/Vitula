@@ -138,17 +138,25 @@ const SPELL_FX = {
 
 // Habilidades do Arqueiro
 Object.assign(SPELL_FX, {
-  pierce(h, sp) {
+  holy(h, sp) {
     const t = this.rangedTarget();
-    let [dx, dy] = t ? [Math.sign(t.x - h.x), Math.sign(t.y - h.y)] : h.facing; if (!dx && !dy) dx = 1;
-    h.facing = [dx, dy]; this.heroSwing(dx && Math.abs(dx) >= Math.abs(dy) ? dx : 0, dx && Math.abs(dx) >= Math.abs(dy) ? 0 : dy);
-    let n = 0;
-    for (let k = 1; k <= 5; k++) { const x = h.x + dx * k, y = h.y + dy * k; if (!this.gen.isFloor(x, y) || this.isClosedDoor(x, y)) break; n = k; }
-    const end = this.cellPos(h.x + dx * Math.max(1, n), h.y + dy * Math.max(1, n));
+    if (!t) { this.msg("Nenhum alvo ao alcance."); h.cds.holy = 0; h.fury += sp.fury; return; }
+    const dx = Math.sign(t.x - h.x), dy = Math.sign(t.y - h.y), side = Math.abs(t.x - h.x) >= Math.abs(t.y - h.y);
+    this.heroSwing(side ? dx : 0, side ? 0 : dy);
     this.time.delayedCall(250, () => {
-      this.shootArrow(h.px, h.py - 40, end.x, end.y - 24, null, 1600);
-      for (let k = 1; k <= n; k++) { const m = this.occ.get(key(h.x + dx * k, h.y + dy * k)); if (m) this.damageMonster(m, this.baseDamage() * 1.8); }
-      sfx(this, "hit", 0.45);
+      if (h.dead || this.finished) return;
+      const a = this.add.image(h.px, h.py - 40, "arrow").setTint(0xfff0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(1.6).setDepth(100000)
+        .setRotation(Math.atan2(t.py - 24 - (h.py - 40), t.px - h.px));
+      const glow = this.add.image(h.px, h.py - 40, "light").setTint(0xfff0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.35).setDepth(99999);
+      this.ents.add(a); this.ents.add(glow);
+      const dur = Math.max(80, Math.hypot(t.px - h.px, t.py - h.py) / 1400 * 1000);
+      this.tweens.add({ targets: [a, glow], x: t.px, y: t.py - 24, duration: dur, onComplete: () => {
+        a.destroy(); glow.destroy();
+        if (t.dead || this.finished) return;
+        this.damageMonster(t, this.baseDamage() * 2.0);
+        this.fx("heal", t.px, t.py - 28, 0.6);
+      } });
+      sfx(this, "gem", 0.4);
     });
   },
   rain(h, sp) {

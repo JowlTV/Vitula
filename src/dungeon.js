@@ -63,6 +63,15 @@ class DungeonScene extends Phaser.Scene {
     (this.keysIn.zoomIn || []).forEach(k => k.on("down", () => this.setCamZoom(this.camZoom() + 0.2)));
     (this.keysIn.zoomOut || []).forEach(k => k.on("down", () => this.setCamZoom(this.camZoom() - 0.2)));
     this.input.on("wheel", (_p, _o, _dx, dy) => this.setCamZoom(this.camZoom() + (dy > 0 ? -0.2 : 0.2)));
+    // clique/toque num monstro: vira o alvo (o arqueiro atira por cima dos outros; o cavaleiro ataca esse se estiver colado)
+    this.input.on("pointerdown", p => {
+      if (this.paused || this.bagOpen || this.finished || !this.hero || this.hero.dead) return;
+      const w = this.cameras.main.getWorldPoint(p.x, p.y), tx = Math.floor(w.x / T), ty = Math.floor(w.y / T);
+      // o desenho do monstro fica acima da casa dele: aceita a casa clicada e a de baixo
+      const m = this.occ.get(key(tx, ty)) || this.occ.get(key(tx, ty + 1));
+      this.hero.target = m && !m.dead ? m : null;
+      if (m) sfx(this, "pickup", 0.15);
+    });
     // câmera da interface: fixa, enxerga só a camada de UI (escuridão, HUD, painéis)
     this.uiLayer = this.add.layer().setDepth(1000000);
     this.uiCam = zoom2(this.cameras.add(0, 0, VIEW_W * 2, VIEW_H * 2));

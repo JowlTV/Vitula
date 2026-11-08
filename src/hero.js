@@ -10,7 +10,7 @@ Object.assign(DungeonScene.prototype, {
     if (!this.aimG || !this.aimG.scene) { this.aimG = this.add.graphics(); this.ents.add(this.aimG); }
     const g = this.aimG.clear().setDepth(99995);
     if (h.dead) return;
-    const t = this.ranged ? this.rangedTarget() : this.adjacentMonster(h.x, h.y, h.facing);
+    const t = this.ranged ? this.rangedTarget() : (h.target && !h.target.dead ? h.target : this.adjacentMonster(h.x, h.y, h.facing));
     if (t && !t.dead) {
       const p = 0.65 + 0.35 * Math.sin(this.time_ * 10);
       const x = t.x * T + 2, y = t.y * T + 2, w = T - 4;
@@ -58,6 +58,8 @@ Object.assign(DungeonScene.prototype, {
     }
     h.spr.setPosition(Math.round(h.px), Math.round(h.py + 4)).setDepth(h.py);
     h.shadow.setPosition(h.px, h.py).setDepth(h.py - 1);
+    // a aura acompanha o herói DEPOIS do passo, sempre logo atrás dele (antes, ao subir, ficava na frente)
+    if (h.auraSpr && h.auraT > 0) h.auraSpr.setPosition(h.px, h.py - 2).setDepth(h.py - 1);
     h.flash = Math.max(0, (h.flash || 0) - dt * 5);
     // pisca em vermelho escuro (#660000) ao apanhar
     if (h.flash > 0.55) h.spr.setTintFill(0x660000); else if (h.flash > 0) h.spr.setTint(0xb04040); else h.spr.setTint(this.ambientTint || 0xffffff);
@@ -89,7 +91,8 @@ Object.assign(DungeonScene.prototype, {
     }
     if (h.atkT <= 0 && (autoAtk || h.atkQueued > 0)) {
       h.atkQueued = 0;
-      const t = this.adjacentMonster(h.x, h.y, h.facing);
+      const sel = h.target && !h.target.dead && Math.max(Math.abs(h.target.x - h.x), Math.abs(h.target.y - h.y)) === 1 ? h.target : null;
+      const t = sel || this.adjacentMonster(h.x, h.y, h.facing);
       if (t) {
         h.atkT = 1.0 * this.stats.cooldown / (this.stats.atkSpeed || 1);
         this.heroSwing(Math.sign(t.x - h.x), Math.sign(t.y - h.y));
@@ -385,6 +388,8 @@ Object.assign(DungeonScene.prototype, {
   // monstro mais próximo ao alcance, com linha livre (prefere o da frente)
   rangedTarget() {
     const h = this.hero, R = this.rangeNow(); let best = null, bd = 1e9;
+    const sel = h.target;
+    if (sel && !sel.dead && this.monsters.includes(sel) && Math.max(Math.abs(sel.x - h.x), Math.abs(sel.y - h.y)) <= R && this.clearShot(h.x, h.y, sel.x, sel.y)) return sel;
     for (const m of this.monsters) {
       if (m.dead) continue;
       const d = Math.max(Math.abs(m.x - h.x), Math.abs(m.y - h.y));
