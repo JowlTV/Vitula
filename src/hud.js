@@ -38,6 +38,8 @@ Object.assign(DungeonScene.prototype, {
     this.bigOpen = !this.bigOpen;
     if (!this.bigMap) { this.bigMap = this.add.graphics().setDepth(5); this.uiLayer.add(this.bigMap); }
     this.bigMap.setVisible(this.bigOpen);
+    if (!this.bigTitle) { this.bigTitle = txt(this, VIEW_W / 2, 64, "", 30, "#e0c890").setOrigin(0.5).setDepth(6).setShadow(2, 2, "#000", 0, true, true); this.uiLayer.add(this.bigTitle); }
+    this.bigTitle.setText(`${this.region.name}\nAndar ${this.floorN} de ${FLOORS}`).setAlign("center").setVisible(this.bigOpen);
     if (this.bigOpen) this.drawBigMap();
   },
 
@@ -69,7 +71,7 @@ Object.assign(DungeonScene.prototype, {
     this.drawBigMap();
     if (!this.mini) return;
     const g = this.gen, s = Math.min(2, 150 / g.w, 110 / g.h), gfx = this.mini;
-    const ox = VIEW_W - Math.ceil(g.w * s) - 12, oy = VIEW_H - Math.ceil(g.h * s) - 12;
+    const ox = VIEW_W - Math.ceil(g.w * s) - 12, oy = 14;
     gfx.clear();
     // pergaminho escuro: o que não foi explorado fica nele, sem revelar nada
     const W2 = g.w * s + 8, H2 = g.h * s + 8;
@@ -108,39 +110,49 @@ Object.assign(DungeonScene.prototype, {
       fr.fillStyle(0x2c2a30, 1).fillTriangle(x - 3, y - 3, x - 9, y + h / 2, x - 3, y + h + 3);
       fr.fillTriangle(x + w + 3, y - 3, x + w + 9, y + h / 2, x + w + 3, y + h + 3);
     };
-    ui.add(this.add.image(14, 16, "heart").setScale(1.4));
-    iron(34, 9, 196, 12);
-    this.hpFill = this.add.rectangle(34, 9, 196, 12, 0x7a1010).setOrigin(0); ui.add(this.hpFill);
-    this.hpShine = this.add.rectangle(34, 9, 196, 2, 0xa83030).setOrigin(0); ui.add(this.hpShine);
-    this.hpText = txt(this, 132, 15, "", 11, COLORS.white).setOrigin(0.5); ui.add(this.hpText);
-    iron(34, 28, 196, 4);
-    this.xpFill = this.add.rectangle(34, 28, 196, 4, 0x8a7430).setOrigin(0); ui.add(this.xpFill);
-    this.lvlText = txt(this, 244, 14, "", 18, COLORS.gold); ui.add(this.lvlText);
-    this.promoText = txt(this, 244, 32, "", 14, "#e8c878"); ui.add(this.promoText);
-    iron(34, 40, 136, 6);
-    this.furyFill = this.add.rectangle(34, 40, 136, 6, 0xa8401a).setOrigin(0); ui.add(this.furyFill);
-    this.furyText = txt(this, 176, 34, VOCATIONS[this.vocId].resource || "Fúria", 14, "#d0703a"); ui.add(this.furyText);
-    this.skillText = txt(this, 12, 54, "", 11, "#a8a090"); ui.add(this.skillText);
-    this.hudFloor = txt(this, VIEW_W / 2 + 90, 18, `${this.region.name} · Andar ${this.floorN}/${FLOORS}`, 18, "#c8b890", { title: true }).setOrigin(0.5);
+    // vida, experiência e fúria: centralizadas no topo
+    const cx = VIEW_W / 2, bx = cx - 98;
+    iron(bx, 9, 196, 12);
+    this.hpFill = this.add.rectangle(bx, 9, 196, 12, 0x7a1010).setOrigin(0); ui.add(this.hpFill);
+    this.hpShine = this.add.rectangle(bx, 9, 196, 2, 0xa83030).setOrigin(0); ui.add(this.hpShine);
+    this.hpText = txt(this, cx, 15, "", 11, COLORS.white).setOrigin(0.5); ui.add(this.hpText);
+    iron(bx, 28, 196, 4);
+    this.xpFill = this.add.rectangle(bx, 28, 196, 4, 0x8a7430).setOrigin(0); ui.add(this.xpFill);
+    iron(cx - 68, 40, 136, 6);
+    this.furyFill = this.add.rectangle(cx - 68, 40, 136, 6, 0xa8401a).setOrigin(0); ui.add(this.furyFill);
+    this.furyText = txt(this, cx + 78, 36, VOCATIONS[this.vocId].resource || "Fúria", 12, "#d0703a"); ui.add(this.furyText);
+    this.lvlText = txt(this, bx - 14, 6, "", 18, COLORS.gold).setOrigin(1, 0); ui.add(this.lvlText);
+    this.promoText = txt(this, bx - 14, 28, "", 12, "#e8c878").setOrigin(1, 0); ui.add(this.promoText);
+    this.skillText = txt(this, cx, 52, "", 10, "#a8a090").setOrigin(0.5, 0); ui.add(this.skillText);
+    // embaixo do minimapa (canto superior direito): nome do andar pequeno, ouro e chaves
+    const mg = this.gen, ms = Math.min(2, 150 / mg.w, 110 / mg.h), mR = VIEW_W - 12, mB = 14 + Math.ceil(mg.h * ms) + 8;
+    this.hudFloor = txt(this, mR, mB + 2, `${this.region.name} · Andar ${this.floorN}/${FLOORS}`, 11, "#c8b890", { title: true }).setOrigin(1, 0);
     ui.add(this.hudFloor);
-    ui.add(this.add.image(VIEW_W - 92, 16, "i_gold_coin").setScale(1.4));
-    this.goldText = txt(this, VIEW_W - 78, 6, "0", 15, COLORS.gold); ui.add(this.goldText);
-    ui.add(this.add.image(VIEW_W - 92, 40, "i_bronze_key").setScale(0.9));
-    this.keyText = txt(this, VIEW_W - 78, 30, "0", 15, COLORS.text); ui.add(this.keyText);
+    ui.add(this.add.image(mR - 92, mB + 26, "i_gold_coin").setScale(0.9));
+    this.goldText = txt(this, mR - 84, mB + 19, "0", 11, COLORS.gold); ui.add(this.goldText);
+    ui.add(this.add.image(mR - 40, mB + 26, "i_bronze_key").setScale(0.6));
+    this.keyText = txt(this, mR - 32, mB + 19, "0", 11, COLORS.text); ui.add(this.keyText);
+    this.hudBelowMini = mB + 40;
     // barra de magias
     const pslots = Save.voc(this.vocId).potionSlots;
     const list = [["basic", "icon_basic", ""], ...Object.entries(this.spells).map(([k, s]) => [k, s.icon, s.key]),
       ["p0", POTIONS[pslots[0]].icon, "5"], ["p1", POTIONS[pslots[1]].icon, "6"]];
     this.potCount = {};
     this.slotIcons = {}; this.slotLocks = {};
-    const size = 40, gap = 8, x0 = VIEW_W / 2 - (list.length * (size + gap) - gap + 14) / 2;
+    const size = 38, gap = 6, x0 = VIEW_W / 2 - (list.length * (size + gap) - gap + 14) / 2;
+    { // moldura da barra de habilidades (estilo Tibia)
+      const bw = list.length * (size + gap) - gap + 14, y = VIEW_H - size - 10;
+      fr.fillStyle(0x050406, 0.92).fillRect(x0 - 8, y - 7, bw + 16, size + 20);
+      fr.fillStyle(0x2c2a30, 1).fillRect(x0 - 7, y - 6, bw + 14, 1).fillRect(x0 - 7, y + size + 12, bw + 14, 1);
+      fr.fillStyle(0x4a464e, 1).fillRect(x0 - 7, y - 6, 1, size + 19).fillRect(x0 + bw + 6, y - 6, 1, size + 19);
+    }
     this.slotCovers = {}; this.slotTimers = {}; this.slotBars = {}; this.slotReady = {};
     list.forEach(([id, icon, k], i) => {
       const x = x0 + i * (size + gap) + ((id === "p0" || id === "p1") ? 14 : 0), y = VIEW_H - size - 10; // poções separadas das magias
       ui.add(this.add.nineslice(x, y, "slot", null, size, size, 4, 4, 4, 4).setOrigin(0));
       const ic = this.add.image(x + size / 2, y + size / 2, icon); ui.add(ic); this.slotIcons[id] = ic;
-      if ((id === "p0" || id === "p1")) { const P = POTIONS[pslots[+id[1]]]; ic.setScale(26 / Math.max(ic.width, ic.height)); if (P.tint) ic.setTint(P.tint); }
-      else ic.setDisplaySize(30, 30);
+      if ((id === "p0" || id === "p1")) { const P = POTIONS[pslots[+id[1]]]; ic.setScale(24.7 / Math.max(ic.width, ic.height)); if (P.tint) ic.setTint(P.tint); }
+      else ic.setDisplaySize(28.5, 28.5);
       // recarga: sombra que desce, segundos restantes e barrinha embaixo do slot
       const cover = this.add.rectangle(x + 3, y + size - 3, size - 6, size - 6, 0x000000, 0.7).setOrigin(0, 1).setVisible(false);
       ui.add(cover); this.slotCovers[id] = cover;
@@ -153,6 +165,9 @@ Object.assign(DungeonScene.prototype, {
       else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "Nv " + this.spells[id].level, 12, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
     });
     this.buildBattleList(ui);
+    // barrinha de vida sobre o herói (H minimiza/mostra; fica salvo)
+    try { this.heroBarOn = localStorage.getItem("vitula_herobar") !== "0"; } catch (e) { this.heroBarOn = true; }
+    this.input.keyboard.on("keydown-H", () => { this.heroBarOn = !this.heroBarOn; try { localStorage.setItem("vitula_herobar", this.heroBarOn ? "1" : "0"); } catch (e) {} this.msg(this.heroBarOn ? "Vida sobre o personagem: visível (H)" : "Vida sobre o personagem: oculta (H)"); });
     // minimapa no canto inferior direito
     this.miniX = VIEW_W - this.gen.w * 2 - 12; this.miniY = VIEW_H - this.gen.h * 2 - 12;
     this.mini = this.add.graphics(); ui.add(this.mini);
@@ -169,8 +184,8 @@ Object.assign(DungeonScene.prototype, {
   // até 8 monstros mais próximos. Janela arrastável pela barra, minimizável (–), fechável (×; L reabre)
   // e redimensionável pelo canto de baixo à direita. Posição e tamanho ficam salvos.
   buildBattleList(ui) {
-    let st = {}; try { st = JSON.parse(localStorage.getItem("vitula_bl") || "{}"); } catch (e) {}
-    this.bl = Object.assign({ x: VIEW_W - 136, y: 58, w: 128, rows: 6, min: false, open: true }, st);
+    let st = {}; try { st = JSON.parse(localStorage.getItem("vitula_bl2") || "{}"); } catch (e) {}
+    this.bl = Object.assign({ x: VIEW_W - 140, y: this.hudBelowMini || 180, w: 128, rows: 6, min: false, open: true }, st);
     const win = this.add.container(0, 0); ui.add(win); this.blWin = win;
     this.blBg = this.add.rectangle(0, 0, 10, 10, 0x0c0a08, 0.8).setOrigin(0).setStrokeStyle(1, 0x5a4a30).setInteractive();
     this.blBar = this.add.rectangle(0, 0, 10, 14, 0x2a2018, 1).setOrigin(0).setInteractive({ useHandCursor: true });
@@ -206,7 +221,7 @@ Object.assign(DungeonScene.prototype, {
     this.input.keyboard.on("keydown-L", () => { this.bl.open = !this.bl.open; this.layoutBattleList(); this.saveBattleList(); });
     this.blT = 0; this.layoutBattleList(); this.refreshBattleList();
   },
-  saveBattleList() { try { localStorage.setItem("vitula_bl", JSON.stringify(this.bl)); } catch (e) {} },
+  saveBattleList() { try { localStorage.setItem("vitula_bl2", JSON.stringify(this.bl)); } catch (e) {} },
   blOwns(objs) { return !!(this.blWin && objs && objs.some(o => o.parentContainer === this.blWin)); },
   layoutBattleList() {
     const b = this.bl, w = b.w, h = b.min ? 14 : 16 + b.rows * 18 + 2;
@@ -239,8 +254,19 @@ Object.assign(DungeonScene.prototype, {
     });
   },
 
+  drawHeroBar() {
+    const h = this.hero;
+    if (!this.heroBarG || !this.heroBarG.scene) { this.heroBarG = this.add.graphics(); this.ents.add(this.heroBarG); }
+    const g = this.heroBarG.clear().setDepth(100001);
+    if (!this.heroBarOn || h.dead || !h.spr) return;
+    const w = 34, f = Phaser.Math.Clamp(h.hp / h.maxHp, 0, 1), x = Math.round(h.px - w / 2), y = Math.round(h.py - h.spr.displayHeight * 0.9 - 4);
+    g.fillStyle(0x000000, 0.85).fillRect(x - 1, y - 1, w + 2, 5);
+    g.fillStyle(f > 0.6 ? 0x3fae3a : f > 0.3 ? 0xd6b23a : f > 0.1 ? 0xc2452f : 0x6e1414, 1).fillRect(x, y, Math.max(1, w * f), 3);
+  },
+
   refreshHud(dt) {
     const h = this.hero;
+    this.drawHeroBar();
     this.blT -= dt || 0; if (this.blT <= 0) { this.blT = 0.15; this.refreshBattleList(); }
     const hw = Math.max(1, 196 * Phaser.Math.Clamp(h.hp / h.maxHp, 0, 1));
     this.hpFill.setSize(hw, 12); this.hpShine.setSize(hw, 2);
