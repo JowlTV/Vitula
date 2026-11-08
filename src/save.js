@@ -13,7 +13,7 @@ const Save = {
     for (const id in SKILLS) if (!d.skills[id]) d.skills[id] = { lvl: SKILLS[id].start, tries: 0 };
     if (!d.ml) d.ml = { lvl: 0, spent: 0 };          // magic level
     if (!d.potions) d.potions = { health: 3 };       // poções guardadas na mochila
-    if (!d.potionSlots) d.potionSlots = ["health", v === "knight" ? "fury" : "mana"];
+    if (!d.potionSlots) d.potionSlots = ["health", v === "knight" || v === "archer" ? "fury" : "mana"];
     if (!d.xpTotal) d.xpTotal = 0;
     if (d.bless == null) d.bless = 0;      // bênçãos de Magdha (0 a 3)
     if (d.promoted == null) d.promoted = false; // título de promoção: conquistado uma vez, não se perde

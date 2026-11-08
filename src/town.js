@@ -46,8 +46,8 @@ class TownScene extends Phaser.Scene {
     (this.keysIn.zoomOut || []).forEach(k => k.on("down", () => this.zoomBy(-0.2)));
     this.input.on("wheel", (_p, _o, _dx, dy) => this.zoomBy(dy > 0 ? -0.2 : 0.2));
     this.cameras.main.fadeIn(500, 0, 0, 0);
-    this.sound.stopAll();
-    menuMusic(this);
+    stopAllButMusic(this);
+    goddessMusic(this, true);
   }
 
   // ------------------------------------------------------------ mapa
@@ -219,7 +219,8 @@ class TownScene extends Phaser.Scene {
     const [x, y] = from === "here" && pos ? pos : from === "sewer" ? [26, 21] : [17, 23];
     const h = this.hero = { x, y, px: x * T + T / 2, py: y * T + T - 4, moveT: 0, facing: from === "sewer" ? [0, 1] : [0, -1], lookLeft: false };
     h.shadow = this.add.image(h.px, h.py, "shadow").setScale(0.75, 0.25);
-    h.spr = this.add.sprite(h.px, h.py + 4, "kn_idle_up").setOrigin(0.5, 1).setScale(0.42).play(from === "sewer" ? "kn_idle_down" : "kn_idle_up");
+    const ap = vocAnim(this.vocId);
+    h.spr = this.add.sprite(h.px, h.py + 4, ap + "idle_up").setOrigin(0.5, 1).setScale(vocScale(this.vocId)).play(from === "sewer" ? ap + "idle_down" : ap + "idle_up");
     this.world.add([h.shadow, h.spr]);
     const cam = this.cameras.main;
     cam.setBounds(0, 0, TOWN_W * T, TOWN_H * T);
@@ -246,7 +247,7 @@ class TownScene extends Phaser.Scene {
     if (h.moveT > 0) h.walkHold = 0.12; else h.walkHold = Math.max(0, (h.walkHold || 0) - dt);
     const [fx, fy] = h.facing, dir = fx ? "side" : (fy < 0 ? "up" : "down");
     if (fx) h.lookLeft = fx < 0;
-    const anim = "kn_" + (h.walkHold > 0 ? "walk" : "idle") + "_" + dir;
+    const anim = vocAnim(this.vocId) + (h.walkHold > 0 ? "walk" : "idle") + "_" + dir;
     if (h.spr.anims.currentAnim.key !== anim) h.spr.play(anim, true);
     h.spr.setFlipX(dir === "side" && h.lookLeft).setTint(TOWN_TINT);
     h.spr.setPosition(Math.round(h.px), Math.round(h.py + 4)).setDepth(h.py);

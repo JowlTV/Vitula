@@ -73,9 +73,9 @@ Object.assign(DungeonScene.prototype, {
     this.hero.x = arr.x; this.hero.y = arr.y; this.hero.moveT = 0;
     const p = this.cellPos(start.x, start.y);
     this.hero.shadow = this.add.image(p.x, p.y, "shadow").setScale(0.75, 0.25);
-    const k4 = this.anims.exists("kn_idle_down");
-    this.hero.spr = this.add.sprite(p.x, p.y + 4, k4 ? "kn_idle_down" : "knight").setOrigin(0.5, 1).play(k4 ? "kn_idle_down" : "hero_idle");
-    if (k4) this.hero.spr.setScale(0.42);
+    const ap = this.ap || "kn_", k4 = this.anims.exists(ap + "idle_down");
+    this.hero.spr = this.add.sprite(p.x, p.y + 4, k4 ? ap + "idle_down" : "knight").setOrigin(0.5, 1).play(k4 ? ap + "idle_down" : "hero_idle");
+    if (k4) this.hero.spr.setScale(this.heroScale || 0.42);
     this.ents.add([this.hero.shadow, this.hero.spr]);
     this.hero.shadow.setDepth(p.y - 1);
     this.hero.px = p.x; this.hero.py = p.y;

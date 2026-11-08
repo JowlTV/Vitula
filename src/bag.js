@@ -38,7 +38,7 @@ Object.assign(DungeonScene.prototype, {
     const groups = [
       ["Ataque", [["Dano base", `${Math.round(mx * 0.6)}–${Math.round(mx)}`], ["Velocidade de ataque", `${this.attacksPerSec().toFixed(2)} golpes/s`], ["Crítico", "10% (×1,8)"]]],
       ["Defesa", [["Vida total", `${Math.ceil(h.hp)} / ${Math.round(h.maxHp)}`], ["Defesa", this.defenseValue().toFixed(1)], ["Chance de bloqueio", `${Math.round(this.blockChance() * 100)}%`]]],
-      ["Skills", [["Sword", sk("sword") + (this.buffOn("berserker") ? "  +10" : "")], ["Club", "—"], ["Axe", "—"], ["Shield", sk("shield")],
+      ["Skills", [this.ranged ? ["Distance", sk("distance") + (this.buffOn("hunter") ? "  +10" : "")] : ["Sword", sk("sword") + (this.buffOn("berserker") ? "  +10" : "")], ["Club", "—"], ["Axe", "—"], ["Shield", sk("shield")],
         ["Magic level", `${ml.lvl}  (${mlPct}%)` + (this.buffOn("mage") ? "  +10" : "")]]],
       ["Progresso", [["Nível", String(h.level) + (this.promo() ? ` · ${this.promo().name}` : "")], ["Experiência total", String(Math.floor(d.xpTotal || 0))],
         ["Para o próximo nível", String(Math.ceil(this.xpNext() - h.xp))]]],

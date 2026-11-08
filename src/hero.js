@@ -10,7 +10,7 @@ Object.assign(DungeonScene.prototype, {
     if (!this.aimG || !this.aimG.scene) { this.aimG = this.add.graphics(); this.ents.add(this.aimG); }
     const g = this.aimG.clear().setDepth(99995);
     if (h.dead) return;
-    const t = this.adjacentMonster(h.x, h.y, h.facing);
+    const t = this.ranged ? this.rangedTarget() : this.adjacentMonster(h.x, h.y, h.facing);
     if (t && !t.dead) {
       const p = 0.65 + 0.35 * Math.sin(this.time_ * 10);
       const x = t.x * T + 2, y = t.y * T + 2, w = T - 4;
@@ -62,14 +62,14 @@ Object.assign(DungeonScene.prototype, {
     // pisca em vermelho escuro (#660000) ao apanhar
     if (h.flash > 0.55) h.spr.setTintFill(0x660000); else if (h.flash > 0) h.spr.setTint(0xb04040); else h.spr.setTint(this.ambientTint || 0xffffff);
     let anim = h.moveT > 0 ? "hero_walk" : "hero_idle";
-    if (this.anims.exists("kn_idle_down")) {
+    if (this.anims.exists(this.ap + "idle_down")) {
       const [fx, fy] = h.facing;
       // "walkHold": continua andando entre um tile e outro (sem voltar ao parado por 1 quadro = mancar)
       if (h.moveT > 0) h.walkHold = 0.12; else h.walkHold = Math.max(0, (h.walkHold || 0) - dt);
       const walking = h.walkHold > 0, atk = h.attackT > 0;
       // 4 direções: baixo, cima e lado (a esquerda é o lado espelhado)
       const dir = atk ? (h.atkDir || "down") : (fx ? "side" : (fy < 0 ? "up" : "down"));
-      anim = "kn_" + (atk ? "attack" : walking ? "walk" : "idle") + "_" + dir;
+      anim = this.ap + (atk ? "attack" : walking ? "walk" : "idle") + "_" + dir;
       // levar dano forte ou lançar magia: animação de frente por um instante
       h.poseT = Math.max(0, (h.poseT || 0) - dt);
       if (h.poseT > 0 && h.pose && this.anims.exists(h.pose) && !atk) anim = h.pose;
@@ -77,10 +77,12 @@ Object.assign(DungeonScene.prototype, {
       h.spr.setFlipX(dir === "side" && !!(atk ? h.atkLeft : h.lookLeft));
     }
     h.attackT = Math.max(0, (h.attackT || 0) - dt);
-    if (h.spr.anims.currentAnim.key !== anim) { h.spr.play(anim, true); if (anim.startsWith("kn_")) h.spr.setScale(anim === "kn_hurt" || anim === "kn_cast" ? 0.38 : 0.42); }
+    if (h.spr.anims.currentAnim.key !== anim) { h.spr.play(anim, true); if (anim.startsWith(this.ap)) h.spr.setScale(this.ap === "kn_" ? (anim === "kn_hurt" || anim === "kn_cast" ? 0.38 : 0.42) : this.heroScale); }
     // ataque básico automático em quem estiver colado
     h.atkQueued = Math.max(0, (h.atkQueued || 0) - dt);
     const autoAtk = Settings.data.autoAttack !== false;
+    if (this.ranged) { this.archerAttack(autoAtk); }
+    else {
     if (h.atkT <= 0 && !autoAtk && h.atkQueued > 0 && !this.adjacentMonster(h.x, h.y, h.facing)) {
       // golpe no vazio: só a animação, para frente
       h.atkQueued = 0; h.atkT = 0.5 * this.stats.cooldown / (this.stats.atkSpeed || 1); this.heroSwing(...h.facing);
@@ -104,6 +106,7 @@ Object.assign(DungeonScene.prototype, {
         });
       }
     }
+    }
     if (h.moveT > 0) return;
     const dir = this.inputDir();
     if (dir) this.tryMove(dir[0], dir[1]);
@@ -118,7 +121,7 @@ Object.assign(DungeonScene.prototype, {
     return (0.085 * FIST_ATTACK * this.swordEff() + this.hero.level / 5) * this.stats.might * (this.promo() ? this.promo().dmgMult : 1);
   },
   baseDamage() { return this.maxDamage() * 0.8; },
-  swordEff() { return Save.skill(this.vocId, "sword").lvl + (this.buffOn("berserker") ? 10 : 0); },
+  swordEff() { return this.ranged ? Save.skill(this.vocId, "distance").lvl + (this.buffOn("hunter") ? 10 : 0) : Save.skill(this.vocId, "sword").lvl + (this.buffOn("berserker") ? 10 : 0); },
   shieldLvl() { return Save.skill(this.vocId, "shield").lvl; },
   mlEff() { return Save.voc(this.vocId).ml.lvl + (this.buffOn("mage") ? 10 : 0); },
   // defesa: armadura + metade do Shield acima do inicial (itens de defesa vão somar aqui)
@@ -305,7 +308,7 @@ Object.assign(DungeonScene.prototype, {
     this.floatText(h.px + Phaser.Math.Between(-6, 6), h.py - 66, String(Math.round(real)), COLORS.hurt);
     sfx(this, "hurt", 0.35);
     // golpe pesado (≥10% da vida): tremor e sangue no chão
-    if (real >= h.maxHp * 0.1 && !(h.attackT > 0)) { h.pose = "kn_hurt"; h.poseT = 0.42; }
+    if (real >= h.maxHp * 0.1 && !(h.attackT > 0)) { h.pose = this.ap + "hurt"; h.poseT = 0.42; }
     if (real >= h.maxHp * 0.1) { this.cameras.main.shake(130, 0.004); this.splat(h.px, h.py - 2, 6); }
     // golpes comuns não tremem mais a tela
     if (h.hp <= 0) {
@@ -353,7 +356,7 @@ Object.assign(DungeonScene.prototype, {
     h.attackT = 0.42;
     h.atkDir = dx ? "side" : (dy < 0 ? "up" : "down");
     h.atkLeft = dx ? dx < 0 : !!h.lookLeft; if (dx) h.lookLeft = dx < 0;
-    const key = this.anims.exists("kn_attack_" + h.atkDir) ? "kn_attack_" + h.atkDir : "k_attack";
+    const key = this.anims.exists(this.ap + "attack_" + h.atkDir) ? this.ap + "attack_" + h.atkDir : "k_attack";
     h.spr.setFlipX(h.atkDir === "side" && h.atkLeft); h.spr.play(key, false);
   },
 
@@ -368,6 +371,63 @@ Object.assign(DungeonScene.prototype, {
 
   xpNext() { return 8 * Math.pow(this.hero.level, 1.35); },
 
+  // ---------------------------------------------------------------- arqueiro
+  rangeNow() { return this.ranged + ((this.hero.eagleT || 0) > 0 ? 2 : 0); },
+  // linha livre entre duas casas (sem parede, porta fechada ou objeto no caminho)
+  clearShot(x0, y0, x1, y1) {
+    const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+    for (let i = 1; i < n; i++) {
+      const x = Math.round(x0 + (x1 - x0) * i / n), y = Math.round(y0 + (y1 - y0) * i / n);
+      if (!this.gen.isFloor(x, y) || this.isClosedDoor(x, y) || this.props.has(key(x, y))) return false;
+    }
+    return true;
+  },
+  // monstro mais próximo ao alcance, com linha livre (prefere o da frente)
+  rangedTarget() {
+    const h = this.hero, R = this.rangeNow(); let best = null, bd = 1e9;
+    for (const m of this.monsters) {
+      if (m.dead) continue;
+      const d = Math.max(Math.abs(m.x - h.x), Math.abs(m.y - h.y));
+      if (d > R || !this.clearShot(h.x, h.y, m.x, m.y)) continue;
+      const score = d - (Math.sign(m.x - h.x) === h.facing[0] && Math.sign(m.y - h.y) === h.facing[1] ? 0.5 : 0);
+      if (score < bd) { bd = score; best = m; }
+    }
+    return best;
+  },
+  // flecha voando de (h) até o alvo; ao chegar chama onHit
+  shootArrow(fromX, fromY, toX, toY, onHit, speed = 900) {
+    const a = this.add.image(fromX, fromY, "arrow").setRotation(Math.atan2(toY - fromY, toX - fromX)).setDepth(100000).setScale(1.2);
+    this.ents.add(a);
+    const dur = Math.max(80, Math.hypot(toX - fromX, toY - fromY) / speed * 1000);
+    this.tweens.add({ targets: a, x: toX, y: toY, duration: dur, onComplete: () => { a.destroy(); onHit && onHit(); } });
+  },
+  archerAttack(autoAtk) {
+    const h = this.hero;
+    h.eagleT = Math.max(0, (h.eagleT || 0) - this.game.loop.delta / 1000);
+    if (h.atkT > 0 || !(autoAtk || h.atkQueued > 0)) return;
+    h.atkQueued = 0;
+    const t = this.rangedTarget();
+    if (!t) return;
+    h.atkT = 1.1 * this.stats.cooldown / (this.stats.atkSpeed || 1) * (h.eagleT > 0 ? 0.5 : 1);
+    const dx = Math.sign(t.x - h.x), dy = Math.sign(t.y - h.y);
+    h.facing = [dx, dy];
+    this.heroSwing(Math.abs(t.x - h.x) >= Math.abs(t.y - h.y) ? dx : 0, Math.abs(t.x - h.x) >= Math.abs(t.y - h.y) ? 0 : dy);
+    // a flecha sai no quadro em que ele solta a corda (~0,3 s)
+    this.time.delayedCall(300, () => {
+      if (h.dead || this.finished) return;
+      this.shootArrow(h.px, h.py - 40, t.px, t.py - 24, () => {
+        if (t.dead || this.finished) return;
+        const crit = Math.random() < 0.1;
+        this.damageMonster(t, this.baseDamage() * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? 1.8 : 1));
+        if (crit) this.splat(t.px, t.py - 4, 5);
+        this.addFury(8);
+        this.trainSkill("distance");
+        sfx(this, "hit", 0.25);
+      });
+      sfx(this, "pickup", 0.15);
+    });
+  },
+
   addFury(v) { const h = this.hero; h.fury = Math.min(this.furyMax, h.fury + v); h.furyIdle = 0; },
 
   addXp(v) {
@@ -377,7 +437,7 @@ Object.assign(DungeonScene.prototype, {
     while (h.xp >= this.xpNext()) {
       h.xp -= this.xpNext(); h.level++; h.maxHp += 10; h.hp = h.maxHp; // subir de nível enche a vida
       this.floatText(h.px, h.py - 84, `Nível ${h.level}!`, COLORS.gold);
-      const nova = Object.values(SPELLS).find(sp => sp.level === h.level);
+      const nova = Object.values(this.spells).find(sp => sp.level === h.level);
       this.msg(nova ? `Nível ${h.level}: você aprendeu ${nova.name}! (tecla ${nova.key})` : `Você subiu para o nível ${h.level}.`);
       sfx(this, "levelup", 0.4);
       this.checkPromotion();

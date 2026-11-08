@@ -119,7 +119,7 @@ Object.assign(DungeonScene.prototype, {
     this.promoText = txt(this, 244, 32, "", 14, "#e8c878"); ui.add(this.promoText);
     iron(34, 40, 136, 6);
     this.furyFill = this.add.rectangle(34, 40, 136, 6, 0xa8401a).setOrigin(0); ui.add(this.furyFill);
-    this.furyText = txt(this, 176, 34, "Fúria", 14, "#d0703a"); ui.add(this.furyText);
+    this.furyText = txt(this, 176, 34, VOCATIONS[this.vocId].resource || "Fúria", 14, "#d0703a"); ui.add(this.furyText);
     this.skillText = txt(this, 12, 54, "", 11, "#a8a090"); ui.add(this.skillText);
     this.hudFloor = txt(this, VIEW_W / 2, 16, `${this.region.name} · Andar ${this.floorN}/${FLOORS}`, 22, "#c8b890").setOrigin(0.5);
     ui.add(this.hudFloor);
@@ -129,17 +129,17 @@ Object.assign(DungeonScene.prototype, {
     this.keyText = txt(this, VIEW_W - 78, 30, "0", 15, COLORS.text); ui.add(this.keyText);
     // barra de magias
     const pslots = Save.voc(this.vocId).potionSlots;
-    const list = [["basic", "icon_basic", ""], ...Object.entries(SPELLS).map(([k, s]) => [k, s.icon, s.key]),
+    const list = [["basic", "icon_basic", ""], ...Object.entries(this.spells).map(([k, s]) => [k, s.icon, s.key]),
       ["p0", POTIONS[pslots[0]].icon, "5"], ["p1", POTIONS[pslots[1]].icon, "6"]];
     this.potCount = {};
     this.slotIcons = {}; this.slotLocks = {};
     const size = 40, gap = 8, x0 = VIEW_W / 2 - (list.length * (size + gap) - gap + 14) / 2;
     this.slotCovers = {}; this.slotTimers = {}; this.slotBars = {}; this.slotReady = {};
     list.forEach(([id, icon, k], i) => {
-      const x = x0 + i * (size + gap) + (id[0] === "p" ? 14 : 0), y = VIEW_H - size - 10; // poções separadas das magias
+      const x = x0 + i * (size + gap) + ((id === "p0" || id === "p1") ? 14 : 0), y = VIEW_H - size - 10; // poções separadas das magias
       ui.add(this.add.nineslice(x, y, "slot", null, size, size, 4, 4, 4, 4).setOrigin(0));
       const ic = this.add.image(x + size / 2, y + size / 2, icon); ui.add(ic); this.slotIcons[id] = ic;
-      if (id[0] === "p") { const P = POTIONS[pslots[+id[1]]]; ic.setScale(26 / Math.max(ic.width, ic.height)); if (P.tint) ic.setTint(P.tint); }
+      if ((id === "p0" || id === "p1")) { const P = POTIONS[pslots[+id[1]]]; ic.setScale(26 / Math.max(ic.width, ic.height)); if (P.tint) ic.setTint(P.tint); }
       else ic.setDisplaySize(30, 30);
       // recarga: sombra que desce, segundos restantes e barrinha embaixo do slot
       const cover = this.add.rectangle(x + 3, y + size - 3, size - 6, size - 6, 0x000000, 0.7).setOrigin(0, 1).setVisible(false);
@@ -149,8 +149,8 @@ Object.assign(DungeonScene.prototype, {
       const bar = this.add.rectangle(x + 2, y + size + 3, size - 4, 4, 0x9fd0ff).setOrigin(0); ui.add(bar); this.slotBars[id] = bar;
       const ready = this.add.rectangle(x, y, size, size).setOrigin(0).setStrokeStyle(2, 0xe0bc60, 1).setAlpha(0); ui.add(ready); this.slotReady[id] = ready;
       if (k) ui.add(txt(this, x + size - 9, y + size - 16, k, 12, COLORS.gold));
-      if (id[0] === "p") { const n = txt(this, x + 4, y + 1, "", 11, COLORS.white); ui.add(n); this.potCount[id] = n; }
-      else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "Nv " + SPELLS[id].level, 12, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
+      if ((id === "p0" || id === "p1")) { const n = txt(this, x + 4, y + 1, "", 11, COLORS.white); ui.add(n); this.potCount[id] = n; }
+      else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "Nv " + this.spells[id].level, 12, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
     });
     // minimapa no canto inferior direito
     this.miniX = VIEW_W - this.gen.w * 2 - 12; this.miniY = VIEW_H - this.gen.h * 2 - 12;
@@ -187,8 +187,8 @@ Object.assign(DungeonScene.prototype, {
       (this.slotWas ||= {})[id] = f;
     };
     cover("basic", h.atkT / this.stats.cooldown, h.atkT);
-    for (const s in SPELLS) {
-      const sp = SPELLS[s], locked = h.level < sp.level;
+    for (const s in this.spells) {
+      const sp = this.spells[s], locked = h.level < sp.level;
       cover(s, locked ? 1 : h.cds[s] / (sp.cd * this.stats.cooldown), h.cds[s], locked);
       this.slotLocks[s].setVisible(locked);
       this.slotIcons[s].setAlpha(locked ? 0.25 : (h.fury >= sp.fury ? 1 : 0.45));
@@ -203,7 +203,7 @@ Object.assign(DungeonScene.prototype, {
     this.furyFill.setSize(Math.max(1, 136 * Math.min(1, h.fury / this.furyMax)), 6);
     const sk = id => { const s = Save.skill(this.vocId, id); return `${SKILLS[id].name} ${s.lvl} (${Math.floor(100 * s.tries / skillTriesNeeded(id, s.lvl))}%)`; };
     const ml = Save.voc(this.vocId).ml;
-    this.skillText.setText(`${sk("sword")}   ${sk("shield")}   ML ${this.mlEff()}`);
+    this.skillText.setText(`${sk(this.ranged ? "distance" : "sword")}   ${sk("shield")}   ML ${this.mlEff()}`);
     if (this.msgT > 0) { this.msgT -= dt; this.msgText.setAlpha(Phaser.Math.Clamp(this.msgT, 0, 1)); }
   },
 
@@ -241,7 +241,7 @@ Object.assign(DungeonScene.prototype, {
     this.paused = true; this.tweens.pauseAll();
     this.pauseBox = this.panel("Pausa",
       "Mover: WASD ou setas (diagonal vale)\nAtaque básico: Espaço · R liga/desliga o automático · E na corda: subir\nFúria enche ao golpear e apanhar e paga as habilidades.\n" +
-      Object.values(SPELLS).map(sp => `${sp.key} · ${sp.name} (nv ${sp.level})`).join("   ") +
+      Object.values(this.spells).map(sp => `${sp.key} · ${sp.name} (nv ${sp.level})`).join("   ") +
       "\n5 e 6: poções · I: mochila · TAB: mapa · roda do mouse: zoom\nBaús pedem chave de bronze.",
       [["Continuar", () => this.togglePause()], ["Abandonar (conta como morte)", () => { this.togglePause(); this.finish(false); }]]);
   },
@@ -251,7 +251,7 @@ Object.assign(DungeonScene.prototype, {
   deathScreen() {
     const h = this.hero;
     h.spr.clearTint();
-    if (this.anims.exists("kn_death")) h.spr.setFlipX(false).play("kn_death");
+    if (this.anims.exists(this.ap + "death")) h.spr.setFlipX(false).play(this.ap + "death");
     else this.tweens.add({ targets: h.spr, angle: 90, alpha: 0.7, duration: 400 });
     const fxs = [];
     try { for (const c of [this.cameras.main]) if (c && c.postFX) fxs.push(c.postFX.addColorMatrix()); } catch (e) {}

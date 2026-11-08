@@ -20,7 +20,11 @@ const VOCATIONS = {
     passive: { name: "Alma de guerreiro", desc: "Regenera 2% da vida máxima a cada 5 s.", regenPct: 0.02, every: 5 },
     unlockCost: 0, portrait: "portrait_knight",
   },
-  archer: { name: "Arqueiro", desc: "Ataca de longe com arco e flechas, abençoadas pela luz.", trait: "Em breve.", unlockCost: 1500, portrait: "portrait_archer", soon: true },
+  archer: {
+    name: "Arqueiro", desc: "Patrulheiro das fronteiras: ataca de longe com arco longo e mantém distância.", trait: "Foco: enche ao acertar flechas e paga as habilidades.",
+    stats: { maxHp: 100, armor: 0, recovery: 0, moveSpeed: 1.05, might: 1.0, cooldown: 1.0 },
+    unlockCost: 0, portrait: "portrait_archer", anim: "ar_", scale: 0.40, ranged: 4, resource: "Foco", skill: "distance",
+  },
   sorcerer: { name: "Feiticeiro", desc: "Frágil, mas domina o fogo, a energia e a morte.", trait: "Em breve.", unlockCost: 2500, portrait: "portrait_sorcerer", soon: true },
   druid: { name: "Druida", desc: "Comanda a terra e a natureza; se cura sozinho.", trait: "Em breve.", unlockCost: 2500, portrait: "portrait_druid", soon: true },
 };
@@ -83,6 +87,7 @@ const BREAKABLE = { barrel: 2, crate_intact: 2, pot: 1, urn: 1 };  // golpes par
 const SKILLS = {
   sword:  { name: "Sword", start: 10, base: 30, growth: 1.12, desc: "base do dano corpo a corpo" },
   shield: { name: "Shield", start: 10, base: 24, growth: 1.12, desc: "defesa e chance de bloqueio" },
+  distance: { name: "Distance", start: 10, base: 30, growth: 1.12, desc: "base do dano a distância" },
 };
 function skillTriesNeeded(id, lvl) { const s = SKILLS[id]; return Math.round(s.base * Math.pow(s.growth, lvl - s.start)); }
 
@@ -101,7 +106,7 @@ const FIST_ATTACK = 20;  // ataque base até existirem armas
 // Poções: 2 atalhos na barra (teclas 5 e 6). voc = vocações que podem usar (vazio = todas).
 const POTIONS = {
   health:    { name: "Poção de vida", icon: "i_health_potion", cd: 10, price: 30, desc: "Cura 40% da vida máxima." },
-  fury:      { name: "Poção de fúria", icon: "i_health_potion", tint: 0xff8a30, cd: 15, price: 45, desc: "Enche toda a Fúria.", voc: ["knight"] },
+  fury:      { name: "Poção de fúria", icon: "i_health_potion", tint: 0xff8a30, cd: 15, price: 45, desc: "Enche toda a Fúria (ou o Foco do Arqueiro).", voc: ["knight", "archer"] },
   mana:      { name: "Poção de mana", icon: "i_mana_potion", cd: 10, price: 30, desc: "Recupera 60% da mana máxima.", voc: ["archer", "sorcerer", "druid"] },
   berserker: { name: "Poção do berserker", icon: "i_health_potion", tint: 0xc02020, cd: 60, dur: 30, price: 160, desc: "+10 de Sword por 30 s." },
   mage:      { name: "Poção do mago", icon: "i_mana_potion", tint: 0xb070ff, cd: 60, dur: 30, price: 160, desc: "+10 de magic level por 30 s." },
@@ -111,7 +116,8 @@ const POTIONS = {
 const potionOk = (id, voc) => !POTIONS[id].voc || POTIONS[id].voc.includes(voc);
 
 // promoção (como no Tibia): no nível 20 o Cavaleiro vira Elite Knight
-const PROMOTION = { knight: { level: 20, name: "Elite Knight", regenMult: 3, dmgMult: 1.15 } };
+const PROMOTION = { knight: { level: 20, name: "Elite Knight", regenMult: 3, dmgMult: 1.15 },
+  archer: { level: 20, name: "Patrulheiro Real", regenMult: 1, dmgMult: 1.15 } };
 
 // Loja de atributos (ouro da vocação). Cada compra sobe 1 nível; o preço cresce a cada nível.
 const SHOP = {
@@ -147,3 +153,14 @@ const BLESS_TEXT = [
   "Você recebeu a segunda bênção de Magdha.\n\nNa próxima morte, perderá 35% da experiência, 35% dos equipamentos e 10% do ouro coletado.",
   "Você recebeu a terceira bênção de Magdha.\n\nNa próxima morte, perderá 20% da experiência, nenhum equipamento e nenhum ouro.",
 ];
+
+// Habilidades do Arqueiro (mesmas teclas 1–4; pagas com Foco).
+const ARCHER_SPELLS = {
+  pierce: { name: "Flecha Perfurante", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Uma flecha que atravessa todos os inimigos em linha reta por 5 casas." },
+  heal:   { name: "Exura", key: "2", icon: "icon_exura", level: 6, fury: 30, cd: 6, desc: "Cura 15% da vida máxima + 1% por magic level." },
+  rain:   { name: "Chuva de Flechas", key: "3", icon: "icon_area", level: 10, fury: 40, cd: 4, desc: "Uma saraivada cai sobre o alvo e as 8 casas em volta." },
+  eagle:  { name: "Olho de Águia", key: "4", icon: "icon_aura_v2", level: 18, fury: 60, cd: 12, dur: 6, desc: "Por 6 s: atira duas vezes mais rápido e com +2 casas de alcance." },
+};
+const vocSpells = voc => (voc === "archer" ? ARCHER_SPELLS : SPELLS);
+const vocAnim = voc => (VOCATIONS[voc] && VOCATIONS[voc].anim) || "kn_";
+const vocScale = voc => (VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42;

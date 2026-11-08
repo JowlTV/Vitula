@@ -42,6 +42,9 @@ class BootScene extends Phaser.Scene {
     this.load.image("tower_view", "assets/town/tower_view.png"); this.load.image("depot_counter", "assets/town/depot_counter.png");
     this.load.image("glow_mushrooms", "assets/art/glow_mushrooms.png");
     this.load.spritesheet("kn_death", "assets/art/kn_death.png", { frameWidth: 192, frameHeight: 192 });
+    // Arqueiro: quadros de 200 px (os de costas, 198)
+    for (const a of ["idle", "walk", "attack"]) for (const d of ["down", "up", "side"]) { const f = d === "up" ? 198 : 200; this.load.spritesheet(`ar_${a}_${d}`, `assets/art/ar_${a}_${d}.png`, { frameWidth: f, frameHeight: f }); }
+    for (const n of ["ar_hurt", "ar_cast", "ar_death"]) this.load.spritesheet(n, `assets/art/${n}.png`, { frameWidth: 200, frameHeight: 200 });
     for (const [m, fw, fh] of [["rat", 40, 19], ["bat", 48, 24], ["slime", 34, 38], ["skeleton", 48, 60]]) this.load.spritesheet("am_" + m, `assets/art/am_${m}.png`, { frameWidth: fw, frameHeight: fh });
     this.load.spritesheet("am_cave_rat", "assets/art/am_cave_rat.png", { frameWidth: 72, frameHeight: 72 });
     this.load.spritesheet("am_giant_rat", "assets/art/am_giant_rat.png", { frameWidth: 108, frameHeight: 108 });
@@ -61,7 +64,7 @@ class BootScene extends Phaser.Scene {
     for (const u of ["logo_vitula", "bar_track", "bar_fill_boss", "bar_fill_xp", "heart", "slot", "panel", "button_normal", "button_hover", "title_banner", "portrait_knight", "portrait_archer", "portrait_sorcerer", "portrait_druid", "map_karhyn_2x", "card_normal", "card_selected", "name_plate", "marker_open", "marker_locked", "marker_cleared"])
       this.load.image(u, `assets/ui/${u}.png`);
     for (const s of SFX) this.load.audio(s, `assets/audio/${s}.wav`);
-    this.load.audio("music_menu", "assets/audio/menu.ogg");
+    this.load.audio("music_goddess", "assets/audio/before_the_shadow_falls.mp3");
   }
   create() {
     this.makeRadial("light", 256, [[0, 1], [0.35, 0.6], [1, 0]]);
@@ -76,6 +79,21 @@ class BootScene extends Phaser.Scene {
       this.anims.create({ key: "kn_attack_" + d, frames: this.anims.generateFrameNumbers("kn_attack_" + d, { start: 0, end: 7 }), frameRate: 19, repeat: 0 });
     }
     this.anims.create({ key: "kn_death", frames: this.anims.generateFrameNumbers("kn_death", { start: 0, end: 11 }), frameRate: 9, repeat: 0 });
+    for (const d of ["down", "up", "side"]) {
+      this.anims.create({ key: "ar_idle_" + d, frames: this.anims.generateFrameNumbers("ar_idle_" + d, { start: 0, end: 7 }), frameRate: 6, repeat: -1 });
+      this.anims.create({ key: "ar_walk_" + d, frames: this.anims.generateFrameNumbers("ar_walk_" + d, { start: 0, end: 7 }), frameRate: 12, repeat: -1 });
+      this.anims.create({ key: "ar_attack_" + d, frames: this.anims.generateFrameNumbers("ar_attack_" + d, { start: 0, end: 7 }), frameRate: 16, repeat: 0 });
+    }
+    this.anims.create({ key: "ar_death", frames: this.anims.generateFrameNumbers("ar_death", { start: 0, end: 11 }), frameRate: 9, repeat: 0 });
+    for (const n of ["ar_hurt", "ar_cast"]) this.anims.create({ key: n, frames: this.anims.generateFrameNumbers(n, { start: 0, end: 7 }), frameRate: 18, repeat: 0 });
+    // flecha (desenhada em código): haste de madeira, ponta de ferro, penas claras
+    if (!this.textures.exists("arrow")) {
+      const g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(0x6a4a2a).fillRect(4, 2, 22, 2);
+      g.fillStyle(0xc8c8d0).fillTriangle(26, 0, 32, 3, 26, 6);
+      g.fillStyle(0xe8dcc0).fillTriangle(0, 0, 7, 3, 0, 6);
+      g.generateTexture("arrow", 32, 6); g.destroy();
+    }
     for (const m of ["rat", "bat", "slime", "skeleton"])
       this.anims.create({ key: "am_" + m, frames: this.anims.generateFrameNumbers("am_" + m, { start: 0, end: 5 }), frameRate: m === "bat" ? 12 : 9, repeat: -1 });
     for (const k in MON_ANIM) {
@@ -118,11 +136,40 @@ function button(scene, x, y, w, label, fn, size = 16) {
   return [b, t];
 }
 
-function menuMusic(scene) {
-  if (scene.sound.locked) { scene.sound.once("unlocked", () => menuMusic(scene)); return; }
-  const m = scene.sound.get("music_menu") || scene.sound.add("music_menu", { loop: true, volume: 0.6 * Settings.data.music });
-  m.setVolume(0.6 * Settings.data.music);
+function menuMusic(scene) { goddessMusic(scene, false); }
+
+// "Before the Shadow Falls": limpa na intro e nos menus; na cidade, distante e com eco,
+// como se a deusa Magdha tocasse ao longe. Uma única faixa que não recomeça ao trocar de cena.
+function goddessMusic(scene, echo) {
+  if (scene.sound.locked) { scene.sound.once("unlocked", () => goddessMusic(scene, echo)); return; }
+  if (!scene.cache.audio.exists("music_goddess")) return;
+  const m = scene.sound.get("music_goddess") || scene.sound.add("music_goddess", { loop: true, volume: 0.6 * Settings.data.music });
+  const ctx = scene.sound.context;
+  // monta a cadeia de eco uma vez (só no Web Audio): saída do volume → seco + (passa-baixa → atraso com repetição)
+  if (ctx && !m.echoFx && m.volumeNode) {
+    try {
+      const out = m.pannerNode || m.volumeNode, dest = scene.sound.destination;
+      out.disconnect();
+      const dry = ctx.createGain(), wet = ctx.createGain(), lp = ctx.createBiquadFilter(), delay = ctx.createDelay(2), fb = ctx.createGain();
+      lp.type = "lowpass"; delay.delayTime.value = 0.42; fb.gain.value = 0.45;
+      out.connect(dry); dry.connect(dest);
+      out.connect(lp); lp.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(dest);
+      m.echoFx = { dry, wet, lp };
+    } catch (e) { m.echoFx = null; }
+  }
+  const fx = m.echoFx, t = ctx ? ctx.currentTime : 0;
+  if (fx) {
+    fx.dry.gain.setTargetAtTime(echo ? 0.3 : 1, t, 0.4);
+    fx.wet.gain.setTargetAtTime(echo ? 0.75 : 0, t, 0.4);
+    fx.lp.frequency.setTargetAtTime(echo ? 1100 : 18000, t, 0.4);
+  }
+  m.setVolume((echo ? 0.5 : 0.6) * Settings.data.music);
   if (!m.isPlaying) m.play();
+}
+
+// para todos os sons menos a música da deusa (ela continua de onde estava)
+function stopAllButMusic(scene) {
+  for (const s of scene.sound.getAllPlaying ? scene.sound.getAllPlaying() : []) if (s.key !== "music_goddess") s.stop();
 }
 
 function menuBackground(scene) {
@@ -254,7 +301,7 @@ class SelectScene extends Phaser.Scene {
       txt(this, x + cw / 2, y + 152, v.name, 24, COLORS.gold).setOrigin(0.5);
       txt(this, x + 16, y + 178, v.desc, 13, COLORS.text, { wordWrap: { width: cw - 32 }, lineSpacing: 2 });
       txt(this, x + 16, y + 238, v.passive ? `Passiva — ${v.passive.name}: ${v.passive.desc}` : v.trait, 12, COLORS.dim, { wordWrap: { width: cw - 32 } });
-      if (open) { const a = Save.skill(id, "sword"), b = Save.skill(id, "shield"); txt(this, x + 16, y + 282, `Espada ${a.lvl} · Defesa ${b.lvl}`, 12, "#9fb8d0"); }
+      if (open) { const a = Save.skill(id, id === "archer" ? "distance" : "sword"), b = Save.skill(id, "shield"); txt(this, x + 16, y + 282, `${id === "archer" ? "Distância" : "Espada"} ${a.lvl} · Defesa ${b.lvl}`, 12, "#9fb8d0"); }
       const foot = open ? `◉ ${Save.gold(id)} de ouro` : (v.soon ? "Em breve" : `Bloqueada · ${v.unlockCost} de ouro`);
       txt(this, x + cw / 2, y + 312, foot, 14, open ? COLORS.gold : COLORS.dim).setOrigin(0.5);
       if (open) {

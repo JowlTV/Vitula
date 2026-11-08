@@ -4,16 +4,16 @@ Object.assign(DungeonScene.prototype, {
 
   // ---------------------------------------------------------------- magias
   cast(spell) {
-    const h = this.hero, sp = SPELLS[spell];
+    const h = this.hero, sp = this.spells[spell];
     if (this.finished || this.paused || h.dead) return;
     if (h.level < sp.level) { this.msg(`${sp.name} é liberada no nível ${sp.level}.`); return; }
     if (h.cds[spell] > 0) return;
-    if (h.fury < sp.fury) { this.msg(`Fúria insuficiente para ${sp.name} (${sp.fury}).`); return; }
+    if (h.fury < sp.fury) { this.msg(`${VOCATIONS[this.vocId].resource || "Fúria"} insuficiente para ${sp.name} (${sp.fury}).`); return; }
     h.fury -= sp.fury;
     this.trainMagic(sp.fury);
     h.cds[spell] = sp.cd * this.stats.cooldown;
     // cada magia tem a sua função em SPELL_FX (fácil de somar as das outras vocações)
-    if (spell === "heal" || spell === "aura") { h.pose = "kn_cast"; h.poseT = 0.45; }
+    if (spell === "heal" || spell === "aura" || spell === "eagle") { h.pose = this.ap + "cast"; h.poseT = 0.45; }
     const fx = SPELL_FX[spell];
     if (fx) fx.call(this, h, sp);
   },
@@ -135,3 +135,41 @@ const SPELL_FX = {
     sfx(this, "explode", 0.25);
   },
 };
+
+// Habilidades do Arqueiro
+Object.assign(SPELL_FX, {
+  pierce(h, sp) {
+    const t = this.rangedTarget();
+    let [dx, dy] = t ? [Math.sign(t.x - h.x), Math.sign(t.y - h.y)] : h.facing; if (!dx && !dy) dx = 1;
+    h.facing = [dx, dy]; this.heroSwing(dx && Math.abs(dx) >= Math.abs(dy) ? dx : 0, dx && Math.abs(dx) >= Math.abs(dy) ? 0 : dy);
+    let n = 0;
+    for (let k = 1; k <= 5; k++) { const x = h.x + dx * k, y = h.y + dy * k; if (!this.gen.isFloor(x, y) || this.isClosedDoor(x, y)) break; n = k; }
+    const end = this.cellPos(h.x + dx * Math.max(1, n), h.y + dy * Math.max(1, n));
+    this.time.delayedCall(250, () => {
+      this.shootArrow(h.px, h.py - 40, end.x, end.y - 24, null, 1600);
+      for (let k = 1; k <= n; k++) { const m = this.occ.get(key(h.x + dx * k, h.y + dy * k)); if (m) this.damageMonster(m, this.baseDamage() * 1.8); }
+      sfx(this, "hit", 0.45);
+    });
+  },
+  rain(h, sp) {
+    const t = this.rangedTarget(); let [fx, fy] = h.facing; if (!fx && !fy) fy = 1;
+    const cx = t ? t.x : h.x + fx * 3, cy = t ? t.y : h.y + fy * 3;
+    h.pose = this.ap + "cast"; h.poseT = 0.45;
+    const c = this.cellPos(cx, cy);
+    for (let i = 0; i < 9; i++) {
+      const ox = Phaser.Math.Between(-T, T), oy = Phaser.Math.Between(-T, T);
+      const a = this.add.image(c.x + ox, c.y + oy - 220, "arrow").setRotation(Math.PI / 2).setDepth(100000).setScale(1.2);
+      this.ents.add(a);
+      this.tweens.add({ targets: a, y: c.y + oy - 16, duration: 260, delay: 120 + i * 35, onComplete: () => a.destroy() });
+    }
+    this.time.delayedCall(420, () => {
+      for (const [dx, dy] of [[0, 0], ...DIRS8]) { const m = this.occ.get(key(cx + dx, cy + dy)); if (m) this.damageMonster(m, this.baseDamage() * 1.5); }
+      sfx(this, "explode", 0.25);
+    });
+  },
+  eagle(h, sp) {
+    h.eagleT = sp.dur;
+    this.floatText(h.px, h.py - 90, "Olho de Águia", "#e0d070");
+    sfx(this, "levelup", 0.25);
+  },
+});

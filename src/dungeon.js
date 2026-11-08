@@ -23,6 +23,8 @@ class DungeonScene extends Phaser.Scene {
     this.regionId = this.registry.get("region") || "karhyn_sewers";
     this.region = REGIONS[this.regionId];
     this.vocId = this.registry.get("vocation") || "knight";
+    this.spells = vocSpells(this.vocId); this.ap = vocAnim(this.vocId); this.heroScale = vocScale(this.vocId);
+    this.ranged = VOCATIONS[this.vocId].ranged || 0;
     this.stats = this.computeStats();
     this.hero = { hp: this.stats.maxHp, maxHp: this.stats.maxHp, level: 1, xp: 0, dead: false, atkT: 0,
       cds: { heal: 0, front: 0, spin: 0, aura: 0 }, facing: [1, 0], regen: 0, fury: 0, furyIdle: 0, auraT: 0, auraTick: 0 };
@@ -44,7 +46,7 @@ class DungeonScene extends Phaser.Scene {
     const K = Phaser.Input.Keyboard.KeyCodes, kb = this.input.keyboard;
     this.keysIn = {};
     for (const [id] of ACTIONS) this.keysIn[id] = Settings.data.keys[id].filter(n => K[n] !== undefined).map(n => kb.addKey(K[n]));
-    const spells = Object.keys(SPELLS);
+    const spells = Object.keys(this.spells);
     ["skill1", "skill2", "skill3", "skill4"].forEach((id, i) => this.keysIn[id].forEach(k => k.on("down", () => this.cast(spells[i]))));
     this.keysIn.pause.forEach(k => k.on("down", () => this.bagOpen ? this.toggleBag() : this.togglePause()));
     (this.keysIn.potion1 || []).forEach(k => k.on("down", () => this.usePotion(0)));
