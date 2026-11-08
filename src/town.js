@@ -41,6 +41,7 @@ class TownScene extends Phaser.Scene {
     for (const [id] of ACTIONS) this.keysIn[id] = Settings.data.keys[id].filter(n => K[n] !== undefined).map(n => kb.addKey(K[n]));
     kb.addCapture("UP,DOWN,LEFT,RIGHT,SPACE");
     (this.keysIn.interact || []).forEach(k => k.on("down", () => this.interact()));
+    this.input.keyboard.on("keydown", ev => this.dialogKey(ev));
     (this.keysIn.pause || []).forEach(k => k.on("down", () => this.dialog ? this.closeDialog() : this.openMenu()));
     (this.keysIn.zoomIn || []).forEach(k => k.on("down", () => this.zoomBy(0.2)));
     (this.keysIn.zoomOut || []).forEach(k => k.on("down", () => this.zoomBy(-0.2)));
@@ -95,7 +96,34 @@ class TownScene extends Phaser.Scene {
     };
     layer("ts_dirt_grass", t => t === "d");
     // paralelepípedo × grama: o quadro do miolo (6) veio com grama na geração; o miolo usa o quadro 10, que é pedra pura
-    layer("ts_cobble_grass", t => t === "c" || t === "p" || t === "s", { 15: 10 });
+    // ruas: o mesmo calçamento em espinha de peixe que é a "parte de baixo" da calçada e da praça (quadro 12 = só calçamento),
+    // assim não há emenda entre rua, calçada e praça. (O tileset paralelepípedo × grama veio com quadros defeituosos.)
+    {
+      const sw = this.textures.get("ts_sidewalk_cobble").getSourceImage(), ts = sw.width / 4;
+      const big = document.createElement("canvas"); big.width = big.height = T; const bc = big.getContext("2d"); bc.imageSmoothingEnabled = false;
+      bc.drawImage(sw, 0, 3 * ts, ts, ts, 0, 0, T, T);
+      c.fillStyle = c.createPattern(big, "repeat");
+      const road = t => t === "c" || t === "p" || t === "s";
+      for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) if (road(this.ground[y][x])) c.fillRect(x * T, y * T, T, T);
+      // borda: tufos de grama irregulares avançando sobre a pedra, e uma sombra fina onde a pedra começa
+      const rng = new Phaser.Math.RandomDataGenerator(["karhyn-borda"]);
+      const tuft = ["#2f3a24", "#34402a", "#2a3420", "#3a4530", "#252c1c"];
+      for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) {
+        if (!road(this.ground[y][x])) continue;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = x + dx, ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= TOWN_W || ny >= TOWN_H) continue;
+          const n = this.ground[ny][nx]; if (n !== "g" && n !== "d") continue;
+          c.fillStyle = "rgba(0,0,0,0.28)";
+          if (dx) c.fillRect(x * T + (dx > 0 ? T - 3 : 0), y * T, 3, T); else c.fillRect(x * T, y * T + (dy > 0 ? T - 3 : 0), T, 3);
+          for (let i = 0; i < 14; i++) {
+            c.fillStyle = n === "d" ? "#4a3a28" : tuft[rng.between(0, 4)];
+            const a = rng.between(0, 15) * 4, b = rng.between(0, 2) * 3, w = rng.between(1, 2) * 3;
+            if (dx) c.fillRect(x * T + (dx > 0 ? T - w - b : b), y * T + a, w, 4); else c.fillRect(x * T + a, y * T + (dy > 0 ? T - w - b : b), 4, w);
+          }
+        }
+      }
+    }
     layer("ts_sidewalk_cobble", t => t === "s");
     layer("ts_plaza_cobble", t => t === "p");
     // muralhas laterais: passadiço de pedra visto de cima (topo do trecho de muralha, girado)
@@ -137,8 +165,9 @@ class TownScene extends Phaser.Scene {
     for (let x = 2; x < TOWN_W - 2; x += 2) A("wall", x, 2, 2, 0);
     for (let x = 2; x < TOWN_W - 2; x += 2) if (x < 21 || x > 25) A("wall", x, TOWN_H - 1, 2, 0);
     for (const [x, y] of [[0, 2], [TOWN_W - 2, 2], [0, TOWN_H - 1], [TOWN_W - 2, TOWN_H - 1]]) A("wall_tower", x, y, 2, 0);
-    const gate = A("gate", 21, TOWN_H - 1, 6, 0); gate.setDepth((TOWN_H - 3) * T); // atrás de quem passa pelo arco
-    this.block(21, TOWN_H - 3, 2, 3); this.block(25, TOWN_H - 3, 2, 3);
+    // portão: fica atrás do herói, menos quando ele está dentro do arco (aí o arco passa na frente)
+    this.gateImg = A("gate", 21, TOWN_H - 1, 6, 0); this.gateImg.setDepth(29 * T);
+    this.block(21, TOWN_H - 6, 2, 6); this.block(25, TOWN_H - 6, 2, 6);
     // templo de Magdha no fim da avenida, com estandartes
     A("temple", 21, 9, 6, 3);
     A("banner", 20, 9, 0.7, 1); A("banner", 27, 9, 0.7, 1);
@@ -184,21 +213,19 @@ class TownScene extends Phaser.Scene {
   npc(tex, x, y, name, kind, zone) {
     const idle = tex + "_idle", anim = this.anims.exists(idle);
     const s = (anim ? this.add.sprite(x * T + T / 2, y * T + T - 4, idle).play({ key: idle, startFrame: Phaser.Math.Between(0, 7) }) : this.add.image(x * T + T / 2, y * T + T - 4, tex)).setOrigin(0.5, 1).setScale(0.42).setTint(TOWN_TINT).setDepth(y * T + T - 4);
-    const sh = this.add.image(s.x, s.y - 2, "shadow").setScale(0.6, 0.2).setDepth(s.depth - 1).setAlpha(0.6);
+    const sh = this.add.image(s.x, s.y - 3, "shadow").setScale(0.9, 0.3).setDepth(s.depth - 1);
     this.world.add([sh, s]);
     this.block(x, y, 1, 1);
     if (!anim) this.tweens.add({ targets: s, scaleY: 0.42 * 1.015, duration: 1500, yoyo: true, repeat: -1, ease: "Sine.inOut" });
-    const tag = txt(this, s.x, s.y - 66, name, 9, COLORS.gold).setOrigin(0.5, 1).setDepth(900000).setAlpha(0.85);
-    this.world.add(tag);
     this.zones.push({ name, kind, ...zone });
   }
 
   // ------------------------------------------------------------ herói
   spawnHero() {
     const from = this.registry.get("townSpawn") || "gate", pos = this.registry.get("townPos");
-    const [x, y] = from === "here" && pos ? pos : from === "sewer" ? [40, 28] : [24, 31];
+    const [x, y] = from === "here" && pos ? pos : from === "sewer" ? [40, 28] : [24, 29];
     const h = this.hero = { x, y, px: x * T + T / 2, py: y * T + T - 4, moveT: 0, facing: from === "sewer" ? [0, 1] : [0, -1], lookLeft: false };
-    h.shadow = this.add.image(h.px, h.py, "shadow").setScale(0.75, 0.25);
+    h.shadow = this.add.image(h.px, h.py - 3, "shadow").setScale(0.9, 0.3);
     const ap = vocAnim(this.vocId);
     h.spr = this.add.sprite(h.px, h.py + 4, ap + "idle_up").setOrigin(0.5, 1).setScale(vocScale(this.vocId)).play(from === "sewer" ? ap + "idle_down" : ap + "idle_up");
     this.world.add([h.shadow, h.spr]);
@@ -231,7 +258,8 @@ class TownScene extends Phaser.Scene {
     if (h.spr.anims.currentAnim.key !== anim) h.spr.play(anim, true);
     h.spr.setFlipX(dir === "side" && h.lookLeft).setTint(TOWN_TINT);
     h.spr.setPosition(Math.round(h.px), Math.round(h.py + 4)).setDepth(h.py);
-    h.shadow.setPosition(h.px, h.py).setDepth(h.py - 1);
+    if (this.gateImg) this.gateImg.setDepth(h.y >= TOWN_H - 3 ? h.py + 1 : 29 * T);
+    h.shadow.setPosition(h.px, h.py - 3).setDepth(h.py - 1);
     // dica de interação
     const z = this.zoneHere();
     this.hint.setText(z && !z.step && !this.dialog ? `E · ${z.name}` : "");
@@ -382,23 +410,74 @@ class TownScene extends Phaser.Scene {
     g.fillStyle(0xffffff, 1).fillRect(m.x + h.x * S, m.y + h.y * S, S, S);
   }
 
+  // retrato do NPC: rosto recortado do 1º quadro da animação parada
+  portrait(title) {
+    const SRC = { "Guarda do Depot": ["npc_depot_guard_idle", 54], "Vendedora de Poções": ["npc_potion_seller_idle", 64], "Ferreiro": ["npc_smith_idle", 64] };
+    const e = SRC[title]; if (!e || !this.textures.exists(e[0])) return null;
+    const key = "portrait_" + e[0];
+    if (!this.textures.exists(key)) {
+      const ct = this.textures.createCanvas(key, 73, 73), cc = ct.getContext(); cc.imageSmoothingEnabled = false;
+      cc.drawImage(this.textures.get(e[0]).getSourceImage(), e[1], 20, 73, 73, 0, 0, 73, 73); ct.refresh();
+    }
+    return key;
+  }
+
+  // conversa em formato de chat: balões do NPC à esquerda, suas respostas à direita, opções clicáveis embaixo.
+  // Responder mostra a sua fala no chat e depois a reação; seguir conversando com o mesmo NPC mantém o histórico.
   say(title, body, buttons) {
-    this.closeDialog();
+    if (!(this.dialog && this.chatWith === title)) { this.closeDialog(); this.chatLog = []; }
+    else { this.dialog.destroy(); this.dialog = null; }
+    this.chatWith = title;
+    this.chatLog.push({ me: false, text: body });
     const c = this.add.container(0, 0); this.uiLayer.add(c); this.dialog = c;
-    const w = 600, x = VIEW_W / 2 - w / 2;
-    const bodyT = txt(this, 0, 0, body, 14, COLORS.text, { wordWrap: { width: w - 60 }, lineSpacing: 4 });
-    const hgt = 70 + bodyT.height + 70, y = VIEW_H - hgt - 16;
-    c.add(this.add.nineslice(x, y, "panel", null, w, hgt, 16, 16, 16, 16).setOrigin(0).setInteractive());
-    c.add(txt(this, x + 30, y + 18, title, 20, COLORS.gold));
-    bodyT.setPosition(x + 30, y + 50); c.add(bodyT);
-    const bw = Math.min(240, (w - 60) / buttons.length - 10);
-    buttons.forEach(([label, fn], i) => {
-      const bx = x + w - 30 - bw / 2 - (buttons.length - 1 - i) * (bw + 10), by = y + hgt - 36;
-      const [b, t] = button(this, bx, by, bw, label, fn, 14);
-      c.add([b, t]);
+    const w = 640, x = VIEW_W / 2 - w / 2, pad = 18, maxW = w - 2 * pad - 120;
+    const port = this.portrait(title);
+    const bubbles = this.chatLog.map(m => {
+      const t = txt(this, 0, 0, m.text, 13, m.me ? "#1a140c" : COLORS.text, { wordWrap: { width: maxW - 20 }, lineSpacing: 3 });
+      return { m, t, h: t.height + 16 };
     });
-    // atalho: Enter escolhe a primeira opção
-    this.dialogKey = this.input.keyboard.once("keydown-ENTER", () => { if (this.dialog === c) buttons[0][1](); });
+    let used = 0, first = bubbles.length;
+    while (first > 0 && used + bubbles[first - 1].h + 8 <= 230) { first--; used += bubbles[first].h + 8; }
+    bubbles.slice(0, first).forEach(bb => bb.t.destroy());
+    const optH = 34, header = 70, hgt = header + used + 14 + buttons.length * (optH + 6) + 10, y = VIEW_H - hgt - 12;
+    c.add(this.add.nineslice(x, y, "panel", null, w, hgt, 16, 16, 16, 16).setOrigin(0).setInteractive());
+    if (port) {
+      c.add(this.add.rectangle(x + pad, y + pad - 4, 56, 56, 0x0c0a08).setOrigin(0).setStrokeStyle(2, 0xc8a050));
+      c.add(this.add.image(x + pad + 28, y + pad + 24, port).setDisplaySize(52, 52));
+    }
+    c.add(txt(this, x + pad + (port ? 70 : 0), y + pad + 10, title, 20, COLORS.gold));
+    let cy = y + header;
+    for (const bb of bubbles.slice(first)) {
+      const bw = Math.min(maxW, bb.t.width + 20), bx = bb.m.me ? x + w - pad - bw : x + pad;
+      c.add(this.add.rectangle(bx, cy, bw, bb.h, bb.m.me ? 0xc8a050 : 0x2a241c, bb.m.me ? 0.92 : 0.95).setOrigin(0).setStrokeStyle(1, bb.m.me ? 0xe8cc80 : 0x5a4c38));
+      bb.t.setPosition(bx + 10, cy + 8); c.add(bb.t);
+      cy += bb.h + 8;
+    }
+    this.dialogBtns = [];
+    let oy = y + header + used + 14;
+    buttons.forEach(([label, fn], i) => {
+      const bw = w - 2 * pad, bx = x + pad;
+      const r = this.add.rectangle(bx, oy, bw, optH, 0x1a1612, 0.95).setOrigin(0).setStrokeStyle(1, 0x7a6440).setInteractive({ useHandCursor: true });
+      const t = txt(this, bx + 14, oy + optH / 2, `${i + 1}  ›  ${label}`, 14, COLORS.text).setOrigin(0, 0.5);
+      const send = () => {
+        if (!this.dialog || this.sending) return;
+        this.sending = true;
+        const keep = this.chatWith, n = this.chatLog.length;
+        this.chatLog.push({ me: true, text: label });
+        r.setFillStyle(0xc8a050, 0.9); t.setColor("#1a140c");
+        // a sua fala aparece por um instante; depois a reação (nova fala, loja, fechar...)
+        this.time.delayedCall(220, () => {
+          this.sending = false; fn();
+          if (this.dialog && this.chatWith === keep && this.chatLog.length === n + 1) this.closeDialog();
+        });
+      };
+      r.on("pointerover", () => this.dialogSelect(i));
+      r.on("pointerup", send);
+      c.add([r, t]); this.dialogBtns.push({ b: r, t, fn: send });
+      oy += optH + 6;
+    });
+    this.dialogAt = this.time.now;
+    this.dialogSelect(0);
   }
   // baú do depot: passa poções entre a mochila e o depot (clique = 1, Shift+clique = todas)
   openLocker() {
@@ -451,7 +530,20 @@ class TownScene extends Phaser.Scene {
     c.add([b, t]);
     this.tweens.add({ targets: c, alpha: 1, duration: 700 });
   }
-  closeDialog() { if (this.dialog) { this.dialog.destroy(); this.dialog = null; } }
+  dialogSelect(i) {
+    if (!this.dialogBtns || !this.dialogBtns.length) return;
+    this.dialogSel = (i + this.dialogBtns.length) % this.dialogBtns.length;
+    this.dialogBtns.forEach((o, k) => { if (o.b && o.b.setStrokeStyle) o.b.setStrokeStyle(k === this.dialogSel ? 2 : 1, k === this.dialogSel ? 0xe8cc80 : 0x7a6440); });
+  }
+  dialogKey(ev) {
+    if (!this.dialog || !this.dialogBtns || !this.dialogBtns.length || this.sending || this.time.now - (this.dialogAt || 0) < 180) return;
+    const n = parseInt(ev.key, 10);
+    if (n >= 1 && n <= this.dialogBtns.length) return this.dialogBtns[n - 1].fn();
+    if (ev.key === "ArrowUp" || ev.key === "ArrowLeft") return this.dialogSelect(this.dialogSel - 1);
+    if (ev.key === "ArrowDown" || ev.key === "ArrowRight") return this.dialogSelect(this.dialogSel + 1);
+    if (ev.key === "Enter" || ev.key === " " || ev.key === "e" || ev.key === "E") this.dialogBtns[this.dialogSel || 0].fn();
+  }
+  closeDialog() { if (this.dialog) { this.dialog.destroy(); this.dialog = null; } this.dialogBtns = null; this.chatWith = null; this.sending = false; }
 
   openMenu() {
     this.say("Karhyn", "O que deseja fazer?", [["Voltar ao mapa", () => this.leave("map")], ["Continuar", () => this.closeDialog()]]);

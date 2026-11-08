@@ -72,7 +72,7 @@ Object.assign(DungeonScene.prototype, {
     const arr = arrive === "stairs" && this.stairs ? (this.nearStairs() || start) : start;
     this.hero.x = arr.x; this.hero.y = arr.y; this.hero.moveT = 0;
     const p = this.cellPos(start.x, start.y);
-    this.hero.shadow = this.add.image(p.x, p.y, "shadow").setScale(0.75, 0.25);
+    this.hero.shadow = this.add.image(p.x, p.y - 3, "shadow").setScale(0.9, 0.3);
     const ap = this.ap || "kn_", k4 = this.anims.exists(ap + "idle_down");
     this.hero.spr = this.add.sprite(p.x, p.y + 4, k4 ? ap + "idle_down" : "knight").setOrigin(0.5, 1).play(k4 ? ap + "idle_down" : "hero_idle");
     if (k4) this.hero.spr.setScale(this.heroScale || 0.42);

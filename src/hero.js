@@ -57,7 +57,7 @@ Object.assign(DungeonScene.prototype, {
       if (h.moveT === 0) this.heroArrived();
     }
     h.spr.setPosition(Math.round(h.px), Math.round(h.py + 4)).setDepth(h.py);
-    h.shadow.setPosition(h.px, h.py).setDepth(h.py - 1);
+    h.shadow.setPosition(h.px, h.py - 3).setDepth(h.py - 1);
     // a aura acompanha o herói DEPOIS do passo, sempre logo atrás dele (antes, ao subir, ficava na frente)
     if (h.auraSpr && h.auraSpr.scene && h.auraT > 0) h.auraSpr.setPosition(h.px, h.py - 2).setDepth(h.py - 1);
     h.flash = Math.max(0, (h.flash || 0) - dt * 5);

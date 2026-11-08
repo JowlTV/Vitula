@@ -72,7 +72,7 @@ class BootScene extends Phaser.Scene {
   }
   create() {
     this.makeRadial("light", 256, [[0, 1], [0.35, 0.6], [1, 0]]);
-    this.makeRadial("shadow", 64, [[0, 0.6], [0.6, 0.35], [1, 0]], 0x000000);
+    this.makeRadial("shadow", 64, [[0, 0.82], [0.5, 0.68], [0.78, 0.32], [1, 0]], 0x000000);
     this.anims.create({ key: "hero_idle", frames: this.anims.generateFrameNumbers("knight", { start: 0, end: 7 }), frameRate: 6, repeat: -1 });
     this.anims.create({ key: "hero_walk", frames: this.anims.generateFrameNumbers("knight", { start: 8, end: 15 }), frameRate: 11, repeat: -1 });
     for (const [k, fps, rep] of [["k_idle", 6, -1], ["k_walk_down", 11, -1], ["k_walk_up", 11, -1], ["k_walk_side", 11, -1], ["k_attack", 18, 0]])

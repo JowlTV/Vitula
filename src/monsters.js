@@ -30,7 +30,7 @@ Object.assign(DungeonScene.prototype, {
                  : this.add.image(p.x, p.y + 4, data.tex).setOrigin(0.5, 1);
     if (ma) m.spr.setScale(ma[4]); else if (data.scale) m.spr.setScale(data.scale);
     m.w = m.spr.displayWidth; m.h = m.spr.displayHeight;
-    m.shadow = this.add.image(p.x, p.y + (m.fly ? 8 : 0), "shadow").setScale(m.w * 0.8 / 64, m.w * 0.26 / 64);
+    m.shadow = this.add.image(p.x, p.y + (m.fly ? 8 : -2), "shadow").setScale(m.w * 0.9 / 64, m.w * 0.3 / 64);
     m.bar = this.add.graphics();
     this.ents.add([m.shadow, m.spr, m.bar]);
     // dificuldade escolhida (100% a 400%): vida e dano
@@ -107,7 +107,7 @@ Object.assign(DungeonScene.prototype, {
     const bob = Math.sin(m.bob * (m.fly ? 9 : 12)) * (m.fly ? 2.5 : (m.moveT > 0 ? 1.2 : 0.4));
     const lift = m.fly ? 16 : 0;
     m.spr.setPosition(Math.round(m.px + m.lunge.x), Math.round(m.py + 4 - lift + bob + m.lunge.y)).setDepth(m.py);
-    m.shadow.setPosition(m.px, m.py + (m.fly ? 6 : 0)).setDepth(m.py - 1);
+    m.shadow.setPosition(m.px, m.py + (m.fly ? 6 : -2)).setDepth(m.py - 1);
     if (m.flash > 0) m.spr.setTintFill(0xffffff); else if (m.champion) m.spr.setTint(0xff9a8a); else m.spr.clearTint();
     this.drawMonsterBar(m);
 
