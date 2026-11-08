@@ -7,9 +7,13 @@ const ART = ["barrel", "chest_closed", "chest_open", "crate_damaged", "crate_int
 const DECOR = ["bones", "manhole", "rat_nest"];
 const SFX = ["boss", "break", "chest", "explode", "gem", "hit", "hurt", "levelup", "pickup"];
 
+// Kelmscott: títulos, cidades, nomes e destaques (size >= 20 ou opts.title); Bulletin: o resto.
+// A Kelmscott não tem acentos: as letras acentuadas caem na Bulletin.
+const FONT_TITLE = "Kelmscott, Bulletin, Pixelify", FONT_TEXT = "Bulletin, Pixelify";
 function txt(scene, x, y, s, size = 16, color = COLORS.text, opts = {}) {
+  const title = opts.title !== undefined ? opts.title : size >= 20; opts = Object.assign({}, opts); delete opts.title;
   return scene.add.text(x, y, s, Object.assign({
-    fontFamily: "Pixelify", fontSize: size + "px", color, stroke: "#0c0608", strokeThickness: Math.max(3, size / 4),
+    fontFamily: title ? FONT_TITLE : FONT_TEXT, fontSize: size + "px", color, stroke: "#0c0608", strokeThickness: Math.max(3, size / 4),
     resolution: 2,
   }, opts));
 }
@@ -120,7 +124,7 @@ class BootScene extends Phaser.Scene {
       const n = this.textures.get("fx_" + f).frameTotal - 1;
       this.anims.create({ key: "fx_" + f, frames: this.anims.generateFrameNumbers("fx_" + f, { start: 0, end: n - 1 }), frameRate: 18 });
     }
-    document.fonts.ready.then(() => { const q = new URLSearchParams(location.search); this.scene.start(q.has("town") ? "town" : q.has("play") ? "dungeon" : "title"); });
+    Promise.all(["20px Kelmscott", "16px Bulletin", "16px Pixelify"].map(f => document.fonts.load(f).catch(() => 0))).then(() => document.fonts.ready).then(() => { const q = new URLSearchParams(location.search); this.scene.start(q.has("town") ? "town" : q.has("play") ? "dungeon" : "title"); });
   }
   makeRadial(key, size, stops, color = 0xffffff) {
     const c = this.textures.createCanvas(key, size, size);
@@ -354,7 +358,7 @@ class MapScene extends Phaser.Scene {
       const r = REGIONS[id], open = unlocked(id) && r.playable;
       const mk = cleared(id) ? "marker_cleared" : (open ? "marker_open" : "marker_locked");
       const m = this.add.image(r.pos[0], r.pos[1], mk).setScale(1.6).setInteractive({ useHandCursor: true });
-      const label = txt(this, r.pos[0], r.pos[1] + 26, r.name, 13, open ? COLORS.text : COLORS.dim).setOrigin(0.5);
+      const label = txt(this, r.pos[0], r.pos[1] + 26, r.name, 13, open ? COLORS.text : COLORS.dim, { title: true }).setOrigin(0.5);
       m.on("pointerup", () => this.select(id));
       label.setInteractive({ useHandCursor: true }).on("pointerup", () => this.select(id));
       if (open) this.tweens.add({ targets: m, y: r.pos[1] - 4, duration: 700, yoyo: true, repeat: -1 });

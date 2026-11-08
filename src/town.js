@@ -64,7 +64,7 @@ class TownScene extends Phaser.Scene {
     const g = this.ground = [];
     for (let y = 0; y < TOWN_H; y++) { g.push([]); for (let x = 0; x < TOWN_W; x++) g[y].push("g"); }
     const rect = (x0, y0, x1, y1, t) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (x >= 0 && y >= 0 && x < TOWN_W && y < TOWN_H) g[y][x] = t; };
-    rect(0, 0, TOWN_W - 1, 2, "w"); rect(0, TOWN_H - 3, TOWN_W - 1, TOWN_H - 1, "w");
+    rect(0, 0, TOWN_W - 1, 2, "w"); rect(0, TOWN_H - 2, TOWN_W - 1, TOWN_H - 1, "w");
     rect(0, 0, 1, TOWN_H - 1, "w"); rect(TOWN_W - 2, 0, TOWN_W - 1, TOWN_H - 1, "w");
     rect(23, TOWN_H - 3, 24, TOWN_H - 1, "c");            // passagem do portão
     rect(23, 10, 24, TOWN_H - 4, "c");                    // avenida
@@ -73,7 +73,7 @@ class TownScene extends Phaser.Scene {
     rect(17, 11, 30, 21, "p");                            // praça
     rect(22, 10, 25, 10, "p");                            // escadaria do templo
     rect(16, 27, 45, 28, "c"); rect(2, 27, 15, 28, "d");  // rua do sul (terra no bairro pobre)
-    rect(3, 24, 14, 26, "d"); rect(39, 19, 45, 21, "c");  // terreiro do bairro pobre; pátio da taverna
+    rect(2, 24, 15, 26, "d"); rect(39, 19, 45, 21, "c");  // terreiro do bairro pobre; pátio da taverna
     rect(38, 29, 41, 30, "c");                            // beco do bueiro
     for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) if (g[y][x] === "w") this.solid.add(this.key(x, y));
   }
@@ -128,7 +128,7 @@ class TownScene extends Phaser.Scene {
     layer("ts_plaza_cobble", t => t === "p");
     // muralhas laterais: passadiço de pedra visto de cima (topo do trecho de muralha, girado)
     const wall = this.textures.get("k2_wall").getSourceImage(), topH = Math.round(wall.height * 0.42);
-    c.fillStyle = "#1c1c20"; c.fillRect(0, 0, W, 2 * T); c.fillRect(0, H - 3 * T, W, 3 * T);
+    c.fillStyle = "#1c1c20"; c.fillRect(0, 0, W, 2 * T);
     for (const x0 of [0, W - 2 * T]) for (let y = 0; y < H; y += 2 * T) {
       c.save(); c.translate(x0 + 2 * T, y); c.rotate(Math.PI / 2);
       c.drawImage(wall, 0, 0, wall.width, topH, 0, 0, 2 * T, 2 * T); c.restore();
@@ -182,7 +182,7 @@ class TownScene extends Phaser.Scene {
     A("tavern_table", 40, 20, 2, 1); A("tavern_table", 43, 20, 2, 1); A("barrels", 45, 19, 1, 1);
     // atrás das casas do norte: casebre, torre de vigia e árvores
     A("cottage", 4, 8, 3, 3); A("tree", 9, 8, 3, 2); A("bush", 13, 7, 1, 1); A("bush", 15, 9, 1, 1);
-    A("tree", 31, 8, 3, 2); A("bush", 35, 6, 1, 1); A("bush", 37, 9, 1, 1); A("tower", 41, 9, 2.4, 3);
+    A("tree", 31, 8, 3, 2); A("bush", 35, 6, 1, 1); A("bush", 37, 9, 1, 1); A("tower", 41.35, 9, 1.7, 3);
     // sul: bairro pobre (oeste) e casas + bueiro (leste)
     A("cottage", 3, 26, 3, 3); A("cottage", 8, 26, 3, 3); A("well", 12, 25, 2, 2); A("crates", 14, 24, 1, 1);
     A("house_red", 30, 26, 3, 3); A("house_red", 34, 26, 3, 3); A("barrels", 37, 26, 1, 1); A("house_red", 42, 26, 3, 3);
