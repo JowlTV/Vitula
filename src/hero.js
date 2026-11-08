@@ -170,7 +170,8 @@ Object.assign(DungeonScene.prototype, {
   // treino de skill: cada uso conta uma tentativa; ao completar, sobe um ponto (devagar, como no Tibia)
   trainSkill(id, n = 1) {
     const sk = Save.skill(this.vocId, id);
-    sk.tries += n * 1.2;   // skills de luta sobem 20% mais rápido
+    // skills de luta: ritmo base 32% acima do original; a cada 10 pontos de skill, 5% mais lento
+    sk.tries += n * 1.32 * Math.pow(0.95, Math.max(0, Math.floor((sk.lvl - SKILLS[id].start) / 10)));
     const need = skillTriesNeeded(id, sk.lvl);
     if (sk.tries >= need) {
       sk.tries -= need; sk.lvl++;
