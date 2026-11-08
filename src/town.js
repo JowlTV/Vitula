@@ -143,7 +143,7 @@ class TownScene extends Phaser.Scene {
   art(tex, bx, by, w, fd = 2, solid = true) {
     const img = this.add.image((bx + w / 2) * T, (by + 1) * T, tex).setOrigin(0.5, 1);
     img.setScale(w * T / img.width).setDepth((by + 1) * T - 2).setTint(TOWN_TINT);
-    this.world.add(img);
+    this.world.add(img); groundShadow(this, img, this.world, w > 2 ? 0.95 : 0.85, w > 2 ? 0.55 : 0.9);
     if (solid && fd > 0) this.block(Math.floor(bx), by - fd + 1, Math.ceil(w), fd);
     return img;
   }

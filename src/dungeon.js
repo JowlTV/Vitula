@@ -107,7 +107,7 @@ class DungeonScene extends Phaser.Scene {
     for (const m of this.monsters.slice()) this.updateMonster(m, dt);
     this.updateTraps(dt);
     if (this.time_ > this.nextWave) { this.spawnWave(); this.nextWave = this.time_ + Phaser.Math.Between(90, 180); }
-    for (const pk of this.pickups.values()) pk.spr.y = pk.baseY + Math.sin(this.time_ * 3 + pk.x) * 2;
+    for (const pk of this.pickups.values()) pk.spr.y = pk.baseY;
     this.drawDarkness(dt);
     this.drawAim();
     this.refreshHud(dt);

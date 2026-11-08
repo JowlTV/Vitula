@@ -164,3 +164,12 @@ const ARCHER_SPELLS = {
 const vocSpells = voc => (voc === "archer" ? ARCHER_SPELLS : SPELLS);
 const vocAnim = voc => (VOCATIONS[voc] && VOCATIONS[voc].anim) || "kn_";
 const vocScale = voc => (VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42;
+
+// sombra de contato: elipse escura colada na base de um sprite (origem 0.5,1), some junto com ele
+function groundShadow(scene, spr, container, wf = 0.85, alpha = 1) {
+  const w = spr.displayWidth * wf;
+  const sh = scene.add.image(spr.x, spr.y - 2, "shadow").setScale(w / 64, Math.max(w * 0.28, 8) / 64).setAlpha(alpha).setDepth(spr.depth - 1);
+  if (container) container.addAt ? container.addAt(sh, Math.max(0, container.getIndex(spr))) : container.add(sh);
+  spr.once("destroy", () => sh.destroy());
+  return sh;
+}

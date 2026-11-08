@@ -149,6 +149,7 @@ Object.assign(DungeonScene.prototype, {
     const img = this.add.image(p.x, p.y + T / 2 - 4, tex).setOrigin(0.5, 1).setDepth(p.y - 40);
     img.setScale(T * 2 / img.height);
     this.ents.add(img);
+    groundShadow(this, img, this.ents, 0.5);
     this.altar = a; this.altarImg = img;
     if (a.used) img.setAlpha(0.55);
     this.props.set(key(a.x, a.y), { kind: "altar", spr: img });
@@ -366,7 +367,7 @@ Object.assign(DungeonScene.prototype, {
     for (const sc of g.sconces) {
       if (g.isFloor(sc.x, sc.y) || !g.isFloor(sc.x, sc.y + 1) || this.doors.has(key(sc.x, sc.y))) continue;
       const img = this.add.image(sc.x * T + T / 2, sc.y * T + T - 4, "torch_stand").setOrigin(0.5, 1).setScale(0.8).setDepth(2);
-      this.world.add(img);
+      this.world.add(img); groundShadow(this, img, this.world, 1.3, 0.7);
       this.lights.push({ x: sc.x * T + T / 2, y: sc.y * T + T - 44, r: 3.6 * T, warm: true, ph: Math.random() * 10 });
       this.sconceX.add(key(sc.x, sc.y));
       this.addDust(sc.x * T + T / 2, sc.y * T + T + 10);
@@ -567,6 +568,7 @@ Object.assign(DungeonScene.prototype, {
     const p = this.cellPos(x, y);
     const spr = this.add.image(p.x, p.y + 4, kind).setOrigin(0.5, 1).setDepth(p.y);
     this.ents.add(spr);
+    groundShadow(this, spr, this.ents, kind === "torch_stand" ? 1.4 : 0.9);
     const pr = { kind, spr, hits: 0, x, y };
     this.props.set(k, pr);
     if (kind === "torch_stand") { this.lights.push({ x: p.x, y: p.y - 38, r: 3.6 * T, warm: true, ph: Math.random() * 10 }); this.addDust(p.x, p.y - 20); }

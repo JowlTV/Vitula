@@ -273,13 +273,13 @@ Object.assign(DungeonScene.prototype, {
     if (item === "none" || !ITEMS[item]) return;
     if (this.pickups.has(key(x, y))) { const alt = this.freeNeighbors(x, y); if (!alt.length) return; ({ x, y } = alt[0]); }
     const p = this.cellPos(x, y);
-    const spr = this.add.image(p.x, p.y - 12, ITEMS[item].icon).setDepth(p.y - 2);
-    this.ents.add(spr);
+    const spr = this.add.image(p.x, p.y + 6, ITEMS[item].icon).setOrigin(0.5, 1).setDepth(p.y - 2);
+    this.ents.add(spr); groundShadow(this, spr, this.ents, 1.3);
     let amount = 0;
     if (item === "gold") amount = Phaser.Math.Between(5, 12);
     if (item === "silver") amount = Phaser.Math.Between(2, 5);
     const k = key(x, y);
-    this.pickups.set(k, { item, amount, spr, x, baseY: p.y - 12 });
+    this.pickups.set(k, { item, amount, spr, x, baseY: p.y + 6 });
     if (x === this.hero.x && y === this.hero.y) this.collect(k);
   },
 
