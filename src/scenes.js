@@ -36,7 +36,7 @@ class BootScene extends Phaser.Scene {
     for (const f of TOWN_FILES.concat(TOWN_ART)) this.load.image(f, `assets/town/${f}.png`);
     this.load.image("rope_v2", "assets/art/rope_v2.png");
     this.load.image("altar_magdha", "assets/art/altar_magdha.png");
-    for (const k in MON_ANIM) { const [fw, w, a, d] = MON_ANIM[k]; for (const n of [w, a, d]) if (!["am_cave_rat", "am_giant_rat"].includes(n)) this.load.spritesheet(n, `assets/art/${n}.png`, { frameWidth: fw, frameHeight: fw }); }
+    const loadedMon = new Set(); for (const k in MON_ANIM) { const [fw, w, a, d] = MON_ANIM[k]; for (const n of [w, a, d]) if (!["am_cave_rat", "am_giant_rat"].includes(n) && !loadedMon.has(n) && loadedMon.add(n)) this.load.spritesheet(n, `assets/art/${n}.png`, { frameWidth: fw, frameHeight: fw }); }
     for (const n of ["kn_hurt", "kn_cast"]) this.load.spritesheet(n, `assets/art/${n}.png`, { frameWidth: 200, frameHeight: 200 });
     for (const n of ["npc_smith_idle", "npc_potion_seller_idle", "npc_depot_guard_idle"]) this.load.spritesheet(n, `assets/town/${n}.png`, { frameWidth: 200, frameHeight: 200 });
     this.load.spritesheet("fx_basic_slash", "assets/art/fx_basic_slash.png", { frameWidth: 72, frameHeight: 72 });
@@ -106,7 +106,8 @@ class BootScene extends Phaser.Scene {
       this.anims.create({ key: "am_" + m, frames: this.anims.generateFrameNumbers("am_" + m, { start: 0, end: 5 }), frameRate: m === "bat" ? 12 : 9, repeat: -1 });
     for (const k in MON_ANIM) {
       const [, w, a, d] = MON_ANIM[k];
-      if (!this.anims.exists(w)) this.anims.create({ key: w, frames: this.anims.generateFrameNumbers(w, { start: 0, end: 7 }), frameRate: k === "bat" ? 12 : 10, repeat: -1 });
+      if (this.textures.exists(w) && !this.anims.exists(w)) this.anims.create({ key: w, frames: this.anims.generateFrameNumbers(w, { start: 0, end: 7 }), frameRate: k === "bat" ? 12 : 10, repeat: -1 });
+      if (!this.textures.exists(w) || this.anims.exists(a)) continue;   // arte ausente ou já criada (aranhas dividem a arte)
       this.anims.create({ key: a, frames: this.anims.generateFrameNumbers(a, { start: 0, end: 7 }), frameRate: 16, repeat: 0 });
       this.anims.create({ key: d, frames: this.anims.generateFrameNumbers(d, { start: 0, end: 7 }), frameRate: 11, repeat: 0 });
     }

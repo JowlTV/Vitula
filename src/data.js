@@ -40,6 +40,7 @@ const REGIONS = {
 };
 
 // animações v2 dos monstros: [tamanho do quadro, andar, atacar, morrer, escala no mapa]
+const SPIDER_FW = 198;   // quadro das animações da aranha (SpriteCook, 8 quadros)
 const MON_ANIM = {
   rat:       [70, "am_rat_walk_v2", "am_rat_attack", "am_rat_death", 0.6],
   bat:       [92, "am_bat_fly_v2", "am_bat_attack", "am_bat_death", 0.6],
@@ -47,6 +48,8 @@ const MON_ANIM = {
   skeleton:  [200, "am_skeleton_walk_v2", "am_skeleton_attack", "am_skeleton_death", 0.42],
   cave_rat:  [72, "am_cave_rat", "am_cave_rat_attack", "am_cave_rat_death", 0.7],
   giant_rat: [108, "am_giant_rat", "am_giant_rat_attack", "am_giant_rat_death", 0.85],
+  spider:        [SPIDER_FW, "am_spider_walk", "am_spider_attack", "am_spider_death", 0.32],
+  poison_spider: [SPIDER_FW, "am_spider_walk", "am_spider_attack", "am_spider_death", 0.34],
 };
 const MONSTERS = {
   // (força −25% em vida, dano e armadura) ritmo "Tibia clássico": no nível 1 um rato leva ~15–30 s de luta e cada mordida tira ~10% da vida.
@@ -57,15 +60,18 @@ const MONSTERS = {
   bat:       { name: "Morcego", tex: "m_bat", anim: "am_bat", hp: 64, arm: 0.9, dmg: 5.4, step: 0.3, atk: 1.6, xp: 10, fly: true },
   slime:     { name: "Lodo", tex: "m_slime", anim: "am_slime", hp: 202, arm: 3.6, dmg: 9.9, step: 0.8, atk: 2.2, xp: 24 },
   skeleton:  { name: "Esqueleto", tex: "m_skeleton", anim: "am_skeleton", hp: 324, arm: 4.5, dmg: 13.5, step: 0.55, atk: 2.0, xp: 40 },
+  // aranhas do esgoto (a partir do 2º andar). A venenosa usa a mesma arte, esverdeada, e envenena: 3% da vida máx./s por 5 s
+  spider:        { name: "Aranha", tex: "am_spider_walk", hp: 175, arm: 2, dmg: 11, step: 0.36, atk: 1.9, xp: 26 },
+  poison_spider: { name: "Aranha Venenosa", tex: "am_spider_walk", tint: 0x9fe07a, hp: 205, arm: 2.5, dmg: 9, step: 0.4, atk: 2.0, xp: 34, poison: { pct: 0.03, dur: 5 } },
   giant_rat: { name: "Rato Gigante", tex: "m_giant_rat", anim: "am_giant_rat", scale: 0.85, hp: 2500, arm: 6, dmg: 50, step: 0.45, atk: 1.8, xp: 300, gold: 60, elite: true },
 };
 
 const FLOOR_MONSTERS = {
   1: [["rat", 70], ["bat", 30]],
-  2: [["rat", 30], ["cave_rat", 30], ["bat", 20], ["slime", 20]],
-  3: [["cave_rat", 35], ["skeleton", 25], ["slime", 20], ["bat", 20]],
-  4: [["cave_rat", 35], ["skeleton", 35], ["slime", 15], ["bat", 15]],
-  5: [["skeleton", 40], ["cave_rat", 35], ["slime", 15], ["bat", 10]],
+  2: [["rat", 25], ["cave_rat", 25], ["bat", 15], ["slime", 15], ["spider", 14], ["poison_spider", 6]],
+  3: [["cave_rat", 28], ["skeleton", 20], ["slime", 15], ["bat", 12], ["spider", 15], ["poison_spider", 10]],
+  4: [["cave_rat", 28], ["skeleton", 28], ["slime", 10], ["bat", 10], ["spider", 12], ["poison_spider", 12]],
+  5: [["skeleton", 32], ["cave_rat", 28], ["slime", 10], ["bat", 8], ["spider", 10], ["poison_spider", 12]],
 };
 
 const ITEMS = {

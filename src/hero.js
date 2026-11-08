@@ -41,6 +41,7 @@ Object.assign(DungeonScene.prototype, {
     if (h.buffs) for (const s in h.buffs) h.buffs[s] = Math.max(0, h.buffs[s] - dt);
     h.atkT = Math.max(0, h.atkT - dt);
     h.regen += dt; if (h.regen >= 1) { h.regen -= 1; this.heal(this.stats.recovery, false); }
+    this.tickPoison(dt);
     // passiva da vocação (Cavaleiro: 2% da vida máxima a cada 5 s)
     const pv = VOCATIONS[this.vocId].passive;
     if (pv) { h.pReg = (h.pReg || 0) + dt; if (h.pReg >= pv.every) { h.pReg -= pv.every; this.heal(h.maxHp * pv.regenPct * (this.promo() ? this.promo().regenMult : 1)); } }
@@ -306,9 +307,24 @@ Object.assign(DungeonScene.prototype, {
 
 
   // ---------------------------------------------------------------- herói: dano, cura, experiência
-  hurtHero(amount) {
+  // veneno (aranha venenosa): dano por segundo que não é bloqueado; renova a duração a cada mordida
+  poisonHero(p) {
+    const h = this.hero; if (h.dead || this.god) return;
+    if (!(h.poisonT > 0)) this.floatText(h.px, h.py - 80, "Envenenado", "#8fe060");
+    h.poisonT = p.dur; h.poisonDps = h.maxHp * p.pct; h.poisonTick = h.poisonTick || 0;
+  },
+  tickPoison(dt) {
+    const h = this.hero; if (!(h.poisonT > 0) || h.dead) return;
+    h.poisonT -= dt; h.poisonTick += dt;
+    if (h.spr) h.spr.setTint(0xa8f08a);
+    if (h.poisonTick >= 1) { h.poisonTick -= 1; this.hurtHero(0, Math.max(1, Math.round(h.poisonDps))); }
+    if (h.poisonT <= 0 && h.spr) h.spr.clearTint();
+  },
+
+  hurtHero(amount, pure = 0) {
     const h = this.hero;
     if (h.dead || this.god) return;
+    if (pure) { h.hp -= pure; this.floatText(h.px + 8, h.py - 60, String(pure), "#7fd04a"); if (h.hp <= 0) h.hp = 0.0001, amount = 1, pure = 0; else return; }
     this.trainSkill("shield");
     // bloqueio com o escudo (chance cresce com o Shield): nenhum dano
     if (Math.random() < this.blockChance()) { this.floatText(h.px, h.py - 66, "Bloqueado", "#9fd0ff"); sfx(this, "hit", 0.2); return; }

@@ -163,7 +163,9 @@ class TownScene extends Phaser.Scene {
     const A = (t, x, y, w, fd, solid) => this.art("k2_" + t, x, y, w, fd, solid);
     // muralha: trechos de 2 casas no norte e no sul, torres nos cantos, portão ao sul
     for (let x = 2; x < TOWN_W - 2; x += 2) A("wall", x, 2, 2, 0);
-    for (let x = 2; x < TOWN_W - 2; x += 2) if (x < 21 || x > 25) A("wall", x, TOWN_H - 1, 2, 0);
+    // trechos do sul param rente às torres do portão (21–27), sem passar na frente delas
+    for (let x = 2; x < TOWN_W - 2; x += 2) if (x + 2 <= 21 || x >= 27) A("wall", x, TOWN_H - 1, 2, 0);
+    A("wall", 19, TOWN_H - 1, 2, 0); A("wall", 27, TOWN_H - 1, 2, 0);
     for (const [x, y] of [[0, 2], [TOWN_W - 2, 2], [0, TOWN_H - 1], [TOWN_W - 2, TOWN_H - 1]]) A("wall_tower", x, y, 2, 0);
     // portão: fica atrás do herói, menos quando ele está dentro do arco (aí o arco passa na frente)
     this.gateImg = A("gate", 21, TOWN_H - 1, 6, 0); this.gateImg.setDepth(29 * T);
@@ -188,12 +190,12 @@ class TownScene extends Phaser.Scene {
     A("house_red", 30, 26, 3, 3); A("house_red", 34, 26, 3, 3); A("barrels", 37.1, 26, 0.8, 1); A("house_red", 42, 26, 3, 3);
     A("stall_red", 17.2, 25, 1.6, 1);
     // entrada: carroça, placa e árvores junto da muralha sul
-    A("cart", 18.25, 31, 1.5, 1); A("signpost", 26, 31, 1, 1);
+    A("cart", 18.25, 31, 1.5, 1); A("signpost", 29, 30, 1, 1);
     for (const [x, y] of [[2, 31], [7, 31], [12, 31], [30, 31], [35, 31], [42, 31]]) A("tree", x, y, 3, 1);
     for (const [x, y] of [[16, 31], [28, 32], [2, 20], [45, 24], [16, 22], [31, 23]]) A("bush", x + 0.1, y, 0.8, 1);
     // lampiões (praça, avenida e ruas)
     this.lamps = [];
-    for (const [x, y] of [[17, 11], [30, 11], [17, 21], [30, 21], [22, 24], [25, 24], [22, 30], [25, 30], [8, 18], [14, 18], [33, 18], [38, 18], [20, 28], [36, 29]])
+    for (const [x, y] of [[17, 11], [30, 11], [17, 21], [30, 21], [22, 24], [25, 24], [19, 29], [28, 29], [8, 18], [14, 18], [33, 18], [38, 18], [20, 28], [36, 29]])
       this.lamps.push(A("lamp", x, y, 0.55, 1));
     // NPCs e lugares
     this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 4, y: 15, w: 2, h: 1 });

@@ -19,6 +19,8 @@ Object.assign(DungeonScene.prototype, {
 
 
   spawnMonster(kind, x, y) {
+    // arte ainda não instalada (ex.: aranhas antes do download): troca por um monstro que já tem arte
+    if (MON_ANIM[kind] && !this.textures.exists(MON_ANIM[kind][1]) && !this.textures.exists(MONSTERS[kind].tex)) kind = this.floorN > 2 ? "cave_rat" : "rat";
     const data = MONSTERS[kind], mult = 1 + 0.15 * (this.floorN - 1);
     const p = this.cellPos(x, y);
     const m = { kind, data, x, y, hp: data.hp * mult, maxHp: data.hp * mult, dmg: data.dmg * (1 + 0.1 * (this.floorN - 1)),
@@ -30,6 +32,7 @@ Object.assign(DungeonScene.prototype, {
     m.spr = anim ? this.add.sprite(p.x, p.y + 4, walkKey).setOrigin(0.5, 1).play({ key: walkKey, startFrame: Phaser.Math.Between(0, 5) })
                  : this.add.image(p.x, p.y + 4, data.tex).setOrigin(0.5, 1);
     m.spr.setScale((ma ? ma[4] : data.scale || 1) * WORLD_SCALE);
+    if (data.tint) m.spr.setTint(data.tint);
     m.w = m.spr.displayWidth; m.h = m.spr.displayHeight;
     m.shadow = this.add.image(p.x, p.y + (m.fly ? 8 : -2), "shadow").setScale(m.w * 0.9 / 64, m.w * 0.3 / 64);
     m.bar = this.add.graphics();
@@ -111,7 +114,7 @@ Object.assign(DungeonScene.prototype, {
     const lift = m.fly ? 16 : 0;
     m.spr.setPosition(Math.round(m.px + m.lunge.x), Math.round(m.py + 4 - lift + bob + m.lunge.y)).setDepth(m.py);
     m.shadow.setPosition(m.px, m.py + (m.fly ? 6 : -2)).setDepth(m.py - 1);
-    if (m.flash > 0) m.spr.setTintFill(0xffffff); else if (m.champion) m.spr.setTint(0xff9a8a); else m.spr.clearTint();
+    if (m.flash > 0) m.spr.setTintFill(0xffffff); else if (m.champion) m.spr.setTint(0xff9a8a); else if (m.data.tint) m.spr.setTint(m.data.tint); else m.spr.clearTint();
     this.drawMonsterBar(m);
 
     const dist = Math.max(Math.abs(h.x - m.x), Math.abs(h.y - m.y));
@@ -138,7 +141,9 @@ Object.assign(DungeonScene.prototype, {
         m.lunge = { x: (h.x - m.x) / len * 7, y: (h.y - m.y) / len * 7 };
         if (h.x !== m.x) m.spr.setFlipX(h.x < m.x);
         this.monsterSwing(m);
+        const hp0 = h.hp;
         this.hurtHero(m.dmg * Phaser.Math.FloatBetween(0.85, 1.15));
+        if (m.data.poison && h.hp < hp0) this.poisonHero(m.data.poison);
       }
       return;
     }
