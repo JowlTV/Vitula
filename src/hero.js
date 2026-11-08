@@ -45,8 +45,9 @@ Object.assign(DungeonScene.prototype, {
     const pv = VOCATIONS[this.vocId].passive;
     if (pv) { h.pReg = (h.pReg || 0) + dt; if (h.pReg >= pv.every) { h.pReg -= pv.every; this.heal(h.maxHp * pv.regenPct * (this.promo() ? this.promo().regenMult : 1)); } }
     // a fúria esfria fora de combate
-    h.furyIdle += dt;
-    if (h.furyIdle > 4) h.fury = Math.max(0, h.fury - 4 * dt);
+    // (Arqueiro: mana, que se regenera sempre e não esfria)
+    if (VOCATIONS[this.vocId].mana) h.fury = Math.min(this.furyMax, h.fury + (3 + 0.15 * (this.magicLevel ? this.magicLevel() : 0)) * dt);
+    else { h.furyIdle += dt; if (h.furyIdle > 4) h.fury = Math.max(0, h.fury - 4 * dt); }
     this.updateAura(dt);
     if (h.moveT > 0) {
       // sobra do quadro vai para o próximo passo (sem micro-parada entre uma casa e outra)
@@ -160,7 +161,7 @@ Object.assign(DungeonScene.prototype, {
     d.potions[id]--; h.potCd[id] = P.cd; Save.save();
     h.buffs = h.buffs || {};
     if (id === "health") this.heal(h.maxHp * 0.4);
-    else if (id === "fury") { h.fury = this.furyMax; this.floatText(h.px, h.py - 70, "Fúria cheia", "#e08a4a"); }
+    else if (id === "fury") { h.fury = this.furyMax; this.floatText(h.px, h.py - 70, VOCATIONS[this.vocId].mana ? "Mana cheia" : "Fúria cheia", VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#e08a4a"); }
     else if (P.dur) { h.buffs[id] = P.dur; this.msg(`${P.name}: ${P.desc}`); }
     sfx(this, "gem", 0.4);
   },
@@ -169,7 +170,7 @@ Object.assign(DungeonScene.prototype, {
   // treino de skill: cada uso conta uma tentativa; ao completar, sobe um ponto (devagar, como no Tibia)
   trainSkill(id, n = 1) {
     const sk = Save.skill(this.vocId, id);
-    sk.tries += n;
+    sk.tries += n * 1.2;   // skills de luta sobem 20% mais rápido
     const need = skillTriesNeeded(id, sk.lvl);
     if (sk.tries >= need) {
       sk.tries -= need; sk.lvl++;
@@ -435,7 +436,8 @@ Object.assign(DungeonScene.prototype, {
     });
   },
 
-  addFury(v) { const h = this.hero; h.fury = Math.min(this.furyMax, h.fury + v); h.furyIdle = 0; },
+  addFury(v) { const h = this.hero; if (VOCATIONS[this.vocId].mana) return;   // mana não vem de golpes
+    h.fury = Math.min(this.furyMax, h.fury + v); h.furyIdle = 0; },
 
   addXp(v) {
     const h = this.hero;

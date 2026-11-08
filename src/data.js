@@ -21,9 +21,9 @@ const VOCATIONS = {
     unlockCost: 0, portrait: "portrait_knight",
   },
   archer: {
-    name: "Arqueiro", desc: "Patrulheiro das fronteiras: ataca de longe com arco longo e mantém distância.", trait: "Foco: enche ao acertar flechas e paga as habilidades.",
+    name: "Arqueiro", desc: "Patrulheiro das fronteiras: ataca de longe com arco longo e mantém distância.", trait: "Mana: conhece um pouco de magia; a mana se regenera com o tempo e paga as habilidades.",
     stats: { maxHp: 100, armor: 0, recovery: 0, moveSpeed: 1.05, might: 1.0, cooldown: 1.0 },
-    unlockCost: 0, portrait: "portrait_archer", anim: "ar_", scale: 0.40, ranged: 4, resource: "Foco", skill: "distance",
+    unlockCost: 0, portrait: "portrait_archer", anim: "ar_", scale: 0.40, ranged: 4, resource: "Mana", mana: true, skill: "distance",
   },
   sorcerer: { name: "Feiticeiro", desc: "Frágil, mas domina o fogo, a energia e a morte.", trait: "Em breve.", unlockCost: 2500, portrait: "portrait_sorcerer", soon: true },
   druid: { name: "Druida", desc: "Comanda a terra e a natureza; se cura sozinho.", trait: "Em breve.", unlockCost: 2500, portrait: "portrait_druid", soon: true },
@@ -107,7 +107,7 @@ const FIST_ATTACK = 20;  // ataque base até existirem armas
 // Poções: 2 atalhos na barra (teclas 5 e 6). voc = vocações que podem usar (vazio = todas).
 const POTIONS = {
   health:    { name: "Poção de vida", icon: "i_health_potion", cd: 10, price: 30, desc: "Cura 40% da vida máxima." },
-  fury:      { name: "Poção de fúria", icon: "i_health_potion", tint: 0xff8a30, cd: 15, price: 45, desc: "Enche toda a Fúria (ou o Foco do Arqueiro).", voc: ["knight", "archer"] },
+  fury:      { name: "Poção de fúria", icon: "i_health_potion", tint: 0xff8a30, cd: 15, price: 45, desc: "Enche toda a Fúria (ou a Mana do Arqueiro).", voc: ["knight", "archer"] },
   mana:      { name: "Poção de mana", icon: "i_mana_potion", cd: 10, price: 30, desc: "Recupera 60% da mana máxima.", voc: ["archer", "sorcerer", "druid"] },
   berserker: { name: "Poção do berserker", icon: "i_health_potion", tint: 0xc02020, cd: 60, dur: 30, price: 160, desc: "+10 de Sword por 30 s." },
   mage:      { name: "Poção do mago", icon: "i_mana_potion", tint: 0xb070ff, cd: 60, dur: 30, price: 160, desc: "+10 de magic level por 30 s." },
@@ -155,7 +155,7 @@ const BLESS_TEXT = [
   "Você recebeu a terceira bênção de Magdha.\n\nNa próxima morte, perderá 20% da experiência, nenhum equipamento e nenhum ouro.",
 ];
 
-// Habilidades do Arqueiro (mesmas teclas 1–4; pagas com Foco).
+// Habilidades do Arqueiro (mesmas teclas 1–4; pagas com Mana).
 const ARCHER_SPELLS = {
   holy:   { name: "Flecha Sagrada", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Uma flecha de luz sagrada que acerta o alvo escolhido com 2× o dano." },
   heal:   { name: "Exura", key: "2", icon: "icon_exura", level: 2, fury: 30, cd: 6, desc: "Cura 15% da vida máxima + 1% por magic level." },

@@ -27,7 +27,7 @@ class DungeonScene extends Phaser.Scene {
     this.ranged = VOCATIONS[this.vocId].ranged || 0;
     this.stats = this.computeStats();
     this.hero = { hp: this.stats.maxHp, maxHp: this.stats.maxHp, level: 1, xp: 0, dead: false, atkT: 0,
-      cds: { heal: 0, front: 0, spin: 0, aura: 0 }, facing: [1, 0], regen: 0, fury: 0, furyIdle: 0, auraT: 0, auraTick: 0 };
+      cds: { heal: 0, front: 0, spin: 0, aura: 0 }, facing: [1, 0], regen: 0, fury: VOCATIONS[this.vocId].mana ? this.furyMax : 0, furyIdle: 0, auraT: 0, auraTick: 0 };
     const lv = +new URLSearchParams(location.search).get("lvl");
     // nível vem da experiência salva (não zera ao entrar de novo)
     { const L = Save.levelInfo(Save.voc(this.vocId).xpTotal); this.hero.level = L.level; this.hero.xp = L.xp; this.hero.maxHp += 10 * (L.level - 1); this.hero.hp = this.hero.maxHp;

@@ -119,11 +119,10 @@ Object.assign(DungeonScene.prototype, {
     iron(bx, 28, 196, 4);
     this.xpFill = this.add.rectangle(bx, 28, 196, 4, 0x8a7430).setOrigin(0); ui.add(this.xpFill);
     iron(cx - 68, 40, 136, 6);
-    this.furyFill = this.add.rectangle(cx - 68, 40, 136, 6, 0xa8401a).setOrigin(0); ui.add(this.furyFill);
-    this.furyText = txt(this, cx + 78, 36, VOCATIONS[this.vocId].resource || "Fúria", 12, "#d0703a"); ui.add(this.furyText);
+    this.furyFill = this.add.rectangle(cx - 68, 40, 136, 6, VOCATIONS[this.vocId].mana ? 0x2f5fb8 : 0xa8401a).setOrigin(0); ui.add(this.furyFill);
+    this.furyText = txt(this, cx + 78, 36, VOCATIONS[this.vocId].resource || "Fúria", 12, VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#d0703a"); ui.add(this.furyText);
     this.lvlText = txt(this, bx - 14, 6, "", 18, COLORS.gold).setOrigin(1, 0); ui.add(this.lvlText);
     this.promoText = txt(this, bx - 14, 28, "", 12, "#e8c878").setOrigin(1, 0); ui.add(this.promoText);
-    this.skillText = txt(this, cx, 52, "", 10, "#a8a090").setOrigin(0.5, 0); ui.add(this.skillText);
     // embaixo do minimapa (canto superior direito): nome do andar pequeno, ouro e chaves
     const mg = this.gen, ms = Math.min(2, 150 / mg.w, 110 / mg.h), mR = VIEW_W - 12, mB = 14 + Math.ceil(mg.h * ms) + 8;
     this.hudFloor = txt(this, mR, mB + 2, `${this.region.name} · Andar ${this.floorN}/${FLOORS}`, 11, "#c8b890", { title: true }).setOrigin(1, 0);
@@ -165,6 +164,7 @@ Object.assign(DungeonScene.prototype, {
       else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "Nv " + this.spells[id].level, 12, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
     });
     this.buildBattleList(ui);
+    this.buildSkillWin(ui);
     // barrinha de vida sobre o herói (H minimiza/mostra; fica salvo)
     try { this.heroBarOn = localStorage.getItem("vitula_herobar") !== "0"; } catch (e) { this.heroBarOn = true; }
     this.input.keyboard.on("keydown-H", () => { this.heroBarOn = !this.heroBarOn; try { localStorage.setItem("vitula_herobar", this.heroBarOn ? "1" : "0"); } catch (e) {} this.msg(this.heroBarOn ? "Vida sobre o personagem: visível (H)" : "Vida sobre o personagem: oculta (H)"); });
@@ -221,8 +221,39 @@ Object.assign(DungeonScene.prototype, {
     this.input.keyboard.on("keydown-L", () => { this.bl.open = !this.bl.open; this.layoutBattleList(); this.saveBattleList(); });
     this.blT = 0; this.layoutBattleList(); this.refreshBattleList();
   },
+  // janela de habilidades: nível, experiência, magic level, sword/distance e shield (arrastar, minimizar, fechar; K reabre)
+  buildSkillWin(ui) {
+    let st = {}; try { st = JSON.parse(localStorage.getItem("vitula_sk") || "{}"); } catch (e) {}
+    const S = this.skS = Object.assign({ x: 8, y: 60, min: false, open: true }, st), w = 128;
+    const win = this.add.container(S.x, S.y); ui.add(win);
+    const bg = this.add.rectangle(0, 0, w, 10, 0x0c0a08, 0.8).setOrigin(0).setStrokeStyle(1, 0x5a4a30).setInteractive();
+    const bar = this.add.rectangle(0, 0, w, 14, 0x2a2018, 1).setOrigin(0).setInteractive({ useHandCursor: true });
+    const title = txt(this, 4, 1, "Habilidades", 10, COLORS.gold);
+    const minB = txt(this, w - 24, 0, "–", 11, COLORS.text).setInteractive({ useHandCursor: true });
+    const clsB = txt(this, w - 11, 0, "×", 11, COLORS.text).setInteractive({ useHandCursor: true });
+    win.add([bg, bar, title, minB, clsB]);
+    const l = [], v = [];
+    for (let i = 0; i < 5; i++) { l.push(txt(this, 5, 17 + i * 14, "", 9, COLORS.dim)); v.push(txt(this, w - 5, 17 + i * 14, "", 9, COLORS.text).setOrigin(1, 0)); }
+    win.add([...l, ...v]);
+    this.skW = { win, bg, l, v, vis: true };
+    const save = () => { try { localStorage.setItem("vitula_sk", JSON.stringify(S)); } catch (e) {} };
+    const layout = () => {
+      win.setPosition(S.x, S.y).setVisible(S.open); const h = S.min ? 14 : 17 + 5 * 14 + 3;
+      bg.setSize(w, h); bg.input.hitArea.setSize(w, h); minB.setText(S.min ? "□" : "–");
+      [...l, ...v].forEach(t => t.setVisible(!S.min)); this.skW.vis = S.open && !S.min;
+    };
+    const pt = p => this.uiCam.getWorldPoint(p.x, p.y); let drag = null;
+    bar.on("pointerdown", p => { const q = pt(p); drag = { ox: q.x - S.x, oy: q.y - S.y }; });
+    this.input.on("pointermove", p => { if (!drag || !p.isDown) return; const q = pt(p); S.x = Phaser.Math.Clamp(q.x - drag.ox, 0, VIEW_W - w); S.y = Phaser.Math.Clamp(q.y - drag.oy, 0, VIEW_H - 14); layout(); });
+    this.input.on("pointerup", () => { if (drag) { drag = null; save(); } });
+    minB.on("pointerdown", () => { S.min = !S.min; layout(); save(); });
+    clsB.on("pointerdown", () => { S.open = false; layout(); save(); this.msg("Habilidades fechada — K para abrir"); });
+    this.input.keyboard.on("keydown-K", () => { S.open = !S.open; layout(); save(); });
+    layout();
+  },
+
   saveBattleList() { try { localStorage.setItem("vitula_bl2", JSON.stringify(this.bl)); } catch (e) {} },
-  blOwns(objs) { return !!(this.blWin && objs && objs.some(o => o.parentContainer === this.blWin)); },
+  blOwns(objs) { return !!(objs && objs.some(o => o.parentContainer && (o.parentContainer === this.blWin || (this.skW && o.parentContainer === this.skW.win)))); },
   layoutBattleList() {
     const b = this.bl, w = b.w, h = b.min ? 14 : 16 + b.rows * 18 + 2;
     this.blWin.setPosition(b.x, b.y).setVisible(b.open);
@@ -305,7 +336,12 @@ Object.assign(DungeonScene.prototype, {
     this.furyFill.setSize(Math.max(1, 136 * Math.min(1, h.fury / this.furyMax)), 6);
     const sk = id => { const s = Save.skill(this.vocId, id); return `${SKILLS[id].name} ${s.lvl} (${Math.floor(100 * s.tries / skillTriesNeeded(id, s.lvl))}%)`; };
     const ml = Save.voc(this.vocId).ml;
-    this.skillText.setText(`${sk(this.ranged ? "distance" : "sword")}   ${sk("shield")}   ML ${this.mlEff()}`);
+    if (this.skW && this.skW.vis) {
+      const one = id => { const q = Save.skill(this.vocId, id); return [`${SKILLS[id].name}`, `${q.lvl}  ${Math.floor(100 * q.tries / skillTriesNeeded(id, q.lvl))}%`]; };
+      const rows = [["Nível", String(h.level)], ["Experiência", `${Math.floor(h.xp)} / ${this.xpNext()}`], ["Magic level", String(this.mlEff())],
+        one(this.ranged ? "distance" : "sword"), one("shield")];
+      rows.forEach((r, i) => { this.skW.l[i].setText(r[0]); this.skW.v[i].setText(r[1]); });
+    }
     if (this.msgT > 0) { this.msgT -= dt; this.msgText.setAlpha(Phaser.Math.Clamp(this.msgT, 0, 1)); }
   },
 
