@@ -3,7 +3,7 @@
 // avenida até o salão de colunas ao norte, praça com fonte no centro, torre de vigia, casas de enxaimel e ciprestes.
 
 const TOWN_TINT = 0xc2c6d0; // luz fria e nublada da cidade, aplicada no herói e nos NPCs
-const TOWN_W = 48, TOWN_H = 36;
+const TOWN_W = 46, TOWN_H = 17;   // vila de Karhyn: uma rua reta de oeste (portão) a leste (esgoto)
 // artes grandes da cidade que já chegaram do SpriteCook (as que faltam são desenhadas por código até chegarem)
 const TOWN_ART = [];   // a cidade é desenhada em código (towngfx.js)
 const TOWN_FILES = ["depot_chest"];
@@ -55,26 +55,22 @@ class TownScene extends Phaser.Scene {
   block(x0, y0, w, h) { for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) this.solid.add(this.key(x, y)); }
   isSolid(x, y) { return x < 0 || y < 0 || x >= TOWN_W || y >= TOWN_H || this.solid.has(this.key(x, y)); }
 
-  // Planta (48×36): muralha em volta com portão ao sul; avenida do portão ao Templo de Magdha (norte);
-  // praça da fonte no centro; rua leste–oeste com calçada (oeste: depósito e casas; leste: poções, ferraria, taverna);
-  // rua do sul (oeste: bairro pobre de terra; leste: casas e o bueiro do esgoto).
-  // Códigos: g grama · c paralelepípedo · p pedra da praça · s calçada · d terra · w muralha
+  // Vila de Karhyn (46×18), casas de 32 px de projeto ampliadas 2×. Rua única oeste→leste:
+  //   y 0–1  breu atrás das casas do norte · y 2–6 casas do norte (base na linha 6) · y 7 calçada
+  //   y 8–10 rua de terra com poças · y 11 calçada · y 12–14 casas do sul (base na 14), 15 quintal · y 16 muro
+  //   x 0–2 portão de pedra (oeste, partida) · x 38–40 estátua da deusa · x 43–44 entrada do esgoto (leste)
+  // Códigos: g grama · c pedra · s calçada · d terra · w muro/escuro
   layout() {
     const g = this.ground = [];
     for (let y = 0; y < TOWN_H; y++) { g.push([]); for (let x = 0; x < TOWN_W; x++) g[y].push("g"); }
     const rect = (x0, y0, x1, y1, t) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (x >= 0 && y >= 0 && x < TOWN_W && y < TOWN_H) g[y][x] = t; };
-    rect(0, 0, TOWN_W - 1, 2, "w"); rect(0, TOWN_H - 2, TOWN_W - 1, TOWN_H - 1, "w");
-    rect(0, 0, 1, TOWN_H - 1, "w"); rect(TOWN_W - 2, 0, TOWN_W - 1, TOWN_H - 1, "w");
-    rect(23, TOWN_H - 3, 24, TOWN_H - 1, "c");            // passagem do portão
-    rect(23, 10, 24, TOWN_H - 4, "c");                    // avenida
-    rect(2, 16, 45, 17, "c");                             // rua leste–oeste
-    rect(2, 15, 16, 15, "s"); rect(31, 15, 45, 15, "s");  // calçadas na frente das casas
-    rect(17, 11, 30, 21, "p");                            // praça
-    rect(22, 10, 25, 10, "p");                            // escadaria do templo
-    rect(16, 27, 45, 28, "c"); rect(2, 27, 15, 28, "d");  // rua do sul (terra no bairro pobre)
-    rect(2, 24, 15, 26, "d"); rect(39, 19, 45, 21, "c");  // terreiro do bairro pobre; pátio da taverna
-    rect(38, 29, 41, 30, "c");                            // beco do bueiro
+    rect(0, 0, TOWN_W - 1, 1, "w"); rect(0, TOWN_H - 1, TOWN_W - 1, TOWN_H - 1, "w");
+    rect(0, 0, 1, TOWN_H - 1, "w"); rect(TOWN_W - 1, 0, TOWN_W - 1, TOWN_H - 1, "w");
+    rect(2, 7, TOWN_W - 2, 7, "s"); rect(2, 11, TOWN_W - 2, 11, "s");       // calçadas
+    rect(0, 8, TOWN_W - 2, 10, "d");                                         // rua de terra
+    rect(36, 7, 41, 11, "c");                                                // largo de pedra da estátua
     for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) if (g[y][x] === "w") this.solid.add(this.key(x, y));
+    this.block(2, 2, TOWN_W - 3, 5); this.block(2, 12, TOWN_W - 3, 4);   // casas do sul (base na 14) e o quintal atrás delas     // quarteirões (as casas cobrem tudo)
   }
 
   // chão: grama de base + autotiles de 15 peças do SpriteCook (grade dupla), cada um sobre o anterior
@@ -110,57 +106,37 @@ class TownScene extends Phaser.Scene {
 
   placeThings() {
     const A = (t, x, y, w, fd, solid) => this.art("k2_" + t, x, y, w, fd, solid);
-    // muralha: trechos de 2 casas no norte e no sul, torres nos cantos, portão ao sul
-    for (let x = 2; x < TOWN_W - 2; x += 2) A("wall", x, 2, 2, 0);
-    // trechos do sul param rente às torres do portão (21–27), sem passar na frente delas
-    for (let x = 2; x < TOWN_W - 2; x += 2) if (x + 2 <= 21 || x >= 27) A("wall", x, TOWN_H - 1, 2, 0);
-    A("wall", 19, TOWN_H - 1, 2, 0); A("wall", 27, TOWN_H - 1, 2, 0);
-    for (const [x, y] of [[0, 2], [TOWN_W - 2, 2], [0, TOWN_H - 1], [TOWN_W - 2, TOWN_H - 1]]) A("wall_tower", x, y, 2, 0);
-    // portão: fica atrás do herói, menos quando ele está dentro do arco (aí o arco passa na frente)
-    this.gateImg = A("gate", 21, TOWN_H - 1, 6, 0); this.gateImg.setDepth(29 * T);
-    this.block(21, TOWN_H - 6, 2, 6); this.block(25, TOWN_H - 6, 2, 6);
-    // templo de Magdha no fim da avenida, com estandartes
-    A("temple", 21, 9, 6, 3);
-    A("banner", 20.1, 9, 0.5, 1); A("banner", 27.1, 9, 0.5, 1);
-    // praça: fonte, bancos, barracas
-    this.fountain = this.put(this.textures.exists("tg_fountain") ? "tg_fountain" : TG.make(this, "tg_fountain", "town_fountain", 2.75), 23, 14, 2, 2, 2.75, true, 2);
-    A("bench", 19.3, 12, 0.85, 1); A("bench", 27.3, 12, 0.85, 1);
-    A("stall_red", 18.2, 20, 1.6, 1); A("stall_green", 28.2, 20, 1.6, 1);
-    // norte da rua (oeste): depósito e casas
-    A("depot", 3, 14, 5, 3); A("barrels", 8.15, 14, 0.8, 1); A("house_red", 9, 14, 3, 3); A("crates", 12.15, 14, 0.8, 1); A("house_red", 13, 14, 3, 3);
-    // norte da rua (leste): poções, ferraria e taverna
-    A("potion_shop", 31, 14, 3, 3); A("crates", 34.1, 14, 0.8, 1); A("smithy", 35, 14, 4, 3); A("barrels", 39.1, 14, 0.8, 1); A("tavern", 40, 14, 5, 3);
-    A("tavern_table", 40.3, 20, 1.3, 1); A("tavern_table", 43.3, 20, 1.3, 1); A("barrels", 45.1, 19, 0.8, 1);
-    // atrás das casas do norte: casebre, torre de vigia e árvores
-    A("cottage", 4, 8, 3, 3); A("tree", 9, 8, 3, 2); A("bush", 13.1, 7, 0.8, 1); A("bush", 15.1, 9, 0.8, 1);
-    A("tree", 31, 8, 3, 2); A("bush", 35.1, 6, 0.8, 1); A("bush", 37.1, 9, 0.8, 1); A("tower", 41.35, 9, 1.7, 3);
-    // sul: bairro pobre (oeste) e casas + bueiro (leste)
-    A("cottage", 3, 26, 3, 3); A("cottage", 8, 26, 3, 3); A("well", 12.3, 25, 1.4, 2); A("crates", 14.1, 24, 0.8, 1);
-    A("house_red", 30, 26, 3, 3); A("house_red", 34, 26, 3, 3); A("barrels", 37.1, 26, 0.8, 1); A("house_red", 42, 26, 3, 3);
-    A("stall_red", 17.2, 25, 1.6, 1);
-    // entrada: carroça, placa e árvores junto da muralha sul
-    A("cart", 18.25, 31, 1.5, 1); A("signpost", 29, 30, 1, 1);
-    for (const [x, y] of [[2, 31], [7, 31], [12, 31], [30, 31], [35, 31], [42, 31]]) A("tree", x, y, 3, 1);
-    for (const [x, y] of [[16, 31], [28, 32], [2, 20], [45, 24], [16, 22], [31, 23]]) A("bush", x + 0.1, y, 0.8, 1);
-    // lampiões (praça, avenida e ruas)
+    // portão de pedra a oeste (3×3), por onde o herói chega sem lembrar de nada
+    this.gateImg = A("v_gate", 0, 10, 3, 0); this.block(0, 8, 2, 3);
+    // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
+    A("v_smith", 5, 6, 4, 0); A("v_ruin", 10, 6, 3, 0); A("v_inn", 14, 6, 6, 0); A("v_potion", 21, 6, 3, 0);
+    A("v_ruin", 25, 6, 3, 0); A("v_ruin", 29, 6, 4, 0); A("v_ruin", 34, 6, 3, 0);
+    // sul: Depot, Acomodação (+ casas pobres)
+    A("v_ruin", 3, 14, 3, 0); A("v_depot", 7, 14, 5, 0); A("v_ruin", 13, 14, 3, 0); A("v_lodging", 17, 14, 5, 0);
+    A("v_ruin", 23, 14, 4, 0); A("v_ruin", 28, 14, 3, 0); A("v_ruin", 32, 14, 4, 0);
+    // estátua da deusa no largo, com o feixe de luz; entrada do esgoto no fim da rua
+    const st = this.add.image(39 * T + T / 2, 8 * T + T - 2, "altar_magdha").setOrigin(0.5, 1);
+    st.setScale(T * 1.1 / st.width).setDepth(9 * T - 2).setTint(TOWN_TINT); this.world.add(st); groundShadow(this, st, this.world, 0.7);
+    this.block(39, 8, 1, 1); this.statue = st;
+    this.manhole = { x: 43, y: 9 };
+    A("v_sewer", 43, 10, 2, 0); this.block(43, 8, 2, 3);
+    // decadência: barris, caixas, lixo, varal, carroça, bancos
+    A("barrels", 9.1, 6, 0.8, 0); A("crates", 24.15, 6, 0.8, 0); A("garbage", 33.1, 7, 0.9, 1); A("garbage", 12.1, 11, 0.9, 1);
+    A("laundry", 27.3, 11, 1.4, 0); A("cart", 25.2, 11, 1.5, 1); A("barrels", 16.1, 11, 0.8, 1); A("crates", 31.1, 11, 0.8, 1);
+    A("garbage", 41.1, 11, 0.9, 1); A("bench", 36.3, 7, 0.85, 1); A("barrels", 42.1, 7, 0.8, 1);
+    // lampiões: as únicas luzes quentes da rua
     this.lamps = [];
-    for (const [x, y] of [[17, 11], [30, 11], [17, 21], [30, 21], [22, 24], [25, 24], [19, 29], [28, 29], [8, 18], [14, 18], [33, 18], [38, 18], [20, 26], [36, 29]])
-      this.lamps.push(A("lamp", x, y, 0.55, 1));
-    // NPCs e lugares
-    this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 4, y: 15, w: 2, h: 1 });
-    this.npc("npc_depot_guard", 7, 15, "Guarda do Depot", "depot", { x: 6, y: 15, w: 2, h: 2 });
-    this.npc("npc_potion_seller", 34, 15, "Vendedora de Poções", "potions", { x: 31, y: 15, w: 4, h: 2 });
-    this.npc("npc_smith", 37, 15, "Ferreiro", "smith", { x: 35, y: 15, w: 4, h: 2 });
-    this.zones.push({ name: "Porta da torre", kind: "tower", x: 41, y: 10, w: 3, h: 1 });
-    this.zones.push({ name: "Templo de Magdha", kind: "hall", x: 22, y: 10, w: 4, h: 1 });
-    // bueiro do esgoto no beco do sul
-    this.manhole = { x: 40, y: 30 };
-    const mh = this.add.image(40 * T + T / 2, 30 * T + T / 2, "decor_manhole").setDepth(-5);
-    mh.setScale(T * 0.9 / mh.width); this.world.add(mh);
-    this.zones.push({ name: "Entrada dos Esgotos", kind: "sewer", x: 39, y: 29, w: 3, h: 2 });
-    // a saída é logo antes da arte do portão (que ocupa as 6 linhas de baixo): ninguém anda por cima das ameias
-    this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 23, y: TOWN_H - 7, w: 2, h: 1, step: true });
-    this.block(23, TOWN_H - 6, 2, 6);
+    for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
+    // NPCs e lugares (na calçada, em frente de cada casa)
+    this.npc("npc_smith", 7, 7, "Ferreiro", "smith", { x: 5, y: 7, w: 4, h: 2 });
+    this.zones.push({ name: "A Harpa Dançante", kind: "inn", x: 16, y: 7, w: 3, h: 1 });
+    this.npc("npc_potion_seller", 22, 7, "Vendedora de Poções", "potions", { x: 21, y: 7, w: 3, h: 2 });
+    this.npc("npc_depot_guard", 9, 11, "Guarda do Depot", "depot", { x: 7, y: 10, w: 2, h: 2 });
+    this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 10, y: 11, w: 2, h: 1 });
+    this.zones.push({ name: "Acomodação", kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
+    this.zones.push({ name: "Estátua da Deusa", kind: "hall", x: 38, y: 8, w: 3, h: 2 });
+    this.zones.push({ name: "Entrada dos Esgotos", kind: "sewer", x: 42, y: 8, w: 1, h: 3 });
+    this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
   }
 
   npc(tex, x, y, name, kind, zone) {
@@ -176,11 +152,11 @@ class TownScene extends Phaser.Scene {
   // ------------------------------------------------------------ herói
   spawnHero() {
     const from = this.registry.get("townSpawn") || "gate", pos = this.registry.get("townPos");
-    const [x, y] = from === "here" && pos ? pos : from === "sewer" ? [40, 28] : [24, 28];
-    const h = this.hero = { x, y, px: x * T + T / 2, py: y * T + T - 4, moveT: 0, facing: from === "sewer" ? [0, 1] : [0, -1], lookLeft: false };
+    const [x, y] = from === "here" && pos ? pos : from === "sewer" ? [41, 9] : [4, 9];
+    const h = this.hero = { x, y, px: x * T + T / 2, py: y * T + T - 4, moveT: 0, facing: from === "sewer" ? [-1, 0] : [1, 0], lookLeft: false };
     h.shadow = this.add.image(h.px, h.py - 3, "shadow").setScale(0.9, 0.3);
     const ap = vocAnim(this.vocId);
-    h.spr = this.add.sprite(h.px, h.py + 4, ap + "idle_up").setOrigin(0.5, 1).setScale(vocScale(this.vocId)).play(from === "sewer" ? ap + "idle_down" : ap + "idle_up");
+    h.spr = this.add.sprite(h.px, h.py + 4, ap + "idle_up").setOrigin(0.5, 1).setScale(vocScale(this.vocId)).play(ap + "idle_side");
     this.world.add([h.shadow, h.spr]);
     const cam = this.cameras.main;
     cam.setBounds(0, 0, TOWN_W * T, TOWN_H * T);
@@ -211,7 +187,6 @@ class TownScene extends Phaser.Scene {
     if (h.spr.anims.currentAnim.key !== anim) h.spr.play(anim, true);
     h.spr.setFlipX(dir === "side" && h.lookLeft).setTint(TOWN_TINT);
     h.spr.setPosition(Math.round(h.px), Math.round(h.py + 4)).setDepth(h.py);
-    if (this.gateImg) this.gateImg.setDepth(h.y >= TOWN_H - 3 ? h.py + 1 : 29 * T);
     h.shadow.setPosition(h.px, h.py - 3).setDepth(h.py - 1);
     // dica de interação
     const z = this.zoneHere();
@@ -276,8 +251,12 @@ class TownScene extends Phaser.Scene {
         [["Até mais", () => this.closeDialog()]]);
     } else if (z.kind === "tower") {
       this.say("Torre de Vigia", "A porta range. Uma escada em caracol sobe no escuro até o terraço.", [["Subir ao topo", () => this.towerView()], ["Ficar aqui", () => this.closeDialog()]]);
+    } else if (z.kind === "inn") {
+      this.say("A Harpa Dançante", "Música abafada e cheiro de cerveja azeda. O taverneiro limpa um copo e te olha como quem já te viu antes.\n\n\"Você estava aqui ontem? Não lembra? Ninguém lembra de nada em Karhyn.\"", [["Sair", () => this.closeDialog()]]);
+    } else if (z.kind === "lodging") {
+      this.say("Acomodação", "Quartos úmidos, cama de palha e uma vela. A dona cobra pouco e não faz perguntas.", [["Descansar (recupera tudo)", () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], ["Sair", () => this.closeDialog()]]);
     } else if (z.kind === "hall") {
-      this.say("Templo", "Os mestres de armas de Karhyn treinam quem paga em ouro: vida, velocidade de ataque, armadura e fúria.",
+      this.say("Estátua da Deusa", "Os mestres de armas de Karhyn treinam quem paga em ouro: vida, velocidade de ataque, armadura e fúria.",
         [["Treinar atributos", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], ["Sair", () => this.closeDialog()]]);
     }
   }
@@ -295,7 +274,7 @@ class TownScene extends Phaser.Scene {
   // ------------------------------------------------------------ interface
   buildUi() {
     const ui = this.uiLayer;
-    ui.add(txt(this, 14, 10, "Cidadela de Karhyn", 22, COLORS.gold));
+    ui.add(txt(this, 14, 10, "Vila de Karhyn", 22, COLORS.gold));
     this.goldT = txt(this, VIEW_W - 14, 14, `${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`, 14, COLORS.gold).setOrigin(1, 0);
     ui.add(this.goldT);
     ui.add(txt(this, 14, VIEW_H - 22, "WASD/setas: andar · E: falar/usar · Esc: menu · roda: zoom", 11, COLORS.dim));
@@ -324,7 +303,8 @@ class TownScene extends Phaser.Scene {
   // ------------------------------------------------------------ hora do dia, chuva e minimapa
   // ciclo completo de 6 minutos; a hora continua de uma visita para a outra
   skyUpdate(dt) {
-    let t = ((this.registry.get("townClock") ?? 0.38) + dt / 360) % 1;
+    let t = ((this.registry.get("townClock") ?? 0.9) + dt / 360) % 1;
+    if (t > 0.12 && t < 0.8) t = 0.8;   // Karhyn vive na noite
     this.registry.set("townClock", t);
     // escuridão 0 (dia) .. 1 (noite): dia 0,30–0,62, entardecer até 0,75, noite até 0,18, amanhecer até 0,30
     const d = t < 0.18 ? 1 : t < 0.30 ? 1 - (t - 0.18) / 0.12 : t < 0.62 ? 0 : t < 0.75 ? (t - 0.62) / 0.13 : 1;
@@ -348,7 +328,7 @@ class TownScene extends Phaser.Scene {
     this.rainT -= dt;
     if (this.rainT <= 0) {
       this.raining = !this.raining;
-      this.rainT = this.raining ? Phaser.Math.Between(60, 120) : Phaser.Math.Between(90, 240);
+      this.rainT = this.raining ? Phaser.Math.Between(240, 480) : Phaser.Math.Between(20, 45);   // chove quase sempre
       this.rainFx.emitting = this.raining;
     }
     this.rainVeil.setAlpha(Phaser.Math.Linear(this.rainVeil.alpha, this.raining ? 0.18 : 0, 0.02));
@@ -359,7 +339,7 @@ class TownScene extends Phaser.Scene {
     g.clear();
     const blink = 0.5 + 0.5 * Math.sin(this.time.now / 180);
     g.fillStyle(0x7fe08a, 0.4 + 0.6 * blink).fillCircle(m.x + (this.manhole.x + 0.5) * S, m.y + (this.manhole.y + 0.5) * S, 4);
-    for (const z of this.zones) if (["depot", "potions", "smith", "hall", "tower"].includes(z.kind)) g.fillStyle(0xe0bc60, 1).fillRect(m.x + (z.x + z.w / 2) * S - 1, m.y + (z.y + z.h / 2) * S - 1, 3, 3);
+    for (const z of this.zones) if (["depot", "potions", "smith", "hall", "inn", "lodging"].includes(z.kind)) g.fillStyle(0xe0bc60, 1).fillRect(m.x + (z.x + z.w / 2) * S - 1, m.y + (z.y + z.h / 2) * S - 1, 3, 3);
     g.fillStyle(0xffffff, 1).fillRect(m.x + h.x * S, m.y + h.y * S, S, S);
   }
 
@@ -520,7 +500,7 @@ class TownScene extends Phaser.Scene {
       rotate: 8, alpha: { start: 0.45, end: 0.25 }, tint: 0xb4c4dc, quantity: 3, frequency: 12, emitting: false });
     this.uiLayer.addAt(this.rainFx, 1);
     this.rainVeil = this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x10141e, 0).setOrigin(0); this.uiLayer.addAt(this.rainVeil, 1);
-    this.raining = false; this.rainT = Phaser.Math.Between(40, 120);
+    this.raining = true; this.rainT = Phaser.Math.Between(240, 480); this.rainFx.emitting = true;
     for (let i = 0; i < 8; i++) {
       const f = this.add.image(Phaser.Math.Between(0, W), Phaser.Math.Between(0, H), "light").setScale(Phaser.Math.FloatBetween(3, 5), Phaser.Math.FloatBetween(0.8, 1.2))
         .setTint(0xc8d0d8).setAlpha(Phaser.Math.FloatBetween(0.04, 0.08)).setDepth(800002);
@@ -533,17 +513,15 @@ class TownScene extends Phaser.Scene {
       this.world.add(fl);
       this.tweens.add({ targets: fl, scaleX: 0.05, scaleY: 0.1, alpha: 0.7, duration: Phaser.Math.Between(90, 160), yoyo: true, repeat: -1 });
     }
-    // fonte: ondas na bacia
-    const fx0 = this.fountain.x, fy0 = this.fountain.y - this.fountain.displayHeight * 0.42;
-    for (let i = 0; i < 3; i++) {
-      const r = this.add.ellipse(fx0, fy0, 20, 8).setStrokeStyle(2, 0xbfe0f0, 0.5).setDepth(this.fountain.depth + 1); this.world.add(r);
-      this.tweens.add({ targets: r, scaleX: 4, scaleY: 4, alpha: 0, duration: 2200, delay: i * 730, repeat: -1 });
-    }
-    // água da fonte: respingos
-    const fx = this.fountain.x, fy = this.fountain.y - this.fountain.displayHeight * 0.55;
-    const p = this.add.particles(fx, fy, "light", { lifespan: 700, speedY: { min: -60, max: -30 }, speedX: { min: -18, max: 18 }, gravityY: 160,
-      scale: { start: 0.02, end: 0.005 }, alpha: { start: 0.7, end: 0 }, tint: 0xcfe4ff, frequency: 70 });
-    p.setDepth(this.fountain.depth + 1); this.world.add(p);
+    // feixe de luz sobre a estátua da deusa: coluna pálida que desce do céu, com poeira brilhando dentro
+    const st = this.statue, bx = st.x, by = st.y - st.displayHeight * 0.5;
+    const beam = this.add.image(bx, by - 120, "light").setTint(0xfff0c8).setBlendMode(Phaser.BlendModes.ADD).setScale(0.55, 3.2).setAlpha(0.32).setDepth(800003);
+    const pool = this.add.image(bx, st.y - 6, "light").setTint(0xffe0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.9, 0.35).setAlpha(0.4).setDepth(800003);
+    this.world.add([beam, pool]);
+    this.tweens.add({ targets: [beam, pool], alpha: "*=0.75", duration: 2600, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+    const motes = this.add.particles(bx, by - 40, "light", { x: { min: -14, max: 14 }, y: { min: -90, max: 30 }, lifespan: 2400, speedY: { min: 6, max: 14 },
+      scale: { start: 0.012, end: 0.004 }, alpha: { start: 0.8, end: 0 }, tint: 0xfff0c0, frequency: 160, blendMode: "ADD" });
+    motes.setDepth(800004); this.world.add(motes);
   }
 
   // ------------------------------------------------------------ artes provisórias (até chegarem as do SpriteCook)

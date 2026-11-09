@@ -10,7 +10,7 @@ const TG = (() => {
     stone: ["#38383e", "#43434a", "#4e4e56", "#595962"], mortar: "#25252a", stoneHi: "#6a6a73",
     moss: ["#33402a", "#3d4c30", "#485a36"],
     wood: ["#33241a", "#3f2d20", "#4c3727", "#5a4230", "#6a4e38"],
-    plaster: ["#b7ae98", "#c4bba4", "#d0c8b2"], timber: "#2b2018",
+    plaster: ["#7e776a", "#8b8476", "#978f80"], timber: "#1e1712",
     roofRed: ["#4a1814", "#5a1e19", "#6b241e", "#7c2c24"], slate: ["#262a33", "#2f343f", "#383f4b", "#424a58"],
     thatch: ["#46391f", "#55462a", "#635233", "#72603c"],
     glass: ["#141a24", "#1d2633", "#2a3646"], lit: ["#a86a2a", "#d8a24a", "#f0c870"],
@@ -320,6 +320,52 @@ const TG = (() => {
       p.outline(); return p.cv; },
   };
 
+  // ---- vila de Karhyn (rua única leste–oeste)
+  Object.assign(MAKERS, {
+    v_smith: w => building(w, "v_smith", { stories: 2, roof: "slate", chimney: [0.2], windows: 2, lit: true,
+      extra: (p, g) => { sign(p, g.dx + g.dw + 3, g.dy - 3, (x, y) => { p.rect(x, y + 3, 7, 2, C.iron[2]); p.rect(x + 2, y + 1, 1, 4, C.wood[4]); p.rect(x + 5, y + 1, 1, 4, C.wood[4]); });
+        p.rect(g.dx - 12, g.H - 14, 9, 7, "#ff7a1a"); p.rect(g.dx - 11, g.H - 13, 7, 3, "#ffd060"); for (let i = 0; i < 6; i++) p.rect(Math.round(0.2 * g.W) + 2 + (i % 2), 0 - i, 2, 1, "rgba(140,140,150,0.5)"); } }),
+    v_inn: w => building(w, "v_inn", { stories: 2, roof: "slate", chimney: [0.15, 0.8], windows: 4, lit: true, doorW: 18,
+      extra: (p, g) => { p.rect(g.dx, g.dy + 2, g.dw, g.dh - 2, "#d8a24a"); p.rect(g.dx + 2, g.dy + 4, g.dw - 4, g.dh - 6, "#f0c870");   // porta aberta e acesa
+        sign(p, g.dx + g.dw + 3, g.dy - 5, (x, y) => { p.rect(x + 1, y, 1, 5, "#c8a050"); p.rect(x + 1, y, 5, 1, "#c8a050"); for (let i = 0; i < 4; i++) p.rect(x + 2 + i, y + 1 + i, 1, 4 - i, "#c8a050"); }); } }),
+    v_potion: w => MAKERS.potion_shop(w),
+    v_depot: w => building(w, "v_depot", { stories: 2, roof: "slate", wall: "stone", windows: 2, doorW: 16,
+      extra: (p, g) => { p.rect(g.dx + g.dw / 2 - 2, g.dy + g.dh / 2, 4, 4, "#8a7a3a"); sign(p, g.dx + g.dw + 3, g.dy - 3, (x, y) => { p.rect(x, y + 1, 7, 4, C.iron[2]); p.rect(x + 3, y + 2, 1, 2, "#c8a050"); }); } }),
+    v_lodging: w => building(w, "v_lodging", { stories: 2, roof: "slate", chimney: [0.7], windows: 3, lit: false,
+      extra: (p, g) => { p.window(Math.round(g.W * 0.2), g.fy + 8, 8, 11, true, true);   // poucas janelas acesas
+        for (let x = 0; x < g.W; x++) p.rect(x, g.top + g.roofH - 3 + Math.round(Math.sin(x / g.W * Math.PI) * 3), 1, 2, C.slate[0]);   // telhado cedendo
+        sign(p, g.dx + g.dw + 3, g.dy - 3, (x, y) => { p.rect(x, y + 3, 6, 2, "#c8b890"); p.rect(x, y + 1, 2, 2, "#c8b890"); p.rect(x, y + 5, 1, 1, C.wood[1]); p.rect(x + 5, y + 5, 1, 1, C.wood[1]); }); } }),
+    v_ruin: w => building(w, "v_ruin" + w, { stories: 1, storyH: 40, roof: "thatch", roofH: 30, wall: "rough", windows: 2,
+      extra: (p, g) => { p.c.clearRect(Math.round(g.W * 0.6), g.top, Math.round(g.W * 0.25), 8); p.rect(Math.round(g.W * 0.6), g.top + 8, Math.round(g.W * 0.25), 2, C.wood[0]);   // buraco no telhado
+        p.planks(Math.round(g.W * 0.15), g.fy + 10, 9, 9, false); } }),
+    // portão de pedra a oeste: arco de frente, grade meio levantada
+    v_gate: w => { const W = Math.round(w * D), H = 3 * D + 20, p = new Pix(W, H, "v_gate"), cx = W / 2;
+      p.stones(0, 14, W, H - 14, C.stone, 8, 5, 0.25); p.rect(0, 8, W, 8, C.stone[2]); p.crenels(0, 2, W, 6, 7); p.rect(0, 16, W, 2, C.mortar);
+      const ax = cx - 16, aw = 32, ay = 38; p.rect(ax - 3, ay - 4, aw + 6, H - ay + 4, C.stone[3]); p.rect(ax, ay, aw, H - ay, "#0e0d10");
+      for (let i = 0; i < aw / 2; i++) { const d = Math.round(16 - Math.sqrt(Math.max(0, 256 - (16 - i) ** 2))); p.rect(ax + i, ay, 1, d, C.stone[3]); p.rect(ax + aw - 1 - i, ay, 1, d, C.stone[3]); }
+      for (let xx = ax + 2; xx < ax + aw - 1; xx += 4) p.rect(xx, ay + 4, 1, 22, C.iron[1]); p.rect(ax + 1, ay + 12, aw - 2, 1, C.iron[1]); p.rect(ax + 1, ay + 25, aw - 2, 2, C.iron[2]);
+      for (let i = 0; i < 6; i++) p.rect(p.int(4, W - 5), p.int(20, H - 6), 1, p.int(4, 10), "rgba(140,170,200,0.35)");   // chuva escorrendo
+      p.outline(); return p.cv; },
+    // entrada do esgoto: arco baixo de pedra com grade enferrujada e água escura escorrendo
+    v_sewer: w => { const W = Math.round(w * D), H = 2 * D + 6, p = new Pix(W, H, "v_sewer"), cx = W / 2;
+      p.stones(0, 6, W, H - 6, ["#3a3c40", "#44464a", "#4e5054"], 7, 4, 0.35);
+      p.rect(cx - 18, 18, 36, H - 18, "#09090b");
+      for (let i = 0; i < 18; i++) { const d = Math.round(18 - Math.sqrt(Math.max(0, 324 - (18 - i) ** 2))); p.rect(cx - 18 + i, 18, 1, d, "#4e5054"); p.rect(cx + 17 - i, 18, 1, d, "#4e5054"); }
+      for (let xx = cx - 15; xx < cx + 16; xx += 5) p.rect(xx, 22, 2, H - 26, "#5a3a24");
+      p.rect(cx - 16, 34, 32, 2, "#6a4428"); p.rect(cx - 16, 48, 32, 2, "#6a4428");
+      p.rect(cx - 10, H - 6, 20, 6, "#1c2a24"); p.speckle(cx - 10, H - 6, 20, 6, ["#2a3e34", "#16201c"], 0.5);
+      p.outline(); return p.cv; },
+    garbage: w => { const W = Math.round(w * D), p = new Pix(W, 18, "garbage" + w);
+      p.ellipse(W / 2, 12, W / 2 - 3, 5, "#2e2a22"); for (let i = 0; i < 40; i++) p.rect(p.int(4, W - 6), p.int(6, 15), p.int(1, 3), p.int(1, 2), p.pick(["#4a4232", "#5a4a30", "#3a3a2a", "#6a5a3a", "#7a6a4a", "#2a2a30", "#8a3a2a"]));
+      p.rect(W / 2 - 3, 4, 6, 6, C.wood[2]); p.outline(); return p.cv; },
+    laundry: w => { const W = Math.round(w * D), p = new Pix(W, 40, "laundry");
+      p.rect(1, 2, 2, 38, C.wood[1]); p.rect(W - 3, 2, 2, 38, C.wood[1]);
+      for (let x = 3; x < W - 3; x++) p.px(x, 6 + Math.round(Math.sin((x - 3) / (W - 6) * Math.PI) * 3), "#6a6050");
+      const cl = [["#6a5a4a", 9, 12], ["#4a5262", 7, 15], ["#7a7060", 10, 10], ["#5a3a3a", 8, 13]];
+      let x = 6; for (const [c, cw, chh] of cl) { if (x + cw > W - 4) break; const y = 7 + Math.round(Math.sin((x - 3) / (W - 6) * Math.PI) * 3); p.rect(x, y, cw, chh, c); p.rect(x, y, cw, 1, "#00000055"); x += cw + 3; }
+      p.outline(); return p.cv; },
+  });
+
   function stall(w, color) {
     const W = Math.round(w * D), p = new Pix(W, 54, "stall" + color), cl = C.cloth[color];
     p.rect(3, 14, 2, 38, C.wood[1]); p.rect(W - 5, 14, 2, 38, C.wood[1]);
@@ -347,6 +393,10 @@ const TG = (() => {
         p.rect(x0, y0, D, D, "#3e3022");
         for (let i = 0; i < 90; i++) p.rect(x0 + p.int(0, D - 1), y0 + p.int(0, D - 1), p.int(1, 3), 1, p.pick(["#352a1e", "#4a3a28", "#55432e", "#3a2c20"]));
         for (let i = 0; i < 3; i++) p.rect(x0 + p.int(1, D - 3), y0 + p.int(1, D - 3), 2, 1, "#6a5a44");
+        if (p.r() < 0.24) {   // poça de chuva: escura, com o céu frio refletido e um brilho
+          const cx = x0 + p.int(9, D - 9), cy = y0 + p.int(8, D - 8), rx = p.int(4, 8), ry = p.int(2, 4);
+          p.ellipse(cx, cy, rx + 1, ry + 1, "#2a2218"); p.ellipse(cx, cy, rx, ry, "#1c2430"); p.rect(cx - rx + 2, cy - 1, Math.max(2, rx - 1), 1, "#3e4c60"); p.px(cx + 1, cy, "#8a9ab0");
+        }
       } else if (t === "c") {   // paralelepípedos irregulares: fileiras de pedras de tamanhos variados, juntas desencontradas
         p.rect(x0, y0, D, D, "#29292d");
         for (let by = y0, row = 0; by < y0 + D; row++) {
