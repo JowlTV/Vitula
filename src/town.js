@@ -110,10 +110,12 @@ class TownScene extends Phaser.Scene {
     // portão de pedra a oeste (3×3), por onde o herói chega sem lembrar de nada
     this.gateImg = A("v_gate", 0, 10, 3, 0); this.block(0, 8, 2, 3);
     // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
-    A("v_smith", 5, 6, 4, 0); A("v_ruin", 10, 6, 3, 0); A("v_inn", 14, 6, 6, 0); A("v_potion", 21, 6, 3, 0);
+    // fachadas do SpriteCook (vk_*); se a imagem faltar, usa a versão desenhada em código
+    const F = (key, kind, x, y, w, wCode) => this.textures.exists(key) ? this.art(key, x, y, w, 0) : A(kind, x, y, wCode, 0);
+    F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); A("v_ruin", 10, 6, 3, 0); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
     A("v_ruin", 25, 6, 3, 0); A("v_ruin", 29, 6, 4, 0); A("v_ruin", 34, 6, 3, 0);
     // sul: Depot, Acomodação (+ casas pobres)
-    A("v_ruin", 3, 14, 3, 0); A("v_depot", 7, 14, 5, 0); A("v_ruin", 13, 14, 3, 0); A("v_lodging", 17, 14, 5, 0);
+    A("v_ruin", 3, 14, 3, 0); F("vk_depot", "v_depot", 7, 14, 5.4, 5); A("v_ruin", 13, 14, 3, 0); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
     A("v_ruin", 23, 14, 4, 0); A("v_ruin", 28, 14, 3, 0); A("v_ruin", 32, 14, 4, 0);
     // estátua da deusa no largo, com o feixe de luz; entrada do esgoto no fim da rua
     const st = this.add.image(39 * T + T / 2, 8 * T + T - 2, "altar_magdha").setOrigin(0.5, 1);
