@@ -1,10 +1,9 @@
 // Cenas de apoio: carregamento e tela de título.
-const ART = ["barrel", "chest_closed", "chest_open", "crate_damaged", "crate_intact", "door_stone_closed", "door_stone_open",
-  "door_wood_closed", "door_wood_open", "door_wood_open_floor", "door_stone_open_floor", "floor", "gas_vent", "i_apple", "i_blue_gem", "i_bread", "i_bronze_key", "i_gold_coin",
+const ART = ["barrel", "chest_closed", "chest_open", "crate_damaged", "crate_intact", "floor", "gas_vent", "i_apple", "i_blue_gem", "i_bread", "i_bronze_key", "i_gold_coin",
   "i_golden_key", "i_health_potion", "i_mana_potion", "i_meat", "i_red_gem", "i_scroll", "i_shield", "i_silver_coin",
-  "i_spell_book", "i_sword", "i_torch", "m_bat", "m_cave_rat", "m_giant_rat", "m_rat", "m_skeleton", "m_slime", "pillar",
+  "i_spell_book", "i_sword", "i_torch", "pillar",
   "pot", "pressure_plate", "stairs", "spikes_extended", "spikes_retracted", "torch_stand", "urn", "wall_face"];
-const DECOR = ["bones", "manhole", "rat_nest"];
+const DECOR = ["bones", "manhole", "rat_nest", "sludge", "grate", "pool", "skeleton", "crate_pile"];
 const SFX = ["boss", "break", "chest", "explode", "gem", "hit", "hurt", "levelup", "pickup"];
 
 // Grenze Gotisch: títulos, cidades, nomes e destaques (size >= 20 ou opts.title); Bulletin: o resto.
@@ -29,8 +28,6 @@ class BootScene extends Phaser.Scene {
     this.load.on("progress", p => bar.width = 300 * p);
     for (const a of ART) this.load.image(a, `assets/art/${a}.png`);
     for (const d of DECOR) this.load.image("decor_" + d, `assets/decor/decor_${d}.png`);
-    this.load.spritesheet("knight", "assets/art/knight.png", { frameWidth: 58, frameHeight: 64 });
-    for (const k of ["k_idle", "k_walk_down", "k_walk_up", "k_walk_side", "k_attack"]) this.load.spritesheet(k, `assets/art/${k}.png`, { frameWidth: 64, frameHeight: 64 });
     // cavaleiro novo: quadros de 192 px, desenhado em 1/3 (mesmo tamanho do antigo de 64 px)
     for (const a of ["idle", "walk", "attack"]) for (const d of ["down", "up", "side"]) this.load.spritesheet(`kn_${a}_${d}`, `assets/art/kn_${a}_${d}.png`, { frameWidth: 192, frameHeight: 192 });
     for (const f of TOWN_FILES.concat(TOWN_ART)) this.load.image(f, `assets/town/${f}.png`);
@@ -75,10 +72,6 @@ class BootScene extends Phaser.Scene {
   create() {
     this.makeRadial("light", 256, [[0, 1], [0.35, 0.6], [1, 0]]);
     this.makeRadial("shadow", 64, [[0, 0.82], [0.5, 0.68], [0.78, 0.32], [1, 0]], 0x000000);
-    this.anims.create({ key: "hero_idle", frames: this.anims.generateFrameNumbers("knight", { start: 0, end: 7 }), frameRate: 6, repeat: -1 });
-    this.anims.create({ key: "hero_walk", frames: this.anims.generateFrameNumbers("knight", { start: 8, end: 15 }), frameRate: 11, repeat: -1 });
-    for (const [k, fps, rep] of [["k_idle", 6, -1], ["k_walk_down", 11, -1], ["k_walk_up", 11, -1], ["k_walk_side", 11, -1], ["k_attack", 18, 0]])
-      this.anims.create({ key: k, frames: this.anims.generateFrameNumbers(k, { start: 0, end: 7 }), frameRate: fps, repeat: rep });
     for (const d of ["down", "up", "side"]) {
       this.anims.create({ key: "kn_idle_" + d, frames: this.anims.generateFrameNumbers("kn_idle_" + d, { start: 0, end: 7 }), frameRate: 6, repeat: -1 });
       // de lado: os quadros 2 e 3 vieram com a capa e o escudo cortados na geração; ficam de fora

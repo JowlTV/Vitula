@@ -5,9 +5,8 @@
 const TOWN_TINT = 0xc2c6d0; // luz fria e nublada da cidade, aplicada no herói e nos NPCs
 const TOWN_W = 48, TOWN_H = 36;
 // artes grandes da cidade que já chegaram do SpriteCook (as que faltam são desenhadas por código até chegarem)
-const TOWN_ART = ["town_gate", "town_hall", "town_tower", "town_fountain", "town_house_red", "town_house_thatch", "town_cypress", "town_lamp", "town_grass", "town_floor_wood", "town_depot_wall", "town_smithy", "town_cobble", "town_rampart"];
-const TOWN_FILES = ["town_street", "town_wall", "town_roof", "town_door", "town_window", "depot_chest", "smith_forge", "smith_bench",
-  "potion_counter", "npc_smith", "npc_potion_seller", "npc_depot_guard"];
+const TOWN_ART = [];   // a cidade é desenhada em código (towngfx.js)
+const TOWN_FILES = ["depot_chest"];
 
 function cityUnlocked() { return true; }
 

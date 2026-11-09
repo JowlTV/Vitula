@@ -382,7 +382,7 @@ Object.assign(DungeonScene.prototype, {
     h.attackT = 0.42;
     h.atkDir = dx ? "side" : (dy < 0 ? "up" : "down");
     h.atkLeft = dx ? dx < 0 : !!h.lookLeft; if (dx) h.lookLeft = dx < 0;
-    const key = this.anims.exists(this.ap + "attack_" + h.atkDir) ? this.ap + "attack_" + h.atkDir : "k_attack";
+    const key = this.anims.exists(this.ap + "attack_" + h.atkDir) ? this.ap + "attack_" + h.atkDir : this.ap + "attack_down";
     h.spr.setFlipX(h.atkDir === "side" && h.atkLeft); h.spr.play(key, false);
   },
 

@@ -74,7 +74,7 @@ Object.assign(DungeonScene.prototype, {
     const p = this.cellPos(start.x, start.y);
     this.hero.shadow = this.add.image(p.x, p.y - 3, "shadow").setScale(0.9, 0.3);
     const ap = this.ap || "kn_", k4 = this.anims.exists(ap + "idle_down");
-    this.hero.spr = this.add.sprite(p.x, p.y + 4, k4 ? ap + "idle_down" : "knight").setOrigin(0.5, 1).play(k4 ? ap + "idle_down" : "hero_idle");
+    this.hero.spr = this.add.sprite(p.x, p.y + 4, ap + "idle_down").setOrigin(0.5, 1).play(ap + "idle_down");
     if (k4) this.hero.spr.setScale(this.heroScale || 0.42);
     this.ents.add([this.hero.shadow, this.hero.spr]);
     this.hero.shadow.setDepth(p.y - 1);
@@ -408,8 +408,12 @@ Object.assign(DungeonScene.prototype, {
       // lodo e ossos encostados na parede de baixo
       for (let k = 0; k < 2; k++) {
         const x = g.rand(r.x + 1, r.x + r.w - 2), y = r.y + r.h - 1;
-        if (k && okC(x, y)) put("bones", x, y, 0.9);
+        if (okC(x, y)) put(k ? "bones" : "sludge", x, y, 0.9);
       }
+      // poça no chão da sala, esqueleto perto da parede de cima, pilha de caixas num canto de cima
+      if (g.rng() < 0.35) { const x = g.rand(r.x + 1, r.x + r.w - 2), y = g.rand(r.y + 1, r.y + r.h - 2); if (okC(x, y)) put("pool", x, y, 0.85); }
+      if (g.rng() < 0.22) { const x = g.rand(r.x + 1, r.x + r.w - 2); if (okC(x, r.y)) put("skeleton", x, r.y); }
+      if (g.rng() < 0.3) { const cx = g.rng() < 0.5 ? r.x : r.x + r.w - 1; if (okC(cx, r.y)) put("crate_pile", cx, r.y); }
     }
     // bueiros redondos na passarela de baixo dos túneis, longe das pontes e das salas
     for (const t of g.tunnels) {
@@ -419,7 +423,7 @@ Object.assign(DungeonScene.prototype, {
       const x = t.h ? m : t.c + 2, y = t.h ? t.c + 2 : m;
       let bad = false;
       for (const [dx, dy] of DIRS8) if (g.isBridge(x + dx, y + dy) || g.isBridge(x, y) || (g.isWalk(x + dx, y + dy) && g.roomOf(x + dx, y + dy) >= 0 && g.rooms[g.roomOf(x + dx, y + dy)].kind === "room")) bad = true;
-      if (!bad && g.isWalk(x, y)) put("manhole", x, y);
+      if (!bad && g.isWalk(x, y)) put(g.rng() < 0.5 ? "manhole" : "grate", x, y);
     }
   },
 
