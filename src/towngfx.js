@@ -379,7 +379,23 @@ const TG = (() => {
 
   // ----------------------------------------------------------------- chão (grama, terra, ruas, calçadas, praça)
   // desenha na resolução de projeto e devolve um canvas do tamanho final (casa = 64 px)
-  function ground(G, TW, TH, T) {
+  // grade dupla (SpriteCook, 15 peças): cada canto entre 4 casas escolhe a peça pela máscara TL=1 TR=2 BL=4 BR=8
+  const FRAME = [-1, 15, 8, 9, 0, 11, 14, 7, 13, 4, 1, 10, 3, 2, 5, 6];
+  function dualGrid(p, img, TW, TH, inside, skipFill = false) {
+    if (!img) return;
+    const at = (x, y) => x >= 0 && y >= 0 && x < TW && y < TH && inside(x, y);
+    for (let y = 0; y <= TH; y++) for (let x = 0; x <= TW; x++) {
+      const m = (at(x - 1, y - 1) ? 1 : 0) | (at(x, y - 1) ? 2 : 0) | (at(x - 1, y) ? 4 : 0) | (at(x, y) ? 8 : 0), f = FRAME[m];
+      if (f < 0 || (skipFill && m === 15)) continue;
+      if (m === 15) {   // miolo: espelha/gira ao acaso para a peça cheia não formar padrão repetido
+        const h = ((x * 73856093) ^ (y * 19349663)) >>> 0, fx = h & 1 ? -1 : 1, fy = h & 2 ? -1 : 1, rot = (h >> 2) & 1;
+        p.c.save(); p.c.translate(x * D, y * D); if (rot) p.c.rotate(Math.PI / 2); p.c.scale(fx, fy);
+        p.c.drawImage(img, (f % 4) * D, Math.floor(f / 4) * D, D, D, -D / 2, -D / 2, D, D); p.c.restore();
+      } else p.c.drawImage(img, (f % 4) * D, Math.floor(f / 4) * D, D, D, x * D - D / 2, y * D - D / 2, D, D);
+    }
+  }
+
+  function ground(G, TW, TH, T, atlas = {}) {
     const W = TW * D, H = TH * D, p = new Pix(W, H, "chao-karhyn");
     const at = (x, y) => (x < 0 || y < 0 || x >= TW || y >= TH) ? "w" : G[y][x];
     // grama: base + manchas + tufos
@@ -427,6 +443,8 @@ const TG = (() => {
         }
       }
     }
+    // tilesets do SpriteCook por cima do desenho em código: rua (terra + paralelepípedo) e muro
+    if (atlas.street) dualGrid(p, atlas.street, TW, TH, (x, y) => G[y][x] === "d" || G[y][x] === "c", true);   // a peça cheia não é uniforme: miolo fica com a terra em código
     // bordas: meio-fio claro onde pedra encontra grama/terra, tufos de grama avançando, sombra fina
     const paved = t => t === "c" || t === "p" || t === "s";
     for (let ty = 0; ty < TH; ty++) for (let tx = 0; tx < TW; tx++) {
@@ -451,6 +469,7 @@ const TG = (() => {
       p.rect(tx0 === 0 ? x0 + 2 * D : x0 - 3, y0, 3, D, "rgba(0,0,0,0.35)");
     }
     p.rect(0, 0, W, 2 * D, "#1c1c20");
+    if (atlas.wall) dualGrid(p, atlas.wall, TW, TH, (x, y) => G[y][x] === "w");
     // amplia 2× para a casa de 64 px
     const out = document.createElement("canvas"); out.width = TW * T; out.height = TH * T;
     const oc = out.getContext("2d"); oc.imageSmoothingEnabled = false; oc.drawImage(p.cv, 0, 0, out.width, out.height);
