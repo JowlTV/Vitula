@@ -107,11 +107,11 @@ class TownScene extends Phaser.Scene {
 
   placeThings() {
     const A = (t, x, y, w, fd, solid) => this.art("k2_" + t, x, y, w, fd, solid);
-    // portão de pedra a oeste (3×3), por onde o herói chega sem lembrar de nada
-    this.gateImg = A("v_gate", 0, 10, 3, 0); this.block(0, 8, 2, 3);
-    // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
-    // fachadas do SpriteCook (vk_*); se a imagem faltar, usa a versão desenhada em código
+    // peças do SpriteCook (vk_*); se a imagem faltar, usa a versão desenhada em código
     const F = (key, kind, x, y, w, wCode) => this.textures.exists(key) ? this.art(key, x, y, w, 0) : A(kind, x, y, wCode, 0);
+    // portão de pedra a oeste (3×3), por onde o herói chega sem lembrar de nada
+    this.gateImg = F("vk_portao", "v_gate", 0, 10, 3, 3); this.block(0, 8, 2, 3);
+    // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
     F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); A("v_ruin", 10, 6, 3, 0); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
     A("v_ruin", 25, 6, 3, 0); A("v_ruin", 29, 6, 4, 0); A("v_ruin", 34, 6, 3, 0);
     // sul: Depot, Acomodação (+ casas pobres)
@@ -122,7 +122,7 @@ class TownScene extends Phaser.Scene {
     st.setScale(T * 1.1 / st.width).setDepth(9 * T - 2).setTint(TOWN_TINT); this.world.add(st); groundShadow(this, st, this.world, 0.7);
     this.block(39, 8, 1, 1); this.statue = st;
     this.manhole = { x: 43, y: 9 };
-    A("v_sewer", 43, 10, 2, 0); this.block(43, 8, 2, 3);
+    F("vk_esgoto", "v_sewer", 43, 10, 2, 2); this.block(43, 8, 2, 3);
     // decadência: barris, caixas, lixo, varal, carroça, bancos
     A("barrels", 9.1, 6, 0.8, 0); A("crates", 24.15, 6, 0.8, 0); A("garbage", 33.1, 7, 0.9, 1); A("garbage", 12.1, 11, 0.9, 1);
     A("laundry", 27.3, 11, 1.4, 0); A("cart", 25.2, 11, 1.5, 1); A("barrels", 16.1, 11, 0.8, 1); A("crates", 31.1, 11, 0.8, 1);
