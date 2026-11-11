@@ -68,7 +68,7 @@ class TownScene extends Phaser.Scene {
     rect(0, 0, 1, TOWN_H - 1, "w"); rect(TOWN_W - 1, 0, TOWN_W - 1, TOWN_H - 1, "w");
     rect(2, 7, TOWN_W - 2, 7, "s"); rect(2, 11, TOWN_W - 2, 11, "s");       // calçadas
     rect(0, 8, TOWN_W - 2, 10, "d");                                         // rua de terra
-    rect(36, 7, 41, 11, "c");                                                // largo de pedra da estátua
+    rect(36, 7, 41, 11, "c"); rect(42, 8, 44, 10, "c");   // calçamento em volta do bueiro                                                // largo de pedra da estátua
     for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) if (g[y][x] === "w") this.solid.add(this.key(x, y));
     this.block(2, 2, TOWN_W - 3, 5); this.block(2, 12, TOWN_W - 3, 4);   // casas do sul (base na 14) e o quintal atrás delas     // quarteirões (as casas cobrem tudo)
   }
@@ -77,7 +77,8 @@ class TownScene extends Phaser.Scene {
   drawGround() {
     const W = TOWN_W * T, H = TOWN_H * T;
     const src = k => this.textures.exists(k) ? this.textures.get(k).getSourceImage() : null;
-    this.textures.addCanvas("town_ground", TG.ground(this.ground, TOWN_W, TOWN_H, T, { street: src("vk_ts_piso"), wall: src("vk_ts_muro") }));   // sem cópia extra do canvas
+    this.textures.addCanvas("town_ground", TG.ground(this.ground, TOWN_W, TOWN_H, T, { street: src("vk_ts_piso"), wall: src("vk_ts_muro") }));
+    this.textures.get("town_ground").setFilter(Phaser.Textures.FilterMode.NEAREST);   // pixels nítidos no zoom (sem borrão)   // sem cópia extra do canvas
     this.world.add(this.add.image(0, 0, "town_ground").setOrigin(0).setDepth(-10));
   }
 
@@ -89,6 +90,7 @@ class TownScene extends Phaser.Scene {
     if (kind && TG.MAKERS[kind]) { const k = `tg_${kind}_${w}`; tex = this.textures.exists(k) ? k : TG.make(this, k, kind, w); }
     const img = this.add.image((bx + w / 2) * T, (by + 1) * T, tex).setOrigin(0.5, 1);
     img.setScale(w * T / img.width).setDepth((by + 1) * T - 2).setTint(TOWN_TINT);
+    img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.world.add(img); groundShadow(this, img, this.world, w > 2 ? 0.95 : 0.85, w > 2 ? 0.55 : 0.9);
     if (solid && fd > 0) this.block(Math.floor(bx), by - fd + 1, Math.ceil(w), fd);
     return img;
@@ -118,15 +120,18 @@ class TownScene extends Phaser.Scene {
     A("v_ruin", 3, 14, 3, 0); F("vk_depot", "v_depot", 7, 14, 5.4, 5); A("v_ruin", 13, 14, 3, 0); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
     A("v_ruin", 23, 14, 4, 0); A("v_ruin", 28, 14, 3, 0); A("v_ruin", 32, 14, 4, 0);
     // estátua da deusa no largo, com o feixe de luz; entrada do esgoto no fim da rua
-    const st = this.add.image(39 * T + T / 2, 8 * T + T - 2, "altar_magdha").setOrigin(0.5, 1);
-    st.setScale(T * 1.1 / st.width).setDepth(9 * T - 2).setTint(TOWN_TINT); this.world.add(st); groundShadow(this, st, this.world, 0.7);
-    this.block(39, 8, 1, 1); this.statue = st;
+    const st = this.add.image(39 * T, 7 * T + T - 2, "altar_magdha").setOrigin(0.5, 1);   // 2× maior e uma casa acima, no alto do largo
+    st.setScale(T * 2.2 / st.width).setDepth(8 * T - 2).setTint(TOWN_TINT); this.world.add(st); groundShadow(this, st, this.world, 0.7);
+    this.block(38, 7, 2, 1); this.statue = st;
     this.manhole = { x: 43, y: 9 };
-    { const mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, "decor_manhole").setDepth(-5); mh.setScale(T * 1.5 / mh.width); this.world.add(mh); this.block(43, 9, 1, 1); }   // descida do bueiro vista de cima (arte própria na fila de geração)
+    { const mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, "decor_manhole").setDepth(-5); mh.setScale(T * 0.8 / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
     // decadência: barris, caixas, lixo, varal, carroça, bancos
-    A("barrels", 9.1, 6, 0.8, 0); A("crates", 24.15, 6, 0.8, 0); A("garbage", 33.1, 7, 0.9, 1); A("garbage", 12.1, 11, 0.9, 1);
-    A("laundry", 27.3, 11, 1.4, 0); A("cart", 25.2, 11, 1.5, 1); A("barrels", 16.1, 11, 0.8, 1); A("crates", 31.1, 11, 0.8, 1);
-    A("garbage", 41.1, 11, 0.9, 1); A("bench", 36.3, 7, 0.85, 1); A("barrels", 42.1, 7, 0.8, 1);
+    // props do SpriteCook (vkp_*), com a versão em código de reserva
+    const P = (n, code, x, y, w, wCode, fd = 1) => this.textures.exists("vkp_" + n) ? this.art("vkp_" + n, x + (1 - w) / 2, y, w, fd) : A(code, x, y, wCode, fd);
+    P("barrel", "barrels", 9, 6, 0.6, 0.8, 0); P("crate", "crates", 24, 6, 0.75, 0.8, 0); P("garbage", "garbage", 33, 7, 0.9, 0.9); P("garbage", "garbage", 12, 11, 0.9, 0.9);
+    P("laundry", "laundry", 27, 11, 1.1, 1.4, 0); P("cart", "cart", 25, 11, 0.95, 1.5); P("barrel", "barrels", 16, 11, 0.6, 0.8); P("crate", "crates", 31, 11, 0.75, 0.8);
+    P("garbage", "garbage", 41, 11, 0.9, 0.9); P("bench", "bench", 36, 7, 0.95, 0.85); P("barrel", "barrels", 42, 7, 0.6, 0.8);
+    P("firewood", "crates", 13, 7, 0.8, 0.8); P("wheel", "garbage", 30, 7, 0.75, 0.9); P("firewood", "crates", 22, 11, 0.8, 0.8); P("barrel", "barrels", 35, 11, 0.6, 0.8);
     // lampiões: as únicas luzes quentes da rua
     this.lamps = [];
     for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
@@ -137,8 +142,8 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: "Depot (entrar)", kind: "depot", x: 7, y: 11, w: 3, h: 1 });
     this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 10, y: 11, w: 2, h: 1 });
     this.zones.push({ name: "Acomodação", kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
-    this.zones.push({ name: "Estátua da Deusa", kind: "hall", x: 38, y: 8, w: 3, h: 2 });
-    this.zones.push({ name: "Descer ao esgoto", kind: "sewer", x: 42, y: 8, w: 3, h: 3 });
+    this.zones.push({ name: "Estátua da Deusa", kind: "hall", x: 37, y: 8, w: 4, h: 1 });
+    this.zones.push({ name: "Descer ao esgoto", kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
     this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
   }
 
