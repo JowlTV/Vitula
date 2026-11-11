@@ -485,7 +485,8 @@ const TG = (() => {
       }
     }
     // muralhas laterais vistas de cima: passadiço de pedra com ameias dos dois lados
-    for (let ty = 0; ty < TH; ty++) for (const tx0 of [0, TW - 2]) {
+    // (só quando não há tileset de muro: com ele, as faixas cinza destoam)
+    if (!atlas.wall) for (let ty = 0; ty < TH; ty++) for (const tx0 of [0, TW - 2]) {
       const x0 = tx0 * D, y0 = ty * D;
       p.stones(x0, y0, 2 * D, D, C.stone, 8, 5, 0.05);
       p.stones(x0 + 6, y0, 2 * D - 12, D, ["#3c3c42", "#46464c", "#4f4f56"], 10, 6, 0.08);
@@ -493,7 +494,10 @@ const TG = (() => {
       p.rect(tx0 === 0 ? x0 + 2 * D : x0 - 3, y0, 3, D, "rgba(0,0,0,0.35)");
     }
     p.rect(0, 0, W, 2 * D, "#1c1c20");
-    if (atlas.wall) dualGrid(p, atlas.wall, TW, TH, (x, y) => G[y][x] === "w");
+    if (atlas.wall) { for (let ty = 0; ty < TH; ty++) for (let tx = 0; tx < TW; tx++) if (G[ty][tx] === "w") p.rect(tx * D, ty * D, D, D, "#16201f");
+      dualGrid(p, atlas.wall, TW, TH, (x, y) => G[y][x] === "w"); }
+    // calçada e largo: tileset de lajes molhadas do SpriteCook por cima do desenho em código
+    if (atlas.pave) dualGrid(p, atlas.pave, TW, TH, (x, y) => G[y][x] === "s" || G[y][x] === "c");
     // amplia 2× para a casa de 64 px
     const out = document.createElement("canvas"); out.width = TW * T; out.height = TH * T;
     const oc = out.getContext("2d"); oc.imageSmoothingEnabled = false; oc.drawImage(p.cv, 0, 0, out.width, out.height);

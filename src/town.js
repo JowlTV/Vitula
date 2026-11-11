@@ -77,7 +77,7 @@ class TownScene extends Phaser.Scene {
   drawGround() {
     const W = TOWN_W * T, H = TOWN_H * T;
     const src = k => this.textures.exists(k) ? this.textures.get(k).getSourceImage() : null;
-    this.textures.addCanvas("town_ground", TG.ground(this.ground, TOWN_W, TOWN_H, T, { street: src("vk_ts_piso"), wall: src("vk_ts_muro") }));
+    this.textures.addCanvas("town_ground", TG.ground(this.ground, TOWN_W, TOWN_H, T, { street: src("vk_ts_piso"), wall: src("vk_ts_muro"), pave: src("vk_ts_calcada") }));
     this.textures.get("town_ground").setFilter(Phaser.Textures.FilterMode.NEAREST);   // pixels nítidos no zoom (sem borrão)   // sem cópia extra do canvas
     this.world.add(this.add.image(0, 0, "town_ground").setOrigin(0).setDepth(-10));
   }
