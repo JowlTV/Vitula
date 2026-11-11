@@ -122,7 +122,7 @@ class TownScene extends Phaser.Scene {
     st.setScale(T * 1.1 / st.width).setDepth(9 * T - 2).setTint(TOWN_TINT); this.world.add(st); groundShadow(this, st, this.world, 0.7);
     this.block(39, 8, 1, 1); this.statue = st;
     this.manhole = { x: 43, y: 9 };
-    F("vk_esgoto", "v_sewer", 43, 10, 2, 2); this.block(43, 8, 2, 3);
+    { const mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, "decor_manhole").setDepth(-5); mh.setScale(T * 1.5 / mh.width); this.world.add(mh); this.block(43, 9, 1, 1); }   // descida do bueiro vista de cima (arte própria na fila de geração)
     // decadência: barris, caixas, lixo, varal, carroça, bancos
     A("barrels", 9.1, 6, 0.8, 0); A("crates", 24.15, 6, 0.8, 0); A("garbage", 33.1, 7, 0.9, 1); A("garbage", 12.1, 11, 0.9, 1);
     A("laundry", 27.3, 11, 1.4, 0); A("cart", 25.2, 11, 1.5, 1); A("barrels", 16.1, 11, 0.8, 1); A("crates", 31.1, 11, 0.8, 1);
@@ -131,14 +131,14 @@ class TownScene extends Phaser.Scene {
     this.lamps = [];
     for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
     // NPCs e lugares (na calçada, em frente de cada casa)
-    this.npc("npc_smith", 7, 7, "Ferreiro", "smith", { x: 5, y: 7, w: 4, h: 2 });
+    this.zones.push({ name: "Ferreiro (entrar)", kind: "smith", x: 5, y: 7, w: 4, h: 1 });
     this.zones.push({ name: "A Harpa Dançante", kind: "inn", x: 16, y: 7, w: 3, h: 1 });
-    this.npc("npc_potion_seller", 22, 7, "Vendedora de Poções", "potions", { x: 21, y: 7, w: 3, h: 2 });
-    this.npc("npc_depot_guard", 9, 11, "Guarda do Depot", "depot", { x: 7, y: 10, w: 2, h: 2 });
+    this.zones.push({ name: "Loja de Poções (entrar)", kind: "potions", x: 21, y: 7, w: 3, h: 1 });
+    this.zones.push({ name: "Depot (entrar)", kind: "depot", x: 7, y: 11, w: 3, h: 1 });
     this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 10, y: 11, w: 2, h: 1 });
     this.zones.push({ name: "Acomodação", kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
     this.zones.push({ name: "Estátua da Deusa", kind: "hall", x: 38, y: 8, w: 3, h: 2 });
-    this.zones.push({ name: "Entrada dos Esgotos", kind: "sewer", x: 42, y: 8, w: 1, h: 3 });
+    this.zones.push({ name: "Descer ao esgoto", kind: "sewer", x: 42, y: 8, w: 3, h: 3 });
     this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
   }
 
@@ -258,6 +258,9 @@ class TownScene extends Phaser.Scene {
       this.say("A Harpa Dançante", "Música abafada e cheiro de cerveja azeda. O taverneiro limpa um copo e te olha como quem já te viu antes.\n\n\"Você estava aqui ontem? Não lembra? Ninguém lembra de nada em Karhyn.\"", [["Sair", () => this.closeDialog()]]);
     } else if (z.kind === "lodging") {
       this.say("Acomodação", "Quartos úmidos, cama de palha e uma vela. A dona cobra pouco e não faz perguntas.", [["Descansar (recupera tudo)", () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], ["Sair", () => this.closeDialog()]]);
+    } else if (z.kind === "hall" && !(d.bless > 0)) {
+      d.bless = 1; Save.save();
+      this.say("Estátua da Deusa", "A pedra está fria e gasta, mas a luz desce sobre você. Por um instante a chuva some, e uma voz que você quase reconhece diz o seu nome.\n\nVocê recebeu a primeira bênção de Magdha (1/3): morrer agora custa menos.", [["Ajoelhar e agradecer", () => this.closeDialog()]]);
     } else if (z.kind === "hall") {
       this.say("Estátua da Deusa", "Os mestres de armas de Karhyn treinam quem paga em ouro: vida, velocidade de ataque, armadura e fúria.",
         [["Treinar atributos", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], ["Sair", () => this.closeDialog()]]);
@@ -307,14 +310,13 @@ class TownScene extends Phaser.Scene {
   // ciclo completo de 6 minutos; a hora continua de uma visita para a outra
   skyUpdate(dt) {
     let t = ((this.registry.get("townClock") ?? 0.9) + dt / 360) % 1;
-    if (t > 0.12 && t < 0.8) t = 0.8;   // Karhyn vive na noite
     this.registry.set("townClock", t);
     // escuridão 0 (dia) .. 1 (noite): dia 0,30–0,62, entardecer até 0,75, noite até 0,18, amanhecer até 0,30
     const d = t < 0.18 ? 1 : t < 0.30 ? 1 - (t - 0.18) / 0.12 : t < 0.62 ? 0 : t < 0.75 ? (t - 0.62) / 0.13 : 1;
     const dusk = (t > 0.6 && t < 0.78) ? 1 - Math.abs(t - 0.69) / 0.09 : (t > 0.16 && t < 0.32) ? 1 - Math.abs(t - 0.24) / 0.08 : 0;
     const lerp = (a, b, k) => Math.round(a + (b - a) * k), rain = this.raining ? 0.85 : 1;
-    let r = lerp(224, 52, d), g = lerp(228, 62, d), b = lerp(236, 104, d);
-    r = lerp(r, 232, dusk * 0.6); g = lerp(g, 150, dusk * 0.6); b = lerp(b, 110, dusk * 0.6);
+    let r = lerp(118, 44, d), g = lerp(126, 52, d), b = lerp(142, 92, d);   // dia cinzento e fechado; noite quase preta
+    r = lerp(r, 150, dusk * 0.3); g = lerp(g, 110, dusk * 0.3); b = lerp(b, 100, dusk * 0.3);
     this.dayTint.setFillStyle(Phaser.Display.Color.GetColor(r * rain | 0, g * rain | 0, b * rain | 0), 1);
     // postes acendem ao anoitecer, com a chama tremendo
     const now = this.time.now / 1000;
@@ -328,11 +330,15 @@ class TownScene extends Phaser.Scene {
     const hour = Math.floor(((t * 24) + 0) % 24), min = Math.floor((t * 24 * 60) % 60);
     this.skyText.setText(`${night ? "Noite" : dusk > 0.4 ? (t < 0.5 ? "Amanhecer" : "Entardecer") : "Dia"}${this.raining ? " · chuva" : ""}  ${String(hour).padStart(2, "0")}:${String(min - min % 10).padStart(2, "0")}`);
     // chuva de vez em quando: 1 a 2 minutos, com intervalos de 1,5 a 4 minutos
-    this.rainT -= dt;
-    if (this.rainT <= 0) {
-      this.raining = !this.raining;
-      this.rainT = this.raining ? Phaser.Math.Between(240, 480) : Phaser.Math.Between(20, 45);   // chove quase sempre
-      this.rainFx.emitting = this.raining;
+    // em Karhyn chove sempre; à noite, relâmpagos clareiam o céu
+    this.raining = true; if (!this.rainFx.emitting) this.rainFx.emitting = true;
+    if (d > 0.5) {
+      this.boltT = (this.boltT ?? Phaser.Math.Between(6, 14)) - dt;
+      if (this.boltT <= 0) {
+        this.boltT = Phaser.Math.Between(9, 26);
+        const f = this.boltFx || (this.boltFx = this.uiLayer.addAt(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0xdfe8ff, 0).setOrigin(0), 1) && this.uiLayer.getAt(1));
+        this.tweens.add({ targets: f, alpha: { from: 0.55, to: 0 }, duration: 120, repeat: Phaser.Math.Between(1, 2), repeatDelay: Phaser.Math.Between(40, 110), onComplete: () => f.setAlpha(0) });
+      }
     }
     this.rainVeil.setAlpha(Phaser.Math.Linear(this.rainVeil.alpha, this.raining ? 0.18 : 0, 0.02));
   }
