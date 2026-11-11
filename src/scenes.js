@@ -302,9 +302,11 @@ class SelectScene extends Phaser.Scene {
       if (!open) port.setTint(0x555060);
       this.add.nineslice(x + cw / 2, y + 152, "name_plate", null, 170, 30, 14, 14, 4, 4);
       txt(this, x + cw / 2, y + 152, v.name, 24, COLORS.gold).setOrigin(0.5);
-      txt(this, x + 16, y + 178, v.desc, 13, COLORS.text, { wordWrap: { width: cw - 32 }, lineSpacing: 2 });
-      txt(this, x + 16, y + 238, v.passive ? `Passiva — ${v.passive.name}: ${v.passive.desc}` : v.trait, 12, COLORS.dim, { wordWrap: { width: cw - 32 } });
-      if (open) { const a = Save.skill(id, id === "archer" ? "distance" : "sword"), b = Save.skill(id, "shield"); txt(this, x + 16, y + 282, `${id === "archer" ? "Distância" : "Espada"} ${a.lvl} · Defesa ${b.lvl}`, 12, "#9fb8d0"); }
+      // descrição e, logo abaixo dela (posição medida, sem sobrepor), a passiva/traço; as skills ficam na janela de Habilidades
+      const d1 = txt(this, x + 16, y + 176, v.desc, 13, COLORS.text, { wordWrap: { width: cw - 32 }, lineSpacing: 2 });
+      const d2 = txt(this, x + 16, d1.y + d1.height + 10, v.passive ? `Passiva — ${v.passive.name}: ${v.passive.desc}` : v.trait, 12, COLORS.dim, { wordWrap: { width: cw - 32 }, lineSpacing: 1 });
+      if (d2.y + d2.height > y + 296) d2.setFontSize(11);
+      if (v.soon) d2.setVisible(false);   // o rodapé já diz "Em breve"
       const foot = open ? `◉ ${Save.gold(id)} de ouro` : (v.soon ? "Em breve" : `Bloqueada · ${v.unlockCost} de ouro`);
       txt(this, x + cw / 2, y + 312, foot, 14, open ? COLORS.gold : COLORS.dim).setOrigin(0.5);
       if (open) {

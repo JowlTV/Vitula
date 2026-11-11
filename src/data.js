@@ -21,7 +21,7 @@ const VOCATIONS = {
     unlockCost: 0, portrait: "portrait_knight",
   },
   archer: {
-    name: "Arqueiro", desc: "Patrulheiro das fronteiras: ataca de longe com arco longo e mantém distância.", trait: "Mana: conhece um pouco de magia; a mana se regenera com o tempo e paga as habilidades.",
+    name: "Arqueiro", desc: "Patrulheiro das fronteiras: ataca de longe com o arco.", trait: "Mana: regenera com o tempo e paga as habilidades.",
     stats: { maxHp: 100, armor: 0, recovery: 0, moveSpeed: 1.05, might: 1.0, cooldown: 1.0 },
     unlockCost: 0, portrait: "portrait_archer", anim: "ar_", scale: 0.40, ranged: 4, resource: "Mana", mana: true, skill: "distance",
   },
