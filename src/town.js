@@ -240,17 +240,17 @@ class TownScene extends Phaser.Scene {
   // interior do prédio como cenário da conversa: a sala (arte do SpriteCook) aparece com o NPC dentro e a conversa abre por cima.
   // Some sozinho quando a conversa fecha (ver update).
   showInterior(kind) {
-    const I = { smith: ["vk_int_ferreiro", "npc_smith", 0.56, 0.66], inn: ["vk_int_harpa"], potions: ["vk_int_pocoes", "npc_potion_seller", 0.5, 0.44],
-      depot: ["vk_int_depot", "npc_depot_guard", 0.56, 0.8], locker: ["vk_int_depot", "npc_depot_guard", 0.56, 0.8], lodging: ["vk_int_acomodacao"] }[kind];
+    const I = { smith: ["vk_int_ferreiro", "npc_smith", 0.44, 0.64], inn: ["vk_int_harpa"], potions: ["vk_int_pocoes", "npc_potion_seller", 0.5, 0.44],
+      depot: ["vk_int_depot", "npc_depot_guard", 0.36, 0.7], locker: ["vk_int_depot", "npc_depot_guard", 0.36, 0.7], lodging: ["vk_int_acomodacao"] }[kind];
     if (!I || !this.textures.exists(I[0])) return;
     if (this.interior) { if (this.interior.key === I[0]) return; this.interior.destroy(); this.interior = null; }
     this.textures.get(I[0]).setFilter(Phaser.Textures.FilterMode.NEAREST);
     const c = this.add.container(0, 0); this.uiLayer.add(c); this.interior = c; c.key = I[0]; this.interiorT = 0;
-    c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x050406, 0.94).setOrigin(0).setInteractive());
-    const img = this.add.image(VIEW_W / 2, 8, I[0]).setOrigin(0.5, 0), s = Math.min((VIEW_H * 0.47) / img.height, (VIEW_W * 0.8) / img.width);
+    c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x050406, 1).setOrigin(0).setInteractive());
+    const img = this.add.image(VIEW_W / 2, VIEW_H / 2, I[0]).setOrigin(0.5), s = Math.min(VIEW_H / img.height, VIEW_W / img.width);   // tela cheia
     img.setScale(s); c.add(img);
     if (I[1]) {
-      const idle = I[1] + "_idle", x = img.x + (I[2] - 0.5) * img.displayWidth, y = img.y + I[3] * img.displayHeight;
+      const idle = I[1] + "_idle", x = img.x + (I[2] - 0.5) * img.displayWidth, y = img.y + (I[3] - 0.5) * img.displayHeight;
       const n = this.anims.exists(idle) ? this.add.sprite(x, y, idle).play(idle) : this.add.image(x, y, I[1]);
       n.setOrigin(0.5, 1).setScale(0.36 * s * 32 / 64 * 1.15);
       c.add([this.add.image(x, y - 2, "shadow").setScale(0.5 * s * 0.5, 0.16 * s * 0.5), n]);
@@ -404,7 +404,8 @@ class TownScene extends Phaser.Scene {
     this.chatWith = title;
     this.chatLog.push({ me: false, text: body });
     const c = this.add.container(0, 0); this.uiLayer.add(c); this.dialog = c;
-    const w = 640, x = VIEW_W / 2 - w / 2, pad = 18, maxW = w - 2 * pad - 120;
+    const inRoom = !!this.interior, w = inRoom ? 430 : 640, x = inRoom ? VIEW_W - w - 10 : VIEW_W / 2 - w / 2, pad = 18,   // dentro de casa: conversa no canto direito, para a sala aparecer
+    maxW = w - 2 * pad - 120;
     const port = this.portrait(title);
     const bubbles = this.chatLog.map(m => {
       const t = txt(this, 0, 0, m.text, 13, m.me ? "#1a140c" : COLORS.text, { wordWrap: { width: maxW - 20 }, lineSpacing: 3 });
