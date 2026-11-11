@@ -42,7 +42,7 @@ class BootScene extends Phaser.Scene {
     // Karhyn nova (guia de estilo aprovado): prédios, objetos e autotiles de chão
     // a arquitetura de Karhyn é desenhada em código (towngfx.js); da arte gerada só fica o lampião
     this.load.image("k2_lamp", "assets/town2/k2_lamp.png");
-    for (const n of ["vk_ts_piso", "vk_ts_muro", "vk_ferreiro", "vk_harpa_dancante", "vk_pocoes", "vk_depot", "vk_acomodacao",
+    for (const n of ["vk_ts_piso", "vk_ts_muro", "vk_ferreiro", "vk_harpa_dancante", "vk_pocoes", "vk_depot", "vk_acomodacao", "vk_portao_lateral", "vk_casebre_1", "vk_casebre_2", "vk_casebre_3", "vk_bueiro",
       ...["barrel", "crate", "garbage", "cart", "laundry", "bench", "firewood", "wheel"].map(n => "vkp_" + n)]) this.load.image(n, `assets/town2/${n}.png`);   // tilesets da vila (SpriteCook, 32 px)
     this.load.image("tower_view", "assets/town/tower_view.png"); this.load.image("depot_counter", "assets/town/depot_counter.png");
     this.load.image("glow_mushrooms", "assets/art/glow_mushrooms.png");

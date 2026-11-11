@@ -112,19 +112,23 @@ class TownScene extends Phaser.Scene {
     // peças do SpriteCook (vk_*); se a imagem faltar, usa a versão desenhada em código
     const F = (key, kind, x, y, w, wCode) => this.textures.exists(key) ? this.art(key, x, y, w, 0) : A(kind, x, y, wCode, 0);
     // portão de pedra a oeste (3×3), por onde o herói chega sem lembrar de nada
-    this.gateImg = A("v_gate_side", 0, 12, 2.2, 0); this.block(0, 6, 2, 7);   // portão lateral visto de cima (torres nas linhas 6–7 e 11–12) this.block(0, 8, 2, 3);
+    // portão lateral visto de cima (SpriteCook): torres ao norte e ao sul da rua, passagem no meio; em código se a arte faltar
+    this.gateImg = this.textures.exists("vk_portao_lateral") ? this.art("vk_portao_lateral", -0.67, 11.5, 3.34, 0).setDepth(7 * T) : A("v_gate_side", 0, 12, 2.2, 0);
+    this.block(0, 6, 2, 7);
+    // casebres pobres (3 variações do SpriteCook, alternadas); em código se faltarem
+    let hv = 0; const H = (x, y, w) => { const k = "vk_casebre_" + (1 + hv++ % 3); return this.textures.exists(k) ? this.art(k, x + (w - 3) / 2, y, 3, 0) : A("v_ruin", x, y, w, 0); };
     // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
-    F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); A("v_ruin", 10, 6, 3, 0); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
-    A("v_ruin", 25, 6, 3, 0); A("v_ruin", 29, 6, 4, 0); A("v_ruin", 34, 6, 3, 0);
+    F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); H(10, 6, 3); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
+    H(25, 6, 3); H(29, 6, 4); H(34, 6, 3);
     // sul: Depot, Acomodação (+ casas pobres)
-    A("v_ruin", 3, 14, 3, 0); F("vk_depot", "v_depot", 7, 14, 5.4, 5); A("v_ruin", 13, 14, 3, 0); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
-    A("v_ruin", 23, 14, 4, 0); A("v_ruin", 28, 14, 3, 0); A("v_ruin", 32, 14, 4, 0);
+    H(3, 14, 3); F("vk_depot", "v_depot", 7, 14, 5.4, 5); H(13, 14, 3); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
+    H(23, 14, 4); H(28, 14, 3); H(32, 14, 4);
     // estátua da deusa no largo, com o feixe de luz; entrada do esgoto no fim da rua
     const st = this.add.image(39 * T, 7 * T + T - 2, "altar_magdha").setOrigin(0.5, 1);   // 2× maior e uma casa acima, no alto do largo
     st.setScale(T * 2.2 / st.width).setDepth(8 * T - 2).setTint(TOWN_TINT); this.world.add(st); groundShadow(this, st, this.world, 0.7);
     this.block(38, 7, 2, 1); this.statue = st;
     this.manhole = { x: 43, y: 9 };
-    { const mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, "decor_manhole").setDepth(-5); mh.setScale(T * 0.8 / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
+    { const bk = this.textures.exists("vk_bueiro"), mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, bk ? "vk_bueiro" : "decor_manhole").setDepth(-5); mh.setScale(T * (bk ? 1.25 : 0.8) / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
     // decadência: barris, caixas, lixo, varal, carroça, bancos
     // props do SpriteCook (vkp_*), com a versão em código de reserva
     const P = (n, code, x, y, w, wCode, fd = 1) => this.textures.exists("vkp_" + n) ? this.art("vkp_" + n, x + (1 - w) / 2, y, w, fd) : A(code, x, y, wCode, fd);

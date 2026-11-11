@@ -151,6 +151,16 @@ Object.assign(DungeonScene.prototype, {
     this.ents.add(img);
     groundShadow(this, img, this.ents, 0.5);
     this.altar = a; this.altarImg = img;
+    // luz da deusa: clareia a escuridão em volta, com um halo dourado-pálido pulsando e poeira brilhando sobre a estátua
+    this.lights.push({ x: p.x, y: p.y - T * 0.8, r: 3.2 * T, warm: true, ph: Math.random() * 10 });
+    const halo = this.add.image(p.x, p.y - T * 0.9, "light").setTint(0xfff0c0).setBlendMode(Phaser.BlendModes.ADD).setScale(1.5, 1.9).setAlpha(0.3).setDepth(img.depth + 1);
+    const base = this.add.image(p.x, p.y + T / 2 - 8, "light").setTint(0xffe0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(1.1, 0.4).setAlpha(0.35).setDepth(img.depth - 1);
+    this.ents.add([halo, base]);
+    this.tweens.add({ targets: [halo, base], alpha: "*=0.6", duration: 2200, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+    const motes = this.add.particles(p.x, p.y - T, "light", { x: { min: -22, max: 22 }, y: { min: -50, max: 40 }, lifespan: 2200, speedY: { min: -14, max: -6 },
+      scale: { start: 0.014, end: 0.004 }, alpha: { start: 0.9, end: 0 }, tint: 0xfff0c0, frequency: 220, blendMode: "ADD" });
+    motes.setDepth(img.depth + 2); this.ents.add(motes);
+    img.once("destroy", () => { halo.destroy(); base.destroy(); motes.destroy(); });
     if (a.used) img.setAlpha(0.55);
     this.props.set(key(a.x, a.y), { kind: "altar", spr: img });
   },
