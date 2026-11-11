@@ -359,24 +359,39 @@ class IntroScene extends Phaser.Scene {
     this.tweens.add({ targets: title, alpha: 1, y: VIEW_H / 2 - 30, duration: 2200, ease: "Sine.out" });
     this.tweens.add({ targets: rule, alpha: 1, scaleX: 1, duration: 2200, delay: 600, ease: "Sine.out" });
     this.tweens.add({ targets: [title, rule], alpha: 0, delay: 5200, duration: 1600 });
-    // texto que sobe devagar e some no alto (como a abertura de Star Wars)
-    const body = this.add.text(VIEW_W / 2, VIEW_H + 10, INTRO_TEXT, { fontFamily: FONT_TITLE, fontSize: "25px", color: "#e8d8a8", stroke: "#0c0608", strokeThickness: 5, resolution: 2,
-      align: "center", wordWrap: { width: 620 }, lineSpacing: 10 }).setOrigin(0.5, 0).setShadow(0, 2, "#000000", 4, true, true);
-    // máscara em degradê: o texto apaga ao chegar ao topo e nasce suave embaixo
-    const mg = this.make.graphics({ add: false });
-    mg.fillGradientStyle(0xffffff, 0xffffff, 0xffffff, 0xffffff, 0, 0, 1, 1).fillRect(0, 40, VIEW_W, 150);
-    mg.fillStyle(0xffffff, 1).fillRect(0, 190, VIEW_W, VIEW_H - 190 - 70);
-    mg.fillGradientStyle(0xffffff, 0xffffff, 0xffffff, 0xffffff, 1, 1, 0, 0).fillRect(0, VIEW_H - 70, VIEW_W, 70);
-    mg.setScale(2);   // a máscara fica em coordenadas da tela (a câmera amplia 2×)
-    body.setMask(new Phaser.Display.Masks.BitmapMask(this, mg));
-    const speed = 17;   // px por segundo
-    this.tweens.add({ targets: body, y: 30 - body.height, delay: 5600, duration: (VIEW_H + body.height) / speed * 1000, onComplete: () => this.finish() });
+    // texto em perspectiva, como a abertura de Star Wars: nasce grande embaixo, sobe devagar e some pequeno no horizonte.
+    // O texto é desenhado uma vez (invisível) e redesenhado a cada quadro em faixas, cada uma mais estreita que a de baixo.
+    const src = this.add.text(0, 0, INTRO_TEXT, { fontFamily: FONT_TITLE, fontSize: "30px", color: "#f0d878", stroke: "#0c0608", strokeThickness: 5, resolution: 2,
+      align: "center", wordWrap: { width: 600 }, lineSpacing: 12, padding: { x: 8, y: 8 } }).setVisible(false);
+    if (this.textures.exists("intro_crawl")) this.textures.remove("intro_crawl");
+    const CW = VIEW_W * 2, CH = VIEW_H * 2, tex = this.textures.createCanvas("intro_crawl", CW, CH);
+    this.add.image(0, 0, "intro_crawl").setOrigin(0).setScale(0.5);
+    this.crawl = { src: src.canvas, tex, ctx: tex.getContext(), scroll: -9999, CW, CH, started: false,
+      horizon: CH * 0.16, top: CH * 0.30, depth: 520, speed: 46 };   // medidas em pixels do canvas (2× a tela)
+    this.time.delayedCall(5600, () => { this.crawl.scroll = 0; this.crawl.started = true; });
     const skip = txt(this, VIEW_W - 16, VIEW_H - 14, "Enter, clique ou toque: pular", 11, COLORS.dim).setOrigin(1, 1).setAlpha(0);
     this.tweens.add({ targets: skip, alpha: 0.9, delay: 1500, duration: 800 });
     this.cameras.main.fadeIn(1200, 0, 0, 0);
     // só aceita pular depois de um instante (o clique que escolheu a vocação não conta)
     this.time.delayedCall(600, () => { this.input.keyboard.on("keydown", () => this.finish()); this.input.on("pointerup", () => this.finish()); });
     menuMusic(this);
+  }
+  update(_, dtMs) {
+    const c = this.crawl; if (!c || !c.started) return;
+    if (!this.done) c.scroll += c.speed * Math.min(0.05, dtMs / 1000);
+    const g = c.ctx, sw = c.src.width, sh = c.src.height, span = c.CH - c.horizon;
+    g.clearRect(0, 0, c.CW, c.CH);
+    // cada faixa da tela mostra uma linha do texto: s = 1 na base (perto), menor quanto mais alto (longe)
+    for (let y = c.top; y < c.CH; y += 2) {
+      const sc = (y - c.horizon) / span, sy = c.scroll - c.depth * (1 / sc - 1);
+      if (sy < 0 || sy >= sh) continue;
+      const w = sw * sc * 1.25, hsrc = Math.max(1, 2 / sc);
+      g.globalAlpha = Math.min(1, (y - c.top) / (c.CH * 0.16)) * Math.min(1, (c.CH - y) / 60);
+      g.drawImage(c.src, 0, sy, sw, Math.min(hsrc, sh - sy), (c.CW - w) / 2, y, w, 2);
+    }
+    g.globalAlpha = 1; c.tex.refresh();
+    // quando a última linha some no horizonte, o jogo começa
+    if (c.scroll - c.depth * (span / (c.top - c.horizon) - 1) > sh) this.finish();
   }
   finish() {
     if (this.done) return; this.done = true;
