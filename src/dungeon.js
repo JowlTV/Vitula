@@ -13,7 +13,7 @@ class DungeonScene extends Phaser.Scene {
       const v = this[k];
       if (v && typeof v === "object" && (v instanceof Phaser.GameObjects.GameObject || v instanceof Phaser.GameObjects.Layer || (v.constructor && /FX|Controller/.test(v.constructor.name)))) this[k] = null;
     }
-    this.paused = false; this.bagOpen = false; this.pauseBox = null; this.bagBox = null; this.rope = null; this.gradeFx = null;
+    this.paused = false; this.bagOpen = false; this.pauseBox = null; this.bagBox = null; this.attrBox = null; this.rope = null; this.gradeFx = null;
     this._stamps = {};
     this.floorN = 1;
     const fq = new URLSearchParams(location.search).get("floor");
@@ -48,7 +48,7 @@ class DungeonScene extends Phaser.Scene {
     for (const [id] of ACTIONS) this.keysIn[id] = Settings.data.keys[id].filter(n => K[n] !== undefined).map(n => kb.addKey(K[n]));
     const spells = Object.keys(this.spells);
     ["skill1", "skill2", "skill3", "skill4"].forEach((id, i) => this.keysIn[id].forEach(k => k.on("down", () => this.cast(spells[i]))));
-    this.keysIn.pause.forEach(k => k.on("down", () => this.bagOpen ? this.toggleBag() : this.togglePause()));
+    this.keysIn.pause.forEach(k => k.on("down", () => this.attrBox ? this.toggleAttrs() : this.bagOpen ? this.toggleBag() : this.togglePause()));
     (this.keysIn.potion1 || []).forEach(k => k.on("down", () => this.usePotion(0)));
     (this.keysIn.potion2 || []).forEach(k => k.on("down", () => this.usePotion(1)));
     (this.keysIn.interact || []).forEach(k => k.on("down", () => this.useRope()));
@@ -58,6 +58,7 @@ class DungeonScene extends Phaser.Scene {
       this.msg(`Ataque automático ${Settings.data.autoAttack ? "ligado" : "desligado"}`);
     }));
     (this.keysIn.bag || []).forEach(k => k.on("down", () => this.toggleBag()));
+    this.input.keyboard.on("keydown-U", () => this.toggleAttrs());
     this.input.keyboard.addCapture("TAB");
     (this.keysIn.map || []).forEach(k => k.on("down", () => this.toggleBigMap()));
     (this.keysIn.zoomIn || []).forEach(k => k.on("down", () => this.setCamZoom(this.camZoom() + 0.2)));
@@ -70,8 +71,8 @@ class DungeonScene extends Phaser.Scene {
       const w = this.cameras.main.getWorldPoint(p.x, p.y), tx = Math.floor(w.x / T), ty = Math.floor(w.y / T);
       // o desenho do monstro fica acima da casa dele: aceita a casa clicada e a de baixo
       const m = this.occ.get(key(tx, ty)) || this.occ.get(key(tx, ty + 1));
-      this.hero.target = m && !m.dead ? m : null;
-      if (m) sfx(this, "pickup", 0.15);
+      // alvo fixo: clicar no chão não solta a mira; só troca quando você escolhe outro monstro
+      if (m && !m.dead) { this.hero.target = m; sfx(this, "pickup", 0.15); }
     });
     // câmera da interface: fixa, enxerga só a camada de UI (escuridão, HUD, painéis)
     this.uiLayer = this.add.layer().setDepth(1000000);
@@ -92,6 +93,12 @@ class DungeonScene extends Phaser.Scene {
     s.armor += tr.armor || 0;
     s.atkSpeed = 1 + 0.05 * (tr.atkspd || 0);
     this.furyMax = FURY_MAX + 10 * (tr.fury || 0);
+    // pontos de atributo (1 por nível)
+    const at = Save.voc(this.vocId).attr || {};
+    s.maxHp += 25 * (at.vit || 0);
+    s.armor += 0.5 * (at.armor || 0);
+    s.atkSpeed += 0.0025 * (at.aspd || 0);
+    s.might *= 1 + 0.02 * (at.str || 0);
     return s;
   }
 

@@ -9,7 +9,7 @@ window.game = new Phaser.Game({
   backgroundColor: "#08070a",
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   audio: { disableWebAudio: false },
-  scene: [BootScene, TitleScene, OptionsScene, SelectScene, MapScene, ShopScene, DungeonScene, TownScene],
+  scene: [BootScene, TitleScene, OptionsScene, SelectScene, IntroScene, MapScene, ShopScene, DungeonScene, TownScene],
 });
 
 // Recalcula o tamanho do canvas ao girar o celular ou mudar a janela (o Phaser nem sempre acompanha sozinho).

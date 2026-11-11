@@ -94,10 +94,17 @@ const SPELL_FX = {
   spin(h, sp) {
     // giro com a espada: 4 cortes em meia-lua varrem as 8 casas em volta (ataque físico, sem fogo)
     this.heroSwing(...h.facing);
-    if (this.anims.exists("fx_ground_slam")) {
-      // espada cravada no chão: onda de cortes em anel cobrindo as 8 casas em volta
-      const s = this.add.sprite(h.px, h.py - 10, "fx_ground_slam").setScale(3 * T / 200).setDepth(h.py + 2);
-      this.ents.add(s); s.play("fx_ground_slam"); s.once("animationcomplete", () => s.destroy());
+    if (this.anims.exists("fx_ring_wave")) {
+      // ondas de corte em anel, uma atrás da outra, crescendo aos poucos até 2× (sem a espada no centro; ficam no chão, atrás do herói)
+      const base = 3 * T / 200;
+      for (let k = 0; k < 3; k++) this.time.delayedCall(k * 130, () => {
+        if (this.finished) return;
+        const s = this.add.sprite(h.px, h.py - 10, "fx_ring_wave").setScale(base * 0.75).setDepth(h.py - 2 - k).setAlpha(0.95 - k * 0.15);
+        this.ents.add(s); s.play("fx_ring_wave");
+        this.tweens.add({ targets: s, scale: base * 2, duration: 560, ease: "Sine.out" });
+        this.tweens.add({ targets: s, alpha: 0, delay: 380, duration: 180 });
+        s.once("animationcomplete", () => s.destroy());
+      });
     } else {
     const cx = h.px, cy = h.py - 22, R = 50, cuts = [];
     for (let k = 0; k < 4; k++) {

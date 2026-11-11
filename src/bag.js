@@ -2,7 +2,7 @@
 Object.assign(DungeonScene.prototype, {
 
   toggleBag() {
-    if (this.finished || this.paused) return;
+    if (this.finished || this.paused || this.attrBox) return;
     this.bagOpen = !this.bagOpen;
     if (this.bagBox) { this.bagBox.destroy(); this.bagBox = null; }
     if (this.bagOpen) this.buildBag();
@@ -36,9 +36,9 @@ Object.assign(DungeonScene.prototype, {
     const ml = d.ml, mlPct = Math.floor(100 * ml.spent / mlNeeded(this.vocId, ml.lvl));
     const mx = this.maxDamage();
     const groups = [
-      ["Ataque", [["Dano base", `${Math.round(mx * 0.6)}–${Math.round(mx)}`], ["Velocidade de ataque", `${this.attacksPerSec().toFixed(2)} golpes/s`], ["Crítico", "10% (×1,8)"]]],
+      ["Ataque", [["Dano base", `${Math.round(mx * 0.6)}–${Math.round(mx)}`], ["Velocidade de ataque", `${this.attacksPerSec().toFixed(2)} golpes/s`], ["Crítico", `${(this.critChance() * 100).toFixed(1).replace(".", ",")}% (×1,8)`]]],
       ["Defesa", [["Vida total", `${Math.ceil(h.hp)} / ${Math.round(h.maxHp)}`], ["Defesa", this.defenseValue().toFixed(1)], ["Chance de bloqueio", `${Math.round(this.blockChance() * 100)}%`]]],
-      ["Skills", [this.ranged ? ["Distance", sk("distance") + (this.buffOn("hunter") ? "  +10" : "")] : ["Sword", sk("sword") + (this.buffOn("berserker") ? "  +10" : "")], ["Club", "—"], ["Axe", "—"], ["Shield", sk("shield")],
+      ["Skills", [this.ranged ? ["Distance", sk("distance") + (this.buffOn("hunter") ? "  +10" : "")] : ["Sword", sk("sword") + (this.buffOn("berserker") ? "  +10" : "")], ["Shield", sk("shield")],
         ["Magic level", `${ml.lvl}  (${mlPct}%)` + (this.buffOn("mage") ? "  +10" : "")]]],
       ["Progresso", [["Nível", String(h.level) + (this.promo() ? ` · ${this.promo().name}` : "")], ["Experiência total", String(Math.floor(d.xpTotal || 0))],
         ["Para o próximo nível", String(Math.ceil(this.xpNext() - h.xp))]]],

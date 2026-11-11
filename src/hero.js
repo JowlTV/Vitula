@@ -36,6 +36,8 @@ Object.assign(DungeonScene.prototype, {
   updateHero(dt) {
     const h = this.hero;
     if (h.dead) return;
+    // alvo fixo: só se solta sozinho se o monstro morreu, sumiu (outro andar) ou ficou longe demais
+    if (h.target && (h.target.dead || !this.monsters.includes(h.target) || Math.max(Math.abs(h.target.x - h.x), Math.abs(h.target.y - h.y)) > 9)) h.target = null;
     for (const s in h.cds) h.cds[s] = Math.max(0, h.cds[s] - dt);
     if (h.potCd) for (const s in h.potCd) h.potCd[s] = Math.max(0, h.potCd[s] - dt);
     if (h.buffs) for (const s in h.buffs) h.buffs[s] = Math.max(0, h.buffs[s] - dt);
@@ -97,6 +99,7 @@ Object.assign(DungeonScene.prototype, {
       const locked = h.target && !h.target.dead ? h.target : null;
       const t = locked ? (Math.max(Math.abs(locked.x - h.x), Math.abs(locked.y - h.y)) === 1 ? locked : null) : this.adjacentMonster(h.x, h.y, h.facing);
       if (t) {
+        h.target = t;   // alvo fixo: fica nele até morrer ou você escolher outro
         h.atkT = 1.0 * this.stats.cooldown / (this.stats.atkSpeed || 1);
         this.heroSwing(Math.sign(t.x - h.x), Math.sign(t.y - h.y));
         // o golpe acerta no quadro de impacto da animação (~0,2 s), não antes
@@ -104,7 +107,7 @@ Object.assign(DungeonScene.prototype, {
           if (t.dead || this.finished) return;
           const sx = Math.sign(t.x - h.x), sy = Math.sign(t.y - h.y), ang = sx && sy ? 45 * sy * sx : 0;   // golpe na diagonal sai inclinado
           this.fx(this.anims.exists("fx_basic_slash") ? "basic_slash" : "slash", t.px, t.py - 22, this.anims.exists("fx_basic_slash") ? 0.9 : 0.7, t.x < h.x, ang);
-          const crit = Math.random() < 0.1;
+          const crit = Math.random() < this.critChance();
           this.damageMonster(t, this.baseDamage() * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? 1.8 : 1));
           if (crit) { this.splat(t.px, t.py - 4, 5); }
           this.addFury(9);
@@ -128,12 +131,24 @@ Object.assign(DungeonScene.prototype, {
     return (0.085 * FIST_ATTACK * this.swordEff() + this.hero.level / 5) * this.stats.might * (this.promo() ? this.promo().dmgMult : 1);
   },
   baseDamage() { return this.maxDamage() * 0.8; },
-  swordEff() { return this.ranged ? Save.skill(this.vocId, "distance").lvl + (this.buffOn("hunter") ? 10 : 0) : Save.skill(this.vocId, "sword").lvl + (this.buffOn("berserker") ? 10 : 0); },
-  shieldLvl() { return Save.skill(this.vocId, "shield").lvl; },
-  mlEff() { return Save.voc(this.vocId).ml.lvl + (this.buffOn("mage") ? 10 : 0); },
+  // pontos de atributo: quantos foram postos em cada um, quantos sobram (1 por nível acima do 1)
+  attr(id) { return (Save.voc(this.vocId).attr || {})[id] || 0; },
+  attrFree() { const a = Save.voc(this.vocId).attr || {}; let spent = 0; for (const k in a) spent += a[k]; return Math.max(0, this.hero.level - 1 - spent); },
+  spendAttr(id) {
+    if (!ATTRS[id] || this.attrFree() <= 0) return false;
+    const d = Save.voc(this.vocId), h = this.hero; d.attr[id] = (d.attr[id] || 0) + 1; Save.save();
+    this.stats = this.computeStats();
+    if (id === "vit") { h.maxHp += 25; h.hp += 25; }
+    sfx(this, "gem", 0.3);
+    return true;
+  },
+  critChance() { return 0.1 + 0.005 * this.attr("crit"); },
+  swordEff() { return this.attr("weapon") + (this.ranged ? Save.skill(this.vocId, "distance").lvl + (this.buffOn("hunter") ? 10 : 0) : Save.skill(this.vocId, "sword").lvl + (this.buffOn("berserker") ? 10 : 0)); },
+  shieldLvl() { return Save.skill(this.vocId, "shield").lvl + this.attr("shield"); },
+  mlEff() { return Save.voc(this.vocId).ml.lvl + this.attr("ml") + (this.buffOn("mage") ? 10 : 0); },
   // defesa: armadura + metade do Shield acima do inicial (itens de defesa vão somar aqui)
   defenseValue() { return this.stats.armor + 0.25 * (this.shieldLvl() - SKILLS.shield.start); },
-  blockChance() { return Math.min(0.35, 0.05 + 0.006 * (this.shieldLvl() - SKILLS.shield.start)); },
+  blockChance() { return Math.min(0.6, Math.min(0.35, 0.05 + 0.006 * (this.shieldLvl() - SKILLS.shield.start)) + 0.005 * this.attr("block")); },
   attacksPerSec() { return (this.stats.atkSpeed || 1) / this.stats.cooldown; },
   buffOn(id) { const b = this.hero.buffs; return !!(b && b[id] > 0); },
 
@@ -409,7 +424,7 @@ Object.assign(DungeonScene.prototype, {
     return true;
   },
   // monstro mais próximo ao alcance, com linha livre (prefere o da frente)
-  rangedTarget() {
+  rangedTarget(lock = false) {
     const h = this.hero, R = this.rangeNow(); let best = null, bd = 1e9;
     const sel = h.target;
     if (sel && !sel.dead && this.monsters.includes(sel) && Math.max(Math.abs(sel.x - h.x), Math.abs(sel.y - h.y)) <= R && this.clearShot(h.x, h.y, sel.x, sel.y)) return sel;
@@ -421,6 +436,7 @@ Object.assign(DungeonScene.prototype, {
       const score = d - (Math.sign(m.x - h.x) === h.facing[0] && Math.sign(m.y - h.y) === h.facing[1] ? 0.5 : 0);
       if (score < bd) { bd = score; best = m; }
     }
+    if (best && lock) h.target = best;   // alvo fixo: o primeiro em quem atira vira o alvo
     return best;
   },
   // flecha voando de (h) até o alvo; ao chegar chama onHit
@@ -435,9 +451,9 @@ Object.assign(DungeonScene.prototype, {
     h.eagleT = Math.max(0, (h.eagleT || 0) - this.game.loop.delta / 1000);
     if (h.atkT > 0 || !(autoAtk || h.atkQueued > 0)) return;
     h.atkQueued = 0;
-    const t = this.rangedTarget();
+    const t = this.rangedTarget(true);
     if (!t) return;
-    h.atkT = 1.1 * this.stats.cooldown / (this.stats.atkSpeed || 1) * (h.eagleT > 0 ? 0.5 : 1);
+    h.atkT = 1.1 / 1.25 * this.stats.cooldown / (this.stats.atkSpeed || 1) * (h.eagleT > 0 ? 0.5 : 1);
     const dx = Math.sign(t.x - h.x), dy = Math.sign(t.y - h.y);
     h.facing = [dx, dy];
     this.heroSwing(Math.abs(t.x - h.x) >= Math.abs(t.y - h.y) ? dx : 0, Math.abs(t.x - h.x) >= Math.abs(t.y - h.y) ? 0 : dy);
@@ -446,7 +462,7 @@ Object.assign(DungeonScene.prototype, {
       if (h.dead || this.finished) return;
       this.shootArrow(h.px, h.py - 40, t.px, t.py - 24, () => {
         if (t.dead || this.finished) return;
-        const crit = Math.random() < 0.1;
+        const crit = Math.random() < this.critChance();
         this.damageMonster(t, this.baseDamage() * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? 1.8 : 1));
         if (crit) this.splat(t.px, t.py - 4, 5);
         this.addFury(8);
@@ -468,7 +484,7 @@ Object.assign(DungeonScene.prototype, {
       h.xp -= this.xpNext(); h.level++; h.maxHp += 10; h.hp = h.maxHp; // subir de nível enche a vida
       this.floatText(h.px, h.py - 84, `Nível ${h.level}!`, COLORS.gold);
       const nova = Object.values(this.spells).find(sp => sp.level === h.level);
-      this.msg(nova ? `Nível ${h.level}: você aprendeu ${nova.name}! (tecla ${nova.key})` : `Você subiu para o nível ${h.level}.`);
+      this.msg(nova ? `Nível ${h.level}: você aprendeu ${nova.name}! (tecla ${nova.key}) · +1 ponto de atributo (U)` : `Você subiu para o nível ${h.level}. +1 ponto de atributo (U)`);
       sfx(this, "levelup", 0.4);
       this.checkPromotion();
     }

@@ -10,6 +10,39 @@ const TOWN_FILES = ["depot_chest"];
 
 function cityUnlocked() { return true; }
 
+// História e boatos de Karhyn (ligados à introdução "A Queda de Karhyn"): cada morador conta a sua parte, uma fala por vez.
+const TOWN_LORE = {
+  smith: [
+    "\"Já ouviu falar da forja de Karhyn? Daqui saíam as melhores espadas e os melhores escudos de Godoyr. Vinha gente do continente inteiro só para encomendar uma lâmina.\"",
+    "\"O segredo é o ferro. Ele vem das montanhas perto da Torre das Amazonas. À noite a luz da deusa banha a pedra, e o metal já chega aqui diferente: mais leve, mais teimoso, quase vivo.\"",
+    "\"Só que faz tempo que nenhuma carroça de minério chega. A estrada do norte ficou perigosa, e quem sobe a montanha não volta. Estou forjando com o que sobrou no fundo do barril.\"",
+    "\"Se o que dizem do esgoto for verdade, vão precisar de aço bom lá embaixo. Volte vivo, que eu ainda afio a sua lâmina.\"",
+  ],
+  potions: [
+    "\"Karhyn era uma cidade de festa, sabia? Música na praça, criança correndo na rua, a Harpa cheia até de madrugada. Hoje fecham as janelas antes de escurecer.\"",
+    "\"Os bichos mudaram primeiro. O gato da vizinha, manso a vida toda, avançou nela com um ódio que eu nunca vi. Depois os ratos. Depois coisa pior.\"",
+    "\"Minhas ervas apodrecem mais depressa perto dos bueiros. Tem alguma coisa subindo junto com aquele ar. Eu não desceria sem uns frascos no cinto.\"",
+    "\"Rezo para a deusa toda noite, diante da estátua do largo. Dizem que ela ainda escuta. Fale com ela antes de descer.\"",
+  ],
+  depot: [
+    "\"Antes eu guardava mercadoria de caravana: seda, tempero, lâminas da forja indo para o continente inteiro. Hoje guardo o pouco que os aventureiros conseguem trazer lá de baixo.\"",
+    "\"Os monstros da escuridão sempre existiram, mas ficavam longe. Agora chegam até o muro. É como se alguma coisa estivesse soprando ódio dentro deles.\"",
+    "\"Três patrulhas desceram ao esgoto. Voltou meia. O que voltou não fala, só olha para o bueiro e treme.\"",
+    "\"Guarde aqui o que tiver de valor antes de descer. Quem morre lá embaixo perde quase tudo que carrega.\"",
+  ],
+  inn: [
+    "O taverneiro baixa a voz.\n\n\"Você quer boato? Aqui é a casa deles. Dizem que nos esgotos mora um mal tão antigo que os ratos fogem dele... e fogem para cima, para as nossas ruas.\"",
+    "\"Um bêbado jurou que desceu até o quinto andar. Disse que lá o esgoto vira caverna e a caverna respira. Riram dele. Na manhã seguinte, a cama estava vazia.\"",
+    "\"O que mais se repete nas mesas é isto: a coisa está subindo. Um andar de cada vez. Se ela vencer o último e chegar à superfície, não sobra Karhyn para contar a história.\"",
+    "\"A harpa da casa tocava sozinha nas noites de festa, dizem. Faz meses que está muda. Beba alguma coisa, forasteiro. E, se for descer, desça logo.\"",
+  ],
+  lodging: [
+    "A dona ajeita o xale.\n\n\"Metade dos quartos está vazia. As famílias que podiam foram embora para o sul. Ficou quem não tem para onde ir.\"",
+    "\"De noite dá para ouvir, sabe? Debaixo do assoalho. Um arranhar, e às vezes uma coisa mais pesada, se arrastando. Eu ponho a cama longe do ralo.\"",
+    "\"Você chegou pelo portão sem lembrar de nada, não foi? Não é o primeiro. A deusa manda gente quando a cidade precisa. Pelo menos é o que eu prefiro acreditar.\"",
+  ],
+};
+
 class TownScene extends Phaser.Scene {
   constructor() { super("town"); }
 
@@ -125,7 +158,10 @@ class TownScene extends Phaser.Scene {
     H(23, 14, 4); H(28, 14, 3); H(32, 14, 4);
     // estátua da deusa no largo, com o feixe de luz; entrada do esgoto no fim da rua
     const st = this.add.image(39 * T, 7 * T + T - 2, "altar_magdha").setOrigin(0.5, 1);   // 2× maior e uma casa acima, no alto do largo
-    st.setScale(T * 2.2 / st.width).setDepth(8 * T - 2).setTint(TOWN_TINT); this.world.add(st); groundShadow(this, st, this.world, 0.7);
+    st.setScale(T * 2.2 / st.width).setDepth(8 * T - 2).setTint(TOWN_TINT); this.world.add(st);
+    { // sombra da estátua: rente ao chão, na largura do pedestal (antes ficava no meio do pedestal, larga demais)
+      const sh = this.add.image(st.x, st.y - 3, "shadow").setScale(st.displayWidth * 0.5 / 64, 13 / 64).setAlpha(0.75).setDepth(st.depth - 1);
+      this.world.addAt(sh, Math.max(0, this.world.getIndex(st))); }
     this.block(38, 7, 2, 1); this.statue = st;
     this.manhole = { x: 43, y: 9 };
     { const bk = this.textures.exists("vk_bueiro"), mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, bk ? "vk_bueiro" : "decor_manhole").setDepth(-5); mh.setScale(T * (bk ? 1.25 : 0.8) / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
@@ -240,7 +276,7 @@ class TownScene extends Phaser.Scene {
   // interior do prédio como cenário da conversa: a sala (arte do SpriteCook) aparece com o NPC dentro e a conversa abre por cima.
   // Some sozinho quando a conversa fecha (ver update).
   showInterior(kind) {
-    const I = { smith: ["vk_int_ferreiro", "npc_smith", 0.42, 0.64], inn: ["vk_int_harpa"], potions: ["vk_int_pocoes", "npc_potion_seller", 0.5, 0.44],
+    const I = { smith: ["vk_int_ferreiro", "npc_smith", 0.42, 0.64], inn: ["vk_int_harpa"], potions: ["vk_int_pocoes", "npc_potion_seller", 0.5, 0.415],
       depot: ["vk_int_depot", "npc_depot_guard", 0.36, 0.7], locker: ["vk_int_depot", "npc_depot_guard", 0.36, 0.7], lodging: ["vk_int_acomodacao"] }[kind];
     if (!I || !this.textures.exists(I[0])) return;
     if (this.interior) { if (this.interior.key === I[0]) return; this.interior.destroy(); this.interior = null; }
@@ -260,6 +296,12 @@ class TownScene extends Phaser.Scene {
 
   use(z) {
     const V = VOCATIONS[this.vocId], d = Save.voc(this.vocId);
+    // história e boatos: cada morador conta um pedaço do que está acontecendo em Karhyn
+    const lore = (title, key, back) => {
+      const L = TOWN_LORE[key], n = (this.loreN = this.loreN || {})[key] = ((this.loreN || {})[key] || 0);
+      return ["Perguntar sobre Karhyn e os boatos", () => { const i = this.loreN[key] % L.length; this.loreN[key]++;
+        this.say(title, L[i], [[this.loreN[key] % L.length ? "E o que mais se fala?" : "Conte de novo, desde o começo", () => lore(title, key, back)[1]()], ["Voltar ao assunto", back]]); }];
+    };
     this.showInterior(z.kind);
     if (z.kind === "gate") {
       this.say("Portão de Karhyn", "Deixar a cidadela e voltar ao mapa?", [["Sair da cidade", () => this.leave("map")], ["Ficar", () => this.closeDialog()]]);
@@ -275,21 +317,21 @@ class TownScene extends Phaser.Scene {
     } else if (z.kind === "potions") {
       const n = Object.values(d.potions).reduce((a, b) => a + b, 0);
       this.say("Vendedora de Poções", `"Frascos frescos, ${V.name.toLowerCase()}. Vida, fúria e outras misturas da casa."\n\nNa sua mochila: ${n} poção(ões).  Ouro: ◉ ${d.gold}`,
-        [["Ver as poções", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "potions"); this.leave("shop"); }], ["Até logo", () => this.closeDialog()]]);
+        [["Ver as poções", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "potions"); this.leave("shop"); }], lore("Vendedora de Poções", "potions", () => this.use(z)), ["Até logo", () => this.closeDialog()]]);
     } else if (z.kind === "depot") {
       this.say("Guarda do Depot", `"Bem-vindo ao depot de Karhyn. Cada aventureiro tem seu baú nas cabines do fundo — o que guardar ali não se perde nas descidas."\n\nOuro guardado: ◉ ${d.gold}`,
-        [["Abrir meu baú", () => this.openLocker()], ["Obrigado", () => this.closeDialog()]]);
+        [["Abrir meu baú", () => this.openLocker()], lore("Guarda do Depot", "depot", () => this.use(z)), ["Obrigado", () => this.closeDialog()]]);
     } else if (z.kind === "locker") {
       this.openLocker();
     } else if (z.kind === "smith") {
       this.say("Ferreiro", `"Traga sua lâmina quando estiver cega. Conserto, afio e reforço armas e armaduras."\n\nReparo e melhoria de equipamentos chegam junto com os equipamentos.`,
-        [["Até mais", () => this.closeDialog()]]);
+        [lore("Ferreiro", "smith", () => this.use(z)), ["Até mais", () => this.closeDialog()]]);
     } else if (z.kind === "tower") {
       this.say("Torre de Vigia", "A porta range. Uma escada em caracol sobe no escuro até o terraço.", [["Subir ao topo", () => this.towerView()], ["Ficar aqui", () => this.closeDialog()]]);
     } else if (z.kind === "inn") {
-      this.say("A Harpa Dançante", "Música abafada e cheiro de cerveja azeda. O taverneiro limpa um copo e te olha como quem já te viu antes.\n\n\"Você estava aqui ontem? Não lembra? Ninguém lembra de nada em Karhyn.\"", [["Sair", () => this.closeDialog()]]);
+      this.say("A Harpa Dançante", "Música abafada e cheiro de cerveja azeda. O taverneiro limpa um copo e te olha como quem já te viu antes.\n\n\"Você estava aqui ontem? Não lembra? Ninguém lembra de nada em Karhyn.\"", [lore("A Harpa Dançante", "inn", () => this.use(z)), ["Sair", () => this.closeDialog()]]);
     } else if (z.kind === "lodging") {
-      this.say("Acomodação", "Quartos úmidos, cama de palha e uma vela. A dona cobra pouco e não faz perguntas.", [["Descansar (recupera tudo)", () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], ["Sair", () => this.closeDialog()]]);
+      this.say("Acomodação", "Quartos úmidos, cama de palha e uma vela. A dona cobra pouco e não faz perguntas.", [["Descansar (recupera tudo)", () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], lore("Acomodação", "lodging", () => this.use(z)), ["Sair", () => this.closeDialog()]]);
     } else if (z.kind === "hall" && !(d.bless > 0)) {
       d.bless = 1; Save.save();
       this.say("Estátua da Deusa", "A pedra está fria e gasta, mas a luz desce sobre você. Por um instante a chuva some, e uma voz que você quase reconhece diz o seu nome.\n\nVocê recebeu a primeira bênção de Magdha (1/3): morrer agora custa menos.", [["Ajoelhar e agradecer", () => this.closeDialog()]]);
@@ -341,7 +383,7 @@ class TownScene extends Phaser.Scene {
   // ------------------------------------------------------------ hora do dia, chuva e minimapa
   // ciclo completo de 6 minutos; a hora continua de uma visita para a outra
   skyUpdate(dt) {
-    let t = ((this.registry.get("townClock") ?? 0.9) + dt / 360) % 1;
+    let t = ((this.registry.get("townClock") ?? 0.32) + dt / 360) % 1;
     this.registry.set("townClock", t);
     // escuridão 0 (dia) .. 1 (noite): dia 0,30–0,62, entardecer até 0,75, noite até 0,18, amanhecer até 0,30
     const d = t < 0.18 ? 1 : t < 0.30 ? 1 - (t - 0.18) / 0.12 : t < 0.62 ? 0 : t < 0.75 ? (t - 0.62) / 0.13 : 1;

@@ -124,7 +124,8 @@ Object.assign(DungeonScene.prototype, {
     this.lvlText = txt(this, bx - 14, 6, "", 18, COLORS.gold).setOrigin(1, 0).setVisible(false);   // o nível fica na janela de Habilidades
     this.promoText = txt(this, bx - 14, 12, "", 12, "#e8c878").setOrigin(1, 0).setVisible(false);
     // embaixo do minimapa (canto superior direito): nome do andar pequeno, ouro e chaves
-    const mg = this.gen, ms = Math.min(2, 150 / mg.w, 110 / mg.h), mR = VIEW_W - 12, mB = 14 + Math.ceil(mg.h * ms) + 8;
+    // posição fixa, abaixo do maior minimapa possível (150×110): cada andar tem um tamanho e o mapa maior cobria o ouro
+    const mR = VIEW_W - 12, mB = 14 + 110 + 10;
     this.hudFloor = txt(this, mR, mB + 2, `${this.region.name} · Andar ${this.floorN}/${FLOORS}`, 11, "#c8b890", { title: true }).setOrigin(1, 0);
     ui.add(this.hudFloor);
     ui.add(this.add.image(mR - 92, mB + 26, "i_gold_coin").setScale(0.9));
@@ -163,11 +164,16 @@ Object.assign(DungeonScene.prototype, {
       if ((id === "p0" || id === "p1")) { const n = txt(this, x + 4, y + 1, "", 11, COLORS.white); ui.add(n); this.potCount[id] = n; }
       else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "Nv " + this.spells[id].level, 12, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
     });
+    { // ataque básico em destaque: moldura dourada; no automático ela pulsa e aparece o selo "AUTO". Clicar no ícone liga/desliga.
+      const bx0 = x0, by0 = VIEW_H - size - 10;
+      this.basicRing = this.add.rectangle(bx0 - 2, by0 - 2, size + 4, size + 4).setOrigin(0).setStrokeStyle(2, 0xe0bc60, 1); ui.add(this.basicRing);
+      this.basicAutoBg = this.add.rectangle(bx0 + size / 2, by0 - 9, 34, 11, 0x3a7a2e, 1).setStrokeStyle(1, 0x9fe08a); ui.add(this.basicAutoBg);
+      this.basicAuto = txt(this, bx0 + size / 2, by0 - 9, "AUTO", 9, "#eaffd8").setOrigin(0.5); ui.add(this.basicAuto);
+      const hit = this.add.rectangle(bx0, by0, size, size, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true }); ui.add(hit); this.basicHit = hit;
+      hit.on("pointerdown", () => { Settings.data.autoAttack = Settings.data.autoAttack === false; Settings.save(); this.msg(`Ataque automático ${Settings.data.autoAttack ? "ligado" : "desligado"}`); });
+    }
     this.buildBattleList(ui);
     this.buildSkillWin(ui);
-    // barrinha de vida sobre o herói (H minimiza/mostra; fica salvo)
-    try { this.heroBarOn = localStorage.getItem("vitula_herobar") !== "0"; } catch (e) { this.heroBarOn = true; }
-    this.input.keyboard.on("keydown-H", () => { this.heroBarOn = !this.heroBarOn; try { localStorage.setItem("vitula_herobar", this.heroBarOn ? "1" : "0"); } catch (e) {} this.msg(this.heroBarOn ? "Vida sobre o personagem: visível (H)" : "Vida sobre o personagem: oculta (H)"); });
     // minimapa no canto inferior direito
     this.miniX = VIEW_W - this.gen.w * 2 - 12; this.miniY = VIEW_H - this.gen.h * 2 - 12;
     this.mini = this.add.graphics(); ui.add(this.mini);
@@ -233,7 +239,7 @@ Object.assign(DungeonScene.prototype, {
     const clsB = txt(this, w - 11, 0, "×", 11, COLORS.text).setInteractive({ useHandCursor: true });
     win.add([bg, bar, title, minB, clsB]);
     // linhas: nível, classe, experiência (barra), magic level (barra), sword/distance (barra), shield (barra)
-    const RH = 17, NR = 6, l = [], v = [], bk = [], fl = [];
+    const RH = 17, NR = 7, l = [], v = [], bk = [], fl = [];
     for (let i = 0; i < NR; i++) {
       const y = 17 + i * RH;
       l.push(txt(this, 5, y, "", 9, COLORS.dim)); v.push(txt(this, w - 5, y, "", 9, COLORS.text).setOrigin(1, 0));
@@ -241,10 +247,13 @@ Object.assign(DungeonScene.prototype, {
       fl.push(this.add.rectangle(5, y + 12, w - 10, 2, 0x8a7430).setOrigin(0));
     }
     win.add([...bk, ...fl, ...l, ...v]);
+    // última linha: pontos de atributo — clicar abre a janela de Atributos
+    v[NR - 1].setInteractive({ useHandCursor: true }).on("pointerdown", () => this.toggleAttrs());
+    l[NR - 1].setInteractive({ useHandCursor: true }).on("pointerdown", () => this.toggleAttrs());
     this.skW = { win, bg, l, v, bk, fl, vis: true };
     const save = () => { try { localStorage.setItem("vitula_sk", JSON.stringify(S)); } catch (e) {} };
     const layout = () => {
-      win.setPosition(S.x, S.y).setVisible(S.open); const h = S.min ? 14 : 17 + 6 * 17 + 2;
+      win.setPosition(S.x, S.y).setVisible(S.open); const h = S.min ? 14 : 17 + 7 * 17 + 2;
       bg.setSize(w, h); bg.input.hitArea.setSize(w, h); minB.setText(S.min ? "□" : "–");
       [...l, ...v, ...this.skW.bk, ...this.skW.fl].forEach(t => t.setVisible(!S.min)); this.skW.vis = S.open && !S.min;
     };
@@ -291,19 +300,8 @@ Object.assign(DungeonScene.prototype, {
     });
   },
 
-  drawHeroBar() {
-    const h = this.hero;
-    if (!this.heroBarG || !this.heroBarG.scene) { this.heroBarG = this.add.graphics(); this.ents.add(this.heroBarG); }
-    const g = this.heroBarG.clear().setDepth(100001);
-    if (!this.heroBarOn || h.dead || !h.spr) return;
-    const w = 34, f = Phaser.Math.Clamp(h.hp / h.maxHp, 0, 1), x = Math.round(h.px - w / 2), y = Math.round(h.py - h.spr.displayHeight * 0.9 - 4);
-    g.fillStyle(0x000000, 0.85).fillRect(x - 1, y - 1, w + 2, 5);
-    g.fillStyle(f > 0.6 ? 0x3fae3a : f > 0.3 ? 0xd6b23a : f > 0.1 ? 0xc2452f : 0x6e1414, 1).fillRect(x, y, Math.max(1, w * f), 3);
-  },
-
   refreshHud(dt) {
     const h = this.hero;
-    this.drawHeroBar();
     this.blT -= dt || 0; if (this.blT <= 0) { this.blT = 0.15; this.refreshBattleList(); }
     const hw = Math.max(1, 196 * Phaser.Math.Clamp(h.hp / h.maxHp, 0, 1));
     this.hpFill.setSize(hw, 12); this.hpShine.setSize(hw, 2);
@@ -326,6 +324,10 @@ Object.assign(DungeonScene.prototype, {
       (this.slotWas ||= {})[id] = f;
     };
     cover("basic", h.atkT / this.stats.cooldown, h.atkT);
+    { const auto = Settings.data.autoAttack !== false, pulse = 0.55 + 0.45 * Math.sin(this.time_ * 6);
+      this.basicRing.setStrokeStyle(2, auto ? 0x9fe08a : 0xe0bc60, auto ? pulse : 0.9);
+      this.basicAuto.setText(auto ? "AUTO" : "MANUAL").setColor(auto ? "#eaffd8" : "#d8c8a8");
+      this.basicAutoBg.setFillStyle(auto ? 0x3a7a2e : 0x3a3028, 1).setStrokeStyle(1, auto ? 0x9fe08a : 0x7a6440).setSize(auto ? 34 : 44, 11).setOrigin(0.5); }
     for (const s in this.spells) {
       const sp = this.spells[s], locked = h.level < sp.level;
       cover(s, locked ? 1 : h.cds[s] / (sp.cd * this.stats.cooldown), h.cds[s], locked);
@@ -349,7 +351,9 @@ Object.assign(DungeonScene.prototype, {
         ["Classe", this.promo() ? this.promo().name : VOCATIONS[this.vocId].name, null],
         ["Experiência", `${Math.floor(h.xp).toLocaleString("pt-BR")} / ${Math.round(this.xpNext()).toLocaleString("pt-BR")}`, h.xp / this.xpNext(), 0x8a7430],
         ["Magic level", `${this.mlEff()}  ${Math.floor(100 * mlf)}%`, mlf, 0x4a6ab8],
-        one(this.ranged ? "distance" : "sword"), one("shield")];
+        one(this.ranged ? "distance" : "sword"), one("shield"),
+        ["Atributos", this.attrFree() > 0 ? `+${this.attrFree()} ponto(s) · U` : "abrir · U", null]];
+      this.skW.v[6].setColor(this.attrFree() > 0 ? "#9fe08a" : COLORS.dim);
       rows.forEach((r, i) => {
         const W = this.skW, on = r[2] != null;
         W.l[i].setText(r[0]); W.v[i].setText(r[1]); W.bk[i].setVisible(on); W.fl[i].setVisible(on);
@@ -359,6 +363,40 @@ Object.assign(DungeonScene.prototype, {
     if (this.msgT > 0) { this.msgT -= dt; this.msgText.setAlpha(Phaser.Math.Clamp(this.msgT, 0, 1)); }
   },
 
+
+  // ---------------------------------------------------------------- atributos (tecla U)
+  // 1 ponto por nível ganho. O jogo pausa com a janela aberta.
+  toggleAttrs() {
+    if (this.finished || this.paused || this.bagOpen && !this.attrBox) return;
+    if (this.attrBox) { this.attrBox.destroy(); this.attrBox = null; this.bagOpen = false; return; }
+    this.bagOpen = true; this.buildAttrs();
+  },
+  buildAttrs() {
+    if (this.attrBox) this.attrBox.destroy();
+    const c = this.add.container(0, 0).setDepth(30); this.uiLayer.add(c); this.attrBox = c;
+    c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 0.6).setOrigin(0).setInteractive());
+    const ids = Object.keys(ATTRS), W = 520, RH = 34, H = 110 + ids.length * RH + 16, X = VIEW_W / 2 - W / 2, Y = Math.max(6, VIEW_H / 2 - H / 2);
+    c.add(this.add.nineslice(X, Y, "panel", null, W, H, 16, 16, 16, 16).setOrigin(0));
+    const T_ = (x, y, s, size = 13, col = COLORS.text) => { const t = txt(this, x, y, s, size, col); c.add(t); return t; };
+    T_(VIEW_W / 2, Y + 24, "Atributos", 24, COLORS.gold).setOrigin(0.5);
+    T_(X + W - 20, Y + 14, "U / ESC fecha", 11, COLORS.dim).setOrigin(1, 0);
+    const free = this.attrFree();
+    T_(VIEW_W / 2, Y + 52, free > 0 ? `Pontos para distribuir: ${free}` : "Sem pontos. Cada nível ganho dá 1 ponto.", 14, free > 0 ? "#9fe08a" : COLORS.dim).setOrigin(0.5);
+    T_(VIEW_W / 2, Y + 72, `Nível ${this.hero.level} · ${this.hero.level - 1 - free} ponto(s) já distribuído(s)`, 11, COLORS.dim).setOrigin(0.5);
+    ids.forEach((id, i) => {
+      const A = ATTRS[id], y = Y + 96 + i * RH, n = this.attr(id);
+      const name = id === "weapon" ? (this.ranged ? "Distance" : "Sword") : A.name;
+      c.add(this.add.rectangle(X + 16, y, W - 32, RH - 4, 0x1a1612, 0.9).setOrigin(0).setStrokeStyle(1, 0x4a3e2c));
+      T_(X + 26, y + 3, name, 14, COLORS.text);
+      T_(X + 26, y + 17, id === "weapon" ? `+1 de ${name}` : A.desc, 11, COLORS.dim);
+      T_(X + W - 150, y + 8, `${n}`, 14, COLORS.gold).setOrigin(1, 0);
+      T_(X + W - 140, y + 10, n ? A.show(n) : "", 11, "#9fd0ff");
+      const on = free > 0;
+      const b = this.add.rectangle(X + W - 46, y + 3, 26, 24, on ? 0x3a7a2e : 0x2a2622, 1).setOrigin(0).setStrokeStyle(1, on ? 0x9fe08a : 0x4a443c); c.add(b);
+      T_(X + W - 33, y + 15, "+", 16, on ? "#eaffd8" : COLORS.dim).setOrigin(0.5);
+      if (on) b.setInteractive({ useHandCursor: true }).on("pointerdown", () => { if (this.spendAttr(id)) this.buildAttrs(); });
+    });
+  },
 
   msg(s) { if (!this.msgText) return; this.msgText.setText(s).setAlpha(1); this.msgT = 3.5; },
 
@@ -394,7 +432,7 @@ Object.assign(DungeonScene.prototype, {
     this.pauseBox = this.panel("Pausa",
       "Mover: WASD ou setas (diagonal vale)\nAtaque básico: Espaço · R liga/desliga o automático · E na corda: subir\nFúria enche ao golpear e apanhar e paga as habilidades.\n" +
       Object.values(this.spells).map(sp => `${sp.key} · ${sp.name} (nv ${sp.level})`).join("   ") +
-      "\n5 e 6: poções · I: mochila · TAB: mapa · roda do mouse: zoom\nBaús pedem chave de bronze.",
+      "\n5 e 6: poções · I: mochila · U: atributos · TAB: mapa · roda do mouse: zoom\nBaús pedem chave de bronze.",
       [["Continuar", () => this.togglePause()], ["Abandonar (conta como morte)", () => { this.togglePause(); this.finish(false); }]]);
   },
 

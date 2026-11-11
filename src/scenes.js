@@ -38,6 +38,7 @@ class BootScene extends Phaser.Scene {
     for (const n of ["npc_smith_idle", "npc_potion_seller_idle", "npc_depot_guard_idle"]) this.load.spritesheet(n, `assets/town/${n}.png`, { frameWidth: 200, frameHeight: 200 });
     this.load.spritesheet("fx_basic_slash", "assets/art/fx_basic_slash.png", { frameWidth: 72, frameHeight: 72 });
     this.load.spritesheet("fx_ground_slam", "assets/art/fx_ground_slam.png", { frameWidth: 214, frameHeight: 214 });
+    this.load.spritesheet("fx_ring_wave", "assets/art/fx_ring_wave.png", { frameWidth: 214, frameHeight: 214 });
     this.load.spritesheet("fx_front_cut", "assets/art/fx_front_cut.png", { frameWidth: 230, frameHeight: 230 });
     // Karhyn nova (guia de estilo aprovado): prédios, objetos e autotiles de chão
     // a arquitetura de Karhyn é desenhada em código (towngfx.js); da arte gerada só fica o lampião
@@ -108,6 +109,7 @@ class BootScene extends Phaser.Scene {
     for (const n of ["kn_hurt", "kn_cast"]) this.anims.create({ key: n, frames: this.anims.generateFrameNumbers(n, { start: 0, end: 7 }), frameRate: 18, repeat: 0 });
     for (const n of ["npc_smith_idle", "npc_potion_seller_idle", "npc_depot_guard_idle"]) this.anims.create({ key: n, frames: this.anims.generateFrameNumbers(n, { start: 0, end: 7 }), frameRate: 6, repeat: -1 });
     this.anims.create({ key: "fx_basic_slash", frames: this.anims.generateFrameNumbers("fx_basic_slash", { start: 0, end: 3 }), frameRate: 18, repeat: 0 });
+    this.anims.create({ key: "fx_ring_wave", frames: this.anims.generateFrameNumbers("fx_ring_wave", { start: 0, end: 5 }), frameRate: 11, repeat: 0 });
     this.anims.create({ key: "fx_ground_slam", frames: this.anims.generateFrameNumbers("fx_ground_slam", { frames: [0, 1, 2, 4, 5, 6] }), frameRate: 16, repeat: 0 });
     this.anims.create({ key: "fx_front_cut", frames: this.anims.generateFrameNumbers("fx_front_cut", { start: 0, end: 6 }), frameRate: 20, repeat: 0 });
     for (const m of ["cave_rat", "giant_rat"]) if (!this.anims.exists("am_" + m))
@@ -118,7 +120,7 @@ class BootScene extends Phaser.Scene {
       const n = this.textures.get("fx_" + f).frameTotal - 1;
       this.anims.create({ key: "fx_" + f, frames: this.anims.generateFrameNumbers("fx_" + f, { start: 0, end: n - 1 }), frameRate: 18 });
     }
-    Promise.all(["20px \"Grenze Gotisch\"", "16px Bulletin", "16px Pixelify"].map(f => document.fonts.load(f).catch(() => 0))).then(() => document.fonts.ready).then(() => { const q = new URLSearchParams(location.search); this.scene.start(q.has("town") ? "town" : q.has("play") ? "dungeon" : "title"); });
+    Promise.all(["20px \"Grenze Gotisch\"", "16px Bulletin", "16px Pixelify"].map(f => document.fonts.load(f).catch(() => 0))).then(() => document.fonts.ready).then(() => { const q = new URLSearchParams(location.search); this.scene.start(q.has("intro") ? "intro" : q.has("town") ? "town" : q.has("play") ? "dungeon" : "title"); });
   }
   makeRadial(key, size, stops, color = 0xffffff) {
     const c = this.textures.createCanvas(key, size, size);
@@ -310,14 +312,78 @@ class SelectScene extends Phaser.Scene {
       const foot = open ? `◉ ${Save.gold(id)} de ouro` : (v.soon ? "Em breve" : `Bloqueada · ${v.unlockCost} de ouro`);
       txt(this, x + cw / 2, y + 312, foot, 14, open ? COLORS.gold : COLORS.dim).setOrigin(0.5);
       if (open) {
-        this.add.zone(x, y, cw, 340).setOrigin(0).setInteractive({ useHandCursor: true }).on("pointerup", () => { this.registry.set("vocation", id); this.scene.start("map"); });
+        this.add.zone(x, y, cw, 340).setOrigin(0).setInteractive({ useHandCursor: true }).on("pointerup", () => { this.registry.set("vocation", id); this.scene.start("intro"); });
         this.tweens.add({ targets: card, alpha: 0.85, duration: 900, yoyo: true, repeat: -1 });
       }
     });
     button(this, VIEW_W / 2, 492, 200, "Voltar", () => this.scene.start("title"));
     this.input.keyboard.on("keydown-ESC", () => this.scene.start("title"));
-    this.input.keyboard.on("keydown-ENTER", () => { this.registry.set("vocation", "knight"); this.scene.start("map"); });
+    this.input.keyboard.on("keydown-ENTER", () => { this.registry.set("vocation", "knight"); this.scene.start("intro"); });
     menuMusic(this);
+  }
+}
+
+// Introdução: a vista da torre sobre os arredores de Karhyn, o título e o texto subindo devagar.
+// Qualquer tecla, clique ou toque pula. Ao fim, o jogo começa no portão de Karhyn, de dia.
+const INTRO_TITLE = "A Queda de Karhyn";
+const INTRO_TEXT = [
+  "No continente de Godoyr existe uma pequena cidade chamada Karhyn.",
+  "Uma cidade virtuosa, de gente carinhosa, calorosa e festeira, conhecida por sua forja, de onde saem as melhores espadas e os melhores escudos de todo o continente.",
+  "Dizem que o metal usado na forja nasce do ferro minerado nas montanhas próximas à Torre das Amazonas — ferro que, à noite, é banhado pela luz da deusa.",
+  "Mas Karhyn está em caos.",
+  "O mal assola os seus moradores. Cresce o ódio dos monstros da escuridão, e animais que antes eram inofensivos agora atacam com uma fúria pungente.",
+  "Na taverna A Harpa Dançante, os boatos correm de mesa em mesa: nos esgotos de Karhyn habita um mal tão perigoso que, se conseguir subir todos os andares e chegar à superfície...",
+  "...poderá ser o nosso fim.",
+].join("\n\n");
+class IntroScene extends Phaser.Scene {
+  constructor() { super("intro"); }
+  create() {
+    this.anims.globalTimeScale = 1; this.done = false;
+    zoom2(this.cameras.main); this.cameras.main.setBackgroundColor("#050406");
+    const img = this.add.image(VIEW_W / 2, VIEW_H / 2, "tower_view").setScale(VIEW_W / 512 * 1.06);
+    img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.tweens.add({ targets: img, x: VIEW_W / 2 - 26, y: VIEW_H / 2 - 10, scale: VIEW_W / 512 * 1.16, duration: 60000, ease: "Sine.inOut" });
+    // névoa passando sobre os campos
+    for (let i = 0; i < 6; i++) {
+      const f = this.add.image(Phaser.Math.Between(-200, VIEW_W), Phaser.Math.Between(120, VIEW_H - 120), "light").setScale(3.2, 0.9).setTint(0xc8d0d8).setAlpha(0.06);
+      this.tweens.add({ targets: f, x: f.x + VIEW_W + 400, duration: Phaser.Math.Between(26000, 42000), repeat: -1, onRepeat: () => { f.x = -400; } });
+    }
+    // véu escuro para o texto ler bem (mais fechado embaixo, onde ele nasce)
+    const veil = this.add.graphics();
+    veil.fillStyle(0x050406, 0.42).fillRect(0, 0, VIEW_W, VIEW_H);
+    veil.fillGradientStyle(0x050406, 0x050406, 0x050406, 0x050406, 0, 0, 0.9, 0.9).fillRect(0, VIEW_H - 150, VIEW_W, 150);
+    // título dramático
+    const title = this.add.text(VIEW_W / 2, VIEW_H / 2 - 20, INTRO_TITLE, { fontFamily: FONT_TITLE, fontSize: "64px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 8, resolution: 2 })
+      .setOrigin(0.5).setAlpha(0).setShadow(0, 4, "#000000", 8, true, true);
+    const rule = this.add.rectangle(VIEW_W / 2, VIEW_H / 2 + 26, 360, 2, 0x8e2a2c).setAlpha(0).setScale(0, 1);
+    this.tweens.add({ targets: title, alpha: 1, y: VIEW_H / 2 - 30, duration: 2200, ease: "Sine.out" });
+    this.tweens.add({ targets: rule, alpha: 1, scaleX: 1, duration: 2200, delay: 600, ease: "Sine.out" });
+    this.tweens.add({ targets: [title, rule], alpha: 0, delay: 5200, duration: 1600 });
+    // texto que sobe devagar e some no alto (como a abertura de Star Wars)
+    const body = this.add.text(VIEW_W / 2, VIEW_H + 10, INTRO_TEXT, { fontFamily: FONT_TITLE, fontSize: "25px", color: "#e8d8a8", stroke: "#0c0608", strokeThickness: 5, resolution: 2,
+      align: "center", wordWrap: { width: 620 }, lineSpacing: 10 }).setOrigin(0.5, 0).setShadow(0, 2, "#000000", 4, true, true);
+    // máscara em degradê: o texto apaga ao chegar ao topo e nasce suave embaixo
+    const mg = this.make.graphics({ add: false });
+    mg.fillGradientStyle(0xffffff, 0xffffff, 0xffffff, 0xffffff, 0, 0, 1, 1).fillRect(0, 40, VIEW_W, 150);
+    mg.fillStyle(0xffffff, 1).fillRect(0, 190, VIEW_W, VIEW_H - 190 - 70);
+    mg.fillGradientStyle(0xffffff, 0xffffff, 0xffffff, 0xffffff, 1, 1, 0, 0).fillRect(0, VIEW_H - 70, VIEW_W, 70);
+    mg.setScale(2);   // a máscara fica em coordenadas da tela (a câmera amplia 2×)
+    body.setMask(new Phaser.Display.Masks.BitmapMask(this, mg));
+    const speed = 17;   // px por segundo
+    this.tweens.add({ targets: body, y: 30 - body.height, delay: 5600, duration: (VIEW_H + body.height) / speed * 1000, onComplete: () => this.finish() });
+    const skip = txt(this, VIEW_W - 16, VIEW_H - 14, "Enter, clique ou toque: pular", 11, COLORS.dim).setOrigin(1, 1).setAlpha(0);
+    this.tweens.add({ targets: skip, alpha: 0.9, delay: 1500, duration: 800 });
+    this.cameras.main.fadeIn(1200, 0, 0, 0);
+    // só aceita pular depois de um instante (o clique que escolheu a vocação não conta)
+    this.time.delayedCall(600, () => { this.input.keyboard.on("keydown", () => this.finish()); this.input.on("pointerup", () => this.finish()); });
+    menuMusic(this);
+  }
+  finish() {
+    if (this.done) return; this.done = true;
+    this.registry.set("townSpawn", "gate"); this.registry.set("townPos", null);
+    this.registry.set("townClock", 0.32);   // o jogo começa de dia
+    this.cameras.main.fadeOut(900, 0, 0, 0);
+    this.cameras.main.once("camerafadeoutcomplete", () => this.scene.start("town"));
   }
 }
 

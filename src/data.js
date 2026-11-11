@@ -96,6 +96,19 @@ const SKILLS = {
   shield: { name: "Shield", start: 10, base: 24, growth: 1.12, desc: "defesa e chance de bloqueio" },
   distance: { name: "Distance", start: 10, base: 30, growth: 1.12, desc: "base do dano a distância" },
 };
+// Pontos de atributo: 1 por nível ganho, para gastar onde quiser (janela de Atributos, tecla U).
+// "weapon" vira Sword no Cavaleiro e Distance no Arqueiro.
+const ATTRS = {
+  str:    { name: "Força",                desc: "+2% de dano de ataque",        show: n => `+${n * 2}% de dano` },
+  vit:    { name: "Vitalidade",           desc: "+25 de vida total",            show: n => `+${n * 25} de vida` },
+  crit:   { name: "Chance crítica",       desc: "+0,5% de chance de crítico",   show: n => `${(10 + n * 0.5).toFixed(1).replace(".", ",")}%` },
+  block:  { name: "Chance de bloqueio",   desc: "+0,5% de chance de bloquear",  show: n => `+${(n * 0.5).toFixed(1).replace(".", ",")}%` },
+  armor:  { name: "Armadura",             desc: "+0,5 de defesa",               show: n => `+${(n * 0.5).toFixed(1).replace(".", ",")} de defesa` },
+  weapon: { name: "Sword",                desc: "+1 de Sword (ou Distance)",    show: n => `+${n}` },
+  ml:     { name: "Magic level",          desc: "+1 de magic level",            show: n => `+${n}` },
+  shield: { name: "Shield",               desc: "+1 de Shield",                 show: n => `+${n}` },
+  aspd:   { name: "Velocidade de ataque", desc: "+0,25% de velocidade de ataque", show: n => `+${(n * 0.25).toFixed(2).replace(".", ",")}%` },
+};
 function skillTriesNeeded(id, lvl) { const s = SKILLS[id]; return Math.round(s.base * Math.pow(s.growth, lvl - s.start)); }
 
 // Habilidades do Cavaleiro: liberadas por nível, pagas com Fúria (sem mana).
