@@ -42,7 +42,10 @@ Object.assign(DungeonScene.prototype, {
     if (h.potCd) for (const s in h.potCd) h.potCd[s] = Math.max(0, h.potCd[s] - dt);
     if (h.buffs) for (const s in h.buffs) h.buffs[s] = Math.max(0, h.buffs[s] - dt);
     h.atkT = Math.max(0, h.atkT - dt);
-    h.regen += dt; if (h.regen >= 1) { h.regen -= 1; this.heal(this.stats.recovery, false); }
+    h.regen += dt; if (h.regen >= 1) { h.regen -= 1; if (this.stats.recovery > 0) this.heal(this.stats.recovery, false); }
+    // regeneração de mana (Arqueiro) ou de Fúria só em combate (Cavaleiro)
+    if (this.stats.manaReg && (VOCATIONS[this.vocId].mana || h.furyIdle < 4)) h.fury = Math.min(this.furyMax, h.fury + this.stats.manaReg * dt);
+    this.tickMonsterPoison(dt);
     this.tickPoison(dt);
     // passiva da vocação (Cavaleiro: 2% da vida máxima a cada 5 s)
     const pv = VOCATIONS[this.vocId].passive;
@@ -109,6 +112,7 @@ Object.assign(DungeonScene.prototype, {
           this.fx(this.anims.exists("fx_basic_slash") ? "basic_slash" : "slash", t.px, t.py - 22, this.anims.exists("fx_basic_slash") ? 0.9 : 0.7, t.x < h.x, ang);
           const crit = Math.random() < this.critChance();
           this.damageMonster(t, this.baseDamage() * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? 1.8 : 1));
+          this.weaponElement(t);
           if (crit) { this.splat(t.px, t.py - 4, 5); }
           this.addFury(9);
           this.trainSkill("sword");
@@ -128,7 +132,7 @@ Object.assign(DungeonScene.prototype, {
   // ---------------------------------------------------------------- status (estilo Tibia)
   // dano corpo a corpo: máx = 0,085 × ataque × Sword + nível/5; o golpe médio fica em ~80% do máximo
   maxDamage() {
-    return (0.085 * FIST_ATTACK * this.swordEff() + this.hero.level / 5) * this.stats.might * (this.promo() ? this.promo().dmgMult : 1);
+    return (0.085 * (this.stats.weaponAtk || FIST_ATTACK) * this.swordEff() + this.hero.level / 5) * this.stats.might * (this.promo() ? this.promo().dmgMult : 1);
   },
   baseDamage() { return this.maxDamage() * 0.8; },
   // pontos de atributo: quantos foram postos em cada um, quantos sobram (1 por nível acima do 1)
@@ -142,13 +146,13 @@ Object.assign(DungeonScene.prototype, {
     sfx(this, "gem", 0.3);
     return true;
   },
-  critChance() { return 0.1 + 0.005 * this.attr("crit"); },
+  critChance() { return 0.1 + 0.005 * this.attr("crit") + (this.stats.gearCrit || 0); },
   swordEff() { return this.attr("weapon") + (this.ranged ? Save.skill(this.vocId, "distance").lvl + (this.buffOn("hunter") ? 10 : 0) : Save.skill(this.vocId, "sword").lvl + (this.buffOn("berserker") ? 10 : 0)); },
   shieldLvl() { return Save.skill(this.vocId, "shield").lvl + this.attr("shield"); },
-  mlEff() { return Save.voc(this.vocId).ml.lvl + this.attr("ml") + (this.buffOn("mage") ? 10 : 0); },
+  mlEff() { return Save.voc(this.vocId).ml.lvl + this.attr("ml") + (this.stats.gearMl || 0) + (this.buffOn("mage") ? 10 : 0); },
   // defesa: armadura + metade do Shield acima do inicial (itens de defesa vão somar aqui)
-  defenseValue() { return this.stats.armor + 0.25 * (this.shieldLvl() - SKILLS.shield.start); },
-  blockChance() { return Math.min(0.6, Math.min(0.35, 0.05 + 0.006 * (this.shieldLvl() - SKILLS.shield.start)) + 0.005 * this.attr("block")); },
+  defenseValue() { return this.stats.armor + (this.stats.gearDef || 0) + 0.25 * (this.shieldLvl() - SKILLS.shield.start); },
+  blockChance() { return Math.min(0.6, Math.min(0.35, 0.05 + 0.006 * (this.shieldLvl() - SKILLS.shield.start)) + 0.005 * this.attr("block") + (this.stats.gearBlock || 0)); },
   attacksPerSec() { return (this.stats.atkSpeed || 1) / this.stats.cooldown; },
   buffOn(id) { const b = this.hero.buffs; return !!(b && b[id] > 0); },
 
@@ -316,10 +320,51 @@ Object.assign(DungeonScene.prototype, {
       case "blue_gem": this.addXp(info.xp); this.floatText(px, py, `+${info.xp} exp`, COLORS.soul); sfx(this, "gem"); break;
       case "bronze_key": this.keys++; this.msg("Você pegou uma chave de bronze."); sfx(this, "pickup"); break;
       case "scroll": for (const s in h.cds) h.cds[s] = 0; this.addXp(40); this.msg("O pergaminho renova suas magias."); sfx(this, "levelup", 0.3); break;
-      default: this.heal(info.healPct ? h.maxHp * info.healPct : info.heal); sfx(this, "pickup", 0.35);
+      default:
+        if (info.gear) { Save.voc(this.vocId).gear.push(info.gear); Save.save(); this.msg(`Você pegou: ${info.name}. (I: mochila)`); this.floatText(px, py, info.name, "#ffd860"); sfx(this, "levelup", 0.25); break; }
+        this.heal(info.healPct ? h.maxHp * info.healPct : info.heal); sfx(this, "pickup", 0.35);
     }
   },
 
+
+  // dano extra do elemento da arma (fogo, gelo, terra, raio) e veneno da Espada da Serpente
+  weaponElement(t) {
+    const W = this.stats.weapon; if (!W || this.ranged || t.dead) return;
+    if (W.el && W.elDmg) this.damageMonster(t, W.elDmg * Phaser.Math.FloatBetween(0.8, 1.2), W.el);
+    if (W.magic && !t.dead) this.damageMonster(t, (5 + 1.5 * this.mlEff()) * Phaser.Math.FloatBetween(0.8, 1.2), "energy");
+    if (W.poison && !t.dead) { t.poisonT = W.poison.dur; t.poisonDps = Math.max(1, this.baseDamage() * W.poison.pct); }
+  },
+  tickMonsterPoison(dt) {
+    for (const m of this.monsters) {
+      if (!(m.poisonT > 0) || m.dead) continue;
+      m.poisonT -= dt; m.poisonTick = (m.poisonTick || 0) + dt;
+      if (m.poisonTick >= 1) { m.poisonTick -= 1; this.damageMonster(m, m.poisonDps, "earth", true); }
+    }
+  },
+
+  // equipamentos: vestir, tirar (o item volta para a mochila)
+  equipItem(id) {
+    const d = Save.voc(this.vocId), E = EQUIP[id], h = this.hero;
+    if (!E || !equipOk(id, this.vocId)) { this.msg("Sua vocação não usa este item."); return false; }
+    if (h.level < E.lvl) { this.msg(`Precisa do nível ${E.lvl}.`); return false; }
+    const i = d.gear.indexOf(id); if (i < 0) return false;
+    d.gear.splice(i, 1);
+    if (d.equip[E.slot]) d.gear.push(d.equip[E.slot]);
+    d.equip[E.slot] = id;
+    // duas mãos não combinam com escudo
+    if (E.twoH && d.equip.shield) { d.gear.push(d.equip.shield); delete d.equip.shield; this.msg("Arma de duas mãos: o escudo foi para a mochila."); }
+    if (E.slot === "shield" && d.equip.weapon && EQUIP[d.equip.weapon].twoH) { d.gear.push(d.equip.weapon); delete d.equip.weapon; this.msg("Escudo vestido: a arma de duas mãos foi para a mochila."); }
+    Save.save(); this.restat(); sfx(this, "pickup", 0.3); return true;
+  },
+  unequipSlot(slot) {
+    const d = Save.voc(this.vocId); if (!d.equip[slot]) return;
+    d.gear.push(d.equip[slot]); delete d.equip[slot]; Save.save(); this.restat();
+  },
+  restat() {
+    const h = this.hero, old = h.maxHp - this.stats.maxHp;   // bônus de nível já somados ao máximo
+    this.stats = this.computeStats();
+    h.maxHp = this.stats.maxHp + old; h.hp = Math.min(h.hp, h.maxHp);
+  },
 
   // ---------------------------------------------------------------- herói: dano, cura, experiência
   // veneno (aranha venenosa): dano por segundo que não é bloqueado; renova a duração a cada mordida
@@ -332,13 +377,16 @@ Object.assign(DungeonScene.prototype, {
     const h = this.hero; if (!(h.poisonT > 0) || h.dead) return;
     h.poisonT -= dt; h.poisonTick += dt;
     if (h.spr) h.spr.setTint(0xa8f08a);
-    if (h.poisonTick >= 1) { h.poisonTick -= 1; this.hurtHero(0, Math.max(1, Math.round(h.poisonDps))); }
+    if (h.poisonTick >= 1) { h.poisonTick -= 1; this.hurtHero(0, Math.max(1, Math.round(h.poisonDps)), "earth"); }
     if (h.poisonT <= 0 && h.spr) h.spr.clearTint();
   },
 
-  hurtHero(amount, pure = 0) {
+  hurtHero(amount, pure = 0, el = "physical") {
     const h = this.hero;
     if (h.dead || this.god) return;
+    // resistências dos equipamentos ao elemento do golpe
+    const res = Math.min(0.8, (this.stats.res || {})[el] || 0);
+    if (res) { amount *= 1 - res; pure = pure ? Math.max(1, Math.round(pure * (1 - res))) : 0; }
     if (pure) { h.hp -= pure; this.floatText(h.px + 8, h.py - 60, String(pure), "#7fd04a"); if (h.hp <= 0) h.hp = 0.0001, amount = 1, pure = 0; else return; }
     this.trainSkill("shield");
     // bloqueio com o escudo (chance cresce com o Shield): nenhum dano

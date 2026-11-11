@@ -108,6 +108,8 @@ const ATTRS = {
   ml:     { name: "Magic level",          desc: "+1 de magic level",            show: n => `+${n}` },
   shield: { name: "Shield",               desc: "+1 de Shield",                 show: n => `+${n}` },
   aspd:   { name: "Velocidade de ataque", desc: "+0,25% de velocidade de ataque", show: n => `+${(n * 0.25).toFixed(2).replace(".", ",")}%` },
+  hpreg:  { name: "Regeneração de vida",  desc: "+0,5 de vida por segundo",     show: n => `+${(n * 0.5).toFixed(1).replace(".", ",")} vida/s` },
+  mpreg:  { name: "Regeneração de mana",  desc: "+0,5 de mana por segundo (Fúria: só em combate)", show: n => `+${(n * 0.5).toFixed(1).replace(".", ",")} /s` },
 };
 function skillTriesNeeded(id, lvl) { const s = SKILLS[id]; return Math.round(s.base * Math.pow(s.growth, lvl - s.start)); }
 
@@ -121,7 +123,7 @@ const ML_MULT = { knight: 3.0, archer: 1.4, sorcerer: 1.1, druid: 1.1 };
 const mlNeeded = (voc, lvl) => Math.round(ML_BASE * Math.pow(ML_MULT[voc] || 3, lvl));
 
 // combate corpo a corpo no estilo Tibia: dano máx = 0,085 × ataque da arma × skill + nível / 5
-const FIST_ATTACK = 20;  // ataque base até existirem armas
+const FIST_ATTACK = 20;  // ataque do punho (sem arma); o arqueiro usa sempre este valor
 
 // Poções: 2 atalhos na barra (teclas 5 e 6). voc = vocações que podem usar (vazio = todas).
 const POTIONS = {

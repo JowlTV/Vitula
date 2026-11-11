@@ -142,7 +142,7 @@ Object.assign(DungeonScene.prototype, {
         if (h.x !== m.x) m.spr.setFlipX(h.x < m.x);
         this.monsterSwing(m);
         const hp0 = h.hp;
-        this.hurtHero(m.dmg * Phaser.Math.FloatBetween(0.85, 1.15));
+        this.hurtHero(m.dmg * Phaser.Math.FloatBetween(0.85, 1.15), 0, MONSTER_ELEMENT[m.kind] || "physical");
         if (m.data.poison && h.hp < hp0) this.poisonHero(m.data.poison);
       }
       return;
@@ -262,14 +262,28 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
-  damageMonster(m, amount) {
+  // dano em monstro: a armadura desconta golpes físicos; cada elemento usa a fraqueza/resistência do monstro
+  // (o número sai na cor do elemento). pierce: ignora a armadura (veneno)
+  damageMonster(m, amount, el = "physical", pierce = false) {
     if (m.dead) return;
-    this.floatText(m.px + Phaser.Math.Between(-6, 6), m.py - 50, String(Math.round(Math.max(1, amount - (m.data.arm || 0)))), COLORS.white);
-    amount = Math.max(1, amount - (m.data.arm || 0));
+    const res = (MONSTER_RES[m.kind] || {})[el] || 0;
+    amount = Math.max(1, amount * (1 - res) - (el === "physical" && !pierce ? (m.data.arm || 0) : 0));
+    if (res >= 1) amount = 0;
+    this.floatText(m.px + Phaser.Math.Between(-6, 6), m.py - 50 - (el === "physical" ? 0 : 10), res >= 1 ? "imune" : String(Math.round(amount)), el === "physical" ? COLORS.white : ELEMENTS[el].color);
+    if (!amount) return;
     m.awake = true; m.hp -= amount; m.flash = 1;
     if (m.hp <= 0) this.monsterDied(m);
   },
 
+
+  // sorteia um equipamento que sirva para a vocação, perto do nível do herói (até 5 acima; os mais baixos pesam menos)
+  rollEquip() {
+    const L = this.hero.level, pool = [];
+    for (const id in EQUIP) { const E = EQUIP[id]; if (!equipOk(id, this.vocId) || E.lvl > L + 5) continue; pool.push([id, E.lvl >= L - 8 ? 4 : 1]); }
+    let tot = 0; for (const [, w] of pool) tot += w; let r = Math.random() * tot;
+    for (const [id, w] of pool) if ((r -= w) <= 0) return id;
+    return null;
+  },
 
   // morte: o corpo fica no chão. Com loot em cima dura 40 s; sem loot, 5 s (depois some com o que sobrou)
   monsterDied(m, byMonster = false) {
@@ -286,6 +300,8 @@ Object.assign(DungeonScene.prototype, {
       if (Math.random() < 0.6 || m.elite || m.champion) this.drop(m.x, m.y, "gold");
       if (Math.random() < 0.12) this.drop(m.x, m.y, ["apple", "bread", "meat"][Phaser.Math.Between(0, 2)]);
       if (Math.random() < 0.06) this.drop(m.x, m.y, "bronze_key");
+      const eqChance = m.elite ? 1 : m.champion ? 0.35 : 0.025;
+      if (Math.random() < eqChance) { const id = this.rollEquip(); if (id) this.drop(m.x, m.y, "eq_" + id); }
       loot = this.pickups.size > before;
     }
     this.makeCorpse(m, loot);

@@ -17,7 +17,8 @@ const Save = {
     if (!d.xpTotal) d.xpTotal = 0;
     if (d.bless == null) d.bless = 0;      // bênçãos de Magdha (0 a 3)
     if (d.promoted == null) d.promoted = false; // título de promoção: conquistado uma vez, não se perde
-    if (!d.attr) d.attr = {};             // pontos de atributo gastos (1 ponto por nível ganho)
+    if (!d.attr) d.attr = {};
+    if (!d.gear) d.gear = [];             // equipamentos guardados na mochila (ids de EQUIP)             // pontos de atributo gastos (1 ponto por nível ganho)
     if (!d.equip) d.equip = {};           // equipamentos vestidos (quando existirem)
     return d;
   },

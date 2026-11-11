@@ -73,6 +73,7 @@ class BootScene extends Phaser.Scene {
     this.load.audio("music_goddess", "assets/audio/before_the_shadow_falls.mp3");
   }
   create() {
+    makeEquipTextures(this);   // ícones dos equipamentos, desenhados em código
     this.makeRadial("light", 256, [[0, 1], [0.35, 0.6], [1, 0]]);
     this.makeRadial("shadow", 64, [[0, 0.82], [0.5, 0.68], [0.78, 0.32], [1, 0]], 0x000000);
     for (const d of ["down", "up", "side"]) {
