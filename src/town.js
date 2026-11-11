@@ -110,7 +110,7 @@ class TownScene extends Phaser.Scene {
     // peças do SpriteCook (vk_*); se a imagem faltar, usa a versão desenhada em código
     const F = (key, kind, x, y, w, wCode) => this.textures.exists(key) ? this.art(key, x, y, w, 0) : A(kind, x, y, wCode, 0);
     // portão de pedra a oeste (3×3), por onde o herói chega sem lembrar de nada
-    this.gateImg = F("vk_portao", "v_gate", 0, 10, 3, 3); this.block(0, 8, 2, 3);
+    this.gateImg = A("v_gate_side", 0, 12, 2.2, 0); this.block(0, 6, 2, 7);   // portão lateral visto de cima (torres nas linhas 6–7 e 11–12) this.block(0, 8, 2, 3);
     // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
     F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); A("v_ruin", 10, 6, 3, 0); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
     A("v_ruin", 25, 6, 3, 0); A("v_ruin", 29, 6, 4, 0); A("v_ruin", 34, 6, 3, 0);

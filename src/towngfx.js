@@ -346,6 +346,30 @@ const TG = (() => {
       for (let xx = ax + 2; xx < ax + aw - 1; xx += 4) p.rect(xx, ay + 4, 1, 22, C.iron[1]); p.rect(ax + 1, ay + 12, aw - 2, 1, C.iron[1]); p.rect(ax + 1, ay + 25, aw - 2, 2, C.iron[2]);
       for (let i = 0; i < 6; i++) p.rect(p.int(4, W - 5), p.int(20, H - 6), 1, p.int(4, 10), "rgba(140,170,200,0.35)");   // chuva escorrendo
       p.outline(); return p.cv; },
+    // portão do muro OESTE visto de cima: duas torres (norte e sul da rua) e o passadiço de pedra cruzando por cima da rua.
+    // A passagem corre de oeste para leste, então quem entra pela lateral passa por baixo do passadiço.
+    v_gate_side: w => { const W = Math.round(w * D), H = 7 * D, p = new Pix(W, H, "v_gate_side"), TWR = 64, TOP = 52;
+      const tower = y0 => {
+        p.stones(0, y0, TWR, TOP, C.stone, 8, 5, 0.2);
+        p.rect(7, y0 + 7, TWR - 14, TOP - 14, "#2c2c32"); p.speckle(7, y0 + 7, TWR - 14, TOP - 14, ["#34343a", "#26262b"], 0.25);
+        for (let x = 0; x < TWR; x += 10) { p.rect(x, y0, 7, 6, C.stone[3]); p.rect(x, y0, 7, 1, C.stoneHi); p.rect(x, y0 + TOP - 6, 7, 6, C.stone[3]); p.rect(x, y0 + TOP - 6, 7, 1, C.stoneHi); }
+        for (let y = y0 + 10; y < y0 + TOP - 8; y += 10) { p.rect(0, y, 6, 7, C.stone[3]); p.rect(TWR - 6, y, 6, 7, C.stone[3]); }
+        p.stones(0, y0 + TOP, TWR, 64 - TOP, ["#2a2a30", "#33333a", "#3b3b42"], 8, 4, 0.3); p.rect(0, y0 + TOP, TWR, 1, C.mortar);   // face sul da torre
+        p.rect(TWR / 2 - 1, y0 + TOP + 3, 2, 6, "#0c0b0e");
+      };
+      // passadiço sobre a rua (entre as torres), com ameias nas bordas oeste e leste
+      const bx = 8, bw = 48, by = 64, bh = 3 * D;
+      p.rect(bx + bw, by, 10, bh, "rgba(0,0,0,0.45)");                                   // sombra da passagem no chão, do lado de dentro
+      p.stones(bx, by, bw, bh, ["#3c3c42", "#46464c", "#4f4f56"], 9, 6, 0.12);
+      p.rect(bx + 7, by, bw - 14, bh, "#303036"); p.speckle(bx + 7, by, bw - 14, bh, ["#38383e", "#2a2a2f"], 0.25);
+      for (let y = by + 2; y < by + bh - 4; y += 10) { p.rect(bx, y, 6, 7, C.stone[3]); p.rect(bx, y, 6, 1, C.stoneHi); p.rect(bx + bw - 6, y, 6, 7, C.stone[3]); p.rect(bx + bw - 6, y, 6, 1, C.stoneHi); }
+      // pontas da grade de ferro levantada aparecendo na boca da passagem
+      for (let y = by + 6; y < by + bh - 4; y += 6) p.rect(bx + bw, y, 3, 2, C.iron[2]);
+      p.rect(bx + bw, by + 2, 1, bh - 4, C.iron[1]);
+      tower(0); tower(160);
+      // tochas nas quinas de dentro
+      for (const ty of [56, 164]) { p.rect(TWR, ty, 3, 2, C.iron[2]); p.rect(TWR + 2, ty - 4, 3, 4, "#ff9a2a"); p.px(TWR + 3, ty - 5, "#ffe080"); }
+      p.outline(); return p.cv; },
     // entrada do esgoto: arco baixo de pedra com grade enferrujada e água escura escorrendo
     v_sewer: w => { const W = Math.round(w * D), H = 2 * D + 6, p = new Pix(W, H, "v_sewer"), cx = W / 2;
       p.stones(0, 6, W, H - 6, ["#3a3c40", "#44464a", "#4e5054"], 7, 4, 0.35);
