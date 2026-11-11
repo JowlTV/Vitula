@@ -240,7 +240,7 @@ class TownScene extends Phaser.Scene {
   // interior do prédio como cenário da conversa: a sala (arte do SpriteCook) aparece com o NPC dentro e a conversa abre por cima.
   // Some sozinho quando a conversa fecha (ver update).
   showInterior(kind) {
-    const I = { smith: ["vk_int_ferreiro", "npc_smith", 0.44, 0.64], inn: ["vk_int_harpa"], potions: ["vk_int_pocoes", "npc_potion_seller", 0.5, 0.44],
+    const I = { smith: ["vk_int_ferreiro", "npc_smith", 0.42, 0.64], inn: ["vk_int_harpa"], potions: ["vk_int_pocoes", "npc_potion_seller", 0.5, 0.44],
       depot: ["vk_int_depot", "npc_depot_guard", 0.36, 0.7], locker: ["vk_int_depot", "npc_depot_guard", 0.36, 0.7], lodging: ["vk_int_acomodacao"] }[kind];
     if (!I || !this.textures.exists(I[0])) return;
     if (this.interior) { if (this.interior.key === I[0]) return; this.interior.destroy(); this.interior = null; }
