@@ -25,7 +25,7 @@ class TownScene extends Phaser.Scene {
     this.uiCam.ignore(this.world);
     this.solid = new Set(); this.zones = [];
     // a cena é reaproveitada ao voltar da loja/esgoto: zera o estado da visita anterior
-    this.leaving = false; this.dialog = null; this.grassPat = null; this.woodPat = null; this.rampPat = null;
+    this.leaving = false; this.dialog = null; this.interior = null; this.grassPat = null; this.woodPat = null; this.rampPat = null;
     if (this.textures.exists("town_ground")) this.textures.remove("town_ground");
     this.makePlaceholders();
     this.layout();
@@ -180,6 +180,7 @@ class TownScene extends Phaser.Scene {
 
   update(_, dtMs) {
     const dt = Math.min(0.05, dtMs / 1000), h = this.hero;
+    if (this.interior) { this.interiorT = this.dialog ? 0 : this.interiorT + dt; if (this.interiorT > 0.35) { this.interior.destroy(); this.interior = null; } }
     if (this.dayTint) { this.skyUpdate(dt); this.miniUpdate(); }
     if (h.moveT > 0) {
       h.moveT = Math.max(0, h.moveT - dt);
@@ -236,8 +237,30 @@ class TownScene extends Phaser.Scene {
     if (z) this.use(z);
   }
 
+  // interior do prédio como cenário da conversa: a sala (arte do SpriteCook) aparece com o NPC dentro e a conversa abre por cima.
+  // Some sozinho quando a conversa fecha (ver update).
+  showInterior(kind) {
+    const I = { smith: ["vk_int_ferreiro", "npc_smith", 0.56, 0.66], inn: ["vk_int_harpa"], potions: ["vk_int_pocoes", "npc_potion_seller", 0.5, 0.44],
+      depot: ["vk_int_depot", "npc_depot_guard", 0.56, 0.8], locker: ["vk_int_depot", "npc_depot_guard", 0.56, 0.8], lodging: ["vk_int_acomodacao"] }[kind];
+    if (!I || !this.textures.exists(I[0])) return;
+    if (this.interior) { if (this.interior.key === I[0]) return; this.interior.destroy(); this.interior = null; }
+    this.textures.get(I[0]).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    const c = this.add.container(0, 0); this.uiLayer.add(c); this.interior = c; c.key = I[0]; this.interiorT = 0;
+    c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x050406, 0.94).setOrigin(0).setInteractive());
+    const img = this.add.image(VIEW_W / 2, 8, I[0]).setOrigin(0.5, 0), s = Math.min((VIEW_H * 0.47) / img.height, (VIEW_W * 0.8) / img.width);
+    img.setScale(s); c.add(img);
+    if (I[1]) {
+      const idle = I[1] + "_idle", x = img.x + (I[2] - 0.5) * img.displayWidth, y = img.y + I[3] * img.displayHeight;
+      const n = this.anims.exists(idle) ? this.add.sprite(x, y, idle).play(idle) : this.add.image(x, y, I[1]);
+      n.setOrigin(0.5, 1).setScale(0.36 * s * 32 / 64 * 1.15);
+      c.add([this.add.image(x, y - 2, "shadow").setScale(0.5 * s * 0.5, 0.16 * s * 0.5), n]);
+    }
+    c.setAlpha(0); this.tweens.add({ targets: c, alpha: 1, duration: 220 });
+  }
+
   use(z) {
     const V = VOCATIONS[this.vocId], d = Save.voc(this.vocId);
+    this.showInterior(z.kind);
     if (z.kind === "gate") {
       this.say("Portão de Karhyn", "Deixar a cidadela e voltar ao mapa?", [["Sair da cidade", () => this.leave("map")], ["Ficar", () => this.closeDialog()]]);
     } else if (z.kind === "sewer") {
