@@ -302,6 +302,21 @@ const TG = (() => {
     for (let i = 0; i < W * H * 0.18; i++) p.rect(p.int(0, W - 1), p.int(0, H - 1), p.int(1, 2), 1, p.pick(["#24301c", "#2f3a24", "#34402a", "#283020", "#39462c"]));
     for (let i = 0; i < W * H * 0.004; i++) { const x = p.int(0, W - 1), y = p.int(0, H - 1); p.rect(x, y, 1, 2, "#43522f"); p.px(x + 1, y + 1, "#3a4a2a"); }
     for (let i = 0; i < W * H * 0.0008; i++) p.px(p.int(0, W - 1), p.int(0, H - 1), p.pick(["#8a7a5a", "#9a3a3a", "#c8b85a"]));   // pedrinhas e flores
+    if (atlas.grass) {
+      // grama do SpriteCook: a peça cheia do tileset tem uma mancha de lama, então o chão é montado com retalhos 16×16
+      // só de grama, tirados de dentro das bordas da folha, sorteados e espelhados para não formar grade
+      const g = atlas.grass, cv = document.createElement("canvas"); cv.width = g.width; cv.height = g.height;
+      const gc = cv.getContext("2d"); gc.drawImage(g, 0, 0); const px = gc.getImageData(0, 0, g.width, g.height).data, ok = [];
+      for (let y = 0; y + 16 <= g.height; y += 4) for (let x = 0; x + 16 <= g.width; x += 4) {
+        let good = true;
+        for (let j = 0; j < 16 && good; j++) for (let i = 0; i < 16; i++) { const k = ((y + j) * g.width + x + i) * 4; if (px[k + 3] < 250 || px[k] > px[k + 1] + 4) { good = false; break; } }
+        if (good) ok.push([x, y]);
+      }
+      if (ok.length) for (let y = 0; y < H; y += 16) for (let x = 0; x < W; x += 16) {
+        const [sx, sy] = p.pick(ok), fx = p.r() < 0.5 ? -1 : 1, fy = p.r() < 0.5 ? -1 : 1;
+        p.c.save(); p.c.translate(x + 8, y + 8); p.c.scale(fx, fy); p.c.drawImage(g, sx, sy, 16, 16, -8, -8, 16, 16); p.c.restore();
+      }
+    }
     for (let ty = 0; ty < TH; ty++) for (let tx = 0; tx < TW; tx++) {
       const t = G[ty][tx], x0 = tx * D, y0 = ty * D;
       if (t === "d") {   // terra batida

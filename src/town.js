@@ -115,7 +115,7 @@ class TownScene extends Phaser.Scene {
   drawGround() {
     const W = TOWN_W * T, H = TOWN_H * T;
     const src = k => this.textures.exists(k) ? this.textures.get(k).getSourceImage() : null;
-    this.textures.addCanvas("town_ground", TG.ground(this.ground, TOWN_W, TOWN_H, T, { street: src("vk_ts_piso"), wall: src("vk_ts_muro"), pave: src("vk_ts_calcada") }));
+    this.textures.addCanvas("town_ground", TG.ground(this.ground, TOWN_W, TOWN_H, T, { street: src("vk_ts_piso"), wall: src("vk_ts_muro"), pave: src("vk_ts_calcada"), grass: src("vk_ts_grama") }));
     this.textures.get("town_ground").setFilter(Phaser.Textures.FilterMode.NEAREST);   // pixels nítidos no zoom (sem borrão)   // sem cópia extra do canvas
     this.world.add(this.add.image(0, 0, "town_ground").setOrigin(0).setDepth(-10));
   }
@@ -171,7 +171,7 @@ class TownScene extends Phaser.Scene {
     this.block(38, 7, 2, 1); this.statue = st;
     { // mural de contratos (SpriteCook "vk_mural" se existir; senão desenhado em código)
       const key = this.textures.exists("vk_mural") ? "vk_mural" : this.makeBoardTex();
-      const b = this.add.image(37 * T + T / 2, 11 * T - 2, key).setOrigin(0.5, 1); b.setScale(T * 1.3 / b.width).setDepth(11 * T - 3).setTint(TOWN_TINT);
+      const b = this.add.image(37 * T + T / 2, 11 * T - 2, key).setOrigin(0.5, 1); b.setScale(T * (key === "vk_mural" ? 1.9 : 1.3) / b.width).setDepth(11 * T - 3).setTint(TOWN_TINT);
       b.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(b); this.block(37, 10, 1, 1); this.board = b; }
     this.manhole = { x: 43, y: 9 };
     { const bk = this.textures.exists("vk_bueiro"), mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, bk ? "vk_bueiro" : "decor_manhole").setDepth(-5); mh.setScale(T * (bk ? 1.25 : 0.8) / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
@@ -184,7 +184,7 @@ class TownScene extends Phaser.Scene {
     P("firewood", "crates", 13, 7, 0.8, 0.8); P("wheel", "garbage", 32, 7, 0.75, 0.9); P("firewood", "crates", 22, 11, 0.8, 0.8); P("barrel", "barrels", 35, 11, 0.6, 0.8);
     // lampiões: as únicas luzes quentes da rua
     this.lamps = [];
-    for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
+    for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [35, 10], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
     // NPCs e lugares (na calçada, em frente de cada casa)
     this.zones.push({ name: "Ferreiro (entrar)", kind: "smith", x: 5, y: 7, w: 4, h: 1 });
     this.zones.push({ name: "A Harpa Dançante", kind: "inn", x: 16, y: 7, w: 3, h: 1 });
