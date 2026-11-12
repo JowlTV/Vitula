@@ -71,6 +71,7 @@ class BootScene extends Phaser.Scene {
       this.load.image(u, `assets/ui/${u}.png`);
     for (const s of SFX) this.load.audio(s, `assets/audio/${s}.wav`);
     this.load.audio("music_goddess", "assets/audio/before_the_shadow_falls.mp3");
+    for (const m of ["title", "town", "sewers", "slope", "boss", "end"]) this.load.audio("music_" + m, `audio/music_${m}.mp3`);
   }
   create() {
     makeEquipTextures(this);   // ícones dos equipamentos, desenhados em código
@@ -141,40 +142,42 @@ function button(scene, x, y, w, label, fn, size = 16) {
   return [b, t];
 }
 
-function menuMusic(scene) { goddessMusic(scene, false); }
+// ── sistema de música ──────────────────────────────────────────
+// Faixas: title (menus), town, sewers, slope, boss, end, music_goddess (fallback)
+let _curMusic = null;   // key da faixa tocando agora
 
-// "Before the Shadow Falls": limpa na intro e nos menus; na cidade, distante e com eco,
-// como se a Oráculo tocasse ao longe. Uma única faixa que não recomeça ao trocar de cena.
-function goddessMusic(scene, echo) {
-  if (scene.sound.locked) { scene.sound.once("unlocked", () => goddessMusic(scene, echo)); return; }
-  if (!scene.cache.audio.exists("music_goddess")) return;
-  const m = scene.sound.get("music_goddess") || scene.sound.add("music_goddess", { loop: true, volume: 0.6 * Settings.data.music });
-  const ctx = scene.sound.context;
-  // monta a cadeia de eco uma vez (só no Web Audio): saída do volume → seco + (passa-baixa → atraso com repetição)
-  if (ctx && !m.echoFx && m.volumeNode) {
-    try {
-      const out = m.pannerNode || m.volumeNode, dest = scene.sound.destination;
-      out.disconnect();
-      const dry = ctx.createGain(), wet = ctx.createGain(), lp = ctx.createBiquadFilter(), delay = ctx.createDelay(2), fb = ctx.createGain();
-      lp.type = "lowpass"; delay.delayTime.value = 0.42; fb.gain.value = 0.45;
-      out.connect(dry); dry.connect(dest);
-      out.connect(lp); lp.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(dest);
-      m.echoFx = { dry, wet, lp };
-    } catch (e) { m.echoFx = null; }
+function playMusic(scene, key, vol = 0.55) {
+  if (scene.sound.locked) { scene.sound.once("unlocked", () => playMusic(scene, key, vol)); return; }
+  if (!scene.cache.audio.exists(key)) { // fallback para a deusa se a faixa não existir
+    if (key !== "music_goddess" && scene.cache.audio.exists("music_goddess")) return playMusic(scene, "music_goddess", vol);
+    return;
   }
-  const fx = m.echoFx, t = ctx ? ctx.currentTime : 0;
-  if (fx) {
-    fx.dry.gain.setTargetAtTime(echo ? 0.3 : 1, t, 0.4);
-    fx.wet.gain.setTargetAtTime(echo ? 0.75 : 0, t, 0.4);
-    fx.lp.frequency.setTargetAtTime(echo ? 1100 : 18000, t, 0.4);
+  const v = vol * Settings.data.music;
+  if (_curMusic === key) {
+    // mesma faixa: só ajusta volume
+    const m = scene.sound.get(key);
+    if (m) m.setVolume(v);
+    return;
   }
-  m.setVolume((echo ? 0.5 : 0.6) * Settings.data.music);
+  // fade out a faixa anterior
+  if (_curMusic) {
+    const old = scene.sound.get(_curMusic);
+    if (old && old.isPlaying) {
+      scene.tweens.add({ targets: old, volume: 0, duration: 800, onComplete: () => old.stop() });
+    }
+  }
+  // toca a nova
+  const m = scene.sound.get(key) || scene.sound.add(key, { loop: true, volume: 0 });
+  _curMusic = key;
   if (!m.isPlaying) m.play();
+  scene.tweens.add({ targets: m, volume: v, duration: 1200 });
 }
 
-// para todos os sons menos a música da deusa (ela continua de onde estava)
+function menuMusic(scene) { playMusic(scene, "music_title", 0.55); }
+
+// para todos os sons menos a música (ela continua de onde estava)
 function stopAllButMusic(scene) {
-  for (const s of scene.sound.getAllPlaying ? scene.sound.getAllPlaying() : []) if (s.key !== "music_goddess") s.stop();
+  for (const s of scene.sound.getAllPlaying ? scene.sound.getAllPlaying() : []) if (s.key !== _curMusic) s.stop();
 }
 
 function menuBackground(scene) {
@@ -192,8 +195,8 @@ class TitleScene extends Phaser.Scene {
     const logo = this.add.image(VIEW_W / 2, 175, "logo_vitula");
     logo.setScale(Math.min(1.5, 560 / logo.width));
     this.tweens.add({ targets: logo, y: 168, duration: 2600, yoyo: true, repeat: -1, ease: "Sine.inOut" });
-    button(this, VIEW_W / 2, 340, 260, "Iniciar", () => this.scene.start("select"), 18);
-    button(this, VIEW_W / 2, 392, 260, "Opções", () => this.scene.start("options"), 16);
+    button(this, VIEW_W / 2, 340, 260, t("play"), () => this.scene.start("select"), 18);
+    button(this, VIEW_W / 2, 392, 260, t("options"), () => this.scene.start("options"), 16);
     txt(this, VIEW_W / 2, 515, "Créditos a JowlTV", 12, COLORS.dim).setOrigin(0.5);
     this.input.once("pointerdown", () => menuMusic(this));
     this.input.keyboard.once("keydown", () => menuMusic(this));
@@ -208,18 +211,19 @@ class OptionsScene extends Phaser.Scene {
     menuBackground(this);
     this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 0.6).setOrigin(0);
     this.add.nineslice(VIEW_W / 2, 40, "title_banner", null, 300, 44, 40, 40, 8, 8);
-    txt(this, VIEW_W / 2, 40, "Opções", 30, COLORS.text).setOrigin(0.5);
+    txt(this, VIEW_W / 2, 40, t("options"), 30, COLORS.text).setOrigin(0.5);
     this.add.nineslice(VIEW_W / 2, 282, "panel", null, 880, 420, 16, 16, 16, 16);
     // volumes
-    this.volRow(98, "Música", "music");
-    this.volRow(126, "Efeitos sonoros", "sfx");
-    this.speedRow(152);
-    txt(this, 60, 172, "Teclas  (clique para trocar · Esc cancela)", 13, COLORS.gold);
+    this.volRow(88, t("music_vol"), "music");
+    this.volRow(112, t("sfx_vol"), "sfx");
+    this.speedRow(136);
+    this.langRow(160);
+    txt(this, 60, 182, t("keys_hint"), 13, COLORS.gold);
     this.keyTexts = {};
     // duas colunas de teclas (cabem todas as ações sem passar dos botões)
     const half = Math.ceil(ACTIONS.length / 2);
     ACTIONS.forEach(([id, label], i) => {
-      const col = i < half ? 0 : 1, y = 194 + (i % half) * 21, lx = col ? 490 : 60;
+      const col = i < half ? 0 : 1, y = 204 + (i % half) * 21, lx = col ? 490 : 60;
       txt(this, lx, y, label, 12, COLORS.text).setOrigin(0, 0.5);
       for (let slot = 0; slot < 2; slot++) {
         const x = lx + 268 + slot * 76;
@@ -230,8 +234,8 @@ class OptionsScene extends Phaser.Scene {
       }
     });
     this.refreshKeys();
-    button(this, VIEW_W / 2 - 110, 456, 200, "Restaurar padrão", () => { Settings.reset(); this.scene.restart(); }, 14);
-    button(this, VIEW_W / 2 + 110, 456, 200, "Voltar", () => this.back(), 14);
+    button(this, VIEW_W / 2 - 110, 456, 200, t("reset_default"), () => { Settings.reset(); this.scene.restart(); }, 14);
+    button(this, VIEW_W / 2 + 110, 456, 200, t("back"), () => this.back(), 14);
     this.input.keyboard.on("keydown-ESC", () => { if (!this.waiting) this.back(); });
     menuMusic(this);
   }
@@ -256,12 +260,27 @@ class OptionsScene extends Phaser.Scene {
   }
   // ritmo do jogo: 50% a 100% (padrão 75%)
   speedRow(y) {
-    txt(this, 200, y, "Velocidade do jogo", 14, COLORS.text).setOrigin(0, 0.5);
-    const opts = [[0.5, "Muito lenta"], [0.65, "Lenta"], [0.75, "Normal"], [0.9, "Rápida"], [1.0, "Original"]];
-    const t = txt(this, 560, y, "", 14, COLORS.gold).setOrigin(0.5);
+    txt(this, 200, y, t("game_speed"), 14, COLORS.text).setOrigin(0, 0.5);
+    const opts = [[0.5, t("speed_very_slow")], [0.65, t("speed_slow")], [0.75, t("speed_normal")], [0.9, t("speed_fast")], [1.0, t("speed_original")]];
+    const label = txt(this, 560, y, "", 14, COLORS.gold).setOrigin(0.5);
     const idx = () => { let b = 0; opts.forEach((o, i) => { if (Math.abs(o[0] - Settings.data.speed) < Math.abs(opts[b][0] - Settings.data.speed)) b = i; }); return b; };
-    const show = () => t.setText(`${opts[idx()][1]} (${Math.round(Settings.data.speed * 100)}%)`);
+    const show = () => label.setText(`${opts[idx()][1]} (${Math.round(Settings.data.speed * 100)}%)`);
     const step = d => { const i = Phaser.Math.Clamp(idx() + d, 0, opts.length - 1); Settings.data.speed = opts[i][0]; Settings.save(); show(); };
+    txt(this, 440, y, "<", 16, COLORS.text).setOrigin(0.5).setInteractive({ useHandCursor: true }).on("pointerup", () => step(-1));
+    txt(this, 680, y, ">", 16, COLORS.text).setOrigin(0.5).setInteractive({ useHandCursor: true }).on("pointerup", () => step(1));
+    show();
+  }
+  langRow(y) {
+    txt(this, 200, y, t("language"), 14, COLORS.text).setOrigin(0, 0.5);
+    const codes = Object.keys(Lang.list());
+    const label = txt(this, 560, y, "", 14, COLORS.gold).setOrigin(0.5);
+    const idx = () => codes.indexOf(Lang.current());
+    const show = () => label.setText(Lang.list()[Lang.current()]);
+    const step = d => {
+      const i = Phaser.Math.Clamp(idx() + d, 0, codes.length - 1);
+      Lang.set(codes[i]);
+      this.scene.restart();
+    };
     txt(this, 440, y, "<", 16, COLORS.text).setOrigin(0.5).setInteractive({ useHandCursor: true }).on("pointerup", () => step(-1));
     txt(this, 680, y, ">", 16, COLORS.text).setOrigin(0.5).setInteractive({ useHandCursor: true }).on("pointerup", () => step(1));
     show();
@@ -273,7 +292,7 @@ class OptionsScene extends Phaser.Scene {
   listen(id, slot, t) {
     if (this.waiting) return;
     this.waiting = true;
-    t.setText("pressione…").setColor(COLORS.gold);
+    t.setText(window.t("press_key")).setColor(COLORS.gold);
     this.input.keyboard.once("keydown", ev => {
       const K = Phaser.Input.Keyboard.KeyCodes;
       const name = Object.keys(K).find(n => K[n] === ev.keyCode);
@@ -294,7 +313,7 @@ class SelectScene extends Phaser.Scene {
     menuBackground(this);
     this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 0.55).setOrigin(0);
     this.add.nineslice(VIEW_W / 2, 52, "title_banner", null, 380, 46, 40, 40, 8, 8);
-    txt(this, VIEW_W / 2, 52, "Escolha sua vocação", 30, COLORS.text).setOrigin(0.5);
+    txt(this, VIEW_W / 2, 52, t("select_vocation"), 30, COLORS.text).setOrigin(0.5);
     const ids = Object.keys(VOCATIONS), cw = 214, gap = 14, x0 = VIEW_W / 2 - (ids.length * (cw + gap) - gap) / 2;
     ids.forEach((id, i) => {
       const v = VOCATIONS[id], x = x0 + i * (cw + gap), y = 96;
@@ -310,17 +329,17 @@ class SelectScene extends Phaser.Scene {
       txt(this, x + cw / 2, y + 152, v.name, 24, v.soon ? "#8a8a8a" : COLORS.gold).setOrigin(0.5);
       // descrição e, logo abaixo dela (posição medida, sem sobrepor), a passiva/traço; as skills ficam na janela de Habilidades
       const d1 = txt(this, x + 16, y + 176, v.desc, 13, v.soon ? "#7a7a7a" : COLORS.text, { wordWrap: { width: cw - 32 }, lineSpacing: 2 });
-      const d2 = txt(this, x + 16, d1.y + d1.height + 10, v.passive ? `Passiva — ${v.passive.name}: ${v.passive.desc}` : v.trait, 12, COLORS.dim, { wordWrap: { width: cw - 32 }, lineSpacing: 1 });
+      const d2 = txt(this, x + 16, d1.y + d1.height + 10, v.passive ? `${t("passive_prefix")}${v.passive.name}: ${v.passive.desc}` : v.trait, 12, COLORS.dim, { wordWrap: { width: cw - 32 }, lineSpacing: 1 });
       if (d2.y + d2.height > y + 296) d2.setFontSize(11);
-      if (v.soon) d2.setVisible(false);   // o rodapé já diz "Em breve"
-      const foot = open ? `Nível ${Save.levelInfo(Save.voc(id).xpTotal).level}` : (v.soon ? "Em breve" : `Bloqueada · ${v.unlockCost} de ouro`);
+      if (v.soon) d2.setVisible(false);
+      const foot = open ? t("level_n", { n: Save.levelInfo(Save.voc(id).xpTotal).level }) : (v.soon ? t("coming_soon") : t("locked_cost", { n: v.unlockCost }));
       txt(this, x + cw / 2, y + 312, foot, 14, open ? COLORS.gold : COLORS.dim).setOrigin(0.5);
       if (open) {
         this.add.zone(x, y, cw, 340).setOrigin(0).setInteractive({ useHandCursor: true }).on("pointerup", () => { this.registry.set("vocation", id); this.scene.start("intro"); });
         this.tweens.add({ targets: card, alpha: 0.85, duration: 900, yoyo: true, repeat: -1 });
       }
     });
-    button(this, VIEW_W / 2, 492, 200, "Voltar", () => this.scene.start("title"));
+    button(this, VIEW_W / 2, 492, 200, t("back"), () => this.scene.start("title"));
     this.input.keyboard.on("keydown-ESC", () => this.scene.start("title"));
     this.input.keyboard.on("keydown-ENTER", () => { this.registry.set("vocation", "knight"); this.scene.start("intro"); });
     menuMusic(this);

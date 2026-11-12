@@ -44,6 +44,9 @@ class DungeonScene extends Phaser.Scene {
     this.gen = new DungeonGen();
     this.cameras.main.setBackgroundColor("#08070a");
     this.cameras.main.roundPixels = true;
+    // música por região
+    const regionMusic = { karhyn_sewers: "music_sewers", goblin_slope: "music_slope" };
+    playMusic(this, regionMusic[this.regionId] || "music_sewers", 0.5);
     this.input.keyboard.addCapture("UP,DOWN,LEFT,RIGHT,SPACE");
     // teclas vindas das Opções (remapeáveis)
     const K = Phaser.Input.Keyboard.KeyCodes, kb = this.input.keyboard;

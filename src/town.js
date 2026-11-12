@@ -85,7 +85,7 @@ class TownScene extends Phaser.Scene {
     this.input.on("wheel", (_p, _o, _dx, dy) => this.zoomBy(dy > 0 ? -0.2 : 0.2));
     this.cameras.main.fadeIn(500, 0, 0, 0);
     stopAllButMusic(this);
-    goddessMusic(this, true);
+    playMusic(this, "music_town", 0.5);
   }
 
   // ------------------------------------------------------------ mapa
