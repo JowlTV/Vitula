@@ -2,7 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Vitula</title>
 <style>
   @font-face { font-family: "Pixelify"; src: url("assets/ui/font.ttf"); }
@@ -10,13 +12,23 @@
   @font-face { font-family: "Bulletin"; src: url("assets/ui/bulletin.ttf"); }
   html, body { margin: 0; height: 100%; background: #08070a; overflow: hidden; }
   body { height: 100dvh; }
-  #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  /* a área do jogo respeita o entalhe e a barra do iPhone; a altura real vem do visualViewport (main.js) */
+  #game { position: fixed; left: env(safe-area-inset-left); right: env(safe-area-inset-right); top: env(safe-area-inset-top); height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    display: flex; align-items: center; justify-content: center; touch-action: none; }
+  /* celular em pé: pede para girar (o jogo é em paisagem) */
+  #rotate { display: none; position: fixed; inset: 0; z-index: 100; background: #08070a; color: #e0bc60; font: 22px "Grenze Gotisch", serif;
+    flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 24px; }
+  #rotate small { font: 14px Bulletin, monospace; color: #b8ac94; }
+  #rotate .ph { width: 54px; height: 90px; border: 3px solid #e0bc60; border-radius: 10px; animation: rot 2.2s ease-in-out infinite; }
+  @keyframes rot { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+  @media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }
   canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
   .preload { font-family: "Pixelify"; position: absolute; left: -999px; }
 </style>
 </head>
 <body>
 <div id="game"></div>
+<div id="rotate"><div class="ph"></div>Gire o celular<small>Vitula é jogado com a tela deitada.</small></div>
 <span class="preload">.</span><span class="preload2">.</span>
 <script src="src/errbox.js"></script>
 <script src="lib/phaser.min.js"></script>

@@ -96,30 +96,37 @@
   }
 
   function build() {
+    // Tamanho dos botões acompanha a altura da tela (paisagem no celular: ~40 px; tablet: até 62 px).
+    // Tudo fica longe do entalhe (safe-area) e fora do topo, onde ficam vida, minimapa e janelas.
     const css = `
-      #vt { position: fixed; inset: 0; pointer-events: none; z-index: 50; font-family: "Pixelify", monospace; user-select: none; -webkit-user-select: none; }
+      #vt { --s: clamp(38px, 10.5vmin, 62px); --g: 5px; --L: calc(env(safe-area-inset-left) + 10px); --R: calc(env(safe-area-inset-right) + 10px); --B: calc(env(safe-area-inset-bottom) + 8px);
+        position: fixed; inset: 0; pointer-events: none; z-index: 50; font-family: "Pixelify", monospace; user-select: none; -webkit-user-select: none; }
       #vt .vt-layer { position: absolute; inset: 0; pointer-events: none; }
       #vt .vt-btn { pointer-events: auto; touch-action: none; -webkit-tap-highlight-color: transparent;
-        background: rgba(20,16,26,.62); color: #e8e1d3; border: 1px solid rgba(201,162,74,.75); border-radius: 10px;
-        font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center;
-        width: 58px; height: 58px; box-shadow: 0 2px 0 rgba(0,0,0,.5); padding: 0; }
+        background: rgba(20,16,26,.45); color: #e8e1d3; border: 1px solid rgba(201,162,74,.6); border-radius: 50%;
+        font-size: calc(var(--s) * .34); font-weight: 700; display: flex; align-items: center; justify-content: center;
+        width: var(--s); height: var(--s); box-shadow: 0 2px 0 rgba(0,0,0,.45); padding: 0; }
       #vt .vt-btn.on { background: rgba(139,30,45,.85); transform: translateY(1px); }
-      #vt .vt-small { width: 44px; height: 44px; font-size: 15px; }
-      #vt .vt-util { width: auto; min-width: 52px; height: 36px; font-size: 13px; padding: 0 8px; }
-      #vt .vt-big { width: 84px; height: 84px; font-size: 20px; border-color: #c9a24a; }
-      #vt .vt-mid { width: 66px; height: 66px; }
-      #vt .pad { position: absolute; left: 14px; bottom: 14px; display: grid; grid-template-columns: repeat(3, 58px); grid-template-rows: repeat(3, 58px); gap: 6px; }
-      #vt .main { position: absolute; right: 14px; bottom: 14px; display: flex; gap: 12px; align-items: flex-end; }
-      #vt .skills { position: absolute; right: 14px; bottom: 108px; display: grid; grid-template-columns: repeat(3, 44px); gap: 6px; }
-      #vt .util { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; align-items: center; }
-      #vt .toggle { position: absolute; top: 10px; left: 10px; pointer-events: auto; }
-      #vt.hidden .vt-layer { display: none; }
+      #vt .vt-small { width: calc(var(--s) * .86); height: calc(var(--s) * .86); }
+      #vt .vt-util { width: calc(var(--s) * 1.25); height: calc(var(--s) * .62); border-radius: 8px; font-size: calc(var(--s) * .27); }
+      #vt .vt-big { width: calc(var(--s) * 1.55); height: calc(var(--s) * 1.55); font-size: calc(var(--s) * .38); border-color: #c9a24a; background: rgba(60,20,24,.55); }
+      #vt .vt-mid { width: calc(var(--s) * 1.05); height: calc(var(--s) * 1.05); }
+      /* direcional: canto inferior esquerdo */
+      #vt .pad { position: absolute; left: var(--L); bottom: var(--B); display: grid; grid-template-columns: repeat(3, var(--s)); grid-template-rows: repeat(3, var(--s)); gap: var(--g); }
+      #vt .pad .vt-btn { border-radius: 10px; }
+      /* ataque e usar: canto inferior direito; habilidades e poções num arco acima */
+      #vt .main { position: absolute; right: var(--R); bottom: var(--B); display: flex; flex-direction: row-reverse; gap: 8px; align-items: flex-end; }
+      #vt .skills { position: absolute; right: var(--R); bottom: calc(var(--B) + var(--s) * 1.55 + 10px); display: grid; grid-template-columns: repeat(3, calc(var(--s) * .86)); gap: var(--g); direction: rtl; }
+      /* atalhos (pausa, mochila, mapa, automático): coluna no alto da lateral esquerda, sob o botão ⌨ */
+      #vt .util { position: absolute; left: var(--L); top: calc(env(safe-area-inset-top) + 10px + var(--s) * .62 + 8px); display: flex; flex-direction: column; gap: var(--g); }
       #vt .toggle-wrap { position: absolute; inset: 0; pointer-events: none; }
-      @media (max-width: 520px) {
-        #vt .vt-btn { width: 50px; height: 50px; }
-        #vt .pad { grid-template-columns: repeat(3, 50px); grid-template-rows: repeat(3, 50px); }
-        #vt .vt-big { width: 74px; height: 74px; }
-        #vt .vt-mid { width: 58px; height: 58px; }
+      #vt .toggle { position: absolute; left: var(--L); top: calc(env(safe-area-inset-top) + 10px); pointer-events: auto; width: calc(var(--s) * 1.25); height: calc(var(--s) * .62); }
+      #vt.hidden .vt-layer { display: none; }
+      #vt.hidden .toggle { opacity: .7; }
+      /* telas bem baixas: atalhos em linha no rodapé, entre direcional e ataque */
+      @media (max-height: 340px) {
+        #vt .util { top: auto; transform: none; bottom: var(--B); left: calc(var(--L) + var(--s) * 3 + 24px); flex-direction: row; }
+        #vt .toggle { top: auto; bottom: calc(var(--B) + var(--s) * .7 + 8px); left: calc(var(--L) + var(--s) * 3 + 24px); }
       }
     `;
     const style = document.createElement("style");
