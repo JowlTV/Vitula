@@ -63,7 +63,7 @@ Faça sempre o caminho de volta: o bueiro em Karhyn leva ao esgoto, e a corda no
 
 **Luz:** um ponto (**I**) com a classe `luz` e o `raio` em tiles.
 
-**Estátua de Magdha:** insira `estatua_magdha` (já vem com a classe `altar`).
+**Estátua da Oráculo:** insira `estatua_magdha` (nome interno antigo) (já vem com a classe `altar`).
 
 **Início do herói:** existe um só por mundo. Está em `karhyn.tmj`, embaixo da fonte.
 
