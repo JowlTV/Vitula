@@ -56,6 +56,21 @@ Object.assign(DungeonScene.prototype, {
     const aur = h.auraT > 0 ? 1.8 : 1;
     pts.push({ x: h.px, y: h.py - 20, r: 3.3 * T * hf * aur, tint: h.auraT > 0 ? 0xffe0a8 : 0xd8ccb8 });
     pts.push({ x: h.px, y: h.py - 20, r: 1.7 * T * hf, tint: 0x8a8072 });
+    // luminária equipada: lampião (gasta óleo) ou Pingente da Deusa
+    const dv = Save.voc(this.vocId), lg = dv.equip.light && EQUIP[dv.equip.light.id];
+    if (lg && lg.light) {
+      const L = lg.light;
+      if (L.fuel && dv.oil > 0) {
+        const was = dv.oil; dv.oil = Math.max(0, dv.oil - dt);
+        if (Math.floor(was / 10) !== Math.floor(dv.oil / 10)) Save.save();
+        if (was > 60 && dv.oil <= 60) this.msg("O lampião está quase sem óleo.");
+        if (dv.oil <= 0) { this.msg("O lampião apagou. Compre óleo com o ferreiro."); Save.save(); }
+      }
+      if (!L.fuel || dv.oil > 0) {
+        const m = gearMult(dv.equip.light), lf = this.flicker(h.lamp = h.lamp || {}, dt, L.fuel ? 0.1 : 0.03);
+        pts.push({ x: h.px, y: h.py - 18, r: L.r * T * lf * Math.min(1.3, m), tint: L.tint });
+      }
+    }
     for (const l of this.lights) {
       const f = this.flicker(l, dt, l.water ? 0.25 : 0.12);
       l.cur = f;

@@ -324,7 +324,7 @@ class TownScene extends Phaser.Scene {
       this.openLocker();
     } else if (z.kind === "smith") {
       this.say("Ferreiro", `"Traga sua lâmina quando estiver cega. Me dê duas peças da mesma raridade que eu derreto e reforço a que você escolher."\n\nCada +1 consome 2 itens da mesma raridade. No +5 o item sobe de raridade (até Ultra raro). Lendários sobem com Essências de chefe, até +10.`,
-        [["Aprimorar equipamento", () => this.openForge()], lore("Ferreiro", "smith", () => this.use(z)), ["Até mais", () => this.closeDialog()]]);
+        [["Aprimorar equipamento", () => this.openForge()], [`Comprar óleo de lampião (${OIL_PRICE} ouro)`, () => this.buyOil(z)], lore("Ferreiro", "smith", () => this.use(z)), ["Até mais", () => this.closeDialog()]]);
     } else if (z.kind === "tower") {
       this.say("Torre de Vigia", "A porta range. Uma escada em caracol sobe no escuro até o terraço.", [["Subir ao topo", () => this.towerView()], ["Ficar aqui", () => this.closeDialog()]]);
     } else if (z.kind === "inn") {
@@ -540,6 +540,14 @@ class TownScene extends Phaser.Scene {
   }
   // forja do ferreiro: escolhe um item (vestido ou na mochila) e aprimora em +1
   // custo: 2 itens da mesma raridade (o ferreiro pega os mais fracos da mochila) ou Essências de chefe (Lendário)
+  buyOil(z) {
+    const d = Save.voc(this.vocId);
+    if (Save.gold(this.vocId) < OIL_PRICE) return this.say("Ferreiro", "\"Óleo não é de graça. Volte com ouro.\"", [["Até mais", () => this.closeDialog()]]);
+    Save.addGold(this.vocId, -OIL_PRICE); d.oil = (d.oil || 0) + OIL_FLASK; Save.save();
+    this.goldT && this.goldT.setText(`${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`);
+    this.say("Ferreiro", `"Óleo de baleia, do bom. Queima limpo."\n\nÓleo do lampião: ${Math.ceil(d.oil / 60)} minutos.`, [["Comprar mais", () => this.buyOil(z)], ["Até mais", () => this.closeDialog()]]);
+  }
+
   openForge(sel) {
     this.closeDialog();
     const d = Save.voc(this.vocId);

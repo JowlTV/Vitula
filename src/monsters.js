@@ -282,7 +282,7 @@ Object.assign(DungeonScene.prototype, {
   rollEquip(m = {}) {
     const top = Math.min(1, 0.12 + this.depth() * 1.0), pool = [];
     for (const id in EQUIP) {
-      const E = EQUIP[id]; if (!equipOk(id, this.vocId) || E.rank > top) continue;
+      const E = EQUIP[id]; if (E.slot === "light" || !equipOk(id, this.vocId) || E.rank > top) continue;
       pool.push([id, E.rank >= top - 0.25 ? 4 : 1]);   // os do topo da faixa caem mais
     }
     let tot = 0; for (const [, w] of pool) tot += w; let x = Math.random() * tot, id = null;
@@ -316,6 +316,8 @@ Object.assign(DungeonScene.prototype, {
       const eqChance = m.elite ? 1 : m.champion ? 0.35 : 0.025;
       if (Math.random() < eqChance) { const g = this.rollEquip(m); if (g) this.drop(m.x, m.y, "eq_" + g.id, g); }
       if (m.elite || (m.champion && Math.random() < 0.25)) this.drop(m.x, m.y, "boss_essence");
+      // Pingente da Deusa: raríssimo, só do primeiro chefe dos esgotos
+      if (m.elite && this.regionId === "karhyn_sewers" && this.depth() < 0.3 && Math.random() < 0.015) this.drop(m.x, m.y, "eq_goddess_pendant", gearNew("goddess_pendant", 4));
       loot = this.pickups.size > before;
     }
     this.makeCorpse(m, loot);

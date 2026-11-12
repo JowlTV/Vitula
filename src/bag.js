@@ -28,7 +28,7 @@ Object.assign(DungeonScene.prototype, {
     const tip = T_(X + 30, Y + H - 34, "Passe o mouse num item para ver os detalhes. Clique para vestir ou tirar.", 12, COLORS.dim, { wordWrap: { width: W - 60 } });
     const showTip = (g, extra = "") => { const E = EQUIP[g.id], R = RARITY[g.r], low = this.hero.level < E.lvl, bad = !equipOk(g.id, this.vocId);
       tip.setText(`${gearName(g)} · ${R.name} · nível ${E.lvl}${bad ? " · não serve para a sua vocação" : ""}${extra}\n${equipStats(g)}${E.desc ? " — " + E.desc : ""}`).setColor(low || bad ? "#e08070" : R.color); };
-    const slotOf = { Capacete: "helmet", Arma: "weapon", Armadura: "armor", Escudo: "shield", "Calça": "legs", Botas: "boots" };
+    const slotOf = { Capacete: "helmet", Arma: "weapon", Armadura: "armor", Escudo: "shield", "Calça": "legs", Botas: "boots", "Luminária": "light" };
     for (const [name, cx, cy] of slots) {
       const sx = ex + cx * (S + G), sy = ey + cy * (S + 22), sl = slotOf[name], g = sl && d.equip[sl], id = g && g.id;
       c.add(this.add.nineslice(sx, sy, "slot", null, S, S, 4, 4, 4, 4).setOrigin(0));
@@ -72,6 +72,8 @@ Object.assign(DungeonScene.prototype, {
     T_(ix + 22, iy, `${this.goldRun} nesta descida · ${Save.gold(this.vocId)} guardado`, 12, COLORS.gold);
     c.add(this.add.image(ix + 8, iy + 30, "i_bronze_key").setScale(0.8));
     T_(ix + 22, iy + 22, `${this.keys} chave(s)`, 12);
+    { const L = d.equip.light && EQUIP[d.equip.light.id], oil = Math.ceil((d.oil || 0) / 60);
+      T_(ix + 120, iy + 22, L ? (L.light.fuel ? `Óleo: ${oil} min${d.oil > 0 ? "" : " · apagado"}` : "Luz da Deusa") : "Sem luminária", 12, L && (!L.light.fuel || d.oil > 0) ? "#ffd27a" : COLORS.dim); }
     T_(ix, iy + 52, "Poções — clique em 5 ou 6 para pôr no atalho", 11, COLORS.dim);
     let py = iy + 72;
     for (const id of Object.keys(POTIONS)) {

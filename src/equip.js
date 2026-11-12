@@ -140,6 +140,14 @@ function forgeNext(g) {
   const p = g.p + 1;
   return { items: 2, to: p >= 5 && g.r < 3 ? { r: g.r + 1, p: 0 } : { r: g.r, p } };
 }
+// ---------------------------------------------------------------- luminárias (slot "Luminária")
+// Lampião: todo personagem começa com ele; queima óleo (vendido pelo ferreiro) e dá uma luz amarelada pequena.
+// Pingente da Deusa: prata com uma harpa; cai raríssimo do primeiro chefe; luz prateada que não se apaga.
+EQUIP.lantern = { slot: "light", name: "Lampião", lvl: 1, price: 0, rank: 0, light: { r: 2.4, tint: 0xffc35a, fuel: true },
+  art: { f: "lantern" }, desc: "Luz amarelada em volta de você. Queima óleo de lampião." };
+EQUIP.goddess_pendant = { slot: "light", name: "Pingente da Deusa", lvl: 1, price: 0, rank: 0, light: { r: 3.4, tint: 0xd8e2ff }, res: { holy: 0.05 }, hpReg: 0.3,
+  art: { f: "pendant" }, desc: "Prata com uma pequena harpa. Brilha sozinho, sem óleo." };
+const OIL_FLASK = 300, OIL_PRICE = 15, OIL_START = 2;   // cada frasco dura 5 minutos dentro das masmorras
 // cada equipamento também é um item que pode cair no chão
 for (const id in EQUIP) ITEMS["eq_" + id] = { icon: "eq_" + id, name: EQUIP[id].name, gear: id };
 ITEMS.boss_essence = { icon: "i_red_gem", tint: 0xff9a30, name: "Essência de chefe" };
@@ -186,6 +194,7 @@ function equipStats(g) {
   if (E.ml) p.push(`magic level +${E.ml}`);
   if (E.hpReg) p.push(`+${n(E.hpReg)} vida/s`);
   if (E.manaReg) p.push(`+${n(E.manaReg)} mana/s`);
+  if (E.light) p.push(E.light.fuel ? "luz pequena (gasta óleo)" : "luz prateada sem óleo");
   if (E.speed) p.push(`velocidade +${pct(E.speed)}`);
   for (const k in E.res || {}) p.push(`${ELEMENTS[k].name} ${E.res[k] > 0 ? "+" : ""}${pct(E.res[k])}`);
   return p.join(" · ");
@@ -219,18 +228,36 @@ const MAT = {   // escuro, médio, claro, brilho
 const OUTLINE = "#0a0808";
 
 // ícones do SpriteCook já recortados (assets/equip/<id>.png): têm prioridade sobre o desenho em código
-const EQUIP_ART = Object.keys(EQUIP);   // os 54 têm ícone recortado das folhas do SpriteCook (cores dos itens do Tibia)
+const EQUIP_ART = Object.keys(EQUIP).filter(id => !EQUIP[id].noArt);   // os 54 têm ícone recortado das folhas do SpriteCook (cores dos itens do Tibia)
 function makeEquipTextures(scene) {
   for (const id in EQUIP) {
     const k = "eq_" + id;
     if (scene.textures.exists(k)) continue;
-    const px = drawEquipIcon(EQUIP[id].art);
+    const f = EQUIP[id].art.f, px = f === "lantern" || f === "pendant" ? drawLightIcon(f) : drawEquipIcon(EQUIP[id].art);
     const tex = scene.textures.createCanvas(k, 32, 32), ctx = tex.getContext();
     for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) { const c = px[y * 32 + x]; if (c) { ctx.fillStyle = c; ctx.fillRect(x, y, 1, 1); } }
     tex.refresh(); tex.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
 }
 
+// ícones provisórios do lampião e do pingente (até a folha do SpriteCook)
+function drawLightIcon(f) {
+  const P = new Array(32 * 32).fill(null), set = (x, y, c) => { if (x >= 0 && y >= 0 && x < 32 && y < 32) P[y * 32 + x] = c; };
+  const rect = (x0, y0, w, h, c) => { for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) set(x, y, c); };
+  if (f === "lantern") {
+    for (let a = 0; a < 40; a++) { const t = a / 39 * Math.PI; set(Math.round(16 + 5 * Math.cos(t)), Math.round(7 - 5 * Math.sin(t)), "#3a3430"); }
+    rect(11, 7, 10, 3, "#4a4038"); rect(12, 6, 8, 1, "#6a5a48");
+    rect(11, 10, 10, 13, "#2a2420"); rect(12, 11, 8, 11, "#e8a83a"); rect(13, 12, 6, 9, "#ffd86a"); rect(15, 14, 2, 5, "#fff4c0");
+    rect(15, 10, 2, 13, "#2a2420"); rect(11, 23, 10, 3, "#4a4038"); rect(10, 26, 12, 2, "#3a3430");
+  } else {
+    for (let a = 0; a < 60; a++) { const t = a / 59 * Math.PI; set(Math.round(16 + 9 * Math.cos(t)), Math.round(12 - 10 * Math.sin(t)), "#a8b0c0"); }
+    for (let y = 12; y < 29; y++) for (let x = 8; x < 25; x++) { const dx = (x - 16) / 7.5, dy = (y - 20) / 8.5; if (dx * dx + dy * dy <= 1) set(x, y, dx * dx + dy * dy > 0.7 ? "#7a8292" : (x + y < 34 ? "#e8eef8" : "#c0c8d6")); }
+    rect(13, 15, 1, 9, "#5a6070"); rect(19, 15, 1, 9, "#5a6070"); rect(13, 15, 7, 1, "#5a6070"); rect(13, 24, 7, 1, "#5a6070");
+    for (let x = 15; x <= 17; x++) rect(x, 16, 1, 8, "#8a92a2");
+    set(16, 12, "#ffffff"); set(15, 13, "#f4f8ff");
+  }
+  return P;
+}
 // desenha numa grade 32×32 e devolve um array de cores (null = transparente)
 function drawEquipIcon(a) {
   const P = new Array(32 * 32).fill(null);
