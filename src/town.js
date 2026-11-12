@@ -362,11 +362,11 @@ class TownScene extends Phaser.Scene {
   // ------------------------------------------------------------ hora do dia, chuva e minimapa
   // ciclo completo de 6 minutos; a hora continua de uma visita para a outra
   skyUpdate(dt) {
-    let t = ((this.registry.get("townClock") ?? 0.32) + dt / 360) % 1;
-    this.registry.set("townClock", t);
+    let tc = ((this.registry.get("townClock") ?? 0.32) + dt / 360) % 1;
+    this.registry.set("townClock", tc);
     // escuridão 0 (dia) .. 1 (noite): dia 0,30–0,62, entardecer até 0,75, noite até 0,18, amanhecer até 0,30
-    const d = t < 0.18 ? 1 : t < 0.30 ? 1 - (t - 0.18) / 0.12 : t < 0.62 ? 0 : t < 0.75 ? (t - 0.62) / 0.13 : 1;
-    const dusk = (t > 0.6 && t < 0.78) ? 1 - Math.abs(t - 0.69) / 0.09 : (t > 0.16 && t < 0.32) ? 1 - Math.abs(t - 0.24) / 0.08 : 0;
+    const d = tc < 0.18 ? 1 : tc < 0.30 ? 1 - (tc - 0.18) / 0.12 : tc < 0.62 ? 0 : tc < 0.75 ? (tc - 0.62) / 0.13 : 1;
+    const dusk = (tc > 0.6 && tc < 0.78) ? 1 - Math.abs(tc - 0.69) / 0.09 : (tc > 0.16 && tc < 0.32) ? 1 - Math.abs(tc - 0.24) / 0.08 : 0;
     const lerp = (a, b, k) => Math.round(a + (b - a) * k), rain = this.raining ? 0.85 : 1;
     let r = lerp(118, 44, d), g = lerp(126, 52, d), b = lerp(142, 92, d);   // dia cinzento e fechado; noite quase preta
     r = lerp(r, 150, dusk * 0.3); g = lerp(g, 110, dusk * 0.3); b = lerp(b, 100, dusk * 0.3);
@@ -403,8 +403,8 @@ class TownScene extends Phaser.Scene {
     if (night) { ic.fillStyle(0xdfe6f2, 1).fillCircle(cx, cy, 9); ic.fillStyle(0x10141e, 1).fillCircle(cx + 5, cy - 3, 8); }
     else { ic.fillStyle(0xf2c050, 1).fillCircle(cx, cy, 7); ic.lineStyle(2, 0xf2c050, 1); for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; ic.lineBetween(cx + Math.cos(a) * 10, cy + Math.sin(a) * 10, cx + Math.cos(a) * 13, cy + Math.sin(a) * 13); } }
     if (this.raining) { ic.fillStyle(0x8a94a4, 1).fillEllipse(cx - 4, cy + 6, 18, 9); }
-    const hour = Math.floor(((t * 24) + 0) % 24), min = Math.floor((t * 24 * 60) % 60);
-    this.skyText.setText(`${night ? t("sky_night") : dusk > 0.4 ? (t < 0.5 ? t("sky_dawn") : t("sky_dusk")) : t("sky_day")}${this.raining ? " · " + t("sky_rain") : ""}  ${String(hour).padStart(2, "0")}:${String(min - min % 10).padStart(2, "0")}`);
+    const hour = Math.floor(((tc * 24) + 0) % 24), min = Math.floor((tc * 24 * 60) % 60);
+    this.skyText.setText(`${night ? t("sky_night") : dusk > 0.4 ? (tc < 0.5 ? t("sky_dawn") : t("sky_dusk")) : t("sky_day")}${this.raining ? " · " + t("sky_rain") : ""}  ${String(hour).padStart(2, "0")}:${String(min - min % 10).padStart(2, "0")}`);
     // chuva de vez em quando: 1 a 2 minutos, com intervalos de 1,5 a 4 minutos
     // em Karhyn chove sempre; à noite, relâmpagos clareiam o céu
     // depois de derrotar o último chefe do esgoto, Karhyn sai das sombras: para de chover e o sol volta de vez
@@ -627,8 +627,8 @@ class TownScene extends Phaser.Scene {
       c.add(m); this.tweens.add({ targets: m, y: m.y - VIEW_H - 220, alpha: 0, duration: Phaser.Math.Between(3500, 6000), delay: Phaser.Math.Between(0, 1800) });
     }
     if (this.textures.exists("vignette")) c.add(this.add.image(0, 0, "vignette").setOrigin(0));
-    const t = this.add.text(VIEW_W / 2, VIEW_H - 54, t("bless_vision_text"),
-      { fontFamily: FONT_TITLE, fontSize: "21px", color: "#f0d888", align: "center", stroke: "#0c0608", strokeThickness: 5, lineSpacing: 4, resolution: 2 }).setOrigin(0.5).setAlpha(0).setShadow(0, 2, "#000", 4, true, true); c.add(t);
+    const vt = this.add.text(VIEW_W / 2, VIEW_H - 54, t("bless_vision_text"),
+      { fontFamily: FONT_TITLE, fontSize: "21px", color: "#f0d888", align: "center", stroke: "#0c0608", strokeThickness: 5, lineSpacing: 4, resolution: 2 }).setOrigin(0.5).setAlpha(0).setShadow(0, 2, "#000", 4, true, true); c.add(vt);
     if (key === "vk_goddess_art") {
       // leve animação da arte: a imagem "respira" (sobe e desce devagar), o halo pulsa, a harpa cintila e cai uma chuva fina
       this.tweens.add({ targets: img, y: VIEW_H / 2 - 6, duration: 2400, yoyo: true, repeat: -1, ease: "Sine.inOut" });
@@ -736,10 +736,10 @@ class TownScene extends Phaser.Scene {
   closeDialog() { if (this.dialog) { this.dialog.destroy(); this.dialog = null; } this.dialogBtns = null; this.chatWith = null; this.sending = false; }
 
   showTitle(hold = 2500) {
-    const t = this.townTitle; if (!t) return;
-    this.tweens.killTweensOf(t); t.setAlpha(0).setY(VIEW_H * 0.24 + 8);
-    this.tweens.add({ targets: t, alpha: 1, y: VIEW_H * 0.24, duration: 1100, ease: "Sine.out" });
-    this.tweens.add({ targets: t, alpha: 0, delay: 1100 + hold, duration: 2200, ease: "Sine.in" });
+    const tt = this.townTitle; if (!tt) return;
+    this.tweens.killTweensOf(tt); tt.setAlpha(0).setY(VIEW_H * 0.24 + 8);
+    this.tweens.add({ targets: tt, alpha: 1, y: VIEW_H * 0.24, duration: 1100, ease: "Sine.out" });
+    this.tweens.add({ targets: tt, alpha: 0, delay: 1100 + hold, duration: 2200, ease: "Sine.in" });
   }
   // mapa da cidade em tela (Tab/M): planta grande com os lugares marcados e o título
   toggleMap() {
