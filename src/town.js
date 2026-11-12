@@ -171,8 +171,8 @@ class TownScene extends Phaser.Scene {
     this.block(38, 7, 2, 1); this.statue = st;
     { // mural de contratos (SpriteCook "vk_mural" se existir; senão desenhado em código)
       const key = this.textures.exists("vk_mural") ? "vk_mural" : this.makeBoardTex();
-      const b = this.add.image(37 * T + T / 2, 11 * T - 2, key).setOrigin(0.5, 1); b.setScale(T * (key === "vk_mural" ? 1.9 : 1.3) / b.width).setDepth(11 * T - 3).setTint(TOWN_TINT);
-      b.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(b); this.block(37, 10, 1, 1); this.board = b; }
+      const b = this.add.image(36 * T + T, 8 * T - 2, key).setOrigin(0.5, 1);   // ao lado da estátua, à esquerda b.setScale(T * (key === "vk_mural" ? 1.9 : 1.3) / b.width).setDepth(8 * T - 3).setTint(TOWN_TINT);
+      b.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(b); this.block(36, 7, 2, 1); this.board = b; }
     this.manhole = { x: 43, y: 9 };
     { const bk = this.textures.exists("vk_bueiro"), mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, bk ? "vk_bueiro" : "decor_manhole").setDepth(-5); mh.setScale(T * (bk ? 1.25 : 0.8) / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
     // decadência: barris, caixas, lixo, varal, carroça, bancos
@@ -180,18 +180,18 @@ class TownScene extends Phaser.Scene {
     const P = (n, code, x, y, w, wCode, fd = 1) => this.textures.exists("vkp_" + n) ? this.art("vkp_" + n, x + (1 - w) / 2, y, w, fd) : A(code, x, y, wCode, fd);
     P("barrel", "barrels", 9, 6, 0.6, 0.8, 0); P("crate", "crates", 24, 6, 0.75, 0.8, 0); P("garbage", "garbage", 33, 7, 0.9, 0.9); P("garbage", "garbage", 12, 11, 0.9, 0.9);
     P("laundry", "laundry", 27, 11, 1.1, 1.4, 0); P("cart", "cart", 25, 11, 0.95, 1.5); P("barrel", "barrels", 16, 11, 0.6, 0.8); P("crate", "crates", 31, 11, 0.75, 0.8);
-    P("garbage", "garbage", 41, 11, 0.9, 0.9); P("bench", "bench", 36, 7, 0.95, 0.85); P("barrel", "barrels", 42, 7, 0.6, 0.8);
+    P("garbage", "garbage", 41, 11, 0.9, 0.9); P("bench", "bench", 34, 7, 0.95, 0.85); P("barrel", "barrels", 42, 7, 0.6, 0.8);
     P("firewood", "crates", 13, 7, 0.8, 0.8); P("wheel", "garbage", 32, 7, 0.75, 0.9); P("firewood", "crates", 22, 11, 0.8, 0.8); P("barrel", "barrels", 35, 11, 0.6, 0.8);
     // lampiões: as únicas luzes quentes da rua
     this.lamps = [];
-    for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [35, 10], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
+    for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
     // NPCs e lugares (na calçada, em frente de cada casa)
     this.zones.push({ name: "Ferreiro (entrar)", kind: "smith", x: 5, y: 7, w: 4, h: 1 });
     this.zones.push({ name: "A Harpa Dançante", kind: "inn", x: 16, y: 7, w: 3, h: 1 });
     this.zones.push({ name: "Loja de Poções (entrar)", kind: "potions", x: 21, y: 7, w: 3, h: 1 });
     this.zones.push({ name: "Depot (entrar)", kind: "depot", x: 26, y: 7, w: 2, h: 1 });
     this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 28, y: 7, w: 2, h: 1 });
-    this.zones.push({ name: "Mural de contratos", kind: "board", x: 36, y: 11, w: 3, h: 1 });
+    this.zones.push({ name: "Mural de contratos", kind: "board", x: 36, y: 8, w: 2, h: 1 });
     this.zones.push({ name: "Acomodação", kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
     this.zones.push({ name: "Estátua da Oráculo", kind: "hall", x: 37, y: 8, w: 4, h: 1 });
     this.zones.push({ name: "Descer ao esgoto", kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
