@@ -324,7 +324,7 @@ class TownScene extends Phaser.Scene {
       this.say("Acomodação", "Quartos úmidos, cama de palha e uma vela. A dona cobra pouco e não faz perguntas.", [["Descansar (recupera tudo)", () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], lore("Acomodação", "lodging", () => this.use(z)), ["Sair", () => this.closeDialog()]]);
     } else if (z.kind === "hall" && !(d.bless > 0)) {
       d.bless = 1; Save.save();
-      this.say("Estátua da Deusa", "A pedra está fria e gasta, mas a luz desce sobre você. Por um instante a chuva some, e uma voz que você quase reconhece diz o seu nome.\n\nVocê recebeu a primeira bênção de Magdha (1/3): morrer agora custa menos.", [["Ajoelhar e agradecer", () => this.closeDialog()]]);
+      this.blessingVision(() => this.say("Estátua da Deusa", "A pedra está fria e gasta, mas a luz desce sobre você. Por um instante a chuva some, e uma voz que você quase reconhece diz o seu nome.\n\nVocê recebeu a primeira bênção de Magdha (1/3): morrer agora custa menos.", [["Ajoelhar e agradecer", () => this.closeDialog()]]));
     } else if (z.kind === "hall") {
       this.say("Estátua da Deusa", "Os mestres de armas de Karhyn treinam quem paga em ouro: vida, velocidade de ataque, armadura e fúria.",
         [["Treinar atributos", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], ["Sair", () => this.closeDialog()]]);
@@ -581,6 +581,38 @@ class TownScene extends Phaser.Scene {
       }
     } else T_(rx, y + 80, "Escolha um item à esquerda.", 13, COLORS.dim);
     const [b2, t2] = button(this, x + w - 100, y + h - 34, 140, "Fechar", () => this.closeDialog(), 14); c.add([b2, t2]);
+  }
+  // visão da deusa ao receber a bênção: a arte dela em tela cheia, com um zoom lento, raios de luz e um clarão,
+  // como se a luz descesse sobre o herói. Usa a arte "vk_goddess_art" (SpriteCook) ou, se faltar, a própria estátua.
+  blessingVision(done) {
+    this.closeDialog();
+    const key = this.textures.exists("vk_goddess_art") ? "vk_goddess_art" : "altar_magdha";
+    const c = this.add.container(0, 0).setAlpha(0); this.uiLayer.add(c); this.dialog = c;
+    c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x050406, 1).setOrigin(0).setInteractive());
+    const img = this.add.image(VIEW_W / 2, VIEW_H / 2, key);
+    img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    const fit = key === "altar_magdha" ? (VIEW_H * 0.92) / img.height : Math.max(VIEW_W / img.width, VIEW_H / img.height);
+    img.setScale(fit); c.add(img);
+    // raios dourados vindos do alto e partículas de luz subindo
+    const rays = [];
+    for (let i = 0; i < 5; i++) {
+      const r = this.add.image(VIEW_W / 2 + (i - 2) * 70, -40, "light").setOrigin(0.5, 0).setScale(0.45, 4.2).setTint(0xffe7a0).setAlpha(0).setAngle((i - 2) * 6).setBlendMode(Phaser.BlendModes.ADD);
+      c.add(r); rays.push(r);
+      this.tweens.add({ targets: r, alpha: 0.16 + 0.05 * (i % 2), duration: 1800, delay: 400 + i * 160, yoyo: true, hold: 1600, ease: "Sine.inOut" });
+    }
+    for (let i = 0; i < 26; i++) {
+      const m = this.add.image(Phaser.Math.Between(0, VIEW_W), VIEW_H + Phaser.Math.Between(0, 200), "light").setScale(0.03).setTint(0xfff0c0).setAlpha(0.8).setBlendMode(Phaser.BlendModes.ADD);
+      c.add(m); this.tweens.add({ targets: m, y: m.y - VIEW_H - 220, alpha: 0, duration: Phaser.Math.Between(3500, 6000), delay: Phaser.Math.Between(0, 1800) });
+    }
+    if (this.textures.exists("vignette")) c.add(this.add.image(0, 0, "vignette").setOrigin(0));
+    const t = txt(this, VIEW_W / 2, VIEW_H - 46, "Magdha, a deusa que vela por Karhyn", 22, COLORS.gold).setOrigin(0.5).setAlpha(0); c.add(t);
+    // aparece, aproxima devagar (como se ela se inclinasse sobre você), clareia e some
+    this.tweens.add({ targets: c, alpha: 1, duration: 900 });
+    this.tweens.add({ targets: img, scale: fit * 1.14, duration: 5200, ease: "Sine.inOut" });
+    this.tweens.add({ targets: t, alpha: 1, delay: 1400, duration: 1200 });
+    this.time.delayedCall(3800, () => this.cameras.main.flash(900, 255, 236, 180));
+    this.time.delayedCall(4800, () => this.tweens.add({ targets: c, alpha: 0, duration: 700, onComplete: () => { c.destroy(); if (this.dialog === c) this.dialog = null; done && done(); } }));
+    sfx(this, "levelup", 0.45);
   }
   // vista do alto da torre: o horizonte de Karhyn (provisório: o mapa da região até chegar a arte própria)
   towerView() {
