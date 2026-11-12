@@ -193,7 +193,7 @@ const MAT = {   // escuro, médio, claro, brilho
 const OUTLINE = "#0a0808";
 
 // ícones do SpriteCook já recortados (assets/equip/<id>.png): têm prioridade sobre o desenho em código
-const EQUIP_ART = [];
+const EQUIP_ART = Object.keys(EQUIP);   // os 54 têm ícone recortado das folhas do SpriteCook (cores dos itens do Tibia)
 function makeEquipTextures(scene) {
   for (const id in EQUIP) {
     const k = "eq_" + id;

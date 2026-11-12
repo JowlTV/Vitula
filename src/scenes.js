@@ -300,7 +300,7 @@ class SelectScene extends Phaser.Scene {
       const v = VOCATIONS[id], x = x0 + i * (cw + gap), y = 96;
       const open = !v.soon && (v.unlockCost <= 0 || (Save.data.unlocked || []).includes(id));
       const card = this.add.nineslice(x, y, open ? "card_selected" : "card_normal", null, cw, 340, 14, 14, 14, 14).setOrigin(0);
-      const port = this.add.image(x + cw / 2, y + 74, v.portrait).setScale(1.15);
+      const port = this.add.image(x + cw / 2, y + 74, v.portrait); port.setScale(115 / Math.max(port.width, port.height));   // retratos de tamanhos diferentes saem com 115 px
       if (!open) port.setTint(0x555060);
       this.add.nineslice(x + cw / 2, y + 152, "name_plate", null, 170, 30, 14, 14, 4, 4);
       txt(this, x + cw / 2, y + 152, v.name, 24, COLORS.gold).setOrigin(0.5);
