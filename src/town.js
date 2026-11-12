@@ -284,7 +284,7 @@ class TownScene extends Phaser.Scene {
     this.textures.get(I[0]).setFilter(Phaser.Textures.FilterMode.NEAREST);
     const c = this.add.container(0, 0); this.uiLayer.add(c); this.interior = c; c.key = I[0]; this.interiorT = 0;
     c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x050406, 1).setOrigin(0).setInteractive());
-    const img = this.add.image(VIEW_W / 2, VIEW_H / 2, I[0]).setOrigin(0.5), s = Math.min(VIEW_H / img.height, VIEW_W / img.width);   // tela cheia
+    const img = this.add.image(VIEW_W / 2, VIEW_H / 2, I[0]).setOrigin(0.5), s = Math.max(VIEW_H / img.height, VIEW_W / img.width);   // tela cheia (cover)
     img.setScale(s); c.add(img);
     if (I[1]) {
       const idle = I[1] + "_idle", x = img.x + (I[2] - 0.5) * img.displayWidth, y = img.y + (I[3] - 0.5) * img.displayHeight;
@@ -674,7 +674,7 @@ class TownScene extends Phaser.Scene {
     this.tweens.add({ targets: t, alpha: 1, delay: 1400, duration: 1200 });
     this.time.delayedCall(3800, () => this.cameras.main.flash(900, 255, 236, 180));
     this.time.delayedCall(5600, () => this.tweens.add({ targets: c, alpha: 0, duration: 700, onComplete: () => { c.destroy(); if (this.dialog === c) this.dialog = null; this.sunBreak(); done && done(); } }));
-    sfx(this, "levelup", 0.45);
+    // som removido a pedido
   }
   // depois de falar com a Oráculo a chuva para e o sol abre por um breve momento (cerca de 30 s), depois o céu fecha de novo
   sunBreak(sec = 30) {
