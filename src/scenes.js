@@ -300,16 +300,20 @@ class SelectScene extends Phaser.Scene {
       const v = VOCATIONS[id], x = x0 + i * (cw + gap), y = 96;
       const open = !v.soon && (v.unlockCost <= 0 || (Save.data.unlocked || []).includes(id));
       const card = this.add.nineslice(x, y, open ? "card_selected" : "card_normal", null, cw, 340, 14, 14, 14, 14).setOrigin(0);
-      const port = this.add.image(x + cw / 2, y + 74, v.portrait); port.setScale(115 / Math.max(port.width, port.height));   // retratos de tamanhos diferentes saem com 115 px
-      if (!open) port.setTint(0x555060);
-      this.add.nineslice(x + cw / 2, y + 152, "name_plate", null, 170, 30, 14, 14, 4, 4);
-      txt(this, x + cw / 2, y + 152, v.name, 24, COLORS.gold).setOrigin(0.5);
+      // vocações ainda sem arte: sem retrato, cartão em preto e branco (cinza)
+      if (!v.soon) {
+        const port = this.add.image(x + cw / 2, y + 74, v.portrait); port.setScale(115 / Math.max(port.width, port.height));   // retratos de tamanhos diferentes saem com 115 px
+        if (id === "archer") port.setFlipX(true);   // todos olhando para o mesmo lado (direita)
+        if (!open) port.setTint(0x555060);
+      } else { card.setTint(0x6a6a6a).setAlpha(0.7); this.add.rectangle(x + cw / 2, y + 74, 120, 120, 0x111111, 0.6).setStrokeStyle(1, 0x3a3a3a); txt(this, x + cw / 2, y + 74, "?", 48, "#4a4a4a").setOrigin(0.5); }
+      const plate = this.add.nineslice(x + cw / 2, y + 152, "name_plate", null, 170, 30, 14, 14, 4, 4); if (v.soon) plate.setTint(0x6a6a6a);
+      txt(this, x + cw / 2, y + 152, v.name, 24, v.soon ? "#8a8a8a" : COLORS.gold).setOrigin(0.5);
       // descrição e, logo abaixo dela (posição medida, sem sobrepor), a passiva/traço; as skills ficam na janela de Habilidades
-      const d1 = txt(this, x + 16, y + 176, v.desc, 13, COLORS.text, { wordWrap: { width: cw - 32 }, lineSpacing: 2 });
+      const d1 = txt(this, x + 16, y + 176, v.desc, 13, v.soon ? "#7a7a7a" : COLORS.text, { wordWrap: { width: cw - 32 }, lineSpacing: 2 });
       const d2 = txt(this, x + 16, d1.y + d1.height + 10, v.passive ? `Passiva — ${v.passive.name}: ${v.passive.desc}` : v.trait, 12, COLORS.dim, { wordWrap: { width: cw - 32 }, lineSpacing: 1 });
       if (d2.y + d2.height > y + 296) d2.setFontSize(11);
       if (v.soon) d2.setVisible(false);   // o rodapé já diz "Em breve"
-      const foot = open ? `◉ ${Save.gold(id)} de ouro` : (v.soon ? "Em breve" : `Bloqueada · ${v.unlockCost} de ouro`);
+      const foot = open ? `Nível ${Save.levelInfo(Save.voc(id).xpTotal).level}` : (v.soon ? "Em breve" : `Bloqueada · ${v.unlockCost} de ouro`);
       txt(this, x + cw / 2, y + 312, foot, 14, open ? COLORS.gold : COLORS.dim).setOrigin(0.5);
       if (open) {
         this.add.zone(x, y, cw, 340).setOrigin(0).setInteractive({ useHandCursor: true }).on("pointerup", () => { this.registry.set("vocation", id); this.scene.start("intro"); });
