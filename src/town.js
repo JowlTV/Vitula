@@ -405,7 +405,12 @@ class TownScene extends Phaser.Scene {
     for (const gl of this.lampGlows) gl.setAlpha((0.12 + 0.55 * d) * (0.85 + 0.15 * Math.sin(now * 9 + gl.ph))).setScale(0.45 + 0.25 * d);
     // luminária do herói: lampião (gasta óleo quando escurece) ou Pingente da Deusa
     const dv = Save.voc(this.vocId), lg = dv.equip && dv.equip.light && EQUIP[dv.equip.light.id], h = this.hero;
-    if (!this.heroGlow) { this.heroGlow = this.add.image(0, 0, "light").setBlendMode(Phaser.BlendModes.ADD).setDepth(800002).setAlpha(0); this.world.add(this.heroGlow); }
+    if (!this.textures.exists("lamp_soft")) {   // halo suave: some de verdade na borda e não estoura no centro
+      const c = this.textures.createCanvas("lamp_soft", 256, 256), x = c.getContext(), gr = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+      gr.addColorStop(0, "rgba(255,255,255,0.55)"); gr.addColorStop(0.25, "rgba(255,255,255,0.42)"); gr.addColorStop(0.6, "rgba(255,255,255,0.14)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+      x.fillStyle = gr; x.fillRect(0, 0, 256, 256); c.refresh();
+    }
+    if (!this.heroGlow) { this.heroGlow = this.add.image(0, 0, "lamp_soft").setBlendMode(Phaser.BlendModes.ADD).setDepth(800002).setAlpha(0); this.world.add(this.heroGlow); }
     let on = lg && lg.light && (!lg.light.fuel || dv.oil > 0);
     if (on && lg.light.fuel && d > 0.3) {
       const was = dv.oil; dv.oil = Math.max(0, dv.oil - dt);
@@ -414,7 +419,7 @@ class TownScene extends Phaser.Scene {
     }
     if (on && h) {
       const L = lg.light, m = Math.min(1.3, gearMult(dv.equip.light)), fl = L.fuel ? 0.9 + 0.1 * Math.sin(now * 11) * Math.sin(now * 3.7) : 0.97 + 0.03 * Math.sin(now * 2);
-      this.heroGlow.setPosition(h.px, h.py - 18).setTint(L.tint).setScale(L.r * T * m * fl / 128).setAlpha((0.08 + 0.4 * d) * fl);
+      this.heroGlow.setPosition(h.px, h.py - 14).setTint(L.fuel ? 0xe8c890 : 0xc8d4f0).setScale(L.r * T * m * fl / 128).setAlpha((0.05 + 0.5 * d) * fl);
     } else this.heroGlow.setAlpha(0);
     // ícone
     const ic = this.skyIcon, cx = VIEW_W - 26, cy = 40, night = d > 0.5;
