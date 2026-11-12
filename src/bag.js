@@ -16,19 +16,19 @@ Object.assign(DungeonScene.prototype, {
     const W = 860, H = 500, X = VIEW_W / 2 - W / 2, Y = VIEW_H / 2 - H / 2 - 8;
     c.add(this.add.nineslice(X, Y, "panel", null, W, H, 16, 16, 16, 16).setOrigin(0));
     const T_ = (x, y, s, size = 13, col = COLORS.text, o) => { const t = txt(this, x, y, s, size, col, o); c.add(t); return t; };
-    T_(VIEW_W / 2, Y + 22, "Mochila", 24, COLORS.gold).setOrigin(0.5);
+    T_(VIEW_W / 2, Y + 22, t("bag_title"), 24, COLORS.gold).setOrigin(0.5);
     T_(X + W - 22, Y + 16, "I / ESC fecha", 11, COLORS.dim).setOrigin(1, 0);
 
     // ---- equipamentos (layout do Tibia)
     const ex = X + 30, ey = Y + 64, S = 50, G = 10;
-    T_(ex, ey - 22, "Equipamentos", 15, COLORS.gold);
-    const slots = [["Amuleto", 0, 0], ["Capacete", 1, 0], ["Mochila", 2, 0], ["Arma", 0, 1], ["Armadura", 1, 1], ["Escudo", 2, 1],
-      ["Anel", 0, 2], ["Calça", 1, 2], ["Luminária", 2, 2], ["Botas", 1, 3]];
+    T_(ex, ey - 22, t("equipment"), 15, COLORS.gold);
+    const slots = [[t("slot_amulet"), 0, 0], [t("slot_helmet"), 1, 0], [t("slot_backpack"), 2, 0], [t("slot_weapon"), 0, 1], [t("slot_armor"), 1, 1], [t("slot_shield"), 2, 1],
+      [t("slot_ring"), 0, 2], [t("slot_legs"), 1, 2], [t("slot_light"), 2, 2], [t("slot_boots"), 1, 3]];
     // detalhes do item sob o mouse (linha no rodapé da mochila)
-    const tip = T_(X + 30, Y + H - 34, "Passe o mouse num item para ver os detalhes. Clique para vestir ou tirar.", 12, COLORS.dim, { wordWrap: { width: W - 60 } });
+    const tip = T_(X + 30, Y + H - 34, t("bag_tip"), 12, COLORS.dim, { wordWrap: { width: W - 60 } });
     const showTip = (g, extra = "") => { const E = EQUIP[g.id], R = RARITY[g.r], low = this.hero.level < E.lvl, bad = !equipOk(g.id, this.vocId);
       tip.setText(`${gearName(g)} · ${R.name} · nível ${E.lvl}${bad ? " · não serve para a sua vocação" : ""}${extra}\n${equipStats(g)}${E.desc ? " — " + E.desc : ""}`).setColor(low || bad ? "#e08070" : R.color); };
-    const slotOf = { Capacete: "helmet", Arma: "weapon", Armadura: "armor", Escudo: "shield", "Calça": "legs", Botas: "boots", "Luminária": "light" };
+    const _sn = n => { const m = { helmet: t("slot_helmet"), weapon: t("slot_weapon"), armor: t("slot_armor"), shield: t("slot_shield"), legs: t("slot_legs"), boots: t("slot_boots"), light: t("slot_light") }; return Object.fromEntries(Object.entries(m).map(([k, v]) => [v, k])); }; const slotOf = _sn();
     for (const [name, cx, cy] of slots) {
       const sx = ex + cx * (S + G), sy = ey + cy * (S + 22), sl = slotOf[name], g = sl && d.equip[sl], id = g && g.id;
       c.add(this.add.nineslice(sx, sy, "slot", null, S, S, 4, 4, 4, 4).setOrigin(0));
@@ -49,14 +49,14 @@ Object.assign(DungeonScene.prototype, {
     const ml = d.ml, mlPct = Math.floor(100 * ml.spent / mlNeeded(this.vocId, ml.lvl));
     const mx = this.maxDamage();
     const groups = [
-      ["Ataque", [["Dano base", `${Math.round(mx * 0.6)}–${Math.round(mx)}` + (this.stats.weapon && !this.ranged && this.stats.weapon.elDmg ? ` +${this.stats.weapon.elDmg} ${ELEMENTS[this.stats.weapon.el].name.toLowerCase()}` : "")], ["Velocidade de ataque", `${this.attacksPerSec().toFixed(2)} golpes/s`], ["Crítico", `${(this.critChance() * 100).toFixed(1).replace(".", ",")}% (×1,8)`]]],
-      ["Defesa", [["Vida total", `${Math.ceil(h.hp)} / ${Math.round(h.maxHp)}`], ["Defesa", this.defenseValue().toFixed(1)], ["Chance de bloqueio", `${Math.round(this.blockChance() * 100)}%`],
-        ["Regeneração", `${(this.stats.recovery || 0).toFixed(1).replace(".", ",")} vida/s · ${(this.stats.manaReg || 0).toFixed(1).replace(".", ",")} ${VOCATIONS[this.vocId].mana ? "mana" : "fúria"}/s`],
-        ["Resistências", Object.keys(this.stats.res || {}).filter(k => this.stats.res[k]).map(k => `${ELEMENTS[k].name} ${this.stats.res[k] > 0 ? "+" : ""}${Math.round(this.stats.res[k] * 100)}%`).join(" · ") || "nenhuma"]]],
-      ["Skills", [this.ranged ? ["Distance", sk("distance") + (this.buffOn("hunter") ? "  +10" : "")] : ["Sword", sk("sword") + (this.buffOn("berserker") ? "  +10" : "")], ["Shield", sk("shield")],
+      [t("attack_label"), [[t("base_dmg"), `${Math.round(mx * 0.6)}–${Math.round(mx)}` + (this.stats.weapon && !this.ranged && this.stats.weapon.elDmg ? ` +${this.stats.weapon.elDmg} ${ELEMENTS[this.stats.weapon.el].name.toLowerCase()}` : "")], [t("atk_speed"), `${this.attacksPerSec().toFixed(2)} ${t("hits_per_sec")}`], [t("critical"), `${(this.critChance() * 100).toFixed(1).replace(".", ",")}% (×1,8)`]]],
+      [t("defense_label"), [[t("total_hp"), `${Math.ceil(h.hp)} / ${Math.round(h.maxHp)}`], [t("defense_value"), this.defenseValue().toFixed(1)], [t("block_chance"), `${Math.round(this.blockChance() * 100)}%`],
+        [t("regen_label"), `${(this.stats.recovery || 0).toFixed(1).replace(".", ",")} vida/s · ${(this.stats.manaReg || 0).toFixed(1).replace(".", ",")} ${VOCATIONS[this.vocId].mana ? "mana" : "fúria"}/s`],
+        [t("resistances"), Object.keys(this.stats.res || {}).filter(k => this.stats.res[k]).map(k => `${ELEMENTS[k].name} ${this.stats.res[k] > 0 ? "+" : ""}${Math.round(this.stats.res[k] * 100)}%`).join(" · ") || t("no_resist")]]],
+      [t("skills_label"), [this.ranged ? ["Distance", sk("distance") + (this.buffOn("hunter") ? "  +10" : "")] : ["Sword", sk("sword") + (this.buffOn("berserker") ? "  +10" : "")], ["Shield", sk("shield")],
         ["Magic level", `${ml.lvl}  (${mlPct}%)` + (this.buffOn("mage") ? "  +10" : "")]]],
-      ["Progresso", [["Nível", String(h.level) + (this.promo() ? ` · ${this.promo().name}` : "")], ["Experiência total", String(Math.floor(d.xpTotal || 0))],
-        ["Para o próximo nível", String(Math.ceil(this.xpNext() - h.xp))]]],
+      [t("progress_label"), [[t("level_label"), String(h.level) + (this.promo() ? ` · ${this.promo().name}` : "")], [t("total_xp"), String(Math.floor(d.xpTotal || 0))],
+        [t("xp_next"), String(Math.ceil(this.xpNext() - h.xp))]]],
     ];
     let yy = sy - 22;
     for (const [title, rows] of groups) {
@@ -67,14 +67,14 @@ Object.assign(DungeonScene.prototype, {
 
     // ---- inventário
     const ix = X + 580, iy = Y + 64;
-    T_(ix, iy - 22, "Inventário", 15, COLORS.gold);
+    T_(ix, iy - 22, t("inventory"), 15, COLORS.gold);
     c.add(this.add.image(ix + 8, iy + 8, "i_gold_coin").setScale(1.2));
     T_(ix + 22, iy, `${this.goldRun} nesta descida · ${Save.gold(this.vocId)} guardado`, 12, COLORS.gold);
     c.add(this.add.image(ix + 8, iy + 30, "i_bronze_key").setScale(0.8));
     T_(ix + 22, iy + 22, `${this.keys} chave(s)`, 12);
     { const L = d.equip.light && EQUIP[d.equip.light.id], oil = Math.ceil((d.oil || 0) / 60);
-      T_(ix + 120, iy + 22, L ? (L.light.fuel ? `Óleo: ${oil} min${d.oil > 0 ? "" : " · apagado"}` : "Luz da Deusa") : "Sem luminária", 12, L && (!L.light.fuel || d.oil > 0) ? "#ffd27a" : COLORS.dim); }
-    T_(ix, iy + 52, "Poções — clique em 5 ou 6 para pôr no atalho", 11, COLORS.dim);
+      T_(ix + 120, iy + 22, L ? (L.light.fuel ? t("oil_label", { n: oil }) + (d.oil > 0 ? "" : " · " + t("oil_empty")) : t("goddess_light")) : t("no_light"), 12, L && (!L.light.fuel || d.oil > 0) ? "#ffd27a" : COLORS.dim); }
+    T_(ix, iy + 52, t("potion_hint"), 11, COLORS.dim);
     let py = iy + 72;
     for (const id of Object.keys(POTIONS)) {
       if (!potionOk(id, this.vocId)) continue;
@@ -91,7 +91,7 @@ Object.assign(DungeonScene.prototype, {
       py += 22;
     }
     // equipamentos guardados: clique para vestir
-    T_(ix, py + 8, `Equipamentos guardados (${d.gear.length})` + (d.essence ? ` · Essências: ${d.essence}` : ""), 13, COLORS.gold);
+    T_(ix, py + 8, t("stored_gear", { n: d.gear.length }) + (d.essence ? ` · ${t("essences_label", { n: d.essence })}` : ""), 13, COLORS.gold);
     if (!d.gear.length) T_(ix, py + 28, "Nenhum. Monstros às vezes deixam cair.", 11, COLORS.dim);
     const GS = 36, cols = 7, maxRows = Math.max(1, Math.floor((Y + H - 44 - (py + 28)) / GS));
     d.gear.slice(0, cols * maxRows).forEach((g, i) => {

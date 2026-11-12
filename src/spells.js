@@ -8,7 +8,7 @@ Object.assign(DungeonScene.prototype, {
     if (this.finished || this.paused || h.dead) return;
     if (h.level < sp.level) { this.msg(`${sp.name} é liberada no nível ${sp.level}.`); return; }
     if (h.cds[spell] > 0) return;
-    if (h.fury < sp.fury) { this.msg(`${VOCATIONS[this.vocId].resource || "Fúria"} insuficiente para ${sp.name} (${sp.fury}).`); return; }
+    if (h.fury < sp.fury) { this.msg(t("fury_low", { resource: VOCATIONS[this.vocId].resource || t("fury_label"), name: sp.name, cost: sp.fury })); return; }
     h.fury -= sp.fury;
     this.trainMagic(sp.fury);
     h.cds[spell] = sp.cd * this.stats.cooldown;
@@ -149,7 +149,7 @@ const SPELL_FX = {
 Object.assign(SPELL_FX, {
   holy(h, sp) {
     const t = this.rangedTarget();
-    if (!t) { this.msg("Nenhum alvo ao alcance."); h.cds.holy = 0; h.fury += sp.fury; return; }
+    if (!t) { this.msg(window.t("no_target")); h.cds.holy = 0; h.fury += sp.fury; return; }
     const dx = Math.sign(t.x - h.x), dy = Math.sign(t.y - h.y), side = Math.abs(t.x - h.x) >= Math.abs(t.y - h.y);
     this.heroSwing(side ? dx : 0, side ? 0 : dy);
     this.time.delayedCall(250, () => {
@@ -186,7 +186,7 @@ Object.assign(SPELL_FX, {
   },
   eagle(h, sp) {
     h.eagleT = sp.dur;
-    this.floatText(h.px, h.py - 90, "Olho de Águia", "#e0d070");
+    this.floatText(h.px, h.py - 90, t("eagle_eye"), "#e0d070");
     sfx(this, "levelup", 0.25);
   },
 });

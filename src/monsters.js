@@ -76,7 +76,7 @@ Object.assign(DungeonScene.prototype, {
       }
     }
     this.cameras.main.shake(300, 0.004); sfx(this, "boss", 0.5);
-    this.msg("Uma horda invade o esgoto! Um campeão a lidera.");
+    this.msg(t("horde_msg"));
     return true;
   },
 
@@ -331,7 +331,7 @@ Object.assign(DungeonScene.prototype, {
     this.makeCorpse(m, loot);
     if (m.elite) {
       sfx(this, "boss", 0.6);
-      this.msg(`O ${m.data.name} caiu! Uma passagem se abre.`);
+      this.msg(t("boss_fell", { name: m.data.name }));
       this.goldRun += m.data.gold;
       this.stairs = { x: m.x, y: m.y };
       if (this.pickups.has(key(m.x, m.y))) { const pk = this.pickups.get(key(m.x, m.y)); this.pickups.delete(key(m.x, m.y)); const alt = this.freeNeighbors(m.x, m.y)[0]; pk.spr.destroy(); if (alt) this.drop(alt.x, alt.y, pk.item); }

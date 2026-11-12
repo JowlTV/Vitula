@@ -120,7 +120,7 @@ Object.assign(DungeonScene.prototype, {
     this.xpFill = this.add.rectangle(bx, 28, 196, 4, 0x8a7430).setOrigin(0); ui.add(this.xpFill);
     iron(cx - 68, 40, 136, 6);
     this.furyFill = this.add.rectangle(cx - 68, 40, 136, 6, VOCATIONS[this.vocId].mana ? 0x2f5fb8 : 0xa8401a).setOrigin(0); ui.add(this.furyFill);
-    this.furyText = txt(this, cx + 78, 36, VOCATIONS[this.vocId].resource || "Fúria", 12, VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#d0703a"); ui.add(this.furyText);
+    this.furyText = txt(this, cx + 78, 36, VOCATIONS[this.vocId].resource || t("fury_label"), 12, VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#d0703a"); ui.add(this.furyText);
     this.lvlText = txt(this, bx - 14, 6, "", 18, COLORS.gold).setOrigin(1, 0).setVisible(false);   // o nível fica na janela de Habilidades
     this.promoText = txt(this, bx - 14, 12, "", 12, "#e8c878").setOrigin(1, 0).setVisible(false);
     // embaixo do minimapa (canto superior direito): nome do andar pequeno, ouro e chaves
@@ -162,7 +162,7 @@ Object.assign(DungeonScene.prototype, {
       const ready = this.add.rectangle(x, y, size, size).setOrigin(0).setStrokeStyle(2, 0xe0bc60, 1).setAlpha(0); ui.add(ready); this.slotReady[id] = ready;
       if (k) ui.add(txt(this, x + size - 9, y + size - 16, k, 12, COLORS.gold));
       if ((id === "p0" || id === "p1")) { const n = txt(this, x + 4, y + 1, "", 11, COLORS.white); ui.add(n); this.potCount[id] = n; }
-      else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "Nv " + this.spells[id].level, 12, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
+      else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, t("lv_prefix") + this.spells[id].level, 12, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
     });
     { // ataque básico em destaque: moldura dourada; no automático ela pulsa e aparece o selo "AUTO". Clicar no ícone liga/desliga.
       const bx0 = x0, by0 = VIEW_H - size - 10;
@@ -195,7 +195,7 @@ Object.assign(DungeonScene.prototype, {
     const win = this.add.container(0, 0); ui.add(win); this.blWin = win;
     this.blBg = this.add.rectangle(0, 0, 10, 10, 0x0c0a08, 0.8).setOrigin(0).setStrokeStyle(1, 0x5a4a30).setInteractive();
     this.blBar = this.add.rectangle(0, 0, 10, 14, 0x2a2018, 1).setOrigin(0).setInteractive({ useHandCursor: true });
-    this.blTitle = txt(this, 4, 1, "Battle List", 10, COLORS.gold);
+    this.blTitle = txt(this, 4, 1, t("battle_list"), 10, COLORS.gold);
     this.blMinB = txt(this, 0, 0, "–", 11, COLORS.text).setInteractive({ useHandCursor: true });
     this.blClsB = txt(this, 0, 0, "×", 11, COLORS.text).setInteractive({ useHandCursor: true });
     this.blGrip = this.add.triangle(0, 0, 8, 0, 8, 8, 0, 8, 0x7a6440).setOrigin(0).setInteractive({ useHandCursor: true });
@@ -223,7 +223,7 @@ Object.assign(DungeonScene.prototype, {
     });
     this.input.on("pointerup", () => { if (drag) { drag = null; this.saveBattleList(); } });
     this.blMinB.on("pointerdown", () => { this.bl.min = !this.bl.min; this.layoutBattleList(); this.saveBattleList(); });
-    this.blClsB.on("pointerdown", () => { this.bl.open = false; this.layoutBattleList(); this.saveBattleList(); this.msg("Battle List fechada — L para abrir"); });
+    this.blClsB.on("pointerdown", () => { this.bl.open = false; this.layoutBattleList(); this.saveBattleList(); this.msg(t("bl_closed")); });
     this.input.keyboard.on("keydown-L", () => { this.bl.open = !this.bl.open; this.layoutBattleList(); this.saveBattleList(); });
     this.blT = 0; this.layoutBattleList(); this.refreshBattleList();
   },
@@ -234,7 +234,7 @@ Object.assign(DungeonScene.prototype, {
     const win = this.add.container(S.x, S.y); ui.add(win);
     const bg = this.add.rectangle(0, 0, w, 10, 0x0c0a08, 0.8).setOrigin(0).setStrokeStyle(1, 0x5a4a30).setInteractive();
     const bar = this.add.rectangle(0, 0, w, 14, 0x2a2018, 1).setOrigin(0).setInteractive({ useHandCursor: true });
-    const title = txt(this, 4, 1, "Habilidades", 10, COLORS.gold);
+    const title = txt(this, 4, 1, t("abilities"), 10, COLORS.gold);
     const minB = txt(this, w - 24, 0, "–", 11, COLORS.text).setInteractive({ useHandCursor: true });
     const clsB = txt(this, w - 11, 0, "×", 11, COLORS.text).setInteractive({ useHandCursor: true });
     win.add([bg, bar, title, minB, clsB]);
@@ -262,7 +262,7 @@ Object.assign(DungeonScene.prototype, {
     this.input.on("pointermove", p => { if (!drag || !p.isDown) return; const q = pt(p); S.x = Phaser.Math.Clamp(q.x - drag.ox, 0, VIEW_W - w); S.y = Phaser.Math.Clamp(q.y - drag.oy, 0, VIEW_H - 14); layout(); });
     this.input.on("pointerup", () => { if (drag) { drag = null; save(); } });
     minB.on("pointerdown", () => { S.min = !S.min; layout(); save(); });
-    clsB.on("pointerdown", () => { S.open = false; layout(); save(); this.msg("Habilidades fechada — K para abrir"); });
+    clsB.on("pointerdown", () => { S.open = false; layout(); save(); this.msg(t("abilities_closed")); });
     this.input.keyboard.on("keydown-K", () => { S.open = !S.open; layout(); save(); });
     layout();
   },
@@ -348,11 +348,11 @@ Object.assign(DungeonScene.prototype, {
       const one = id => { const q = Save.skill(this.vocId, id), f = q.tries / skillTriesNeeded(id, q.lvl); return [`${SKILLS[id].name}`, `${q.lvl}  ${Math.floor(100 * f)}%`, f, 0x5a9a4a]; };
       const ml = Save.voc(this.vocId).ml, mlf = ml.spent / mlNeeded(this.vocId, ml.lvl);
       const rows = [["Nível", String(h.level), null],
-        ["Classe", this.promo() ? this.promo().name : VOCATIONS[this.vocId].name, null],
-        ["Experiência", `${Math.floor(h.xp).toLocaleString("pt-BR")} / ${Math.round(this.xpNext()).toLocaleString("pt-BR")}`, h.xp / this.xpNext(), 0x8a7430],
-        ["Magic level", `${this.mlEff()}  ${Math.floor(100 * mlf)}%`, mlf, 0x4a6ab8],
+        [t("class_label"), this.promo() ? this.promo().name : VOCATIONS[this.vocId].name, null],
+        [t("experience"), `${Math.floor(h.xp).toLocaleString("pt-BR")} / ${Math.round(this.xpNext()).toLocaleString("pt-BR")}`, h.xp / this.xpNext(), 0x8a7430],
+        [t("magic_level"), `${this.mlEff()}  ${Math.floor(100 * mlf)}%`, mlf, 0x4a6ab8],
         one(this.ranged ? "distance" : "sword"), one("shield"),
-        ["Atributos", this.attrFree() > 0 ? `+${this.attrFree()} ponto(s) · U` : "abrir · U", null]];
+        [t("attrs_label"), this.attrFree() > 0 ? t("attrs_free", { n: this.attrFree() }) : t("attrs_open"), null]];
       this.skW.v[6].setColor(this.attrFree() > 0 ? "#9fe08a" : COLORS.dim);
       rows.forEach((r, i) => {
         const W = this.skW, on = r[2] != null;
@@ -378,10 +378,10 @@ Object.assign(DungeonScene.prototype, {
     const ids = Object.keys(ATTRS), W = 520, RH = 34, H = 110 + ids.length * RH + 16, X = VIEW_W / 2 - W / 2, Y = Math.max(6, VIEW_H / 2 - H / 2);
     c.add(this.add.nineslice(X, Y, "panel", null, W, H, 16, 16, 16, 16).setOrigin(0));
     const T_ = (x, y, s, size = 13, col = COLORS.text) => { const t = txt(this, x, y, s, size, col); c.add(t); return t; };
-    T_(VIEW_W / 2, Y + 24, "Atributos", 24, COLORS.gold).setOrigin(0.5);
+    T_(VIEW_W / 2, Y + 24, t("attrs_title"), 24, COLORS.gold).setOrigin(0.5);
     T_(X + W - 20, Y + 14, "U / ESC fecha", 11, COLORS.dim).setOrigin(1, 0);
     const free = this.attrFree();
-    T_(VIEW_W / 2, Y + 52, free > 0 ? `Pontos para distribuir: ${free}` : "Sem pontos. Cada nível ganho dá 1 ponto.", 14, free > 0 ? "#9fe08a" : COLORS.dim).setOrigin(0.5);
+    T_(VIEW_W / 2, Y + 52, free > 0 ? t("attrs_points", { n: free }) : t("attrs_none"), 14, free > 0 ? "#9fe08a" : COLORS.dim).setOrigin(0.5);
     T_(VIEW_W / 2, Y + 72, `Nível ${this.hero.level} · ${this.hero.level - 1 - free} ponto(s) já distribuído(s)`, 11, COLORS.dim).setOrigin(0.5);
     ids.forEach((id, i) => {
       const A = ATTRS[id], y = Y + 96 + i * RH, n = this.attr(id);
@@ -429,11 +429,11 @@ Object.assign(DungeonScene.prototype, {
     if (this.finished) return;
     if (this.pauseBox) { this.pauseBox.destroy(); this.pauseBox = null; this.paused = false; this.tweens.resumeAll(); return; }
     this.paused = true; this.tweens.pauseAll();
-    this.pauseBox = this.panel("Pausa",
-      "Mover: WASD ou setas (diagonal vale)\nAtaque básico: Espaço · R liga/desliga o automático · E na corda: subir\nFúria enche ao golpear e apanhar e paga as habilidades.\n" +
+    this.pauseBox = this.panel(t("pause_title"),
+      t("pause_controls") + "\n" +
       Object.values(this.spells).map(sp => `${sp.key} · ${sp.name} (nv ${sp.level})`).join("   ") +
       "\n5 e 6: poções · I: mochila · U: atributos · TAB: mapa · roda do mouse: zoom\nBaús pedem chave de bronze.",
-      [["Continuar", () => this.togglePause()], ["Abandonar (conta como morte)", () => { this.togglePause(); this.finish(false); }]]);
+      [[t("resume"), () => this.togglePause()], [t("abandon"), () => { this.togglePause(); this.finish(false); }]]);
   },
 
 
@@ -485,11 +485,11 @@ Object.assign(DungeonScene.prototype, {
     Save.save();
     const v = VOCATIONS[this.vocId];
     const penText = pen ? `\n\nMorte — bênçãos da Oráculo: ${pen.bless}/3\nExperiência perdida: ${Math.round(pen.b.xp * 100)}%\nEquipamentos perdidos: ${pen.b.equip >= 1 ? "todos" : Math.round(pen.b.equip * 100) + "%"}\nOuro perdido: ${Math.round(pen.b.gold * 100)}% (${pen.goldLost})` : "";
-    this.panel(victory ? "Masmorra Vencida" : "Você Caiu",
+    this.panel(victory ? t("dungeon_won") : t("you_fell"),
       `Dificuldade: ${Math.round(this.diff * 100)}%\nAndar alcançado: ${this.floorN}/${FLOORS}\nNível: ${this.hero.level}\nAbates: ${this.kills}\nOuro obtido: ${earned}   (bolsa do ${v.name}: ${Save.gold(this.vocId)})` + penText,
-      [["Descer de novo", () => this.scene.restart()]]
-        .concat(cityUnlocked() ? [["Voltar à cidade", () => { this.registry.set("townSpawn", "sewer"); this.scene.start("town"); }]] : [])
-        .concat([["Voltar ao mapa", () => this.scene.start("map")]]));
+      [[t("descend_again"), () => this.scene.restart()]]
+        .concat(cityUnlocked() ? [[t("back_to_city"), () => { this.registry.set("townSpawn", "sewer"); this.scene.start("town"); }]] : [])
+        .concat([[t("back_to_map"), () => this.scene.start("map")]]));
     window.__vitulaEnd = { victory, floor: this.floorN, level: this.hero.level, kills: this.kills, earned };
   },
 });

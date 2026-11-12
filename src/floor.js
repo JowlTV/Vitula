@@ -664,7 +664,7 @@ Object.assign(DungeonScene.prototype, {
 
 
   triggerVent(vent) {
-    this.msg("Clique! Gás venenoso sai do respiradouro.");
+    this.msg(t("gas_trap"));
     sfx(this, "explode", 0.2);
     const g = this.add.graphics({ x: vent.x * T + T / 2, y: vent.y * T + T / 2 }).setDepth(150000);
     for (let k = 0; k < 10; k++) g.fillStyle(0x6fbf3a, 0.2).fillCircle(Phaser.Math.Between(-T, T), Phaser.Math.Between(-T, T), Phaser.Math.Between(18, 30));

@@ -163,8 +163,8 @@ Object.assign(DungeonScene.prototype, {
     let need = mlNeeded(this.vocId, ml.lvl);
     while (ml.spent >= need) {
       ml.spent -= need; ml.lvl++;
-      this.msg(`Você avançou para o magic level ${ml.lvl}.`);
-      this.floatText(this.hero.px, this.hero.py - 96, `Magic level ${ml.lvl}`, "#c0a0ff");
+      this.msg(t("ml_up", { n: ml.lvl }));
+      this.floatText(this.hero.px, this.hero.py - 96, t("ml_float", { n: ml.lvl }), "#c0a0ff");
       sfx(this, "levelup", 0.25);
       need = mlNeeded(this.vocId, ml.lvl);
     }
@@ -178,11 +178,11 @@ Object.assign(DungeonScene.prototype, {
     if (!potionOk(id, this.vocId)) { this.msg(`${P.name} não serve para ${VOCATIONS[this.vocId].name}.`); return; }
     h.potCd = h.potCd || {};
     if ((h.potCd[id] || 0) > 0) return;
-    if (!(d.potions[id] > 0)) { this.msg(`Sem ${P.name.toLowerCase()} na mochila. Compre na Loja.`); return; }
+    if (!(d.potions[id] > 0)) { this.msg(t("no_potion", { name: P.name.toLowerCase() })); return; }
     d.potions[id]--; h.potCd[id] = P.cd; Save.save();
     h.buffs = h.buffs || {};
     if (id === "health") this.heal(h.maxHp * 0.4);
-    else if (id === "fury") { h.fury = this.furyMax; this.floatText(h.px, h.py - 70, VOCATIONS[this.vocId].mana ? "Mana cheia" : "Fúria cheia", VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#e08a4a"); }
+    else if (id === "fury") { h.fury = this.furyMax; this.floatText(h.px, h.py - 70, VOCATIONS[this.vocId].mana ? t("mana_full") : t("fury_full"), VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#e08a4a"); }
     else if (P.dur) { h.buffs[id] = P.dur; this.msg(`${P.name}: ${P.desc}`); }
     sfx(this, "gem", 0.4);
   },
@@ -196,7 +196,7 @@ Object.assign(DungeonScene.prototype, {
     const need = skillTriesNeeded(id, sk.lvl);
     if (sk.tries >= need) {
       sk.tries -= need; sk.lvl++;
-      this.msg(`Você avançou em ${SKILLS[id].name} para ${sk.lvl}.`);
+      this.msg(t("skill_up", { name: SKILLS[id].name, n: sk.lvl }));
       this.floatText(this.hero.px, this.hero.py - 96, `${SKILLS[id].name} ${sk.lvl}`, "#9fd0ff");
       sfx(this, "levelup", 0.25);
       Save.save();
@@ -252,7 +252,7 @@ Object.assign(DungeonScene.prototype, {
           this.buildFloor();
           this.cameras.main.fadeIn(300);
           this.msg(this.floorN === 3 ? "O esgoto desaba numa caverna natural. Fique perto da luz."
-            : this.floorN < FLOORS ? `${this.region.name} — andar ${this.floorN}.` : "Último andar. Algo grande fareja você.");
+            : this.floorN < FLOORS ? t("floor_info", { region: this.region.name, n: this.floorN }) : t("last_floor"));
         });
       } else this.finish(true);
     }
@@ -264,7 +264,7 @@ Object.assign(DungeonScene.prototype, {
     if (pr.kind === "chest_closed") {
       if (this.keys <= 0) { this.msg("O baú está trancado. Precisa de uma chave de bronze."); return; }
       this.keys--; pr.spr.setTexture("chest_open"); pr.kind = "chest_open";
-      sfx(this, "chest", 0.6); this.msg("Você abriu o baú.");
+      sfx(this, "chest", 0.6); this.msg(t("chest_open"));
       this.goldRun += Phaser.Math.Between(30, 60);
       const spots = this.freeNeighbors(x, y);
       // baús não dão mais poções (agora se compram): comida, pergaminho/gema e ouro
@@ -322,12 +322,12 @@ Object.assign(DungeonScene.prototype, {
       case "gold": case "silver": if (this.buffOn("luck")) pk.amount = Math.round(pk.amount * 1.5); this.goldRun += pk.amount; this.floatText(px, py, `+${pk.amount} ouro`, COLORS.gold); sfx(this, "pickup", 0.35); break;
       case "red_gem": this.goldRun += info.gold; this.floatText(px, py, `+${info.gold} ouro`, COLORS.gold); sfx(this, "gem"); break;
       case "blue_gem": this.addXp(info.xp); this.floatText(px, py, `+${info.xp} exp`, COLORS.soul); sfx(this, "gem"); break;
-      case "bronze_key": this.keys++; this.msg("Você pegou uma chave de bronze."); sfx(this, "pickup"); break;
+      case "bronze_key": this.keys++; this.msg(t("got_key")); sfx(this, "pickup"); break;
       case "scroll": for (const s in h.cds) h.cds[s] = 0; this.addXp(40); this.msg("O pergaminho renova suas magias."); sfx(this, "levelup", 0.3); break;
       default:
         if (info.gear) { const g = pk.meta || gearNew(info.gear), R = RARITY[g.r]; Save.voc(this.vocId).gear.push(g); Save.save();
-          this.msg(`Você pegou: ${info.name} (${R.name}). (I: mochila)`); this.floatText(px, py, info.name, R.color); sfx(this, "levelup", 0.25); break; }
-        if (pk.item === "boss_essence") { const d = Save.voc(this.vocId); d.essence++; Save.save(); this.msg(`Essência de chefe! (${d.essence}) O ferreiro usa para aprimorar itens Lendários.`); this.floatText(px, py, "Essência de chefe", "#ffa030"); sfx(this, "gem"); break; }
+          this.msg(t("got_item", { name: info.name, rarity: R.name })); this.floatText(px, py, info.name, R.color); sfx(this, "levelup", 0.25); break; }
+        if (pk.item === "boss_essence") { const d = Save.voc(this.vocId); d.essence++; Save.save(); this.msg(t("got_essence", { n: d.essence })); this.floatText(px, py, t("got_essence", { n: "" }), "#ffa030"); sfx(this, "gem"); break; }
         this.heal(info.healPct ? h.maxHp * info.healPct : info.heal); sfx(this, "pickup", 0.35);
     }
   },
@@ -353,14 +353,14 @@ Object.assign(DungeonScene.prototype, {
   equipItem(i) {
     const d = Save.voc(this.vocId), g = d.gear[i], E = g && EQUIP[g.id], h = this.hero;
     if (!E) return false;
-    if (!equipOk(g.id, this.vocId)) { this.msg("Sua vocação não usa este item."); return false; }
-    if (h.level < E.lvl) { this.msg(`Precisa do nível ${E.lvl}.`); return false; }
+    if (!equipOk(g.id, this.vocId)) { this.msg(t("wrong_voc")); return false; }
+    if (h.level < E.lvl) { this.msg(t("need_level", { n: E.lvl })); return false; }
     d.gear.splice(i, 1);
     if (d.equip[E.slot]) d.gear.push(d.equip[E.slot]);
     d.equip[E.slot] = g;
     // duas mãos não combinam com escudo
-    if (E.twoH && d.equip.shield) { d.gear.push(d.equip.shield); delete d.equip.shield; this.msg("Arma de duas mãos: o escudo foi para a mochila."); }
-    if (E.slot === "shield" && d.equip.weapon && EQUIP[d.equip.weapon.id].twoH) { d.gear.push(d.equip.weapon); delete d.equip.weapon; this.msg("Escudo vestido: a arma de duas mãos foi para a mochila."); }
+    if (E.twoH && d.equip.shield) { d.gear.push(d.equip.shield); delete d.equip.shield; this.msg(t("two_hand_shield")); }
+    if (E.slot === "shield" && d.equip.weapon && EQUIP[d.equip.weapon.id].twoH) { d.gear.push(d.equip.weapon); delete d.equip.weapon; this.msg(t("shield_two_hand")); }
     Save.save(); this.restat(); sfx(this, "pickup", 0.3); return true;
   },
   unequipSlot(slot) {
@@ -377,7 +377,7 @@ Object.assign(DungeonScene.prototype, {
   // veneno (aranha venenosa): dano por segundo que não é bloqueado; renova a duração a cada mordida
   poisonHero(p) {
     const h = this.hero; if (h.dead || this.god) return;
-    if (!(h.poisonT > 0)) this.floatText(h.px, h.py - 80, "Envenenado", "#8fe060");
+    if (!(h.poisonT > 0)) this.floatText(h.px, h.py - 80, t("poisoned"), "#8fe060");
     h.poisonT = p.dur; h.poisonDps = h.maxHp * p.pct; h.poisonTick = h.poisonTick || 0;
   },
   tickPoison(dt) {
@@ -397,7 +397,7 @@ Object.assign(DungeonScene.prototype, {
     if (pure) { h.hp -= pure; this.floatText(h.px + 8, h.py - 60, String(pure), "#7fd04a"); if (h.hp <= 0) h.hp = 0.0001, amount = 1, pure = 0; else return; }
     this.trainSkill("shield");
     // bloqueio com o escudo (chance cresce com o Shield): nenhum dano
-    if (Math.random() < this.blockChance()) { this.floatText(h.px, h.py - 66, "Bloqueado", "#9fd0ff"); sfx(this, "hit", 0.2); return; }
+    if (Math.random() < this.blockChance()) { this.floatText(h.px, h.py - 66, t("blocked"), "#9fd0ff"); sfx(this, "hit", 0.2); return; }
     const real = Math.max(1, amount - this.defenseValue());
     h.hp -= real; h.flash = 1;
     this.addFury(4);
@@ -420,7 +420,7 @@ Object.assign(DungeonScene.prototype, {
     if (this.tryAltar()) return;
     if (!this.rope || h.dead || this.finished || this.paused || this.bagOpen) return;
     if (Math.abs(h.x - this.rope.x) > 1 || Math.abs(h.y - this.rope.y) > 1) return;
-    if (this.floorN > 1) { this.floorN--; this.buildFloor("stairs"); this.msg(`Você sobe pela corda. Andar ${this.floorN}.`); return; }
+    if (this.floorN > 1) { this.floorN--; this.buildFloor("stairs"); this.msg(t("rope_up", { n: this.floorN })); return; }
     this.finished = true;
     const earned = Math.round(this.goldRun * this.stats.greed);
     Save.addGold(this.vocId, earned); Save.addKills(this.killsByType); Save.data.runs++; Save.save();
@@ -439,9 +439,9 @@ Object.assign(DungeonScene.prototype, {
     d.bless = n + 1; a.used = true; Save.save();
     if (this.altarImg) this.altarImg.setAlpha(0.55);
     sfx(this, "levelup", 0.3);
-    this.floatText(h.px, h.py - 90, `Bênção ${d.bless}/3`, "#f2e2a0");
+    this.floatText(h.px, h.py - 90, t("bless_float", { n: d.bless }), "#f2e2a0");
     this.paused = true;
-    const box = this.panel("Bênção da Oráculo", BLESS_TEXT[n], [["Continuar", () => { box.destroy(); this.paused = false; }]]);
+    const box = this.panel(t("bless_title"), BLESS_TEXT[n], [["Continuar", () => { box.destroy(); this.paused = false; }]]);
     return true;
   },
 
@@ -537,9 +537,9 @@ Object.assign(DungeonScene.prototype, {
     const d = Save.voc(this.vocId); d.xpTotal = (d.xpTotal || 0) + v * this.stats.growth; h.xpTotal = (h.xpTotal || 0) + v * this.stats.growth; Save.save();
     while (h.xp >= this.xpNext()) {
       h.xp -= this.xpNext(); h.level++; h.maxHp += 10; h.hp = h.maxHp; // subir de nível enche a vida
-      this.floatText(h.px, h.py - 84, `Nível ${h.level}!`, COLORS.gold);
+      this.floatText(h.px, h.py - 84, t("level_up_float", { n: h.level }), COLORS.gold);
       const nova = Object.values(this.spells).find(sp => sp.level === h.level);
-      this.msg(nova ? `Nível ${h.level}: você aprendeu ${nova.name}! (tecla ${nova.key}) · +1 ponto de atributo (U)` : `Você subiu para o nível ${h.level}. +1 ponto de atributo (U)`);
+      this.msg(nova ? t("level_up_skill", { n: h.level, name: nova.name, key: nova.key }) : t("level_up_plain", { n: h.level }));
       sfx(this, "levelup", 0.4);
       this.checkPromotion();
     }
@@ -552,7 +552,7 @@ Object.assign(DungeonScene.prototype, {
     const p = PROMOTION[this.vocId], h = this.hero, d = Save.voc(this.vocId);
     if (!p || d.promoted || h.level < p.level) return;
     d.promoted = true; h.promoted = true; Save.save();
-    this.msg(`Você foi promovido a ${p.name}! Regeneração ×${p.regenMult} e +${Math.round((p.dmgMult - 1) * 100)}% de dano.`);
+    this.msg(t("promoted", { name: p.name, regen: p.regenMult, dmg: Math.round((p.dmgMult - 1) * 100) }));
     this.floatText(h.px, h.py - 100, p.name, COLORS.gold);
     this.fx("heal", h.px, h.py - 28, 1.2);
     this.cameras.main.flash(300, 224, 188, 96);

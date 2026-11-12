@@ -51,21 +51,21 @@
   // Botões: [rótulo, ação ou tecla fixa, tipo: "hold" (segura) ou "tap" (toque único), título]
   const LAYOUT = {
     pad: [
-      ["▲", "up", "hold", "Cima", 2, 1], ["◀", "left", "hold", "Esquerda", 1, 2],
-      ["▶", "right", "hold", "Direita", 3, 2], ["▼", "down", "hold", "Baixo", 2, 3],
+      ["▲", "up", "hold", t("touch_up"), 2, 1], ["◀", "left", "hold", t("touch_left"), 1, 2],
+      ["▶", "right", "hold", t("touch_right"), 3, 2], ["▼", "down", "hold", t("touch_down"), 2, 3],
     ],
     skills: [
-      ["1", "skill1", "tap", "Golpe Frontal"], ["2", "skill2", "tap", "Magia 2"],
-      ["3", "skill3", "tap", "Golpe em Área"], ["4", "skill4", "tap", "Aura"],
-      ["5", "potion1", "tap", "Poção 1"], ["6", "potion2", "tap", "Poção 2"],
+      ["1", "skill1", "tap", t("touch_frontal")], ["2", "skill2", "tap", t("touch_magic2")],
+      ["3", "skill3", "tap", t("touch_aoe")], ["4", "skill4", "tap", t("touch_aura")],
+      ["5", "potion1", "tap", t("touch_pot1")], ["6", "potion2", "tap", t("touch_pot2")],
     ],
     main: [
-      ["ATQ", "attack", "tap", "Ataque básico", "big"], ["E", "interact", "tap", "Falar / usar / corda", "mid"],
-      ["OK", "ENTER", "tap", "Confirmar"],
+      ["ATQ", "attack", "tap", t("touch_attack"), "big"], ["E", "interact", "tap", t("touch_interact"), "mid"],
+      ["OK", "ENTER", "tap", t("touch_confirm")],
     ],
     util: [
-      ["Esc", "ESC", "tap", "Pausa / voltar"], ["Mochila", "bag", "tap", "Mochila"],
-      ["Atributos", "U", "tap", "Pontos de atributo"], ["Mapa", "map", "tap", "Mapa"], ["Auto", "autoAttack", "tap", "Ataque automático"],
+      ["Esc", "ESC", "tap", t("touch_pause")], [t("touch_bag"), "bag", "tap", t("touch_bag")],
+      ["Atributos", "U", "tap", t("touch_attrs")], [t("touch_map"), "map", "tap", t("touch_map")], ["Auto", "autoAttack", "tap", t("touch_auto")],
     ],
   };
 
@@ -155,7 +155,7 @@
     // Botão de mostrar/ocultar (sempre visível, para não ficar preso escondido).
     const toggle = document.createElement("button");
     toggle.type = "button"; toggle.className = "vt-btn vt-util toggle"; toggle.textContent = "⌨";
-    toggle.title = "Mostrar/ocultar controles"; toggle.setAttribute("aria-label", "Mostrar ou ocultar controles de toque");
+    toggle.title = t("touch_toggle"); toggle.setAttribute("aria-label", t("touch_toggle_aria"));
     toggle.style.pointerEvents = "auto";
     const wrap = document.createElement("div"); wrap.className = "toggle-wrap"; wrap.appendChild(toggle);
 

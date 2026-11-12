@@ -183,19 +183,19 @@ function equipOk(id, vocId) { const E = EQUIP[id]; return !E.voc || E.voc.includ
 function equipStats(g) {
   if (typeof g === "string") g = gearNew(g);
   const E = EQUIP[g.id], m = gearMult(g), p = [], pct = v => `${Math.round(v * 100)}%`, n = v => (Math.round(v * 10) / 10).toString().replace(".", ",");
-  if (E.atk) p.push(`Ataque ${Math.round(E.atk * m)}`);
-  if (E.def) p.push(`Defesa ${n(E.def * m)}`);
-  if (E.twoH) p.push("duas mãos");
-  if (E.el && E.elDmg) p.push(`+${Math.round(E.elDmg * m)} de ${ELEMENTS[E.el].name.toLowerCase()}`);
-  if (E.magic) p.push("+ataque mágico (raio)");
-  if (E.poison) p.push("envenena");
-  if (E.crit) p.push(`crítico +${pct(E.crit)}`);
-  if (E.block) p.push(`bloqueio +${pct(E.block)}`);
+  if (E.atk) p.push(t("eq_atk", { v: Math.round(E.atk * m) }));
+  if (E.def) p.push(t("eq_def", { v: n(E.def * m) }));
+  if (E.twoH) p.push(t("eq_twoh"));
+  if (E.el && E.elDmg) p.push(t("eq_el_dmg", { v: Math.round(E.elDmg * m), el: ELEMENTS[E.el].name.toLowerCase() }));
+  if (E.magic) p.push(t("eq_magic_atk"));
+  if (E.poison) p.push(t("eq_poison"));
+  if (E.crit) p.push(t("eq_crit", { v: pct(E.crit) }));
+  if (E.block) p.push(t("eq_block", { v: pct(E.block) }));
   if (E.ml) p.push(`magic level +${E.ml}`);
-  if (E.hpReg) p.push(`+${n(E.hpReg)} vida/s`);
-  if (E.manaReg) p.push(`+${n(E.manaReg)} mana/s`);
-  if (E.light) p.push(E.light.fuel ? "luz pequena (gasta óleo)" : "luz prateada sem óleo");
-  if (E.speed) p.push(`velocidade +${pct(E.speed)}`);
+  if (E.hpReg) p.push(t("eq_hpreg", { v: n(E.hpReg) }));
+  if (E.manaReg) p.push(t("eq_manareg", { v: n(E.manaReg) }));
+  if (E.light) p.push(E.light.fuel ? t("eq_light_oil") : t("eq_light_free"));
+  if (E.speed) p.push(t("eq_speed", { v: pct(E.speed) }));
   for (const k in E.res || {}) p.push(`${ELEMENTS[k].name} ${E.res[k] > 0 ? "+" : ""}${pct(E.res[k])}`);
   return p.join(" · ");
 }

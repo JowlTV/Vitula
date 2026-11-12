@@ -63,8 +63,8 @@ Object.assign(DungeonScene.prototype, {
       if (L.fuel && dv.oil > 0) {
         const was = dv.oil; dv.oil = Math.max(0, dv.oil - dt);
         if (Math.floor(was / 10) !== Math.floor(dv.oil / 10)) Save.save();
-        if (was > 60 && dv.oil <= 60) this.msg("O lampião está quase sem óleo.");
-        if (dv.oil <= 0) { this.msg("O lampião apagou. Compre óleo com o ferreiro."); Save.save(); }
+        if (was > 60 && dv.oil <= 60) this.msg(t("oil_low"));
+        if (dv.oil <= 0) { this.msg(t("oil_empty")); Save.save(); }
       }
       if (!L.fuel || dv.oil > 0) {
         const m = gearMult(dv.equip.light), lf = this.flicker(h.lamp = h.lamp || {}, dt, L.fuel ? 0.1 : 0.03);

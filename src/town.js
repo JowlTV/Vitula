@@ -12,35 +12,11 @@ function cityUnlocked() { return true; }
 
 // História e boatos de Karhyn (ligados à introdução "A Queda de Karhyn"): cada morador conta a sua parte, uma fala por vez.
 const TOWN_LORE = {
-  smith: [
-    "\"Já ouviu falar da forja de Karhyn? Daqui saíam as melhores espadas e os melhores escudos de Godoyr. Vinha gente do continente inteiro só para encomendar uma lâmina.\"",
-    "\"O segredo é o ferro. Ele vem das montanhas perto da Torre das Amazonas. À noite a luz da deusa banha a pedra, e o metal já chega aqui diferente: mais leve, mais teimoso, quase vivo.\"",
-    "\"Só que faz tempo que nenhuma carroça de minério chega. A estrada do norte ficou perigosa, e quem sobe a montanha não volta. Estou forjando com o que sobrou no fundo do barril.\"",
-    "\"Se o que dizem do esgoto for verdade, vão precisar de aço bom lá embaixo. Volte vivo, que eu ainda afio a sua lâmina.\"",
-  ],
-  potions: [
-    "\"Karhyn era uma cidade de festa, sabia? Música na praça, criança correndo na rua, a Harpa cheia até de madrugada. Hoje fecham as janelas antes de escurecer.\"",
-    "\"Os bichos mudaram primeiro. O gato da vizinha, manso a vida toda, avançou nela com um ódio que eu nunca vi. Depois os ratos. Depois coisa pior.\"",
-    "\"Minhas ervas apodrecem mais depressa perto dos bueiros. Tem alguma coisa subindo junto com aquele ar. Eu não desceria sem uns frascos no cinto.\"",
-    "\"Rezo para a deusa toda noite, diante da estátua do largo. Dizem que ela ainda escuta. Fale com ela antes de descer.\"",
-  ],
-  depot: [
-    "\"Antes eu guardava mercadoria de caravana: seda, tempero, lâminas da forja indo para o continente inteiro. Hoje guardo o pouco que os aventureiros conseguem trazer lá de baixo.\"",
-    "\"Os monstros da escuridão sempre existiram, mas ficavam longe. Agora chegam até o muro. É como se alguma coisa estivesse soprando ódio dentro deles.\"",
-    "\"Três patrulhas desceram ao esgoto. Voltou meia. O que voltou não fala, só olha para o bueiro e treme.\"",
-    "\"Guarde aqui o que tiver de valor antes de descer. Quem morre lá embaixo perde quase tudo que carrega.\"",
-  ],
-  inn: [
-    "O taverneiro baixa a voz.\n\n\"Você quer boato? Aqui é a casa deles. Dizem que nos esgotos mora um mal tão antigo que os ratos fogem dele... e fogem para cima, para as nossas ruas.\"",
-    "\"Um bêbado jurou que desceu até o quinto andar. Disse que lá o esgoto vira caverna e a caverna respira. Riram dele. Na manhã seguinte, a cama estava vazia.\"",
-    "\"O que mais se repete nas mesas é isto: a coisa está subindo. Um andar de cada vez. Se ela vencer o último e chegar à superfície, não sobra Karhyn para contar a história.\"",
-    "\"A harpa da casa tocava sozinha nas noites de festa, dizem. Faz meses que está muda. Beba alguma coisa, forasteiro. E, se for descer, desça logo.\"",
-  ],
-  lodging: [
-    "A dona ajeita o xale.\n\n\"Metade dos quartos está vazia. As famílias que podiam foram embora para o sul. Ficou quem não tem para onde ir.\"",
-    "\"De noite dá para ouvir, sabe? Debaixo do assoalho. Um arranhar, e às vezes uma coisa mais pesada, se arrastando. Eu ponho a cama longe do ralo.\"",
-    "\"Você chegou pelo portão sem lembrar de nada, não foi? Não é o primeiro. A deusa manda gente quando a cidade precisa. Pelo menos é o que eu prefiro acreditar.\"",
-  ],
+  smith: [t("lore_smith_1"), t("lore_smith_2"), t("lore_smith_3"), t("lore_smith_4")],
+  potions: [t("lore_potions_1"), t("lore_potions_2"), t("lore_potions_3"), t("lore_potions_4")],
+  depot: [t("lore_depot_1"), t("lore_depot_2"), t("lore_depot_3"), t("lore_depot_4")],
+  inn: [t("lore_inn_1"), t("lore_inn_2"), t("lore_inn_3"), t("lore_inn_4")],
+  lodging: [t("lore_lodging_1"), t("lore_lodging_2"), t("lore_lodging_3")],
 };
 
 class TownScene extends Phaser.Scene {
@@ -81,7 +57,7 @@ class TownScene extends Phaser.Scene {
     (this.keysIn.zoomOut || []).forEach(k => k.on("down", () => this.zoomBy(-0.2)));
     { const d = Save.voc(this.vocId);   // breve tutorial na primeira chegada a Karhyn
       if (!d.tutTown) this.time.delayedCall(3200, () => { if (this.dialog || this.leaving) return; d.tutTown = true; Save.save();
-        this.say("Karhyn", "Esta é Karhyn, uma cidade que já viveu dias melhores.\n\nConverse com os moradores e descubra mais sobre a sua história e os seus boatos. Compre poções, aprimore atributos, guarde seus itens no depot ou melhore-os com o ferreiro. Pegue contratos de caça no mural do largo.\n\nExplore o esgoto e salve a cidade antes que ela entre em colapso.", [["Entendi", () => this.closeDialog()]]); }); }
+        this.say("Karhyn", t("town_welcome"), [[t("understood"), () => this.closeDialog()]]); }); }
     this.input.on("wheel", (_p, _o, _dx, dy) => this.zoomBy(dy > 0 ? -0.2 : 0.2));
     this.cameras.main.fadeIn(500, 0, 0, 0);
     stopAllButMusic(this);
@@ -186,16 +162,16 @@ class TownScene extends Phaser.Scene {
     this.lamps = [];
     for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
     // NPCs e lugares (na calçada, em frente de cada casa)
-    this.zones.push({ name: "Ferreiro (entrar)", kind: "smith", x: 5, y: 7, w: 4, h: 1 });
-    this.zones.push({ name: "A Harpa Dançante", kind: "inn", x: 16, y: 7, w: 3, h: 1 });
-    this.zones.push({ name: "Loja de Poções (entrar)", kind: "potions", x: 21, y: 7, w: 3, h: 1 });
-    this.zones.push({ name: "Depot (entrar)", kind: "depot", x: 26, y: 7, w: 2, h: 1 });
-    this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 28, y: 7, w: 2, h: 1 });
-    this.zones.push({ name: "Mural de contratos", kind: "board", x: 36, y: 8, w: 2, h: 1 });
-    this.zones.push({ name: "Acomodação", kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
-    this.zones.push({ name: "Estátua da Oráculo", kind: "hall", x: 37, y: 8, w: 4, h: 1 });
-    this.zones.push({ name: "Descer ao esgoto", kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
-    this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
+    this.zones.push({ name: t("zone_smith_enter"), kind: "smith", x: 5, y: 7, w: 4, h: 1 });
+    this.zones.push({ name: t("tavern_title"), kind: "inn", x: 16, y: 7, w: 3, h: 1 });
+    this.zones.push({ name: t("zone_potions_enter"), kind: "potions", x: 21, y: 7, w: 3, h: 1 });
+    this.zones.push({ name: t("zone_depot_enter"), kind: "depot", x: 26, y: 7, w: 2, h: 1 });
+    this.zones.push({ name: t("zone_locker"), kind: "locker", x: 28, y: 7, w: 2, h: 1 });
+    this.zones.push({ name: t("zone_board"), kind: "board", x: 36, y: 8, w: 2, h: 1 });
+    this.zones.push({ name: t("lodging_title"), kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
+    this.zones.push({ name: t("zone_oracle"), kind: "hall", x: 37, y: 8, w: 4, h: 1 });
+    this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
+    this.zones.push({ name: t("zone_gate"), kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
   }
 
   // ------------------------------------------------------------ herói
@@ -300,44 +276,44 @@ class TownScene extends Phaser.Scene {
     // história e boatos: cada morador conta um pedaço do que está acontecendo em Karhyn
     const lore = (title, key, back) => {
       const L = TOWN_LORE[key], n = (this.loreN = this.loreN || {})[key] = ((this.loreN || {})[key] || 0);
-      return ["Perguntar sobre Karhyn e os boatos", () => { const i = this.loreN[key] % L.length; this.loreN[key]++;
-        this.say(title, L[i], [[this.loreN[key] % L.length ? "E o que mais se fala?" : "Conte de novo, desde o começo", () => lore(title, key, back)[1]()], ["Voltar ao assunto", back]]); }];
+      return [t("ask_lore"), () => { const i = this.loreN[key] % L.length; this.loreN[key]++;
+        this.say(title, L[i], [[this.loreN[key] % L.length ? t("lore_more") : t("lore_restart"), () => lore(title, key, back)[1]()], [t("lore_back"), back]]); }];
     };
     this.showInterior(z.kind);
     if (z.kind === "gate") {
-      this.say("Portão de Karhyn", "Deixar a cidadela e voltar ao mapa?", [["Sair da cidade", () => this.leave("map")], ["Ficar", () => this.closeDialog()]]);
+      this.say(t("zone_gate"), t("gate_ask"), [[t("gate_leave"), () => this.leave("map")], [t("gate_stay"), () => this.closeDialog()]]);
     } else if (z.kind === "sewer") {
       // a dificuldade continua valendo por baixo (a maior já liberada), mas não aparece mais para o jogador
       const max = (Save.data.diffMax || {})["karhyn_sewers:" + this.vocId] || 1;
-      this.say("Entrada dos Esgotos", "A grade range com o vento que sobe lá de baixo. Ratos guincham na escuridão e semeiam o caos.\n\nDizem que, se descer demais, é possível ouvir os gritos de uma besta desconhecida.",
-        [["Descer", () => { this.registry.set("region", "karhyn_sewers"); this.registry.set("difficulty", max); this.leave("dungeon"); }], ["Ainda não", () => this.closeDialog()]]);
+      this.say(t("sewer_title"), t("sewer_desc"),
+        [[t("sewer_go"), () => { this.registry.set("region", "karhyn_sewers"); this.registry.set("difficulty", max); this.leave("dungeon"); }], [t("sewer_wait"), () => this.closeDialog()]]);
     } else if (z.kind === "potions") {
       const n = Object.values(d.potions).reduce((a, b) => a + b, 0);
-      this.say("Vendedora de Poções", `"Frascos frescos, ${V.name.toLowerCase()}. Vida, fúria e outras misturas da casa."\n\nNa sua mochila: ${n} poção(ões).  Ouro: ◉ ${d.gold}`,
-        [["Ver as poções", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "potions"); this.leave("shop"); }], lore("Vendedora de Poções", "potions", () => this.use(z)), ["Até logo", () => this.closeDialog()]]);
+      this.say(t("potion_seller"), t("potion_greet", { voc: V.name.toLowerCase(), n, gold: d.gold }),
+        [[t("see_potions"), () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "potions"); this.leave("shop"); }], lore(t("potion_seller"), "potions", () => this.use(z)), [t("bye"), () => this.closeDialog()]]);
     } else if (z.kind === "board") {
       this.openBoard();
     } else if (z.kind === "depot") {
-      this.say("Guarda do Depot", `"Bem-vindo ao depot de Karhyn. Cada aventureiro tem seu baú nas cabines do fundo — o que guardar ali não se perde nas descidas."\n\nOuro guardado: ◉ ${d.gold}`,
-        [["Abrir meu baú", () => this.openLocker()], lore("Guarda do Depot", "depot", () => this.use(z)), ["Obrigado", () => this.closeDialog()]]);
+      this.say(t("depot_guard"), t("depot_greet", { gold: d.gold }),
+        [[t("open_locker"), () => this.openLocker()], lore(t("depot_guard"), "depot", () => this.use(z)), [t("thanks"), () => this.closeDialog()]]);
     } else if (z.kind === "locker") {
       this.openLocker();
     } else if (z.kind === "smith") {
-      this.say("Ferreiro", `"Traga sua lâmina quando estiver cega. Me dê duas peças da mesma raridade que eu derreto e reforço a que você escolher."\n\nCada +1 consome 2 itens da mesma raridade. No +5 o item sobe de raridade (até Ultra raro). Lendários sobem com Essências de chefe, até +10.`,
-        [["Aprimorar equipamento", () => this.openForge()], [`Comprar óleo de lampião (${OIL_PRICE} ouro)`, () => this.buyOil(z)], lore("Ferreiro", "smith", () => this.use(z)), ["Até mais", () => this.closeDialog()]]);
+      this.say(t("smith_title"), t("smith_greet"),
+        [[t("upgrade_gear"), () => this.openForge()], [t("buy_oil", { price: OIL_PRICE }), () => this.buyOil(z)], lore(t("smith_title"), "smith", () => this.use(z)), [t("bye2"), () => this.closeDialog()]]);
     } else if (z.kind === "tower") {
-      this.say("Torre de Vigia", "A porta range. Uma escada em caracol sobe no escuro até o terraço.", [["Subir ao topo", () => this.towerView()], ["Ficar aqui", () => this.closeDialog()]]);
+      this.say(t("tower_title"), t("tower_desc"), [[t("tower_go"), () => this.towerView()], [t("tower_stay"), () => this.closeDialog()]]);
     } else if (z.kind === "inn") {
-      this.say("A Harpa Dançante", "Música abafada e cheiro de cerveja azeda. O taverneiro limpa um copo e te olha como quem já te viu antes.\n\n\"Você estava aqui ontem? Não lembra? Ninguém lembra de nada em Karhyn.\"", [lore("A Harpa Dançante", "inn", () => this.use(z)), ["Sair", () => this.closeDialog()]]);
+      this.say(t("tavern_title"), t("tavern_desc"), [lore(t("tavern_title"), "inn", () => this.use(z)), [t("leave"), () => this.closeDialog()]]);
     } else if (z.kind === "lodging") {
-      this.say("Acomodação", "Quartos úmidos, cama de palha e uma vela. A dona cobra pouco e não faz perguntas.", [["Descansar (recupera tudo)", () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], lore("Acomodação", "lodging", () => this.use(z)), ["Sair", () => this.closeDialog()]]);
+      this.say(t("lodging_title"), t("lodging_desc"), [[t("lodging_rest"), () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], lore(t("lodging_title"), "lodging", () => this.use(z)), [t("leave"), () => this.closeDialog()]]);
     } else if (z.kind === "hall" && !(d.bless > 0)) {
       d.bless = 1; Save.save();
-      this.blessingVision(() => this.say("Estátua da Oráculo", "A pedra está fria e gasta, mas a luz desce sobre você. Por um instante a chuva some, e uma voz que você quase reconhece diz o seu nome.\n\nVocê recebeu a primeira bênção da Oráculo (1/3): morrer agora custa menos.", [["Ajoelhar e agradecer", () => this.closeDialog()]]));
+      this.blessingVision(() => this.say(t("zone_oracle"), t("bless_first"), [[t("thanks"), () => this.closeDialog()]]));
     } else if (z.kind === "hall") {
-      this.say("Estátua da Oráculo", "Os mestres de armas de Karhyn treinam quem paga em ouro: vida, velocidade de ataque, armadura e fúria.",
-        [["Rezar", () => this.blessingVision(() => this.say("Estátua da Oráculo", "Você fecha os olhos. A chuva parece cair mais devagar, e por um instante a harpa da Oráculo toca só para você. a Oráculo ainda vela por Karhyn.", [["Levantar-se", () => this.closeDialog()]]))],
-         ["Treinar atributos", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], ["Sair", () => this.closeDialog()]]);
+      this.say(t("zone_oracle"), t("bless_train_desc"),
+        [[t("bless_title"), () => this.blessingVision(() => this.say(t("zone_oracle"), t("bless_second"), [[t("leave"), () => this.closeDialog()]]))],
+         [t("attrs_title"), () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], [t("leave"), () => this.closeDialog()]]);
     }
   }
 
@@ -355,12 +331,12 @@ class TownScene extends Phaser.Scene {
   buildUi() {
     const ui = this.uiLayer;
     // título da cidade: aparece grande na chegada e some devagar; volta quando se abre o mapa (Tab/M)
-    this.townTitle = this.add.text(VIEW_W / 2, VIEW_H * 0.24, "Vila de Karhyn", { fontFamily: FONT_TITLE, fontSize: "54px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
+    this.townTitle = this.add.text(VIEW_W / 2, VIEW_H * 0.24, t("town_name"), { fontFamily: FONT_TITLE, fontSize: "54px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
       .setOrigin(0.5).setAlpha(0).setShadow(0, 3, "#000", 6, true, true);
     ui.add(this.townTitle); this.showTitle(4200);
     this.goldT = txt(this, VIEW_W - 14, 14, `${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`, 14, COLORS.gold).setOrigin(1, 0);
     ui.add(this.goldT);
-    ui.add(txt(this, 14, VIEW_H - 22, "WASD/setas: andar · E: falar/usar · Esc: menu · roda: zoom", 11, COLORS.dim));
+    ui.add(txt(this, 14, VIEW_H - 22, t("town_controls"), 11, COLORS.dim));
     this.hint = txt(this, VIEW_W / 2, VIEW_H - 70, "", 16, COLORS.text).setOrigin(0.5);
     ui.add(this.hint);
     if (this.textures.exists("vignette")) ui.addAt(this.add.image(0, 0, "vignette").setOrigin(0).setAlpha(0.55), 0);
@@ -380,7 +356,7 @@ class TownScene extends Phaser.Scene {
     }
     base.lineStyle(1, 0xc8a050, 0.8).strokeRect(mx - 3, my - 3, TOWN_W * S + 6, TOWN_H * S + 6);
     this.miniDyn = this.add.graphics(); ui.add(this.miniDyn);
-    ui.add(txt(this, mx, my - 16, "Bueiro do esgoto", 10, "#7fe08a"));
+    ui.add(txt(this, mx, my - 16, t("sewer_manhole"), 10, "#7fe08a"));
   }
 
   // ------------------------------------------------------------ hora do dia, chuva e minimapa
@@ -428,7 +404,7 @@ class TownScene extends Phaser.Scene {
     else { ic.fillStyle(0xf2c050, 1).fillCircle(cx, cy, 7); ic.lineStyle(2, 0xf2c050, 1); for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; ic.lineBetween(cx + Math.cos(a) * 10, cy + Math.sin(a) * 10, cx + Math.cos(a) * 13, cy + Math.sin(a) * 13); } }
     if (this.raining) { ic.fillStyle(0x8a94a4, 1).fillEllipse(cx - 4, cy + 6, 18, 9); }
     const hour = Math.floor(((t * 24) + 0) % 24), min = Math.floor((t * 24 * 60) % 60);
-    this.skyText.setText(`${night ? "Noite" : dusk > 0.4 ? (t < 0.5 ? "Amanhecer" : "Entardecer") : "Dia"}${this.raining ? " · chuva" : ""}  ${String(hour).padStart(2, "0")}:${String(min - min % 10).padStart(2, "0")}`);
+    this.skyText.setText(`${night ? t("sky_night") : dusk > 0.4 ? (t < 0.5 ? t("sky_dawn") : t("sky_dusk")) : t("sky_day")}${this.raining ? " · " + t("sky_rain") : ""}  ${String(hour).padStart(2, "0")}:${String(min - min % 10).padStart(2, "0")}`);
     // chuva de vez em quando: 1 a 2 minutos, com intervalos de 1,5 a 4 minutos
     // em Karhyn chove sempre; à noite, relâmpagos clareiam o céu
     // depois de derrotar o último chefe do esgoto, Karhyn sai das sombras: para de chover e o sol volta de vez
@@ -456,7 +432,7 @@ class TownScene extends Phaser.Scene {
 
   // retrato do NPC: rosto recortado do 1º quadro da animação parada
   portrait(title) {
-    const SRC = { "Guarda do Depot": ["npc_depot_guard_idle", 54], "Vendedora de Poções": ["npc_potion_seller_idle", 64], "Ferreiro": ["npc_smith_idle", 64] };
+    const SRC = { [t("depot_guard")]: ["npc_depot_guard_idle", 54], [t("potion_seller")]: ["npc_potion_seller_idle", 64], [t("smith_title")]: ["npc_smith_idle", 64] };
     const e = SRC[title]; if (!e || !this.textures.exists(e[0])) return null;
     const key = "portrait_" + e[0];
     if (!this.textures.exists(key)) {
@@ -532,8 +508,8 @@ class TownScene extends Phaser.Scene {
     c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 0.55).setOrigin(0).setInteractive());
     const w = 700, h = 380, x = VIEW_W / 2 - w / 2, y = VIEW_H / 2 - h / 2;
     c.add(this.add.nineslice(x, y, "panel", null, w, h, 16, 16, 16, 16).setOrigin(0));
-    c.add(txt(this, VIEW_W / 2, y + 26, "Depot de Karhyn", 24, COLORS.gold).setOrigin(0.5));
-    c.add(txt(this, VIEW_W / 2, y + 52, "Clique num item para passar 1 · Shift+clique passa todos", 11, COLORS.dim).setOrigin(0.5));
+    c.add(txt(this, VIEW_W / 2, y + 26, t("depot_title"), 24, COLORS.gold).setOrigin(0.5));
+    c.add(txt(this, VIEW_W / 2, y + 52, t("depot_hint"), 11, COLORS.dim).setOrigin(0.5));
     const grid = (title, store, other, gx) => {
       c.add(txt(this, gx + 150, y + 78, title, 16, COLORS.text).setOrigin(0.5));
       for (let i = 0; i < 12; i++) {
@@ -550,20 +526,20 @@ class TownScene extends Phaser.Scene {
         c.add([ic, txt(this, sx + 26, sy + 24, "×" + store[id], 12, COLORS.text).setOrigin(1)]);
       });
     };
-    grid("Mochila", d.potions, d.depot.potions, x + 30);
-    grid("Baú do depot", d.depot.potions, d.potions, x + w - 330);
+    grid(t("bag_label"), d.potions, d.depot.potions, x + 30);
+    grid(t("depot_chest"), d.depot.potions, d.potions, x + w - 330);
     c.add(txt(this, VIEW_W / 2, y + 140, "⇄", 30, COLORS.gold).setOrigin(0.5));
     c.add(txt(this, x + 30, y + h - 44, `Ouro: ◉ ${d.gold}   ·   equipamentos também ficarão aqui quando chegarem`, 12, COLORS.dim));
-    const [b, t] = button(this, x + w - 100, y + h - 38, 140, "Fechar", () => this.closeDialog(), 14); c.add([b, t]);
+    const [b, t] = button(this, x + w - 100, y + h - 38, 140, t("close"), () => this.closeDialog(), 14); c.add([b, t]);
   }
   // forja do ferreiro: escolhe um item (vestido ou na mochila) e aprimora em +1
   // custo: 2 itens da mesma raridade (o ferreiro pega os mais fracos da mochila) ou Essências de chefe (Lendário)
   buyOil(z) {
     const d = Save.voc(this.vocId);
-    if (Save.gold(this.vocId) < OIL_PRICE) return this.say("Ferreiro", "\"Óleo não é de graça. Volte com ouro.\"", [["Até mais", () => this.closeDialog()]]);
+    if (Save.gold(this.vocId) < OIL_PRICE) return this.say(t("smith_title"), t("oil_no_gold"), [[t("bye2"), () => this.closeDialog()]]);
     Save.addGold(this.vocId, -OIL_PRICE); d.oil = (d.oil || 0) + OIL_FLASK; Save.save();
     this.goldT && this.goldT.setText(`${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`);
-    this.say("Ferreiro", `"Óleo de baleia, do bom. Queima limpo."\n\nÓleo do lampião: ${Math.ceil(d.oil / 60)} minutos.`, [["Comprar mais", () => this.buyOil(z)], ["Até mais", () => this.closeDialog()]]);
+    this.say(t("smith_title"), t("oil_bought", { min: Math.ceil(d.oil / 60) }), [[t("buy_more"), () => this.buyOil(z)], [t("bye2"), () => this.closeDialog()]]);
   }
 
   openForge(sel) {
@@ -577,20 +553,20 @@ class TownScene extends Phaser.Scene {
     const w = Math.min(VIEW_W - 20, 820), h = Math.min(VIEW_H - 20, 440), x = VIEW_W / 2 - w / 2, y = VIEW_H / 2 - h / 2;
     c.add(this.add.nineslice(x, y, "panel", null, w, h, 16, 16, 16, 16).setOrigin(0));
     const T_ = (tx, ty, s, size = 13, col = COLORS.text, o) => { const t = txt(this, tx, ty, s, size, col, o); c.add(t); return t; };
-    T_(VIEW_W / 2, y + 24, "Forja de Karhyn", 24, COLORS.gold).setOrigin(0.5);
+    T_(VIEW_W / 2, y + 24, t("forge_title"), 24, COLORS.gold).setOrigin(0.5);
     T_(x + 24, y + 50, `Essências de chefe: ${d.essence || 0}`, 12, "#ffa030");
     // lista de itens
     const GS = 44, cols = 8, gx0 = x + 24, gy0 = y + 74;
-    if (!all.length) T_(gx0, gy0, "Você não tem equipamentos.", 13, COLORS.dim);
+    if (!all.length) T_(gx0, gy0, t("no_equip"), 13, COLORS.dim);
     all.slice(0, cols * 7).forEach((o, i) => {
       const g = o.g, gx = gx0 + (i % cols) * GS, gy = gy0 + Math.floor(i / cols) * GS, on = g === sel;
       c.add(this.add.rectangle(gx, gy, GS - 4, GS - 4, on ? 0x3a2e1c : 0x1a1612, 1).setOrigin(0).setStrokeStyle(on ? 3 : 2, on ? 0xe0bc60 : RARITY[g.r].hex));
       c.add(this.add.image(gx + (GS - 4) / 2, gy + (GS - 4) / 2, "eq_" + g.id));
       if (g.p) T_(gx + GS - 7, gy + GS - 18, `+${g.p}`, 10, RARITY[g.r].color).setOrigin(1, 0);
-      if (o.worn) T_(gx + 3, gy + 1, "V", 9, "#9fe08a");
+      if (o.worn) T_(gx + 3, gy + 1, t("worn_label"), 9, "#9fe08a");
       c.add(this.add.rectangle(gx, gy, GS - 4, GS - 4, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true }).on("pointerup", () => this.openForge(g)));
     });
-    T_(gx0, y + h - 40, "V = vestido · a borda mostra a raridade", 11, COLORS.dim);
+    T_(gx0, y + h - 40, t("worn_hint"), 11, COLORS.dim);
     // detalhes do item escolhido
     const rx = x + 24 + cols * GS + 18, rw = x + w - 24 - rx;
     if (sel) {
@@ -598,9 +574,9 @@ class TownScene extends Phaser.Scene {
       c.add(this.add.image(rx + 28, y + 96, "eq_" + sel.id).setScale(1.6));
       T_(rx + 62, y + 76, gearName(sel), 16, R.color);
       T_(rx + 62, y + 98, `${R.name} · nível ${E.lvl}`, 12, COLORS.dim);
-      T_(rx, y + 130, "Agora:", 12, COLORS.dim); T_(rx, y + 146, equipStats(sel), 12, COLORS.text, { wordWrap: { width: rw } });
+      T_(rx, y + 130, t("now_label"), 12, COLORS.dim); T_(rx, y + 146, equipStats(sel), 12, COLORS.text, { wordWrap: { width: rw } });
       let yy = y + 196;
-      if (!nx) { T_(rx, yy, sel.r === 3 ? "Ultra raro no +5: é o máximo na forja. Lendários só caem de chefes." : "Já está no máximo (+10).", 13, "#e0bc60", { wordWrap: { width: rw } }); }
+      if (!nx) { T_(rx, yy, sel.r === 3 ? t("forge_max_ultra") : t("forge_max_legend"), 13, "#e0bc60", { wordWrap: { width: rw } }); }
       else {
         const after = { id: sel.id, r: nx.to.r, p: nx.to.p };
         T_(rx, yy, `Depois: ${gearName(after)} · ${RARITY[after.r].name}`, 12, RARITY[after.r].color); yy += 16;
@@ -615,7 +591,7 @@ class TownScene extends Phaser.Scene {
           mats.forEach((g, i) => { const mx = rx + i * 46, my = yy + 22; c.add(this.add.rectangle(mx, my, 40, 40, 0x1a1612).setOrigin(0).setStrokeStyle(2, RARITY[g.r].hex)); c.add(this.add.image(mx + 20, my + 20, "eq_" + g.id)); });
           if (mats.length) T_(rx + mats.length * 46 + 6, yy + 34, mats.map(gearName).join(", "), 11, COLORS.dim, { wordWrap: { width: rw - mats.length * 46 - 6 } });
         }
-        const [b, t] = button(this, rx + rw / 2, y + h - 80, 220, ok ? "Aprimorar" : "Faltam materiais", () => {
+        const [b, t] = button(this, rx + rw / 2, y + h - 80, 220, ok ? t("upgrade_btn") : t("need_materials"), () => {
           if (!ok) return;
           if (nx.essence) d.essence -= nx.essence; else d.gear = d.gear.filter(g => !mats.includes(g));
           const up = after.r > sel.r; sel.r = after.r; sel.p = after.p; Save.save();
@@ -625,8 +601,8 @@ class TownScene extends Phaser.Scene {
         if (!ok) { b.setAlpha(0.5); t.setAlpha(0.6); }
         c.add([b, t]);
       }
-    } else T_(rx, y + 80, "Escolha um item à esquerda.", 13, COLORS.dim);
-    const [b2, t2] = button(this, x + w - 100, y + h - 34, 140, "Fechar", () => this.closeDialog(), 14); c.add([b2, t2]);
+    } else T_(rx, y + 80, t("choose_left"), 13, COLORS.dim);
+    const [b2, t2] = button(this, x + w - 100, y + h - 34, 140, t("close"), () => this.closeDialog(), 14); c.add([b2, t2]);
   }
   // visão da deusa ao receber a bênção: a arte dela em tela cheia, com um zoom lento, raios de luz e um clarão,
   // como se a luz descesse sobre o herói. Usa a arte "vk_goddess_art" (SpriteCook) ou, se faltar, a própria estátua.
@@ -651,7 +627,7 @@ class TownScene extends Phaser.Scene {
       c.add(m); this.tweens.add({ targets: m, y: m.y - VIEW_H - 220, alpha: 0, duration: Phaser.Math.Between(3500, 6000), delay: Phaser.Math.Between(0, 1800) });
     }
     if (this.textures.exists("vignette")) c.add(this.add.image(0, 0, "vignette").setOrigin(0));
-    const t = this.add.text(VIEW_W / 2, VIEW_H - 54, "Enquanto a Oráculo toca a sua harpa, abençoando os habitantes de Karhyn,\nas nuvens negras das trevas abrem caminho para a luz.",
+    const t = this.add.text(VIEW_W / 2, VIEW_H - 54, t("bless_vision_text"),
       { fontFamily: FONT_TITLE, fontSize: "21px", color: "#f0d888", align: "center", stroke: "#0c0608", strokeThickness: 5, lineSpacing: 4, resolution: 2 }).setOrigin(0.5).setAlpha(0).setShadow(0, 2, "#000", 4, true, true); c.add(t);
     if (key === "vk_goddess_art") {
       // leve animação da arte: a imagem "respira" (sobe e desce devagar), o halo pulsa, a harpa cintila e cai uma chuva fina
@@ -686,7 +662,7 @@ class TownScene extends Phaser.Scene {
         this.sunRays.add(r); this.tweens.add({ targets: r, alpha: 0.08, duration: 2200 + i * 300, yoyo: true, repeat: -1, ease: "Sine.inOut" });
       }
     }
-    if (sec < 900) this.msg && this.msg("As nuvens se abrem. Por um momento, a luz alcança Karhyn.");
+    if (sec < 900) this.msg && this.msg(t("clouds_open"));
   }
   // textura do mural em código (reserva até a arte do SpriteCook): tábua com telhadinho, papéis pregados e dois postes
   makeBoardTex() {
@@ -705,25 +681,25 @@ class TownScene extends Phaser.Scene {
   openBoard() {
     const d = Save.voc(this.vocId), L = Save.levelInfo(d.xpTotal).level;
     if (!d.contractOffers || !d.contractOffers.length) d.contractOffers = rollContracts(L);
-    const c = d.contract, close = ["Sair", () => this.closeDialog()];
+    const c = d.contract, close = [t("leave"), () => this.closeDialog()];
     if (c) {
       const M = MONSTERS[c.kind], done = c.got >= c.n, T_ = CONTRACT_TIERS[c.tier];
       const txt_ = `Contrato ${T_.name.toLowerCase()}: caçar ${c.n} ${c.n > 1 ? M.plural || M.name + "s" : M.name}.\nProgresso: ${Math.min(c.got, c.n)}/${c.n}.\n\nRecompensa: ${c.xp} de experiência, ${c.gold} de ouro e um item ${RARITY[c.item.r].name.toLowerCase()} (${EQUIP[c.item.id].name}).`;
-      this.say("Mural de contratos", txt_, done ? [["Entregar o contrato", () => {
+      this.say(t("zone_board"), txt_, done ? [[t("deliver_contract"), () => {
         d.xpTotal += c.xp; Save.addGold(this.vocId, c.gold); d.gear.push(c.item); d.contract = null; d.contractOffers = rollContracts(L); Save.save();
         this.goldT && this.goldT.setText(`${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`);
         sfx(this, "levelup", 0.5); this.cameras.main.flash(250, 255, 220, 140);
-        this.say("Mural de contratos", `Contrato cumprido! Você recebeu ${c.xp} de experiência, ${c.gold} de ouro e ${gearName(c.item)} (${RARITY[c.item.r].name}), que foi para a mochila.`, [["Ver novos contratos", () => this.openBoard()], close]);
-      }], close] : [["Desistir do contrato", () => { d.contract = null; Save.save(); this.openBoard(); }], close]);
+        this.say(t("zone_board"), t("contract_done", { xp: c.xp, gold: c.gold, gear: gearName(c.item), rarity: RARITY[c.item.r].name }), [[t("see_new_contracts"), () => this.openBoard()], close]);
+      }], close] : [[t("abandon_contract"), () => { d.contract = null; Save.save(); this.openBoard(); }], close]);
       return;
     }
     const opts = d.contractOffers.map(o => {
       const M = MONSTERS[o.kind], T_ = CONTRACT_TIERS[o.tier];
       return [`${T_.name}: ${o.n} ${o.n > 1 ? M.plural || M.name + "s" : M.name} · ${o.xp} exp · ${o.gold} ouro · item ${RARITY[o.item.r].name.toLowerCase()}`,
         () => { d.contract = Object.assign({}, o, { got: 0 }); Save.save(); sfx(this, "pickup", 0.4);
-          this.say("Mural de contratos", `Você arrancou o papel do mural. Contrato aceito: caçar ${o.n} ${o.n > 1 ? M.plural || M.name + "s" : M.name} no esgoto.\n\nVolte aqui para receber a recompensa.`, [close]); }];
+          this.say(t("zone_board"), `Você arrancou o papel do mural. Contrato aceito: caçar ${o.n} ${o.n > 1 ? M.plural || M.name + "s" : M.name} no esgoto.\n\nVolte aqui para receber a recompensa.`, [close]); }];
     });
-    this.say("Mural de contratos", "Papéis pregados uns sobre os outros, molhados de chuva. Os moradores pagam a quem limpar o esgoto das criaturas que sobem à noite.\n\nQuanto mais difícil o contrato, maior a recompensa. Um contrato por vez.", [...opts, close]);
+    this.say(t("zone_board"), t("board_desc"), [...opts, close]);
   }
   // vista do alto da torre: o horizonte de Karhyn (provisório: o mapa da região até chegar a arte própria)
   towerView() {
@@ -738,9 +714,9 @@ class TownScene extends Phaser.Scene {
       c.add(f); this.tweens.add({ targets: f, x: f.x + VIEW_W + 400, duration: Phaser.Math.Between(25000, 40000), repeat: -1, onRepeat: () => { f.x = -400; } });
     }
     if (this.textures.exists("vignette")) c.add(this.add.image(0, 0, "vignette").setOrigin(0));
-    c.add(txt(this, VIEW_W / 2, 30, "Do alto da torre de vigia", 24, COLORS.gold).setOrigin(0.5));
-    c.add(txt(this, VIEW_W / 2, 58, "O vento corta. Ao longe: a Encosta dos Goblins, o Acampamento Orc, a Torre das Amazonas e as Terras Espectrais.", 12, COLORS.text).setOrigin(0.5));
-    const [b, t] = button(this, VIEW_W / 2, VIEW_H - 40, 200, "Descer", () => this.tweens.add({ targets: c, alpha: 0, duration: 500, onComplete: () => this.closeDialog() }), 15);
+    c.add(txt(this, VIEW_W / 2, 30, t("tower_view_title"), 24, COLORS.gold).setOrigin(0.5));
+    c.add(txt(this, VIEW_W / 2, 58, t("tower_view_desc"), 12, COLORS.text).setOrigin(0.5));
+    const [b, t] = button(this, VIEW_W / 2, VIEW_H - 40, 200, t("sewer_go"), () => this.tweens.add({ targets: c, alpha: 0, duration: 500, onComplete: () => this.closeDialog() }), 15);
     c.add([b, t]);
     this.tweens.add({ targets: c, alpha: 1, duration: 700 });
   }
@@ -780,20 +756,20 @@ class TownScene extends Phaser.Scene {
       g.fillStyle(col, 1).fillRect(mx + x * S, my + y * S, S, S);
     }
     g.lineStyle(2, 0xc8a050, 0.9).strokeRect(mx - 3, my - 3, TOWN_W * S + 6, TOWN_H * S + 6);
-    const NAMES = { smith: "Ferreiro", inn: "Harpa Dançante", potions: "Poções", depot: "Depot", lodging: "Acomodação", hall: "Oráculo", board: "Contratos", sewer: "Esgoto", gate: "Portão" };
+    const NAMES = { smith: t("smith_title"), inn: t("inn_name"), potions: t("potions_name"), depot: t("depot_name"), lodging: t("lodging_title"), hall: t("oracle_name"), board: t("contracts_name"), sewer: t("sewer_name"), gate: t("gate_name") };
     for (const z of this.zones) if (NAMES[z.kind]) {
       const zx = mx + (z.x + z.w / 2) * S, zy = my + (z.y + z.h / 2) * S;
       g.fillStyle(0xe0bc60, 1).fillCircle(zx, zy, 4);
       c.add(txt(this, zx, zy + (z.y < 9 ? -10 : 10), NAMES[z.kind], 11, COLORS.text).setOrigin(0.5, z.y < 9 ? 1 : 0));
     }
     const h = this.hero; g.fillStyle(0x7fe08a, 1).fillCircle(mx + (h.x + 0.5) * S, my + (h.y + 0.5) * S, 5);
-    c.add(txt(this, VIEW_W / 2, my + TOWN_H * S + 16, "Tab / M fecha", 11, COLORS.dim).setOrigin(0.5, 0));
+    c.add(txt(this, VIEW_W / 2, my + TOWN_H * S + 16, t("tab_close"), 11, COLORS.dim).setOrigin(0.5, 0));
     this.tweens.killTweensOf(this.townTitle); this.townTitle.setAlpha(0).setY(VIEW_H * 0.24 + 8);
     this.tweens.add({ targets: this.townTitle, alpha: 1, y: VIEW_H * 0.24, duration: 700 });
     this.uiLayer.bringToTop(this.townTitle);
   }
   openMenu() {
-    this.say("Karhyn", "O que deseja fazer?", [["Voltar ao mapa", () => this.leave("map")], ["Continuar", () => this.closeDialog()]]);
+    this.say("Karhyn", t("what_to_do"), [[t("back_to_map"), () => this.leave("map")], [t("continue_label"), () => this.closeDialog()]]);
   }
 
   // ------------------------------------------------------------ atmosfera
