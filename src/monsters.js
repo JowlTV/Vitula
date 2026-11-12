@@ -1,4 +1,9 @@
 const CHAMPION_SCALE = Math.min(2.5, 2.0);   // limite pedido: 2,5× o tamanho original
+// Regra de tamanho: o chefe tem sempre BOSS_SIZE (maior lado do sprite); elites/campeões nunca passam de 80% disso
+// tamanho medido pelo maior lado do sprite (o rato é largo e baixo).
+// Regra: chefes têm sempre BOSS_SIZE; elites e campeões nunca passam de 80% disso.
+const BOSS_SIZE = 2.4 * T, ELITE_MAX = BOSS_SIZE * 0.8;
+const spriteSize = s => Math.max(s.displayWidth, s.displayHeight);
 // Monstros: criação, caminho até o herói (BFS), passos, ataques, dano e morte.
 // (métodos da DungeonScene, separados por assunto)
 Object.assign(DungeonScene.prototype, {
@@ -32,6 +37,9 @@ Object.assign(DungeonScene.prototype, {
     m.spr = anim ? this.add.sprite(p.x, p.y + 4, walkKey).setOrigin(0.5, 1).play({ key: walkKey, startFrame: Phaser.Math.Between(0, 5) })
                  : this.add.image(p.x, p.y + 4, data.tex).setOrigin(0.5, 1);
     m.spr.setScale((ma ? ma[4] : data.scale || 1) * WORLD_SCALE);
+    if (data.elite) m.spr.setScale(m.spr.scaleX * BOSS_SIZE / spriteSize(m.spr));
+    else if (spriteSize(m.spr) > ELITE_MAX) m.spr.setScale(m.spr.scaleX * ELITE_MAX / spriteSize(m.spr));
+    m.bodyScale = m.spr.scaleX;
     if (data.tint) m.spr.setTint(data.tint);
     m.w = m.spr.displayWidth; m.h = m.spr.displayHeight;
     m.shadow = this.add.image(p.x, p.y + (m.fly ? 8 : -2), "shadow").setScale(m.w * 0.9 / 64, m.w * 0.3 / 64);
@@ -62,7 +70,7 @@ Object.assign(DungeonScene.prototype, {
         // campeão da horda: maior, avermelhado, bem mais forte, vale muito mais xp
         m.champion = true; m.hp *= 4; m.maxHp = m.hp; m.dmg *= 1.6;
         // no máximo 2,5× o tamanho normal da criatura (antes multiplicava a escala da imagem bruta e passava de 6×)
-        m.baseScale = m.spr.scaleX; m.spr.setScale(m.baseScale * CHAMPION_SCALE).setTint(0xff9a8a);
+        m.baseScale = m.spr.scaleX; m.spr.setScale(m.baseScale * Math.min(CHAMPION_SCALE, ELITE_MAX / spriteSize(m.spr))).setTint(0xff9a8a); m.bodyScale = m.spr.scaleX;
         m.w = m.spr.displayWidth; m.h = m.spr.displayHeight;
         m.shadow.setScale(m.w * 0.9 / 64, m.w * 0.3 / 64);
       }
@@ -237,7 +245,7 @@ Object.assign(DungeonScene.prototype, {
       m.spr.setTexture("corpse_" + m.kind).setAngle(0).setOrigin(0.5, 0.5).setScale(WORLD_SCALE).clearTint().setAlpha(1);
       m.spr.setFlipX(Math.random() < 0.5).setDepth(m.py - 30).setPosition(m.px, m.py + 4);
     } else {
-      m.spr.setAngle(m.spr.flipX ? -80 : 80).setOrigin(0.5, 0.8).setScale(((MON_ANIM[m.kind] || [])[4] || m.data.scale || 1) * WORLD_SCALE * 0.9);
+      m.spr.setAngle(m.spr.flipX ? -80 : 80).setOrigin(0.5, 0.8).setScale((m.bodyScale || ((MON_ANIM[m.kind] || [])[4] || m.data.scale || 1) * WORLD_SCALE) * 0.9);
       m.spr.setTint(m.kind === "skeleton" ? 0x8a8478 : 0x6a3a34).setDepth(m.py - 30).setPosition(m.px, m.py - 6);
     }
     this.tweens.add({ targets: m.spr, alpha: 0, delay: (ttl - 1.2) * 1000, duration: 1200, onComplete: () => {
