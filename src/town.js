@@ -171,7 +171,7 @@ class TownScene extends Phaser.Scene {
     this.block(38, 7, 2, 1); this.statue = st;
     { // mural de contratos (SpriteCook "vk_mural" se existir; senão desenhado em código)
       const key = this.textures.exists("vk_mural") ? "vk_mural" : this.makeBoardTex();
-      const b = this.add.image(36 * T + T, 8 * T - 2, key).setOrigin(0.5, 1);   // ao lado da estátua, à esquerda b.setScale(T * (key === "vk_mural" ? 1.9 : 1.3) / b.width).setDepth(8 * T - 3).setTint(TOWN_TINT);
+      const b = this.add.image(36 * T + T, 8 * T - 2, key).setOrigin(0.5, 1);   // ao lado da estátua, à esquerda b.setScale(T * 1.25 / b.width).setDepth(8 * T - 3).setTint(TOWN_TINT);
       b.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(b); this.block(36, 7, 2, 1); this.board = b; }
     this.manhole = { x: 43, y: 9 };
     { const bk = this.textures.exists("vk_bueiro"), mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, bk ? "vk_bueiro" : "decor_manhole").setDepth(-5); mh.setScale(T * (bk ? 1.25 : 0.8) / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
