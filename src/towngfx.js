@@ -153,9 +153,6 @@ const TG = (() => {
   };
 
   const MAKERS = {
-    house_red: w => building(w, "house" + w, { stories: 2, roof: "red", chimney: [0.75], flowers: true, lit: true }),
-    cottage: w => building(w, "cottage" + w, { stories: 1, storyH: 40, roof: "thatch", roofH: 34, wall: "rough", windows: 2,
-      extra: (p, g) => { for (let i = 0; i < 5; i++) p.rect(g.W - 14 + (i % 3) * 4, g.H - 9 - Math.floor(i / 3) * 3, 4, 3, i % 2 ? C.wood[3] : C.wood[2]); } }),
     potion_shop: w => building(w, "potion", { stories: 2, roof: "red", chimney: [0.2], lit: true, windows: 2,
       extra: (p, g) => {
         // vitrine de poções e toldo verde listrado
@@ -167,21 +164,6 @@ const TG = (() => {
     depot: w => building(w, "depot", { stories: 2, roof: "slate", wall: "stone", chimney: [0.15], doorW: 18, windows: 4,
       extra: (p, g) => { sign(p, g.dx + g.dw + 3, g.dy - 3, (x, y) => { p.rect(x, y + 1, 7, 4, C.wood[4]); p.rect(x, y + 2, 7, 1, C.iron[2]); });
         for (let i = 0; i < 3; i++) p.rect(4 + i * 7, g.H - 10, 6, 6, i % 2 ? C.wood[3] : C.wood[2]); } }),
-    tavern: w => building(w, "tavern", { stories: 2, roof: "red", chimney: [0.15, 0.85], lit: true, windows: 4, flowers: true, doorW: 16,
-      extra: (p, g) => { sign(p, g.dx + g.dw + 3, g.dy - 4, (x, y) => { p.rect(x + 1, y + 1, 4, 4, "#c8a050"); p.rect(x + 5, y + 2, 1, 2, "#c8a050"); p.rect(x + 1, y, 4, 1, "#eee"); });
-        for (const bx of [g.dx - 12, g.dx + g.dw + 14]) { p.rect(bx, g.H - 12, 8, 9, C.wood[3]); p.rect(bx, g.H - 10, 8, 1, C.iron[1]); p.rect(bx, g.H - 6, 8, 1, C.iron[1]); } } }),
-    smithy: w => building(w, "smithy", { stories: 1, storyH: 48, roof: "slate", roofH: 30, wall: "stone", chimney: [0.12], windows: 0, doorW: 1,
-      extra: (p, g) => {
-        // frente aberta sob o alpendre: forja acesa no fundo, bigorna, ferramentas
-        const ox = 18, ow = g.W - 26, oy = g.fy + 4, oh = g.facH - 8;
-        p.rect(ox, oy, ow, oh, "#17130f"); p.rect(ox, oy, ow, 3, "#000");
-        p.stones(ox + 4, oy + 6, 18, oh - 6, ["#3a3634", "#45403c"], 5, 4);
-        p.rect(ox + 8, oy + oh - 13, 10, 7, "#ff7a1a"); p.rect(ox + 9, oy + oh - 12, 8, 4, "#ffd060"); p.speckle(ox + 6, oy + oh - 17, 14, 5, ["#ff9a2a", "#c84a1a"], 0.2);
-        p.rect(ox + ow - 22, oy + oh - 8, 12, 3, C.iron[2]); p.rect(ox + ow - 19, oy + oh - 5, 6, 5, C.iron[1]);        // bigorna
-        for (let i = 0; i < 4; i++) p.rect(ox + 28 + i * 5, oy + 8, 1, 9, C.iron[2]);                                  // ferramentas
-        for (let i = 0; i < 3; i++) p.rect(ox + ow - 10 + i * 3, oy + 6, 1, 14, "#8a8a96");                            // espadas na parede
-        p.rect(ox - 2, oy - 2, 3, oh + 2, C.wood[2]); p.rect(ox + ow - 1, oy - 2, 3, oh + 2, C.wood[2]);               // pilares do alpendre
-      } }),
     tower: w => {
       const W = Math.round(w * D), H = 130, p = new Pix(W, H, "tower");
       p.stones(2, 14, W - 4, H - 14, C.stone, 7, 4, 0.1);
@@ -189,33 +171,6 @@ const TG = (() => {
       p.rect(Math.round(W / 2), -2, 1, 12, C.iron[2]); p.banner(Math.round(W / 2) + 1, 0, 7, 9, C.cloth.dark);
       for (const yy of [32, 62]) for (const xx of [Math.round(W * 0.28), Math.round(W * 0.62)]) { p.rect(xx - 1, yy - 1, 6, 12, C.mortar); p.rect(xx, yy + 1, 4, 9, C.glass[0]); p.rect(xx + 1, yy, 2, 1, C.glass[0]); }
       p.door(Math.round(W / 2) - 7, H - 26, 14, 24, true);
-      p.outline(); return p.cv;
-    },
-    temple: w => {
-      const W = Math.round(w * D), H = 200, p = new Pix(W, H, "temple"), cx = W / 2;
-      // torre do sino no meio, atrás do telhado
-      p.stones(cx - 14, 0, 28, 70, C.stone, 6, 4, 0.05); p.rect(cx - 16, 0, 32, 4, C.stone[3]);
-      p.rect(cx - 6, 10, 12, 16, "#0e0c10"); p.ellipse(cx, 18, 4, 4, "#8a6a2a"); p.rect(cx - 1, 6, 2, 4, C.iron[2]);
-      p.roof(0, 40, W, 40, "slate");
-      // fachada gótica de pedra clara
-      const fy = 80; p.stones(0, fy, W, H - fy, ["#55555c", "#606068", "#6a6a72", "#4c4c54"], 8, 5, 0.06);
-      for (const bx of [0, W - 10, Math.round(W * 0.3) - 5, Math.round(W * 0.7) - 5]) { p.rect(bx, fy, 10, H - fy, C.stone[1]); p.rect(bx, fy, 1, H - fy, C.stoneHi); }
-      // rosácea
-      p.ellipse(cx, fy + 22, 14, 14, C.stone[0]); p.ellipse(cx, fy + 22, 12, 12, "#2a1830");
-      for (let a = 0; a < 8; a++) { const ang = a * Math.PI / 4; p.rect(cx + Math.cos(ang) * 7 - 1, fy + 22 + Math.sin(ang) * 7 - 1, 3, 3, ["#c8402a", "#3a6ac8", "#d8b040", "#5a2a8a"][a % 4]); }
-      p.rect(cx - 1, fy + 10, 2, 24, C.stone[3]); p.rect(cx - 12, fy + 21, 24, 2, C.stone[3]); p.ellipse(cx, fy + 22, 3, 3, "#f0c870");
-      // vitrais em arco ogival
-      for (const wx of [Math.round(W * 0.15), Math.round(W * 0.85)]) {
-        p.rect(wx - 6, fy + 18, 12, 42, C.stone[0]); p.rect(wx - 4, fy + 20, 8, 38, "#3a1e3e");
-        for (let i = 0; i < 6; i++) p.rect(wx - 4 + (i % 2) * 4, fy + 22 + i * 6, 4, 5, ["#c84a2a", "#3a6ad8", "#d8a83a", "#6a2a9a"][i % 4]);
-        for (let i = 0; i < 6; i++) { p.c.clearRect(wx - 6 + i, fy + 18, 1, 6 - i); p.c.clearRect(wx + 5 - i, fy + 18, 1, 6 - i); }
-      }
-      // portal ogival com degraus e nicho do anjo
-      p.rect(cx - 15, fy + 46, 30, H - fy - 50, C.stone[0]);
-      p.door(cx - 12, fy + 56, 24, H - fy - 62, true);
-      p.rect(cx, fy + 56, 1, H - fy - 62, C.timber);
-      p.rect(cx - 5, fy + 40, 10, 12, "#1c1a20"); p.rect(cx - 2, fy + 42, 4, 8, "#c8c0b0"); p.rect(cx - 5, fy + 43, 3, 4, "#a8a090"); p.rect(cx + 2, fy + 43, 3, 4, "#a8a090");
-      for (let i = 0; i < 3; i++) p.rect(cx - 18 - i * 3, H - 6 + i * 2, 36 + i * 6, 2, C.stone[2 + (i % 2)]);
       p.outline(); return p.cv;
     },
     gate: w => {
@@ -241,40 +196,6 @@ const TG = (() => {
       }
       p.outline(); return p.cv;
     },
-    wall: w => {
-      const W = Math.round(w * D), H = 66, p = new Pix(W, H, "wall" + w);
-      p.rect(0, 6, W, 12, C.stone[2]); p.speckle(0, 6, W, 12, C.stone, 0.2);            // passadiço visto de cima
-      p.crenels(0, 0, W, 7, 8); p.rect(0, 18, W, 2, C.mortar);
-      p.stones(0, 20, W, H - 20, C.stone, 9, 5, 0.22);
-      for (let i = 0; i < 3; i++) { const vx = p.int(2, W - 4); p.rect(vx, 22, 1, p.int(6, 20), p.pick(C.moss)); }
-      return p.cv;   // sem contorno nas laterais: trechos emendam
-    },
-    wall_tower: w => {
-      const W = Math.round(w * D), H = 72, p = new Pix(W, H, "wtower");
-      p.ellipse(W / 2, 12, W / 2 - 1, 10, C.stone[2]); p.ellipse(W / 2, 12, W / 2 - 7, 6, "#1a1a1e");
-      for (let i = 0; i < 6; i++) { const a = Math.PI * (i / 5); p.rect(W / 2 + Math.cos(a) * (W / 2 - 4) - 3, 12 - Math.sin(a) * 8 - 3, 6, 5, C.stone[3]); }
-      p.stones(2, 18, W - 4, H - 18, C.stone, 7, 4, 0.15);
-      p.rect(W / 2 - 1, 34, 3, 14, "#0c0b0e");
-      p.outline(); return p.cv;
-    },
-    // ----------------------------------------------------------------- natureza e objetos
-    tree: w => {
-      const W = Math.round(w * D), H = 104, p = new Pix(W, H, "tree" + w), cx = W / 2;
-      p.rect(cx - 5, 60, 10, 36, C.trunk[1]); p.rect(cx - 5, 60, 3, 36, C.trunk[2]); p.rect(cx + 3, 60, 2, 36, C.trunk[0]);
-      for (const [dx, len] of [[-12, 8], [-7, 5], [8, 6], [12, 9]]) p.rect(cx + dx * 0.6, 92, Math.abs(dx) * 0.6, 3, C.trunk[0]), p.rect(cx + dx - (dx < 0 ? 0 : 2), 93, 3, 2, C.trunk[1]);
-      const blobs = [[0, 32, 30, 24], [-20, 40, 18, 16], [20, 40, 18, 16], [-12, 20, 18, 15], [12, 18, 18, 15], [0, 10, 16, 10], [-24, 52, 12, 9], [24, 52, 12, 9]];
-      for (const [bx, by, rx, ry] of blobs) p.ellipse(cx + bx, by, rx, ry, C.leaf[1]);
-      for (const [bx, by, rx, ry] of blobs) for (let i = 0; i < rx * ry * 0.9; i++) {
-        const a = p.r() * Math.PI * 2, rr = Math.sqrt(p.r()), x = cx + bx + Math.cos(a) * rx * rr, y = by + Math.sin(a) * ry * rr;
-        const light = (-(x - cx) * 0.3 - (y - 30)) / 40 + p.r() * 0.6;
-        p.rect(x, y, 2, 2, C.leaf[Math.max(0, Math.min(4, Math.round(1.5 + light * 2)))]);
-      }
-      p.outline(); return p.cv;
-    },
-    bush: w => { const W = Math.round(w * D), p = new Pix(W, 24, "bush" + w);
-      p.ellipse(W / 2, 13, W / 2 - 2, 10, C.leaf[1]);
-      for (let i = 0; i < 120; i++) { const x = p.int(3, W - 4), y = p.int(4, 22); if ((x - W / 2) ** 2 / ((W / 2 - 2) ** 2) + (y - 13) ** 2 / 100 > 1) continue; p.rect(x, y, 2, 2, C.leaf[Math.min(4, Math.max(0, Math.round(3 - (y - 4) / 6 + p.r())))]); }
-      p.outline(); return p.cv; },
     barrels: w => { const W = Math.round(w * D), p = new Pix(W, 30, "barrels");
       const barrel = (x, y) => { p.rect(x, y, 11, 15, C.wood[3]); p.rect(x, y, 2, 15, C.wood[4]); p.rect(x + 9, y, 2, 15, C.wood[1]);
         p.rect(x, y + 3, 11, 1, C.iron[1]); p.rect(x, y + 11, 11, 1, C.iron[1]); p.ellipse(x + 5, y, 5, 2, C.wood[2]); p.ellipse(x + 5, y, 4, 1, C.wood[1]); };
@@ -286,30 +207,12 @@ const TG = (() => {
     bench: w => { const W = Math.round(w * D), p = new Pix(W, 18, "bench");
       p.rect(2, 2, W - 4, 3, C.wood[3]); p.rect(2, 5, W - 4, 1, C.wood[1]); p.rect(1, 8, W - 2, 4, C.wood[4]); p.rect(1, 11, W - 2, 1, C.wood[1]);
       for (const x of [2, W - 4]) { p.rect(x, 1, 2, 16, C.iron[1]); } p.outline(); return p.cv; },
-    tavern_table: w => { const W = Math.round(w * D), p = new Pix(W, 28, "table");
-      p.rect(2, 6, W - 4, 9, C.wood[3]); p.planks(2, 6, W - 4, 9, false); p.rect(2, 15, W - 4, 3, C.wood[1]);
-      for (const x of [4, W - 7]) p.rect(x, 18, 3, 7, C.wood[1]);
-      p.rect(8, 3, 4, 5, "#8a8a92"); p.rect(W - 14, 4, 4, 5, "#8a8a92"); p.rect(W / 2, 3, 2, 4, "#e8dcc0"); p.px(W / 2, 2, "#ffd060");
-      for (const x of [-1, W - 7]) { p.ellipse(x + 4, 22, 3, 2, C.wood[2]); p.rect(x + 3, 23, 2, 4, C.wood[1]); }
-      p.outline(); return p.cv; },
-    stall_red: w => stall(w, "red"), stall_green: w => stall(w, "green"),
-    well: w => { const W = Math.round(w * D), p = new Pix(W, 46, "well"), cx = W / 2;
-      p.rect(cx - 13, 24, 26, 18, C.stone[1]); p.stones(cx - 13, 26, 26, 16, C.stone, 6, 4, 0.2);
-      p.ellipse(cx, 24, 13, 5, C.stone[3]); p.ellipse(cx, 24, 10, 3, "#0e1418");
-      p.rect(cx - 13, 6, 2, 20, C.wood[2]); p.rect(cx + 11, 6, 2, 20, C.wood[2]); p.rect(cx - 16, 2, 32, 6, C.roofRed[2]); p.rect(cx - 16, 6, 32, 2, C.roofRed[0]);
-      p.rect(cx - 11, 11, 22, 2, C.wood[3]); p.rect(cx, 13, 1, 7, "#8a7a5a"); p.rect(cx - 2, 19, 5, 4, C.wood[2]);
-      p.outline(); return p.cv; },
     cart: w => { const W = Math.round(w * D), p = new Pix(W, 30, "cart");
       p.rect(2, 10, W - 14, 10, C.wood[3]); p.planks(2, 10, W - 14, 10, true); p.rect(W - 12, 15, 12, 2, C.wood[2]);
       p.speckle(3, 4, W - 16, 7, C.thatch, 0.9); p.ellipse(14, 6, 6, 4, "#8a7a5a"); p.ellipse(24, 7, 6, 4, "#7a6a4a");
       p.ellipse(12, 21, 7, 7, C.wood[1]); p.ellipse(12, 21, 5, 5, "rgba(0,0,0,0)"); p.c.clearRect(8, 18, 9, 7); p.ellipse(12, 21, 1, 1, C.iron[2]);
       for (let a = 0; a < 4; a++) { const an = a * Math.PI / 4; p.rect(12 + Math.cos(an) * 4, 21 + Math.sin(an) * 4, 1, 1, C.wood[3]); p.rect(12 - Math.cos(an) * 4, 21 - Math.sin(an) * 4, 1, 1, C.wood[3]); }
       p.outline(); return p.cv; },
-    signpost: w => { const W = Math.round(w * D), p = new Pix(W, 44, "sign"), cx = W / 2;
-      p.rect(cx - 1, 4, 3, 40, C.wood[2]); p.rect(cx - 12, 8, 20, 6, C.wood[3]); p.rect(cx + 8, 9, 3, 4, C.wood[3]); p.rect(cx - 8, 17, 20, 6, C.wood[3]); p.rect(cx - 11, 18, 3, 4, C.wood[3]);
-      p.rect(cx - 10, 10, 14, 1, C.wood[1]); p.rect(cx - 6, 19, 14, 1, C.wood[1]); p.outline(); return p.cv; },
-    banner: w => { const W = Math.max(10, Math.round(w * D)), p = new Pix(W, 62, "banner");
-      p.rect(W / 2 - 1, 0, 2, 62, C.iron[1]); p.banner(1, 4, W - 2, 34, C.cloth.red); p.stones(W / 2 - 4, 56, 8, 6, C.stone, 4, 3); p.outline(); return p.cv; },
     town_fountain: w => { const W = Math.round(w * D), H = 64, p = new Pix(W, H, "fountain"), cx = W / 2;
       p.ellipse(cx, 42, W / 2 - 2, 16, C.stone[1]); p.stones(4, 42, W - 8, 14, ["#5a5a62", "#66666e", "#50505a"], 6, 4);
       p.ellipse(cx, 56, W / 2 - 4, 6, C.stone[1]); p.c.clearRect(0, 58, W, 6);
@@ -339,15 +242,6 @@ const TG = (() => {
       extra: (p, g) => { p.c.clearRect(Math.round(g.W * 0.6), g.top, Math.round(g.W * 0.25), 8); p.rect(Math.round(g.W * 0.6), g.top + 8, Math.round(g.W * 0.25), 2, C.wood[0]);   // buraco no telhado
         p.planks(Math.round(g.W * 0.15), g.fy + 10, 9, 9, false); } }),
     // portão de pedra a oeste: arco de frente, grade meio levantada
-    v_gate: w => { const W = Math.round(w * D), H = 3 * D + 20, p = new Pix(W, H, "v_gate"), cx = W / 2;
-      p.stones(0, 14, W, H - 14, C.stone, 8, 5, 0.25); p.rect(0, 8, W, 8, C.stone[2]); p.crenels(0, 2, W, 6, 7); p.rect(0, 16, W, 2, C.mortar);
-      const ax = cx - 16, aw = 32, ay = 38; p.rect(ax - 3, ay - 4, aw + 6, H - ay + 4, C.stone[3]); p.rect(ax, ay, aw, H - ay, "#0e0d10");
-      for (let i = 0; i < aw / 2; i++) { const d = Math.round(16 - Math.sqrt(Math.max(0, 256 - (16 - i) ** 2))); p.rect(ax + i, ay, 1, d, C.stone[3]); p.rect(ax + aw - 1 - i, ay, 1, d, C.stone[3]); }
-      for (let xx = ax + 2; xx < ax + aw - 1; xx += 4) p.rect(xx, ay + 4, 1, 22, C.iron[1]); p.rect(ax + 1, ay + 12, aw - 2, 1, C.iron[1]); p.rect(ax + 1, ay + 25, aw - 2, 2, C.iron[2]);
-      for (let i = 0; i < 6; i++) p.rect(p.int(4, W - 5), p.int(20, H - 6), 1, p.int(4, 10), "rgba(140,170,200,0.35)");   // chuva escorrendo
-      p.outline(); return p.cv; },
-    // portão do muro OESTE visto de cima: duas torres (norte e sul da rua) e o passadiço de pedra cruzando por cima da rua.
-    // A passagem corre de oeste para leste, então quem entra pela lateral passa por baixo do passadiço.
     v_gate_side: w => { const W = Math.round(w * D), H = 7 * D, p = new Pix(W, H, "v_gate_side"), TWR = 64, TOP = 52;
       const tower = y0 => {
         p.stones(0, y0, TWR, TOP, C.stone, 8, 5, 0.2);
@@ -371,14 +265,6 @@ const TG = (() => {
       for (const ty of [56, 164]) { p.rect(TWR, ty, 3, 2, C.iron[2]); p.rect(TWR + 2, ty - 4, 3, 4, "#ff9a2a"); p.px(TWR + 3, ty - 5, "#ffe080"); }
       p.outline(); return p.cv; },
     // entrada do esgoto: arco baixo de pedra com grade enferrujada e água escura escorrendo
-    v_sewer: w => { const W = Math.round(w * D), H = 2 * D + 6, p = new Pix(W, H, "v_sewer"), cx = W / 2;
-      p.stones(0, 6, W, H - 6, ["#3a3c40", "#44464a", "#4e5054"], 7, 4, 0.35);
-      p.rect(cx - 18, 18, 36, H - 18, "#09090b");
-      for (let i = 0; i < 18; i++) { const d = Math.round(18 - Math.sqrt(Math.max(0, 324 - (18 - i) ** 2))); p.rect(cx - 18 + i, 18, 1, d, "#4e5054"); p.rect(cx + 17 - i, 18, 1, d, "#4e5054"); }
-      for (let xx = cx - 15; xx < cx + 16; xx += 5) p.rect(xx, 22, 2, H - 26, "#5a3a24");
-      p.rect(cx - 16, 34, 32, 2, "#6a4428"); p.rect(cx - 16, 48, 32, 2, "#6a4428");
-      p.rect(cx - 10, H - 6, 20, 6, "#1c2a24"); p.speckle(cx - 10, H - 6, 20, 6, ["#2a3e34", "#16201c"], 0.5);
-      p.outline(); return p.cv; },
     garbage: w => { const W = Math.round(w * D), p = new Pix(W, 18, "garbage" + w);
       p.ellipse(W / 2, 12, W / 2 - 3, 5, "#2e2a22"); for (let i = 0; i < 40; i++) p.rect(p.int(4, W - 6), p.int(6, 15), p.int(1, 3), p.int(1, 2), p.pick(["#4a4232", "#5a4a30", "#3a3a2a", "#6a5a3a", "#7a6a4a", "#2a2a30", "#8a3a2a"]));
       p.rect(W / 2 - 3, 4, 6, 6, C.wood[2]); p.outline(); return p.cv; },
@@ -389,17 +275,6 @@ const TG = (() => {
       let x = 6; for (const [c, cw, chh] of cl) { if (x + cw > W - 4) break; const y = 7 + Math.round(Math.sin((x - 3) / (W - 6) * Math.PI) * 3); p.rect(x, y, cw, chh, c); p.rect(x, y, cw, 1, "#00000055"); x += cw + 3; }
       p.outline(); return p.cv; },
   });
-
-  function stall(w, color) {
-    const W = Math.round(w * D), p = new Pix(W, 54, "stall" + color), cl = C.cloth[color];
-    p.rect(3, 14, 2, 38, C.wood[1]); p.rect(W - 5, 14, 2, 38, C.wood[1]);
-    p.rect(2, 30, W - 4, 18, C.wood[3]); p.planks(2, 36, W - 4, 12, true); p.rect(2, 30, W - 4, 6, C.wood[2]);
-    const goods = color === "red" ? ["#a8642a", "#c8823a", "#b83a2a", "#d8c070", "#e0d8b0"] : ["#5a3a6a", "#3a5a8a", "#c8b070", "#8a4a2a", "#e0e0d8"];
-    for (let i = 0; i < 9; i++) p.ellipse(6 + i * ((W - 12) / 8), 30 + (i % 2), 3, 2, p.pick(goods));
-    for (let x = 0; x < W; x++) { const stripe = Math.floor(x / 5) % 2 ? cl[1] : C.cloth.cream[1]; p.rect(x, 2, 1, 13, stripe); p.rect(x, 2, 1, 1, Math.floor(x / 5) % 2 ? cl[2] : C.cloth.cream[2]); }
-    for (let x = 0; x < W; x += 5) p.ellipse(x + 2, 15, 2, 2, Math.floor(x / 5) % 2 ? cl[0] : C.cloth.cream[0]);
-    p.outline(); return p.cv;
-  }
 
   // ----------------------------------------------------------------- chão (grama, terra, ruas, calçadas, praça)
   // desenha na resolução de projeto e devolve um canvas do tamanho final (casa = 64 px)

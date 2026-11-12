@@ -187,16 +187,6 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
   }
 
-  npc(tex, x, y, name, kind, zone) {
-    const idle = tex + "_idle", anim = this.anims.exists(idle);
-    const s = (anim ? this.add.sprite(x * T + T / 2, y * T + T - 4, idle).play({ key: idle, startFrame: Phaser.Math.Between(0, 7) }) : this.add.image(x * T + T / 2, y * T + T - 4, tex)).setOrigin(0.5, 1).setScale(0.42 * WORLD_SCALE).setTint(TOWN_TINT).setDepth(y * T + T - 4);
-    const sh = this.add.image(s.x, s.y - 3, "shadow").setScale(0.9, 0.3).setDepth(s.depth - 1);
-    this.world.add([sh, s]);
-    this.block(x, y, 1, 1);
-    if (!anim) this.tweens.add({ targets: s, scaleY: 0.42 * WORLD_SCALE * 1.015, duration: 1500, yoyo: true, repeat: -1, ease: "Sine.inOut" });
-    this.zones.push({ name, kind, ...zone });
-  }
-
   // ------------------------------------------------------------ herói
   spawnHero() {
     const from = this.registry.get("townSpawn") || "gate", pos = this.registry.get("townPos");
@@ -324,8 +314,8 @@ class TownScene extends Phaser.Scene {
     } else if (z.kind === "locker") {
       this.openLocker();
     } else if (z.kind === "smith") {
-      this.say("Ferreiro", `"Traga sua lâmina quando estiver cega. Conserto, afio e reforço armas e armaduras."\n\nReparo e melhoria de equipamentos chegam junto com os equipamentos.`,
-        [lore("Ferreiro", "smith", () => this.use(z)), ["Até mais", () => this.closeDialog()]]);
+      this.say("Ferreiro", `"Traga sua lâmina quando estiver cega. Me dê duas peças da mesma raridade que eu derreto e reforço a que você escolher."\n\nCada +1 consome 2 itens da mesma raridade. No +5 o item sobe de raridade (até Ultra raro). Lendários sobem com Essências de chefe, até +10.`,
+        [["Aprimorar equipamento", () => this.openForge()], lore("Ferreiro", "smith", () => this.use(z)), ["Até mais", () => this.closeDialog()]]);
     } else if (z.kind === "tower") {
       this.say("Torre de Vigia", "A porta range. Uma escada em caracol sobe no escuro até o terraço.", [["Subir ao topo", () => this.towerView()], ["Ficar aqui", () => this.closeDialog()]]);
     } else if (z.kind === "inn") {
@@ -527,6 +517,70 @@ class TownScene extends Phaser.Scene {
     c.add(txt(this, VIEW_W / 2, y + 140, "⇄", 30, COLORS.gold).setOrigin(0.5));
     c.add(txt(this, x + 30, y + h - 44, `Ouro: ◉ ${d.gold}   ·   equipamentos também ficarão aqui quando chegarem`, 12, COLORS.dim));
     const [b, t] = button(this, x + w - 100, y + h - 38, 140, "Fechar", () => this.closeDialog(), 14); c.add([b, t]);
+  }
+  // forja do ferreiro: escolhe um item (vestido ou na mochila) e aprimora em +1
+  // custo: 2 itens da mesma raridade (o ferreiro pega os mais fracos da mochila) ou Essências de chefe (Lendário)
+  openForge(sel) {
+    this.closeDialog();
+    const d = Save.voc(this.vocId);
+    const all = [...Object.values(d.equip).map(g => ({ g, worn: true })), ...d.gear.map(g => ({ g, worn: false }))].filter(o => EQUIP[o.g.id]);
+    if (sel && !all.some(o => o.g === sel)) sel = null;
+    sel = sel || (all[0] && all[0].g);
+    const c = this.add.container(0, 0); this.uiLayer.add(c); this.dialog = c;
+    c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 0.6).setOrigin(0).setInteractive());
+    const w = Math.min(VIEW_W - 20, 820), h = Math.min(VIEW_H - 20, 440), x = VIEW_W / 2 - w / 2, y = VIEW_H / 2 - h / 2;
+    c.add(this.add.nineslice(x, y, "panel", null, w, h, 16, 16, 16, 16).setOrigin(0));
+    const T_ = (tx, ty, s, size = 13, col = COLORS.text, o) => { const t = txt(this, tx, ty, s, size, col, o); c.add(t); return t; };
+    T_(VIEW_W / 2, y + 24, "Forja de Karhyn", 24, COLORS.gold).setOrigin(0.5);
+    T_(x + 24, y + 50, `Essências de chefe: ${d.essence || 0}`, 12, "#ffa030");
+    // lista de itens
+    const GS = 44, cols = 8, gx0 = x + 24, gy0 = y + 74;
+    if (!all.length) T_(gx0, gy0, "Você não tem equipamentos.", 13, COLORS.dim);
+    all.slice(0, cols * 7).forEach((o, i) => {
+      const g = o.g, gx = gx0 + (i % cols) * GS, gy = gy0 + Math.floor(i / cols) * GS, on = g === sel;
+      c.add(this.add.rectangle(gx, gy, GS - 4, GS - 4, on ? 0x3a2e1c : 0x1a1612, 1).setOrigin(0).setStrokeStyle(on ? 3 : 2, on ? 0xe0bc60 : RARITY[g.r].hex));
+      c.add(this.add.image(gx + (GS - 4) / 2, gy + (GS - 4) / 2, "eq_" + g.id));
+      if (g.p) T_(gx + GS - 7, gy + GS - 18, `+${g.p}`, 10, RARITY[g.r].color).setOrigin(1, 0);
+      if (o.worn) T_(gx + 3, gy + 1, "V", 9, "#9fe08a");
+      c.add(this.add.rectangle(gx, gy, GS - 4, GS - 4, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true }).on("pointerup", () => this.openForge(g)));
+    });
+    T_(gx0, y + h - 40, "V = vestido · a borda mostra a raridade", 11, COLORS.dim);
+    // detalhes do item escolhido
+    const rx = x + 24 + cols * GS + 18, rw = x + w - 24 - rx;
+    if (sel) {
+      const E = EQUIP[sel.id], R = RARITY[sel.r], nx = forgeNext(sel);
+      c.add(this.add.image(rx + 28, y + 96, "eq_" + sel.id).setScale(1.6));
+      T_(rx + 62, y + 76, gearName(sel), 16, R.color);
+      T_(rx + 62, y + 98, `${R.name} · nível ${E.lvl}`, 12, COLORS.dim);
+      T_(rx, y + 130, "Agora:", 12, COLORS.dim); T_(rx, y + 146, equipStats(sel), 12, COLORS.text, { wordWrap: { width: rw } });
+      let yy = y + 196;
+      if (!nx) { T_(rx, yy, sel.r === 3 ? "Ultra raro no +5: é o máximo na forja. Lendários só caem de chefes." : "Já está no máximo (+10).", 13, "#e0bc60", { wordWrap: { width: rw } }); }
+      else {
+        const after = { id: sel.id, r: nx.to.r, p: nx.to.p };
+        T_(rx, yy, `Depois: ${gearName(after)} · ${RARITY[after.r].name}`, 12, RARITY[after.r].color); yy += 16;
+        T_(rx, yy, equipStats(after), 12, COLORS.text, { wordWrap: { width: rw } }); yy += 40;
+        let ok = false, mats = [];
+        if (nx.essence) { ok = (d.essence || 0) >= nx.essence; T_(rx, yy, `Custo: ${nx.essence} Essências de chefe (você tem ${d.essence || 0})`, 12, ok ? COLORS.text : "#e08070"); }
+        else {
+          // materiais: os 2 itens mais fracos da mochila com a mesma raridade (nunca os vestidos nem o escolhido)
+          mats = d.gear.filter(g => g !== sel && g.r === sel.r).sort((a, b) => EQUIP[a.id].rank - EQUIP[b.id].rank || a.p - b.p).slice(0, nx.items);
+          ok = mats.length >= nx.items;
+          T_(rx, yy, `Custo: ${nx.items} itens ${RARITY[sel.r].name} da mochila` + (ok ? " (derretidos)" : ` — você tem ${mats.length}`), 12, ok ? COLORS.text : "#e08070");
+          mats.forEach((g, i) => { const mx = rx + i * 46, my = yy + 22; c.add(this.add.rectangle(mx, my, 40, 40, 0x1a1612).setOrigin(0).setStrokeStyle(2, RARITY[g.r].hex)); c.add(this.add.image(mx + 20, my + 20, "eq_" + g.id)); });
+          if (mats.length) T_(rx + mats.length * 46 + 6, yy + 34, mats.map(gearName).join(", "), 11, COLORS.dim, { wordWrap: { width: rw - mats.length * 46 - 6 } });
+        }
+        const [b, t] = button(this, rx + rw / 2, y + h - 80, 220, ok ? "Aprimorar" : "Faltam materiais", () => {
+          if (!ok) return;
+          if (nx.essence) d.essence -= nx.essence; else d.gear = d.gear.filter(g => !mats.includes(g));
+          const up = after.r > sel.r; sel.r = after.r; sel.p = after.p; Save.save();
+          sfx(this, up ? "levelup" : "hit", 0.5); this.cameras.main.flash(200, 255, 190, 90);
+          this.openForge(sel);
+        }, 15);
+        if (!ok) { b.setAlpha(0.5); t.setAlpha(0.6); }
+        c.add([b, t]);
+      }
+    } else T_(rx, y + 80, "Escolha um item à esquerda.", 13, COLORS.dim);
+    const [b2, t2] = button(this, x + w - 100, y + h - 34, 140, "Fechar", () => this.closeDialog(), 14); c.add([b2, t2]);
   }
   // vista do alto da torre: o horizonte de Karhyn (provisório: o mapa da região até chegar a arte própria)
   towerView() {

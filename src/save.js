@@ -18,7 +18,11 @@ const Save = {
     if (d.bless == null) d.bless = 0;      // bênçãos de Magdha (0 a 3)
     if (d.promoted == null) d.promoted = false; // título de promoção: conquistado uma vez, não se perde
     if (!d.attr) d.attr = {};
-    if (!d.gear) d.gear = [];             // equipamentos guardados na mochila (ids de EQUIP)             // pontos de atributo gastos (1 ponto por nível ganho)
+    if (!d.gear) d.gear = [];
+    // equipamentos viraram objetos { id, r: raridade, p: aprimoramento } (antes eram só o id)
+    d.gear = d.gear.map(g => typeof g === "string" ? { id: g, r: 0, p: 0 } : g);
+    if (d.equip) for (const k in d.equip) if (typeof d.equip[k] === "string") d.equip[k] = { id: d.equip[k], r: 0, p: 0 };
+    if (d.essence == null) d.essence = 0;     // Essências de chefe (aprimoram itens Lendários)             // equipamentos guardados na mochila (ids de EQUIP)             // pontos de atributo gastos (1 ponto por nível ganho)
     if (!d.equip) d.equip = {};           // equipamentos vestidos (quando existirem)
     return d;
   },

@@ -37,7 +37,6 @@ class BootScene extends Phaser.Scene {
     for (const n of ["kn_hurt", "kn_cast"]) this.load.spritesheet(n, `assets/art/${n}.png`, { frameWidth: 200, frameHeight: 200 });
     for (const n of ["npc_smith_idle", "npc_potion_seller_idle", "npc_depot_guard_idle"]) this.load.spritesheet(n, `assets/town/${n}.png`, { frameWidth: 200, frameHeight: 200 });
     this.load.spritesheet("fx_basic_slash", "assets/art/fx_basic_slash.png", { frameWidth: 72, frameHeight: 72 });
-    this.load.spritesheet("fx_ground_slam", "assets/art/fx_ground_slam.png", { frameWidth: 214, frameHeight: 214 });
     this.load.spritesheet("fx_ring_wave", "assets/art/fx_ring_wave.png", { frameWidth: 214, frameHeight: 214 });
     this.load.spritesheet("fx_front_cut", "assets/art/fx_front_cut.png", { frameWidth: 230, frameHeight: 230 });
     // Karhyn nova (guia de estilo aprovado): prédios, objetos e autotiles de chão
@@ -111,7 +110,6 @@ class BootScene extends Phaser.Scene {
     for (const n of ["npc_smith_idle", "npc_potion_seller_idle", "npc_depot_guard_idle"]) this.anims.create({ key: n, frames: this.anims.generateFrameNumbers(n, { start: 0, end: 7 }), frameRate: 6, repeat: -1 });
     this.anims.create({ key: "fx_basic_slash", frames: this.anims.generateFrameNumbers("fx_basic_slash", { start: 0, end: 3 }), frameRate: 18, repeat: 0 });
     this.anims.create({ key: "fx_ring_wave", frames: this.anims.generateFrameNumbers("fx_ring_wave", { start: 0, end: 5 }), frameRate: 11, repeat: 0 });
-    this.anims.create({ key: "fx_ground_slam", frames: this.anims.generateFrameNumbers("fx_ground_slam", { frames: [0, 1, 2, 4, 5, 6] }), frameRate: 16, repeat: 0 });
     this.anims.create({ key: "fx_front_cut", frames: this.anims.generateFrameNumbers("fx_front_cut", { start: 0, end: 6 }), frameRate: 20, repeat: 0 });
     for (const m of ["cave_rat", "giant_rat"]) if (!this.anims.exists("am_" + m))
       this.anims.create({ key: "am_" + m, frames: this.anims.generateFrameNumbers("am_" + m, { start: 0, end: 7 }), frameRate: 10, repeat: -1 });
@@ -121,7 +119,7 @@ class BootScene extends Phaser.Scene {
       const n = this.textures.get("fx_" + f).frameTotal - 1;
       this.anims.create({ key: "fx_" + f, frames: this.anims.generateFrameNumbers("fx_" + f, { start: 0, end: n - 1 }), frameRate: 18 });
     }
-    Promise.all(["20px \"Grenze Gotisch\"", "16px Bulletin", "16px Pixelify"].map(f => document.fonts.load(f).catch(() => 0))).then(() => document.fonts.ready).then(() => { const q = new URLSearchParams(location.search); this.scene.start(q.has("intro") ? "intro" : q.has("town") ? "town" : q.has("play") ? "dungeon" : "title"); });
+    Promise.all(["20px \"Grenze Gotisch\"", "16px Bulletin", "16px Pixelify"].map(f => document.fonts.load(f).catch(() => 0))).then(() => document.fonts.ready).then(() => { const q = new URLSearchParams(location.search); if (q.get("voc") && VOCATIONS[q.get("voc")]) this.registry.set("vocation", q.get("voc")); this.scene.start(q.has("intro") ? "intro" : q.has("town") ? "town" : q.has("play") ? "dungeon" : "title"); });
   }
   makeRadial(key, size, stops, color = 0xffffff) {
     const c = this.textures.createCanvas(key, size, size);

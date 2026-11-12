@@ -270,7 +270,6 @@ class DungeonGen {
     return -1;
   }
 
-  hasDoor(x, y) { return this.doors.some(d => d.x === x && d.y === y); }
 
   // porta só nas salas abaixo do túnel: a abertura fica na parede de cima da sala (vista de frente)
   // sem portas: as salas ficam abertas, só a passagem entre as pedras

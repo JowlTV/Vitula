@@ -26,7 +26,7 @@ class DungeonScene extends Phaser.Scene {
     this.spells = vocSpells(this.vocId); this.ap = vocAnim(this.vocId); this.heroScale = vocScale(this.vocId);
     this.ranged = VOCATIONS[this.vocId].ranged || 0;
     { const d = Save.voc(this.vocId);   // equipamento inicial: uma vez por vocação
-      if (!d.starterGear) { d.starterGear = true; if (this.vocId === "knight") { d.equip.weapon = d.equip.weapon || "karhyn_sword"; d.equip.shield = d.equip.shield || "wooden_shield"; } d.equip.armor = d.equip.armor || "leather_armor"; Save.save(); } }
+      if (!d.starterGear) { d.starterGear = true; if (this.vocId === "knight") { d.equip.weapon = d.equip.weapon || gearNew("karhyn_sword"); d.equip.shield = d.equip.shield || gearNew("wooden_shield"); } d.equip.armor = d.equip.armor || gearNew("leather_armor"); Save.save(); } }
     this.stats = this.computeStats();
     this.hero = { hp: this.stats.maxHp, maxHp: this.stats.maxHp, level: 1, xp: 0, dead: false, atkT: 0,
       cds: { heal: 0, front: 0, spin: 0, aura: 0 }, facing: [1, 0], regen: 0, fury: VOCATIONS[this.vocId].mana ? this.furyMax : 0, furyIdle: 0, auraT: 0, auraTick: 0 };
@@ -107,9 +107,10 @@ class DungeonScene extends Phaser.Scene {
     s.weaponAtk = FIST_ATTACK; s.gearDef = 0; s.gearBlock = 0; s.gearCrit = 0; s.gearMl = 0; s.res = {}; s.weapon = null;
     const eq = Save.voc(this.vocId).equip || {};
     for (const slot in eq) {
-      const E = EQUIP[eq[slot]]; if (!E) continue;
-      if (E.slot === "weapon") { s.weapon = E; if (!this.ranged) s.weaponAtk = E.atk; }
-      s.gearDef += E.def || 0; s.gearBlock += E.block || 0; s.gearCrit += E.crit || 0; s.gearMl += E.ml || 0;
+      const g = eq[slot], E = g && EQUIP[g.id]; if (!E) continue;
+      const m = gearMult(g);   // raridade e +N
+      if (E.slot === "weapon") { s.weapon = Object.assign({}, E, { elDmg: (E.elDmg || 0) * m }); if (!this.ranged) s.weaponAtk = E.atk * m; }
+      s.gearDef += (E.def || 0) * m; s.gearBlock += E.block || 0; s.gearCrit += E.crit || 0; s.gearMl += E.ml || 0;
       s.recovery += E.hpReg || 0; s.manaReg += E.manaReg || 0; s.moveSpeed *= 1 + (E.speed || 0);
       for (const k in E.res || {}) s.res[k] = (s.res[k] || 0) + E.res[k];
     }

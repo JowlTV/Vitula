@@ -276,13 +276,23 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
-  // sorteia um equipamento que sirva para a vocação, perto do nível do herói (até 5 acima; os mais baixos pesam menos)
-  rollEquip() {
-    const L = this.hero.level, pool = [];
-    for (const id in EQUIP) { const E = EQUIP[id]; if (!equipOk(id, this.vocId) || E.lvl > L + 5) continue; pool.push([id, E.lvl >= L - 8 ? 4 : 1]); }
-    let tot = 0; for (const [, w] of pool) tot += w; let r = Math.random() * tot;
-    for (const [id, w] of pool) if ((r -= w) <= 0) return id;
-    return null;
+  // profundidade da masmorra de 0 a 1: região (tier 1 a 6) × andar (1 a 5). Os esgotos de Karhyn ficam em 0,03–0,17.
+  depth() { const t = (this.region && this.region.tier) || 1; return ((t - 1) * FLOORS + this.floorN) / (6 * FLOORS); },
+  // sorteia equipamento pela profundidade: só cai o que é da faixa do andar (nos esgotos, os mais fracos de cada tipo)
+  rollEquip(m = {}) {
+    const top = Math.min(1, 0.12 + this.depth() * 1.0), pool = [];
+    for (const id in EQUIP) {
+      const E = EQUIP[id]; if (!equipOk(id, this.vocId) || E.rank > top) continue;
+      pool.push([id, E.rank >= top - 0.25 ? 4 : 1]);   // os do topo da faixa caem mais
+    }
+    let tot = 0; for (const [, w] of pool) tot += w; let x = Math.random() * tot, id = null;
+    for (const [i, w] of pool) if ((x -= w) <= 0) { id = i; break; }
+    if (!id) return null;
+    // raridade: Lendário só de chefe (elite) e campeão
+    const W = m.elite ? [30, 34, 22, 10, 4] : m.champion ? [46, 30, 14, 8, 2] : [66, 23, 8, 3, 0];
+    let s = W.reduce((a, b) => a + b), y = Math.random() * s, r = 0;
+    for (; r < 4; r++) if ((y -= W[r]) <= 0) break;
+    return gearNew(id, r);
   },
 
   // morte: o corpo fica no chão. Com loot em cima dura 40 s; sem loot, 5 s (depois some com o que sobrou)
@@ -301,7 +311,8 @@ Object.assign(DungeonScene.prototype, {
       if (Math.random() < 0.12) this.drop(m.x, m.y, ["apple", "bread", "meat"][Phaser.Math.Between(0, 2)]);
       if (Math.random() < 0.06) this.drop(m.x, m.y, "bronze_key");
       const eqChance = m.elite ? 1 : m.champion ? 0.35 : 0.025;
-      if (Math.random() < eqChance) { const id = this.rollEquip(); if (id) this.drop(m.x, m.y, "eq_" + id); }
+      if (Math.random() < eqChance) { const g = this.rollEquip(m); if (g) this.drop(m.x, m.y, "eq_" + g.id, g); }
+      if (m.elite || (m.champion && Math.random() < 0.25)) this.drop(m.x, m.y, "boss_essence");
       loot = this.pickups.size > before;
     }
     this.makeCorpse(m, loot);

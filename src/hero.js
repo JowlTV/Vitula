@@ -296,17 +296,21 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
-  drop(x, y, item) {
+  drop(x, y, item, meta) {
     if (item === "none" || !ITEMS[item]) return;
     if (this.pickups.has(key(x, y))) { const alt = this.freeNeighbors(x, y); if (!alt.length) return; ({ x, y } = alt[0]); }
     const p = this.cellPos(x, y);
     const spr = this.add.image(p.x, p.y + 6, ITEMS[item].icon).setOrigin(0.5, 1).setDepth(p.y - 2);
+    if (ITEMS[item].tint) spr.setTint(ITEMS[item].tint);
+    // brilho da raridade sob o equipamento caído (Normal não brilha)
+    if (meta && meta.r > 0) { const gl = this.add.image(p.x, p.y + 2, "light").setScale(0.22, 0.1).setTint(RARITY[meta.r].hex).setAlpha(0.8).setDepth(p.y - 3).setBlendMode(Phaser.BlendModes.ADD); this.ents.add(gl);
+      this.tweens.add({ targets: gl, alpha: 0.35, duration: 700, yoyo: true, repeat: -1 }); spr.once("destroy", () => gl.destroy()); }
     this.ents.add(spr); groundShadow(this, spr, this.ents, 1.3);
     let amount = 0;
     if (item === "gold") amount = Phaser.Math.Between(5, 12);
     if (item === "silver") amount = Phaser.Math.Between(2, 5);
     const k = key(x, y);
-    this.pickups.set(k, { item, amount, spr, x, baseY: p.y + 6 });
+    this.pickups.set(k, { item, amount, spr, x, baseY: p.y + 6, meta });
     if (x === this.hero.x && y === this.hero.y) this.collect(k);
   },
 
@@ -321,7 +325,9 @@ Object.assign(DungeonScene.prototype, {
       case "bronze_key": this.keys++; this.msg("Você pegou uma chave de bronze."); sfx(this, "pickup"); break;
       case "scroll": for (const s in h.cds) h.cds[s] = 0; this.addXp(40); this.msg("O pergaminho renova suas magias."); sfx(this, "levelup", 0.3); break;
       default:
-        if (info.gear) { Save.voc(this.vocId).gear.push(info.gear); Save.save(); this.msg(`Você pegou: ${info.name}. (I: mochila)`); this.floatText(px, py, info.name, "#ffd860"); sfx(this, "levelup", 0.25); break; }
+        if (info.gear) { const g = pk.meta || gearNew(info.gear), R = RARITY[g.r]; Save.voc(this.vocId).gear.push(g); Save.save();
+          this.msg(`Você pegou: ${info.name} (${R.name}). (I: mochila)`); this.floatText(px, py, info.name, R.color); sfx(this, "levelup", 0.25); break; }
+        if (pk.item === "boss_essence") { const d = Save.voc(this.vocId); d.essence++; Save.save(); this.msg(`Essência de chefe! (${d.essence}) O ferreiro usa para aprimorar itens Lendários.`); this.floatText(px, py, "Essência de chefe", "#ffa030"); sfx(this, "gem"); break; }
         this.heal(info.healPct ? h.maxHp * info.healPct : info.heal); sfx(this, "pickup", 0.35);
     }
   },
@@ -343,17 +349,18 @@ Object.assign(DungeonScene.prototype, {
   },
 
   // equipamentos: vestir, tirar (o item volta para a mochila)
-  equipItem(id) {
-    const d = Save.voc(this.vocId), E = EQUIP[id], h = this.hero;
-    if (!E || !equipOk(id, this.vocId)) { this.msg("Sua vocação não usa este item."); return false; }
+  // i = posição na lista da mochila (d.gear)
+  equipItem(i) {
+    const d = Save.voc(this.vocId), g = d.gear[i], E = g && EQUIP[g.id], h = this.hero;
+    if (!E) return false;
+    if (!equipOk(g.id, this.vocId)) { this.msg("Sua vocação não usa este item."); return false; }
     if (h.level < E.lvl) { this.msg(`Precisa do nível ${E.lvl}.`); return false; }
-    const i = d.gear.indexOf(id); if (i < 0) return false;
     d.gear.splice(i, 1);
     if (d.equip[E.slot]) d.gear.push(d.equip[E.slot]);
-    d.equip[E.slot] = id;
+    d.equip[E.slot] = g;
     // duas mãos não combinam com escudo
     if (E.twoH && d.equip.shield) { d.gear.push(d.equip.shield); delete d.equip.shield; this.msg("Arma de duas mãos: o escudo foi para a mochila."); }
-    if (E.slot === "shield" && d.equip.weapon && EQUIP[d.equip.weapon].twoH) { d.gear.push(d.equip.weapon); delete d.equip.weapon; this.msg("Escudo vestido: a arma de duas mãos foi para a mochila."); }
+    if (E.slot === "shield" && d.equip.weapon && EQUIP[d.equip.weapon.id].twoH) { d.gear.push(d.equip.weapon); delete d.equip.weapon; this.msg("Escudo vestido: a arma de duas mãos foi para a mochila."); }
     Save.save(); this.restat(); sfx(this, "pickup", 0.3); return true;
   },
   unequipSlot(slot) {

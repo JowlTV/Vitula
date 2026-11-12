@@ -95,18 +95,64 @@ const EQUIP = {
   guardian_boots: { slot: "boots", name: "Botas do Guardião",         def: 2,   lvl: 36, block: 0.02, hpReg: 0.5, price: 1500, art: { f: "boots", m: "guardian", trim: "steel", plates: 1 } },
   dragon_boots:   { slot: "boots", name: "Botas de Escamas de Dragão", def: 2.4, lvl: 50, res: { fire: 0.06 }, speed: 0.04, price: 2200, art: { f: "boots", m: "dscale", trim: "gold", scales: 1 } },
 };
-const EQUIP_SLOTS = { weapon: "Arma", shield: "Escudo", helmet: "Capacete", armor: "Armadura", legs: "Calça", boots: "Botas" };
+
+// Ordem de força em cada tipo (do mais fraco ao mais forte). Os de Escamas de Dragão, os Mágicos e os do Dragão
+// são os mais fortes; o resto segue a ordem da lista original. Nível, ataque e defesa saem desta posição.
+const EQUIP_ORDER = {
+  weapon: ["karhyn_sword", "crimson_sword", "broadsword", "serpent_sword", "crystal_sword", "avenger", "fire_sword", "emerald_sword", "demon_sword", "dragon_sword", "magic_longsword"],
+  shield: ["wooden_shield", "copper_shield", "battle_shield", "guardian_shield", "medusa_shield", "demon_shield", "blessed_shield", "dragon_shield", "magic_shield"],
+  helmet: ["wooden_helmet", "chain_helmet", "copper_helmet", "steel_helmet", "dark_helmet", "crusader_helmet", "royal_helmet", "demon_helmet", "golden_helmet", "dragon_helmet"],
+  armor:  ["wooden_armor", "leather_armor", "chain_armor", "plate_armor", "dark_armor", "knight_armor", "golden_armor", "magic_plate", "dragon_mail"],
+  legs:   ["leather_legs", "wooden_legs", "chain_legs", "plate_legs", "knight_legs", "golden_legs", "magic_legs", "dragon_legs"],
+  boots:  ["leather_boots", "chain_boots", "sandals", "crocodile_boots", "golden_boots", "guardian_boots", "dragon_boots"],
+};
+// [mínimo, máximo] de ataque (armas) ou defesa (o resto), do 1º ao último da ordem
+const EQUIP_RANGE = { weapon: [24, 60], shield: [1, 6], helmet: [0.5, 3.4], armor: [1, 5.8], legs: [0.5, 3.8], boots: [0.4, 2.6] };
+for (const slot in EQUIP_ORDER) EQUIP_ORDER[slot].forEach((id, i, arr) => {
+  const E = EQUIP[id], f = arr.length > 1 ? i / (arr.length - 1) : 0, [a, b] = EQUIP_RANGE[slot];
+  E.rank = f;                                     // 0 = mais fraco, 1 = mais forte do tipo
+  E.lvl = Math.max(1, Math.round(1 + f * 49));    // nível 1 a 50
+  const v = a + (b - a) * f;
+  if (slot === "weapon") E.atk = Math.round(v * (E.twoH ? 1.2 : 1)); else E.def = Math.round(v * 10) / 10;
+  if (id === "sandals") E.def = 0.1;              // as mais fracas: compensam na regeneração
+});
+
+// ---------------------------------------------------------------- raridade e aprimoramento
+// O mesmo item cai em raridades diferentes. No ferreiro, 2 itens da mesma raridade dão +1 ao escolhido.
+// Ao chegar a +5 ele sobe de raridade (até Ultra raro, que para no +5).
+// Lendário só cai de chefes e campeões; cada +1 pede Essências de chefe, até +10.
+const RARITY = [
+  { name: "Normal",     color: "#d8d0c0", hex: 0x8a8070, mult: 1.00 },
+  { name: "Incomum",    color: "#6ad86a", hex: 0x3a9a3a, mult: 1.10 },
+  { name: "Raro",       color: "#5aa8ff", hex: 0x2a6ad0, mult: 1.22 },
+  { name: "Ultra raro", color: "#c878ff", hex: 0x8a3ad0, mult: 1.36 },
+  { name: "Lendário",   color: "#ffa030", hex: 0xd07010, mult: 1.55 },
+];
+const PLUS_BONUS = 0.04;        // cada +1: +4% de ataque/defesa/dano do elemento
+const LEGEND_MAX = 10, ESSENCE_PER_PLUS = 2;
+function gearMult(g) { return RARITY[g.r || 0].mult * (1 + PLUS_BONUS * (g.p || 0)); }
+function gearName(g) { return EQUIP[g.id].name + (g.p ? ` +${g.p}` : ""); }
+function gearNew(id, r = 0) { return { id, r, p: 0 }; }
+// o que o ferreiro pede para o próximo +1 (null = já está no máximo)
+function forgeNext(g) {
+  if (g.r === 4) return g.p >= LEGEND_MAX ? null : { essence: ESSENCE_PER_PLUS, to: { r: 4, p: g.p + 1 } };
+  if (g.r === 3 && g.p >= 5) return null;
+  const p = g.p + 1;
+  return { items: 2, to: p >= 5 && g.r < 3 ? { r: g.r + 1, p: 0 } : { r: g.r, p } };
+}
 // cada equipamento também é um item que pode cair no chão
 for (const id in EQUIP) ITEMS["eq_" + id] = { icon: "eq_" + id, name: EQUIP[id].name, gear: id };
+ITEMS.boss_essence = { icon: "i_red_gem", tint: 0xff9a30, name: "Essência de chefe" };
 
 function equipOk(id, vocId) { const E = EQUIP[id]; return !E.voc || E.voc.includes(vocId); }
-// texto curto de atributos do item (para a mochila)
-function equipStats(id) {
-  const E = EQUIP[id], p = [], pct = v => `${Math.round(v * 100)}%`, n = v => String(v).replace(".", ",");
-  if (E.atk) p.push(`Ataque ${E.atk}`);
-  if (E.def) p.push(`Defesa ${n(E.def)}`);
+// texto curto de atributos do item (para a mochila e o ferreiro); g = { id, r, p }
+function equipStats(g) {
+  if (typeof g === "string") g = gearNew(g);
+  const E = EQUIP[g.id], m = gearMult(g), p = [], pct = v => `${Math.round(v * 100)}%`, n = v => (Math.round(v * 10) / 10).toString().replace(".", ",");
+  if (E.atk) p.push(`Ataque ${Math.round(E.atk * m)}`);
+  if (E.def) p.push(`Defesa ${n(E.def * m)}`);
   if (E.twoH) p.push("duas mãos");
-  if (E.el && E.elDmg) p.push(`+${E.elDmg} de ${ELEMENTS[E.el].name.toLowerCase()}`);
+  if (E.el && E.elDmg) p.push(`+${Math.round(E.elDmg * m)} de ${ELEMENTS[E.el].name.toLowerCase()}`);
   if (E.magic) p.push("+ataque mágico (raio)");
   if (E.poison) p.push("envenena");
   if (E.crit) p.push(`crítico +${pct(E.crit)}`);
