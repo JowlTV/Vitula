@@ -305,6 +305,9 @@ Object.assign(DungeonScene.prototype, {
     if (!byMonster) {
       this.kills++; this.killsByType[m.kind] = (this.killsByType[m.kind] || 0) + 1;
       this.addXp(m.data.xp * (this.diff || 1) * (m.champion ? 5 : 1));
+      { const ct = Save.voc(this.vocId).contract;   // contrato de caça do mural de Karhyn
+        if (ct && ct.kind === m.kind && ct.got < ct.n) { ct.got++; Save.save();
+          this.msg(ct.got >= ct.n ? `Contrato cumprido: ${ct.n}/${ct.n} ${m.data.name}. Volte ao mural de Karhyn.` : `Contrato: ${ct.got}/${ct.n} ${m.data.name}`); } }
       // drop: ouro, às vezes comida ou chave (itens de equipamento entram depois)
       const before = this.pickups.size;
       if (Math.random() < 0.6 || m.elite || m.champion) this.drop(m.x, m.y, "gold");

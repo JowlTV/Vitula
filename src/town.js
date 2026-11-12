@@ -75,8 +75,13 @@ class TownScene extends Phaser.Scene {
     (this.keysIn.interact || []).forEach(k => k.on("down", () => this.interact()));
     this.input.keyboard.on("keydown", ev => this.dialogKey(ev));
     (this.keysIn.pause || []).forEach(k => k.on("down", () => this.dialog ? this.closeDialog() : this.openMenu()));
+    (this.keysIn.map || []).forEach(k => k.on("down", () => this.toggleMap()));
+    this.bigMap = null;
     (this.keysIn.zoomIn || []).forEach(k => k.on("down", () => this.zoomBy(0.2)));
     (this.keysIn.zoomOut || []).forEach(k => k.on("down", () => this.zoomBy(-0.2)));
+    { const d = Save.voc(this.vocId);   // breve tutorial na primeira chegada a Karhyn
+      if (!d.tutTown) this.time.delayedCall(3200, () => { if (this.dialog || this.leaving) return; d.tutTown = true; Save.save();
+        this.say("Karhyn", "Esta é Karhyn, uma cidade que já viveu dias melhores.\n\nConverse com os moradores e descubra mais sobre a sua história e os seus boatos. Compre poções, aprimore atributos, guarde seus itens no depot ou melhore-os com o ferreiro. Pegue contratos de caça no mural do largo.\n\nExplore o esgoto e salve a cidade antes que ela entre em colapso.", [["Entendi", () => this.closeDialog()]]); }); }
     this.input.on("wheel", (_p, _o, _dx, dy) => this.zoomBy(dy > 0 ? -0.2 : 0.2));
     this.cameras.main.fadeIn(500, 0, 0, 0);
     stopAllButMusic(this);
@@ -152,9 +157,10 @@ class TownScene extends Phaser.Scene {
     let hv = 0; const H = (x, y, w) => { const k = "vk_casebre_" + (1 + hv++ % 3); return this.textures.exists(k) ? this.art(k, x + (w - 3) / 2, y, 3, 0) : A("v_ruin", x, y, w, 0); };
     // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
     F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); H(10, 6, 3); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
-    H(25, 6, 3); H(29, 6, 4); H(34, 6, 3);
-    // sul: Depot, Acomodação (+ casas pobres)
-    H(3, 14, 3); F("vk_depot", "v_depot", 7, 14, 5.4, 5); H(13, 14, 3); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
+    // Depot no lado norte (antes ficava embaixo, quase escondido na tela)
+    F("vk_depot", "v_depot", 25, 6, 5.4, 5); H(31, 6, 3);
+    // sul: Acomodação (+ casas pobres)
+    H(3, 14, 3); H(7, 14, 3); H(10, 14, 3); H(13, 14, 3); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
     H(23, 14, 4); H(28, 14, 3); H(32, 14, 4);
     // estátua da deusa no largo, com o feixe de luz; entrada do esgoto no fim da rua
     const st = this.add.image(39 * T, 7 * T + T - 2, "altar_oraculo").setOrigin(0.5, 1);   // 2× maior e uma casa acima, no alto do largo
@@ -163,6 +169,10 @@ class TownScene extends Phaser.Scene {
       const sh = this.add.image(st.x, st.y - 3, "shadow").setScale(st.displayWidth * 0.5 / 64, 13 / 64).setAlpha(0.75).setDepth(st.depth - 1);
       this.world.addAt(sh, Math.max(0, this.world.getIndex(st))); }
     this.block(38, 7, 2, 1); this.statue = st;
+    { // mural de contratos (SpriteCook "vk_mural" se existir; senão desenhado em código)
+      const key = this.textures.exists("vk_mural") ? "vk_mural" : this.makeBoardTex();
+      const b = this.add.image(37 * T + T / 2, 11 * T - 2, key).setOrigin(0.5, 1); b.setScale(T * 1.3 / b.width).setDepth(11 * T - 3).setTint(TOWN_TINT);
+      b.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(b); this.block(37, 10, 1, 1); this.board = b; }
     this.manhole = { x: 43, y: 9 };
     { const bk = this.textures.exists("vk_bueiro"), mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, bk ? "vk_bueiro" : "decor_manhole").setDepth(-5); mh.setScale(T * (bk ? 1.25 : 0.8) / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
     // decadência: barris, caixas, lixo, varal, carroça, bancos
@@ -171,7 +181,7 @@ class TownScene extends Phaser.Scene {
     P("barrel", "barrels", 9, 6, 0.6, 0.8, 0); P("crate", "crates", 24, 6, 0.75, 0.8, 0); P("garbage", "garbage", 33, 7, 0.9, 0.9); P("garbage", "garbage", 12, 11, 0.9, 0.9);
     P("laundry", "laundry", 27, 11, 1.1, 1.4, 0); P("cart", "cart", 25, 11, 0.95, 1.5); P("barrel", "barrels", 16, 11, 0.6, 0.8); P("crate", "crates", 31, 11, 0.75, 0.8);
     P("garbage", "garbage", 41, 11, 0.9, 0.9); P("bench", "bench", 36, 7, 0.95, 0.85); P("barrel", "barrels", 42, 7, 0.6, 0.8);
-    P("firewood", "crates", 13, 7, 0.8, 0.8); P("wheel", "garbage", 30, 7, 0.75, 0.9); P("firewood", "crates", 22, 11, 0.8, 0.8); P("barrel", "barrels", 35, 11, 0.6, 0.8);
+    P("firewood", "crates", 13, 7, 0.8, 0.8); P("wheel", "garbage", 32, 7, 0.75, 0.9); P("firewood", "crates", 22, 11, 0.8, 0.8); P("barrel", "barrels", 35, 11, 0.6, 0.8);
     // lampiões: as únicas luzes quentes da rua
     this.lamps = [];
     for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
@@ -179,8 +189,9 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: "Ferreiro (entrar)", kind: "smith", x: 5, y: 7, w: 4, h: 1 });
     this.zones.push({ name: "A Harpa Dançante", kind: "inn", x: 16, y: 7, w: 3, h: 1 });
     this.zones.push({ name: "Loja de Poções (entrar)", kind: "potions", x: 21, y: 7, w: 3, h: 1 });
-    this.zones.push({ name: "Depot (entrar)", kind: "depot", x: 7, y: 11, w: 3, h: 1 });
-    this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 10, y: 11, w: 2, h: 1 });
+    this.zones.push({ name: "Depot (entrar)", kind: "depot", x: 26, y: 7, w: 2, h: 1 });
+    this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 28, y: 7, w: 2, h: 1 });
+    this.zones.push({ name: "Mural de contratos", kind: "board", x: 36, y: 11, w: 3, h: 1 });
     this.zones.push({ name: "Acomodação", kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
     this.zones.push({ name: "Estátua da Oráculo", kind: "hall", x: 37, y: 8, w: 4, h: 1 });
     this.zones.push({ name: "Descer ao esgoto", kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
@@ -308,6 +319,8 @@ class TownScene extends Phaser.Scene {
       const n = Object.values(d.potions).reduce((a, b) => a + b, 0);
       this.say("Vendedora de Poções", `"Frascos frescos, ${V.name.toLowerCase()}. Vida, fúria e outras misturas da casa."\n\nNa sua mochila: ${n} poção(ões).  Ouro: ◉ ${d.gold}`,
         [["Ver as poções", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "potions"); this.leave("shop"); }], lore("Vendedora de Poções", "potions", () => this.use(z)), ["Até logo", () => this.closeDialog()]]);
+    } else if (z.kind === "board") {
+      this.openBoard();
     } else if (z.kind === "depot") {
       this.say("Guarda do Depot", `"Bem-vindo ao depot de Karhyn. Cada aventureiro tem seu baú nas cabines do fundo — o que guardar ali não se perde nas descidas."\n\nOuro guardado: ◉ ${d.gold}`,
         [["Abrir meu baú", () => this.openLocker()], lore("Guarda do Depot", "depot", () => this.use(z)), ["Obrigado", () => this.closeDialog()]]);
@@ -345,7 +358,10 @@ class TownScene extends Phaser.Scene {
   // ------------------------------------------------------------ interface
   buildUi() {
     const ui = this.uiLayer;
-    ui.add(txt(this, 14, 10, "Vila de Karhyn", 22, COLORS.gold));
+    // título da cidade: aparece grande na chegada e some devagar; volta quando se abre o mapa (Tab/M)
+    this.townTitle = this.add.text(VIEW_W / 2, VIEW_H * 0.24, "Vila de Karhyn", { fontFamily: FONT_TITLE, fontSize: "54px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
+      .setOrigin(0.5).setAlpha(0).setShadow(0, 3, "#000", 6, true, true);
+    ui.add(this.townTitle); this.showTitle(4200);
     this.goldT = txt(this, VIEW_W - 14, 14, `${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`, 14, COLORS.gold).setOrigin(1, 0);
     ui.add(this.goldT);
     ui.add(txt(this, 14, VIEW_H - 22, "WASD/setas: andar · E: falar/usar · Esc: menu · roda: zoom", 11, COLORS.dim));
@@ -401,6 +417,8 @@ class TownScene extends Phaser.Scene {
     this.skyText.setText(`${night ? "Noite" : dusk > 0.4 ? (t < 0.5 ? "Amanhecer" : "Entardecer") : "Dia"}${this.raining ? " · chuva" : ""}  ${String(hour).padStart(2, "0")}:${String(min - min % 10).padStart(2, "0")}`);
     // chuva de vez em quando: 1 a 2 minutos, com intervalos de 1,5 a 4 minutos
     // em Karhyn chove sempre; à noite, relâmpagos clareiam o céu
+    // depois de derrotar o último chefe do esgoto, Karhyn sai das sombras: para de chover e o sol volta de vez
+    if (this.freed) this.sunT = 999;
     this.raining = !(this.sunT > 0); this.rainFx.emitting = this.raining;
     if (d > 0.5 && this.raining) {
       this.boltT = (this.boltT ?? Phaser.Math.Between(6, 14)) - dt;
@@ -646,7 +664,44 @@ class TownScene extends Phaser.Scene {
         this.sunRays.add(r); this.tweens.add({ targets: r, alpha: 0.08, duration: 2200 + i * 300, yoyo: true, repeat: -1, ease: "Sine.inOut" });
       }
     }
-    this.msg && this.msg("As nuvens se abrem. Por um momento, a luz alcança Karhyn.");
+    if (sec < 900) this.msg && this.msg("As nuvens se abrem. Por um momento, a luz alcança Karhyn.");
+  }
+  // textura do mural em código (reserva até a arte do SpriteCook): tábua com telhadinho, papéis pregados e dois postes
+  makeBoardTex() {
+    const k = "board_code"; if (this.textures.exists(k)) return k;
+    const g = this.make.graphics({ add: false });
+    g.fillStyle(0x2a1c10).fillRect(4, 10, 3, 30).fillRect(25, 10, 3, 30);            // postes
+    g.fillStyle(0x3a2616).fillRect(0, 8, 32, 3); g.fillStyle(0x1e140a).fillRect(1, 6, 30, 2);   // telhadinho
+    g.fillStyle(0x5a3c22).fillRect(2, 11, 28, 18); g.fillStyle(0x4a301a).fillRect(2, 15, 28, 1).fillRect(2, 21, 28, 1);
+    const P = [[4, 12, 7, 8, 0xd8c8a0], [12, 13, 8, 7, 0xc8b890], [21, 12, 7, 9, 0xe0d0a8], [6, 21, 8, 6, 0xc0b088], [17, 22, 9, 6, 0xd8c8a0]];
+    for (const [x, y, w, h, c] of P) { g.fillStyle(c).fillRect(x, y, w, h); g.fillStyle(0x6a5a40).fillRect(x + 1, y + 2, w - 2, 1).fillRect(x + 1, y + 4, w - 3, 1); g.fillStyle(0x8a1a1a).fillRect(x + w / 2 - 0.5 | 0, y, 1, 1); }
+    g.generateTexture(k, 32, 40); g.destroy(); return k;
+  }
+
+  // ------------------------------------------------------------ contratos de caça (mural do largo)
+  // 3 ofertas (fácil, médio, difícil); um contrato ativo por vez; o progresso conta no esgoto e a recompensa sai no mural.
+  openBoard() {
+    const d = Save.voc(this.vocId), L = Save.levelInfo(d.xpTotal).level;
+    if (!d.contractOffers || !d.contractOffers.length) d.contractOffers = rollContracts(L);
+    const c = d.contract, close = ["Sair", () => this.closeDialog()];
+    if (c) {
+      const M = MONSTERS[c.kind], done = c.got >= c.n, T_ = CONTRACT_TIERS[c.tier];
+      const txt_ = `Contrato ${T_.name.toLowerCase()}: caçar ${c.n} ${c.n > 1 ? M.plural || M.name + "s" : M.name}.\nProgresso: ${Math.min(c.got, c.n)}/${c.n}.\n\nRecompensa: ${c.xp} de experiência, ${c.gold} de ouro e um item ${RARITY[c.item.r].name.toLowerCase()} (${EQUIP[c.item.id].name}).`;
+      this.say("Mural de contratos", txt_, done ? [["Entregar o contrato", () => {
+        d.xpTotal += c.xp; Save.addGold(this.vocId, c.gold); d.gear.push(c.item); d.contract = null; d.contractOffers = rollContracts(L); Save.save();
+        this.goldT && this.goldT.setText(`${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`);
+        sfx(this, "levelup", 0.5); this.cameras.main.flash(250, 255, 220, 140);
+        this.say("Mural de contratos", `Contrato cumprido! Você recebeu ${c.xp} de experiência, ${c.gold} de ouro e ${gearName(c.item)} (${RARITY[c.item.r].name}), que foi para a mochila.`, [["Ver novos contratos", () => this.openBoard()], close]);
+      }], close] : [["Desistir do contrato", () => { d.contract = null; Save.save(); this.openBoard(); }], close]);
+      return;
+    }
+    const opts = d.contractOffers.map(o => {
+      const M = MONSTERS[o.kind], T_ = CONTRACT_TIERS[o.tier];
+      return [`${T_.name}: ${o.n} ${o.n > 1 ? M.plural || M.name + "s" : M.name} · ${o.xp} exp · ${o.gold} ouro · item ${RARITY[o.item.r].name.toLowerCase()}`,
+        () => { d.contract = Object.assign({}, o, { got: 0 }); Save.save(); sfx(this, "pickup", 0.4);
+          this.say("Mural de contratos", `Você arrancou o papel do mural. Contrato aceito: caçar ${o.n} ${o.n > 1 ? M.plural || M.name + "s" : M.name} no esgoto.\n\nVolte aqui para receber a recompensa.`, [close]); }];
+    });
+    this.say("Mural de contratos", "Papéis pregados uns sobre os outros, molhados de chuva. Os moradores pagam a quem limpar o esgoto das criaturas que sobem à noite.\n\nQuanto mais difícil o contrato, maior a recompensa. Um contrato por vez.", [...opts, close]);
   }
   // vista do alto da torre: o horizonte de Karhyn (provisório: o mapa da região até chegar a arte própria)
   towerView() {
@@ -682,6 +737,39 @@ class TownScene extends Phaser.Scene {
   }
   closeDialog() { if (this.dialog) { this.dialog.destroy(); this.dialog = null; } this.dialogBtns = null; this.chatWith = null; this.sending = false; }
 
+  showTitle(hold = 2500) {
+    const t = this.townTitle; if (!t) return;
+    this.tweens.killTweensOf(t); t.setAlpha(0).setY(VIEW_H * 0.24 + 8);
+    this.tweens.add({ targets: t, alpha: 1, y: VIEW_H * 0.24, duration: 1100, ease: "Sine.out" });
+    this.tweens.add({ targets: t, alpha: 0, delay: 1100 + hold, duration: 2200, ease: "Sine.in" });
+  }
+  // mapa da cidade em tela (Tab/M): planta grande com os lugares marcados e o título
+  toggleMap() {
+    if (this.bigMap) { this.bigMap.destroy(); this.bigMap = null; this.tweens.add({ targets: this.townTitle, alpha: 0, duration: 600 }); return; }
+    if (this.dialog) return;
+    const S = Math.floor(Math.min((VIEW_W - 80) / TOWN_W, (VIEW_H - 170) / TOWN_H)), mx = (VIEW_W - TOWN_W * S) / 2, my = VIEW_H * 0.24 + 52;
+    const c = this.add.container(0, 0); this.uiLayer.add(c); this.bigMap = c;
+    c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 0.72).setOrigin(0).setInteractive().on("pointerup", () => this.toggleMap()));
+    const g = this.add.graphics(); c.add(g);
+    for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) {
+      const t = this.ground[y][x];
+      let col = t === "w" ? 0x55524c : t === "c" || t === "s" ? 0x7a746a : t === "d" ? 0x6a5236 : 0x2e3a26;
+      if (t !== "w" && this.solid.has(this.key(x, y))) col = 0x6a3a2a;
+      g.fillStyle(col, 1).fillRect(mx + x * S, my + y * S, S, S);
+    }
+    g.lineStyle(2, 0xc8a050, 0.9).strokeRect(mx - 3, my - 3, TOWN_W * S + 6, TOWN_H * S + 6);
+    const NAMES = { smith: "Ferreiro", inn: "Harpa Dançante", potions: "Poções", depot: "Depot", lodging: "Acomodação", hall: "Oráculo", board: "Contratos", sewer: "Esgoto", gate: "Portão" };
+    for (const z of this.zones) if (NAMES[z.kind]) {
+      const zx = mx + (z.x + z.w / 2) * S, zy = my + (z.y + z.h / 2) * S;
+      g.fillStyle(0xe0bc60, 1).fillCircle(zx, zy, 4);
+      c.add(txt(this, zx, zy + (z.y < 9 ? -10 : 10), NAMES[z.kind], 11, COLORS.text).setOrigin(0.5, z.y < 9 ? 1 : 0));
+    }
+    const h = this.hero; g.fillStyle(0x7fe08a, 1).fillCircle(mx + (h.x + 0.5) * S, my + (h.y + 0.5) * S, 5);
+    c.add(txt(this, VIEW_W / 2, my + TOWN_H * S + 16, "Tab / M fecha", 11, COLORS.dim).setOrigin(0.5, 0));
+    this.tweens.killTweensOf(this.townTitle); this.townTitle.setAlpha(0).setY(VIEW_H * 0.24 + 8);
+    this.tweens.add({ targets: this.townTitle, alpha: 1, y: VIEW_H * 0.24, duration: 700 });
+    this.uiLayer.bringToTop(this.townTitle);
+  }
   openMenu() {
     this.say("Karhyn", "O que deseja fazer?", [["Voltar ao mapa", () => this.leave("map")], ["Continuar", () => this.closeDialog()]]);
   }
@@ -705,6 +793,8 @@ class TownScene extends Phaser.Scene {
     this.uiLayer.addAt(this.rainFx, 1);
     this.rainVeil = this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x10141e, 0).setOrigin(0); this.uiLayer.addAt(this.rainVeil, 1);
     this.raining = true; this.rainT = Phaser.Math.Between(240, 480); this.rainFx.emitting = true;
+    this.freed = Object.keys(Save.data.cleared).some(k => k.startsWith("karhyn_sewers:"));
+    if (this.freed) { this.sunT = 999; this.sunK = 1; this.sunBreak(999); }
     for (let i = 0; i < 8; i++) {
       const f = this.add.image(Phaser.Math.Between(0, W), Phaser.Math.Between(0, H), "light").setScale(Phaser.Math.FloatBetween(3, 5), Phaser.Math.FloatBetween(0.8, 1.2))
         .setTint(0xc8d0d8).setAlpha(Phaser.Math.FloatBetween(0.04, 0.08)).setDepth(800002);

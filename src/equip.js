@@ -144,6 +144,32 @@ function forgeNext(g) {
 for (const id in EQUIP) ITEMS["eq_" + id] = { icon: "eq_" + id, name: EQUIP[id].name, gear: id };
 ITEMS.boss_essence = { icon: "i_red_gem", tint: 0xff9a30, name: "Essência de chefe" };
 
+// ---------------------------------------------------------------- contratos de caça (mural de Karhyn)
+const CONTRACT_TIERS = [
+  { name: "Fácil",   mult: 1.0, gold: 40,  rar: [70, 25, 5, 0, 0] },
+  { name: "Médio",   mult: 1.6, gold: 120, rar: [35, 38, 20, 7, 0] },
+  { name: "Difícil", mult: 2.6, gold: 320, rar: [10, 30, 32, 22, 6] },
+];
+// criaturas de cada dificuldade (todas do esgoto) e quantas caçar
+const CONTRACT_POOL = [
+  [["rat", 12], ["bat", 10], ["rat", 15]],
+  [["cave_rat", 14], ["slime", 8], ["spider", 8], ["bat", 18]],
+  [["poison_spider", 8], ["skeleton", 10], ["giant_rat", 1], ["slime", 14]],
+];
+function rollContracts(level) {
+  const vocId = (typeof game !== "undefined" && game.registry.get("vocation")) || "knight";
+  return CONTRACT_TIERS.map((T_, tier) => {
+    const [kind, n] = CONTRACT_POOL[tier][Math.floor(Math.random() * CONTRACT_POOL[tier].length)], M = MONSTERS[kind];
+    const xp = Math.round(n * M.xp * 3 * T_.mult + level * 20 * (tier + 1));
+    const gold = Math.round(T_.gold * (1 + level * 0.05));
+    // item: até 3 níveis acima do herói; raridade melhor nos contratos difíceis
+    const pool = Object.keys(EQUIP).filter(id => equipOk(id, vocId) && EQUIP[id].lvl <= level + 3);
+    const id = pool[Math.floor(Math.random() * pool.length)] || "leather_boots";
+    let y = Math.random() * 100, r = 0; for (; r < 4; r++) if ((y -= T_.rar[r]) <= 0) break;
+    return { kind, n, tier, xp, gold, item: gearNew(id, r) };
+  });
+}
+
 function equipOk(id, vocId) { const E = EQUIP[id]; return !E.voc || E.voc.includes(vocId); }
 // texto curto de atributos do item (para a mochila e o ferreiro); g = { id, r, p }
 function equipStats(g) {

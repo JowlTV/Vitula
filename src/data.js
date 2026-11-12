@@ -56,14 +56,14 @@ const MONSTERS = {
   // −10% em vida, dano e armadura (nov/26); ratos 15% mais lentos (o Rato Gigante ficou de fora: 2500 de vida, 50 de dano)
   // arm = armadura (desconta de cada golpe do herói)
   rat:       { name: "Rato", tex: "m_rat", anim: "am_rat", hp: 148, arm: 1.8, dmg: 9, step: 0.59, atk: 2.2, xp: 14 },
-  cave_rat:  { name: "Rato da Caverna", tex: "m_cave_rat", anim: "am_cave_rat", scale: 0.7, hp: 216, arm: 2.7, dmg: 10.8, step: 0.49, atk: 2.0, xp: 22 },
+  cave_rat:  { name: "Rato da Caverna", plural: "Ratos da Caverna", tex: "m_cave_rat", anim: "am_cave_rat", scale: 0.7, hp: 216, arm: 2.7, dmg: 10.8, step: 0.49, atk: 2.0, xp: 22 },
   bat:       { name: "Morcego", tex: "m_bat", anim: "am_bat", hp: 64, arm: 0.9, dmg: 5.4, step: 0.3, atk: 1.6, xp: 10, fly: true },
   slime:     { name: "Lodo", tex: "m_slime", anim: "am_slime", hp: 202, arm: 3.6, dmg: 9.9, step: 0.8, atk: 2.2, xp: 24 },
   skeleton:  { name: "Esqueleto", tex: "m_skeleton", anim: "am_skeleton", hp: 324, arm: 4.5, dmg: 13.5, step: 0.55, atk: 2.0, xp: 40 },
   // aranhas do esgoto (a partir do 2º andar). A venenosa usa a mesma arte, esverdeada, e envenena: 3% da vida máx./s por 5 s
   spider:        { name: "Aranha", tex: "am_spider_walk", hp: 175, arm: 2, dmg: 11, step: 0.36, atk: 1.9, xp: 26 },
-  poison_spider: { name: "Aranha Venenosa", tex: "am_spider_walk", tint: 0x9fe07a, hp: 205, arm: 2.5, dmg: 9, step: 0.4, atk: 2.0, xp: 34, poison: { pct: 0.03, dur: 5 } },
-  giant_rat: { name: "Rato Gigante", tex: "m_giant_rat", anim: "am_giant_rat", scale: 0.85, hp: 2500, arm: 6, dmg: 50, step: 0.45, atk: 1.8, xp: 300, gold: 60, elite: true },
+  poison_spider: { name: "Aranha Venenosa", plural: "Aranhas Venenosas", tex: "am_spider_walk", tint: 0x9fe07a, hp: 205, arm: 2.5, dmg: 9, step: 0.4, atk: 2.0, xp: 34, poison: { pct: 0.03, dur: 5 } },
+  giant_rat: { name: "Rato Gigante", plural: "Ratos Gigantes", tex: "m_giant_rat", anim: "am_giant_rat", scale: 0.85, hp: 2500, arm: 6, dmg: 50, step: 0.45, atk: 1.8, xp: 300, gold: 60, elite: true },
 };
 
 const FLOOR_MONSTERS = {
