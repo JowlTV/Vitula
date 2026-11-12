@@ -303,19 +303,28 @@ const TG = (() => {
     for (let i = 0; i < W * H * 0.004; i++) { const x = p.int(0, W - 1), y = p.int(0, H - 1); p.rect(x, y, 1, 2, "#43522f"); p.px(x + 1, y + 1, "#3a4a2a"); }
     for (let i = 0; i < W * H * 0.0008; i++) p.px(p.int(0, W - 1), p.int(0, H - 1), p.pick(["#8a7a5a", "#9a3a3a", "#c8b85a"]));   // pedrinhas e flores
     if (atlas.grass) {
-      // grama do SpriteCook: a peça cheia do tileset tem uma mancha de lama, então o chão é montado com retalhos 16×16
-      // só de grama, tirados de dentro das bordas da folha, sorteados e espelhados para não formar grade
-      const g = atlas.grass, cv = document.createElement("canvas"); cv.width = g.width; cv.height = g.height;
-      const gc = cv.getContext("2d"); gc.drawImage(g, 0, 0); const px = gc.getImageData(0, 0, g.width, g.height).data, ok = [];
-      for (let y = 0; y + 16 <= g.height; y += 4) for (let x = 0; x + 16 <= g.width; x += 4) {
-        let good = true;
-        for (let j = 0; j < 16 && good; j++) for (let i = 0; i < 16; i++) { const k = ((y + j) * g.width + x + i) * 4; if (px[k + 3] < 250 || px[k] > px[k + 1] + 4) { good = false; break; } }
-        if (good) ok.push([x, y]);
+      // grama contínua na paleta da arte do SpriteCook (vk_ts_grama): manchas suaves de claro/escuro (ruído de valor),
+      // pontilhado de pixel, tufos sempre iluminados de cima-esquerda e alguns trevos e pedrinhas. Sem lama, sem emendas.
+      const PAL = ["#1d2b2a", "#253432", "#2d3c34", "#344236", "#3e4c3d", "#4a5846", "#58655b"];
+      const S = 24, gw = Math.ceil(W / S) + 2, gh = Math.ceil(H / S) + 2, nv = [];
+      for (let k = 0; k < gw * gh; k++) nv.push(p.r());
+      const sm = t => t * t * (3 - 2 * t);
+      const noise = (x, y) => { const gx = x / S, gy = y / S, ix = Math.floor(gx), iy = Math.floor(gy), fx = sm(gx - ix), fy = sm(gy - iy), v = (a, b) => nv[(iy + b) * gw + ix + a];
+        return (v(0, 0) * (1 - fx) + v(1, 0) * fx) * (1 - fy) + (v(0, 1) * (1 - fx) + v(1, 1) * fx) * fy; };
+      const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        const n = noise(x, y) * 0.75 + noise(x * 3.1, y * 3.1) * 0.25;            // grande + fino
+        const lv = 1 + n * 3.2 + (BAYER[(y & 3) * 4 + (x & 3)] / 16 - 0.5) * 0.9;     // tons 1–4 com pontilhado ordenado
+        p.px(x, y, PAL[Math.max(0, Math.min(4, Math.floor(lv)))]);
       }
-      if (ok.length) for (let y = 0; y < H; y += 16) for (let x = 0; x < W; x += 16) {
-        const [sx, sy] = p.pick(ok), fx = p.r() < 0.5 ? -1 : 1, fy = p.r() < 0.5 ? -1 : 1;
-        p.c.save(); p.c.translate(x + 8, y + 8); p.c.scale(fx, fy); p.c.drawImage(g, sx, sy, 16, 16, -8, -8, 16, 16); p.c.restore();
+      // tufos: lâminas de 2–3 px, base escura e ponta clara virada para a luz (cima-esquerda)
+      for (let k = 0; k < W * H * 0.012; k++) {
+        const x = p.int(1, W - 2), y = p.int(2, H - 1), lit = noise(x, y) > 0.45;
+        p.px(x, y, PAL[1]); p.px(x, y - 1, PAL[lit ? 5 : 4]); if (p.r() < 0.5) p.px(x - 1, y - 2, PAL[lit ? 6 : 5]);
+        if (p.r() < 0.4) { p.px(x + 1, y, PAL[1]); p.px(x + 1, y - 1, PAL[4]); }
       }
+      for (let k = 0; k < W * H * 0.0007; k++) { const x = p.int(1, W - 3), y = p.int(1, H - 3); p.rect(x, y, 2, 1, "#5a5a52"); p.px(x, y - 1, "#7a7a70"); p.px(x + 1, y + 1, PAL[0]); }   // pedrinhas
+      for (let k = 0; k < W * H * 0.0004; k++) { const x = p.int(1, W - 2), y = p.int(1, H - 2); p.px(x, y, "#8a8a6a"); p.px(x + 1, y, "#6a7a5a"); }   // flores apagadas
     }
     for (let ty = 0; ty < TH; ty++) for (let tx = 0; tx < TW; tx++) {
       const t = G[ty][tx], x0 = tx * D, y0 = ty * D;

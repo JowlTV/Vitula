@@ -212,8 +212,8 @@ class TownScene extends Phaser.Scene {
     cam.setZoom(this.zoom());
     cam.startFollow(h.spr, true, 0.35, 0.35, 0, 24);
   }
-  zoom() { return Phaser.Math.Clamp(Settings.data.zoom || 2.8, 2, 3.6); }
-  zoomBy(d) { Settings.data.zoom = Math.round(Phaser.Math.Clamp(this.zoom() + d, 2, 3.6) * 10) / 10; Settings.save(); this.cameras.main.setZoom(this.zoom()); }
+  zoom() { return Phaser.Math.Clamp(Settings.data.zoom || 2.8, 2, 5); }
+  zoomBy(d) { Settings.data.zoom = Math.round(Phaser.Math.Clamp(this.zoom() + d, 2, 5) * 10) / 10; Settings.save(); this.cameras.main.setZoom(this.zoom()); }
 
   update(_, dtMs) {
     const dt = Math.min(0.05, dtMs / 1000), h = this.hero;

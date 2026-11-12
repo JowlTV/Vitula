@@ -190,7 +190,7 @@ const vocAnim = voc => (VOCATIONS[voc] && VOCATIONS[voc].anim) || "kn_";
 const WORLD_SCALE = 0.78;
 // altura alvo (px) de cada objeto da masmorra, em proporção ao herói (~60 px de corpo)
 const PROP_H = { barrel: 40, crate_intact: 32, crate_damaged: 32, chest_closed: 28, chest_open: 28, pot: 27, urn: 36, torch_stand: 62, pillar: 92 };
-const vocScale = voc => ((VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42) * WORLD_SCALE;
+const vocScale = voc => ((VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42) * WORLD_SCALE * 1.12;   // heróis 12% maiores (nov/26)
 
 // sombra de contato: elipse escura colada na base de um sprite (origem 0.5,1), some junto com ele
 function groundShadow(scene, spr, container, wf = 0.85, alpha = 1) {

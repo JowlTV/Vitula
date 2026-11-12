@@ -23,10 +23,10 @@ Object.assign(DungeonScene.prototype, {
 
   // ---------------------------------------------------------------- câmera
   // zoom da câmera do jogo (a interface fica sempre igual). 2 = visão antiga; padrão 2,8 (mais perto)
-  camZoom() { return Phaser.Math.Clamp(Settings.data.zoom || 2.8, 2, 3.6); },
+  camZoom() { return Phaser.Math.Clamp(Settings.data.zoom || 2.8, 2, 5); },
 
   setCamZoom(z) {
-    Settings.data.zoom = Math.round(Phaser.Math.Clamp(z, 2, 3.6) * 10) / 10; Settings.save();
+    Settings.data.zoom = Math.round(Phaser.Math.Clamp(z, 2, 5) * 10) / 10; Settings.save();
     this.cameras.main.setZoom(this.camZoom());
     this.msg(`Zoom ${this.camZoom().toFixed(1)}×`);
   },
