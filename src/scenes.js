@@ -144,7 +144,7 @@ function button(scene, x, y, w, label, fn, size = 16) {
 function menuMusic(scene) { goddessMusic(scene, false); }
 
 // "Before the Shadow Falls": limpa na intro e nos menus; na cidade, distante e com eco,
-// como se a deusa Magdha tocasse ao longe. Uma única faixa que não recomeça ao trocar de cena.
+// como se a Oráculo tocasse ao longe. Uma única faixa que não recomeça ao trocar de cena.
 function goddessMusic(scene, echo) {
   if (scene.sound.locked) { scene.sound.once("unlocked", () => goddessMusic(scene, echo)); return; }
   if (!scene.cache.audio.exists("music_goddess")) return;

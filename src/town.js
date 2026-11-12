@@ -182,7 +182,7 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: "Depot (entrar)", kind: "depot", x: 7, y: 11, w: 3, h: 1 });
     this.zones.push({ name: "Seu baú do depot", kind: "locker", x: 10, y: 11, w: 2, h: 1 });
     this.zones.push({ name: "Acomodação", kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
-    this.zones.push({ name: "Estátua da Deusa", kind: "hall", x: 37, y: 8, w: 4, h: 1 });
+    this.zones.push({ name: "Estátua da Oráculo", kind: "hall", x: 37, y: 8, w: 4, h: 1 });
     this.zones.push({ name: "Descer ao esgoto", kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
     this.zones.push({ name: "Portão de Karhyn", kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
   }
@@ -324,10 +324,10 @@ class TownScene extends Phaser.Scene {
       this.say("Acomodação", "Quartos úmidos, cama de palha e uma vela. A dona cobra pouco e não faz perguntas.", [["Descansar (recupera tudo)", () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], lore("Acomodação", "lodging", () => this.use(z)), ["Sair", () => this.closeDialog()]]);
     } else if (z.kind === "hall" && !(d.bless > 0)) {
       d.bless = 1; Save.save();
-      this.blessingVision(() => this.say("Estátua da Deusa", "A pedra está fria e gasta, mas a luz desce sobre você. Por um instante a chuva some, e uma voz que você quase reconhece diz o seu nome.\n\nVocê recebeu a primeira bênção de Magdha (1/3): morrer agora custa menos.", [["Ajoelhar e agradecer", () => this.closeDialog()]]));
+      this.blessingVision(() => this.say("Estátua da Oráculo", "A pedra está fria e gasta, mas a luz desce sobre você. Por um instante a chuva some, e uma voz que você quase reconhece diz o seu nome.\n\nVocê recebeu a primeira bênção da Oráculo (1/3): morrer agora custa menos.", [["Ajoelhar e agradecer", () => this.closeDialog()]]));
     } else if (z.kind === "hall") {
-      this.say("Estátua da Deusa", "Os mestres de armas de Karhyn treinam quem paga em ouro: vida, velocidade de ataque, armadura e fúria.",
-        [["Rezar", () => this.blessingVision(() => this.say("Estátua da Deusa", "Você fecha os olhos. A chuva parece cair mais devagar, e por um instante a harpa da deusa toca só para você. Magdha ainda vela por Karhyn.", [["Levantar-se", () => this.closeDialog()]]))],
+      this.say("Estátua da Oráculo", "Os mestres de armas de Karhyn treinam quem paga em ouro: vida, velocidade de ataque, armadura e fúria.",
+        [["Rezar", () => this.blessingVision(() => this.say("Estátua da Oráculo", "Você fecha os olhos. A chuva parece cair mais devagar, e por um instante a harpa da Oráculo toca só para você. a Oráculo ainda vela por Karhyn.", [["Levantar-se", () => this.closeDialog()]]))],
          ["Treinar atributos", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], ["Sair", () => this.closeDialog()]]);
     }
   }
@@ -382,6 +382,11 @@ class TownScene extends Phaser.Scene {
     const lerp = (a, b, k) => Math.round(a + (b - a) * k), rain = this.raining ? 0.85 : 1;
     let r = lerp(118, 44, d), g = lerp(126, 52, d), b = lerp(142, 92, d);   // dia cinzento e fechado; noite quase preta
     r = lerp(r, 150, dusk * 0.3); g = lerp(g, 110, dusk * 0.3); b = lerp(b, 100, dusk * 0.3);
+    // estiagem depois da bênção: clareia e esquenta a luz aos poucos, e volta a fechar no fim
+    this.sunT = Math.max(0, (this.sunT || 0) - dt);
+    this.sunK = Phaser.Math.Linear(this.sunK || 0, this.sunT > 0 ? 1 : 0, Math.min(1, dt * 0.8));
+    if (this.sunK > 0.01) { const k = this.sunK * (1 - d * 0.6); r = lerp(r, 236, k); g = lerp(g, 222, k); b = lerp(b, 188, k); }
+    if (this.sunRays) this.sunRays.setAlpha(this.sunK * (1 - d * 0.7));
     this.dayTint.setFillStyle(Phaser.Display.Color.GetColor(r * rain | 0, g * rain | 0, b * rain | 0), 1);
     // postes acendem ao anoitecer, com a chama tremendo
     const now = this.time.now / 1000;
@@ -396,8 +401,8 @@ class TownScene extends Phaser.Scene {
     this.skyText.setText(`${night ? "Noite" : dusk > 0.4 ? (t < 0.5 ? "Amanhecer" : "Entardecer") : "Dia"}${this.raining ? " · chuva" : ""}  ${String(hour).padStart(2, "0")}:${String(min - min % 10).padStart(2, "0")}`);
     // chuva de vez em quando: 1 a 2 minutos, com intervalos de 1,5 a 4 minutos
     // em Karhyn chove sempre; à noite, relâmpagos clareiam o céu
-    this.raining = true; if (!this.rainFx.emitting) this.rainFx.emitting = true;
-    if (d > 0.5) {
+    this.raining = !(this.sunT > 0); this.rainFx.emitting = this.raining;
+    if (d > 0.5 && this.raining) {
       this.boltT = (this.boltT ?? Phaser.Math.Between(6, 14)) - dt;
       if (this.boltT <= 0) {
         this.boltT = Phaser.Math.Between(9, 26);
@@ -606,14 +611,42 @@ class TownScene extends Phaser.Scene {
       c.add(m); this.tweens.add({ targets: m, y: m.y - VIEW_H - 220, alpha: 0, duration: Phaser.Math.Between(3500, 6000), delay: Phaser.Math.Between(0, 1800) });
     }
     if (this.textures.exists("vignette")) c.add(this.add.image(0, 0, "vignette").setOrigin(0));
-    const t = txt(this, VIEW_W / 2, VIEW_H - 46, "Magdha, a deusa que vela por Karhyn", 22, COLORS.gold).setOrigin(0.5).setAlpha(0); c.add(t);
+    const t = this.add.text(VIEW_W / 2, VIEW_H - 54, "Enquanto a Oráculo toca a sua harpa, abençoando os habitantes de Karhyn,\nas nuvens negras das trevas abrem caminho para a luz.",
+      { fontFamily: FONT_TITLE, fontSize: "21px", color: "#f0d888", align: "center", stroke: "#0c0608", strokeThickness: 5, lineSpacing: 4, resolution: 2 }).setOrigin(0.5).setAlpha(0).setShadow(0, 2, "#000", 4, true, true); c.add(t);
+    if (key === "vk_goddess_art") {
+      // leve animação da arte: a imagem "respira" (sobe e desce devagar), o halo pulsa, a harpa cintila e cai uma chuva fina
+      this.tweens.add({ targets: img, y: VIEW_H / 2 - 6, duration: 2400, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+      const halo = this.add.image(VIEW_W / 2, VIEW_H * 0.3, "light").setScale(2.6, 3.2).setTint(0xffe2a0).setAlpha(0.18).setBlendMode(Phaser.BlendModes.ADD); c.addAt(halo, 2);
+      this.tweens.add({ targets: halo, alpha: 0.34, scaleX: 2.9, duration: 1700, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+      const hx = () => img.x + (0.575 - 0.5) * img.displayWidth, hy = () => img.y + (0.26 - 0.5) * img.displayHeight;   // posição da harpa na arte
+      const harp = this.add.image(hx(), hy(), "light").setScale(0.35).setTint(0xffd060).setAlpha(0).setBlendMode(Phaser.BlendModes.ADD); c.add(harp);
+      this.tweens.add({ targets: harp, alpha: { from: 0.05, to: 0.55 }, duration: 520, yoyo: true, repeat: -1, ease: "Sine.inOut", onUpdate: () => harp.setPosition(hx(), hy()) });
+      for (let i = 0; i < 6; i++) this.time.delayedCall(300 + i * 650, () => {   // notas de luz saindo da harpa
+        if (!c.active) return;
+        const n = this.add.image(hx(), hy(), "light").setScale(0.05).setTint(0xfff0b0).setBlendMode(Phaser.BlendModes.ADD); c.add(n);
+        this.tweens.add({ targets: n, x: n.x + Phaser.Math.Between(-60, 60), y: n.y - Phaser.Math.Between(60, 120), alpha: 0, scale: 0.02, duration: 1600, onComplete: () => n.destroy() });
+      });
+      if (this.textures.exists("rain_drop")) { const rf = this.add.particles(0, 0, "rain_drop", { x: { min: -40, max: VIEW_W + 60 }, y: -20, lifespan: 900, speedY: { min: 520, max: 640 }, speedX: { min: -70, max: -50 }, alpha: { start: 0.25, end: 0.05 }, frequency: 25, quantity: 2 }); c.add(rf); }
+    }
     // aparece, aproxima devagar (como se ela se inclinasse sobre você), clareia e some
     this.tweens.add({ targets: c, alpha: 1, duration: 900 });
-    this.tweens.add({ targets: img, scale: fit * 1.14, duration: 5200, ease: "Sine.inOut" });
+    this.tweens.add({ targets: img, scale: fit * 1.14, duration: 6000, ease: "Sine.inOut" });
     this.tweens.add({ targets: t, alpha: 1, delay: 1400, duration: 1200 });
     this.time.delayedCall(3800, () => this.cameras.main.flash(900, 255, 236, 180));
-    this.time.delayedCall(4800, () => this.tweens.add({ targets: c, alpha: 0, duration: 700, onComplete: () => { c.destroy(); if (this.dialog === c) this.dialog = null; done && done(); } }));
+    this.time.delayedCall(5600, () => this.tweens.add({ targets: c, alpha: 0, duration: 700, onComplete: () => { c.destroy(); if (this.dialog === c) this.dialog = null; this.sunBreak(); done && done(); } }));
     sfx(this, "levelup", 0.45);
+  }
+  // depois de falar com a Oráculo a chuva para e o sol abre por um breve momento (cerca de 30 s), depois o céu fecha de novo
+  sunBreak(sec = 30) {
+    this.sunT = sec;
+    if (!this.sunRays) {
+      this.sunRays = this.add.container(0, 0).setAlpha(0); this.uiLayer.addAt(this.sunRays, 1);
+      for (let i = 0; i < 6; i++) {
+        const r = this.add.image(VIEW_W * (0.1 + i * 0.17), -60, "light").setOrigin(0.5, 0).setScale(0.6, 6).setAngle(-18).setTint(0xffe6a8).setAlpha(0.22).setBlendMode(Phaser.BlendModes.ADD);
+        this.sunRays.add(r); this.tweens.add({ targets: r, alpha: 0.08, duration: 2200 + i * 300, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+      }
+    }
+    this.msg && this.msg("As nuvens se abrem. Por um momento, a luz alcança Karhyn.");
   }
   // vista do alto da torre: o horizonte de Karhyn (provisório: o mapa da região até chegar a arte própria)
   towerView() {

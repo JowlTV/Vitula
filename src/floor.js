@@ -118,7 +118,7 @@ Object.assign(DungeonScene.prototype, {
     return null;
   },
 
-  // estátua da deusa Magdha: aparece em alguns andares, dá uma bênção por estátua (até 3)
+  // estátua da Oráculo: aparece em alguns andares, dá uma bênção por estátua (até 3)
   placeAltar(start) {
     this.altar = null; this.altarImg = null;
     if (!this.altarMemo) this.altarMemo = {};

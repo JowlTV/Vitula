@@ -15,7 +15,7 @@ const Save = {
     if (!d.potions) d.potions = { health: 3 };       // poções guardadas na mochila
     if (!d.potionSlots) d.potionSlots = ["health", v === "knight" || v === "archer" ? "fury" : "mana"];
     if (!d.xpTotal) d.xpTotal = 0;
-    if (d.bless == null) d.bless = 0;      // bênçãos de Magdha (0 a 3)
+    if (d.bless == null) d.bless = 0;      // bênçãos da Oráculo (0 a 3)
     if (d.promoted == null) d.promoted = false; // título de promoção: conquistado uma vez, não se perde
     if (!d.attr) d.attr = {};
     if (!d.gear) d.gear = [];

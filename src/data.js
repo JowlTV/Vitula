@@ -163,7 +163,7 @@ function weighted(table) {
   return table[0][0];
 }
 
-// Morte: quanto se perde conforme o número de bênçãos de Magdha (0 a 3)
+// Morte: quanto se perde conforme o número de bênçãos da Oráculo (0 a 3)
 const DEATH_LOSS = [
   { xp: 0.80, equip: 1.00, gold: 0.25 },
   { xp: 0.60, equip: 0.75, gold: 0.20 },
@@ -171,9 +171,9 @@ const DEATH_LOSS = [
   { xp: 0.20, equip: 0.00, gold: 0.00 },
 ];
 const BLESS_TEXT = [
-  "Você recebeu a primeira bênção de Magdha.\n\nNa próxima morte, perderá 60% da experiência, 75% dos equipamentos e 20% do ouro coletado (em vez de 80%, 100% e 25%).",
-  "Você recebeu a segunda bênção de Magdha.\n\nNa próxima morte, perderá 35% da experiência, 35% dos equipamentos e 10% do ouro coletado.",
-  "Você recebeu a terceira bênção de Magdha.\n\nNa próxima morte, perderá 20% da experiência, nenhum equipamento e nenhum ouro.",
+  "Você recebeu a primeira bênção da Oráculo.\n\nNa próxima morte, perderá 60% da experiência, 75% dos equipamentos e 20% do ouro coletado (em vez de 80%, 100% e 25%).",
+  "Você recebeu a segunda bênção da Oráculo.\n\nNa próxima morte, perderá 35% da experiência, 35% dos equipamentos e 10% do ouro coletado.",
+  "Você recebeu a terceira bênção da Oráculo.\n\nNa próxima morte, perderá 20% da experiência, nenhum equipamento e nenhum ouro.",
 ];
 
 // Habilidades do Arqueiro (mesmas teclas 1–4; pagas com Mana).

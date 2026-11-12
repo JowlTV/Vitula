@@ -459,7 +459,7 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
-  // morte: perde experiência, equipamentos e ouro coletado, conforme as bênçãos de Magdha
+  // morte: perde experiência, equipamentos e ouro coletado, conforme as bênçãos da Oráculo
   deathPenalty() {
     const d = Save.voc(this.vocId), b = DEATH_LOSS[Math.min(3, d.bless || 0)];
     const xpBefore = d.xpTotal || 0;
@@ -484,7 +484,7 @@ Object.assign(DungeonScene.prototype, {
     }
     Save.save();
     const v = VOCATIONS[this.vocId];
-    const penText = pen ? `\n\nMorte — bênçãos de Magdha: ${pen.bless}/3\nExperiência perdida: ${Math.round(pen.b.xp * 100)}%\nEquipamentos perdidos: ${pen.b.equip >= 1 ? "todos" : Math.round(pen.b.equip * 100) + "%"}\nOuro perdido: ${Math.round(pen.b.gold * 100)}% (${pen.goldLost})` : "";
+    const penText = pen ? `\n\nMorte — bênçãos da Oráculo: ${pen.bless}/3\nExperiência perdida: ${Math.round(pen.b.xp * 100)}%\nEquipamentos perdidos: ${pen.b.equip >= 1 ? "todos" : Math.round(pen.b.equip * 100) + "%"}\nOuro perdido: ${Math.round(pen.b.gold * 100)}% (${pen.goldLost})` : "";
     this.panel(victory ? "Masmorra Vencida" : "Você Caiu",
       `Dificuldade: ${Math.round(this.diff * 100)}%\nAndar alcançado: ${this.floorN}/${FLOORS}\nNível: ${this.hero.level}\nAbates: ${this.kills}\nOuro obtido: ${earned}   (bolsa do ${v.name}: ${Save.gold(this.vocId)})` + penText,
       [["Descer de novo", () => this.scene.restart()]]

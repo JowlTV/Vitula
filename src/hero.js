@@ -429,19 +429,19 @@ Object.assign(DungeonScene.prototype, {
     this.cameras.main.once("camerafadeoutcomplete", () => this.scene.start("town"));
   },
 
-  // estátua de Magdha: a bênção é concedida uma vez por estátua
+  // estátua da Oráculo: a bênção é concedida uma vez por estátua
   tryAltar() {
     const a = this.altar, h = this.hero;
     if (!a || a.used || this.paused || this.bagOpen || this.finished || h.dead) return false;
     if (Math.abs(h.x - a.x) > 1 || Math.abs(h.y - a.y) > 1) return false;
     const d = Save.voc(this.vocId), n = d.bless || 0;
-    if (n >= 3) { this.msg("Magdha já lhe concedeu toda a sua bênção."); return true; }
+    if (n >= 3) { this.msg("A Oráculo já lhe concedeu toda a sua bênção."); return true; }
     d.bless = n + 1; a.used = true; Save.save();
     if (this.altarImg) this.altarImg.setAlpha(0.55);
     sfx(this, "levelup", 0.3);
     this.floatText(h.px, h.py - 90, `Bênção ${d.bless}/3`, "#f2e2a0");
     this.paused = true;
-    const box = this.panel("Bênção de Magdha", BLESS_TEXT[n], [["Continuar", () => { box.destroy(); this.paused = false; }]]);
+    const box = this.panel("Bênção da Oráculo", BLESS_TEXT[n], [["Continuar", () => { box.destroy(); this.paused = false; }]]);
     return true;
   },
 
