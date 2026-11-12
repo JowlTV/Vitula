@@ -307,14 +307,10 @@ class TownScene extends Phaser.Scene {
     if (z.kind === "gate") {
       this.say("Portão de Karhyn", "Deixar a cidadela e voltar ao mapa?", [["Sair da cidade", () => this.leave("map")], ["Ficar", () => this.closeDialog()]]);
     } else if (z.kind === "sewer") {
+      // a dificuldade continua valendo por baixo (a maior já liberada), mas não aparece mais para o jogador
       const max = (Save.data.diffMax || {})["karhyn_sewers:" + this.vocId] || 1;
-      let cur = Math.min(this.registry.get("difficulty") || max, max);
-      const pct = v => Math.round(v * 100) + "%";
-      const opts = [["Descer — " + pct(cur), () => { this.registry.set("region", "karhyn_sewers"); this.registry.set("difficulty", cur); this.leave("dungeon"); }]];
-      if (cur < max) opts.push(["Dificuldade ▲", () => { this.registry.set("difficulty", cur + 0.25); this.use(z); }]);
-      if (cur > 1) opts.push(["Dificuldade ▼", () => { this.registry.set("difficulty", cur - 0.25); this.use(z); }]);
-      opts.push(["Ainda não", () => this.closeDialog()]);
-      this.say("Entrada dos Esgotos", `A grade range com o vento que sobe lá de baixo. Ratos guincham na escuridão.\n\nDificuldade: ${pct(cur)} (liberada até ${pct(max)}). Vencer o esgoto na dificuldade máxima libera +25%, até 400%. Monstros mais fortes dão mais xp.`, opts);
+      this.say("Entrada dos Esgotos", "A grade range com o vento que sobe lá de baixo. Ratos guincham na escuridão e semeiam o caos.\n\nDizem que, se descer demais, é possível ouvir os gritos de uma besta desconhecida.",
+        [["Descer", () => { this.registry.set("region", "karhyn_sewers"); this.registry.set("difficulty", max); this.leave("dungeon"); }], ["Ainda não", () => this.closeDialog()]]);
     } else if (z.kind === "potions") {
       const n = Object.values(d.potions).reduce((a, b) => a + b, 0);
       this.say("Vendedora de Poções", `"Frascos frescos, ${V.name.toLowerCase()}. Vida, fúria e outras misturas da casa."\n\nNa sua mochila: ${n} poção(ões).  Ouro: ◉ ${d.gold}`,
