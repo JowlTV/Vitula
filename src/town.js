@@ -327,7 +327,8 @@ class TownScene extends Phaser.Scene {
       this.blessingVision(() => this.say("Estátua da Deusa", "A pedra está fria e gasta, mas a luz desce sobre você. Por um instante a chuva some, e uma voz que você quase reconhece diz o seu nome.\n\nVocê recebeu a primeira bênção de Magdha (1/3): morrer agora custa menos.", [["Ajoelhar e agradecer", () => this.closeDialog()]]));
     } else if (z.kind === "hall") {
       this.say("Estátua da Deusa", "Os mestres de armas de Karhyn treinam quem paga em ouro: vida, velocidade de ataque, armadura e fúria.",
-        [["Treinar atributos", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], ["Sair", () => this.closeDialog()]]);
+        [["Rezar", () => this.blessingVision(() => this.say("Estátua da Deusa", "Você fecha os olhos. A chuva parece cair mais devagar, e por um instante a harpa da deusa toca só para você. Magdha ainda vela por Karhyn.", [["Levantar-se", () => this.closeDialog()]]))],
+         ["Treinar atributos", () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], ["Sair", () => this.closeDialog()]]);
     }
   }
 

@@ -8,7 +8,7 @@
     potion1: ["FIVE"], potion2: ["SIX"], attack: ["SPACE"], interact: ["E"],
     bag: ["I"], map: ["TAB"], autoAttack: ["R"], pause: ["ESC"],
   };
-  const FIXED = { ENTER: "ENTER", ESC: "ESC" };
+  const FIXED = { ENTER: "ENTER", ESC: "ESC", U: "U" };
   const PREF = "vitula_touch_v1";
 
   // Nome da tecla (Phaser) para uma ação, respeitando remapeamento nas Opções.
@@ -65,7 +65,7 @@
     ],
     util: [
       ["Esc", "ESC", "tap", "Pausa / voltar"], ["Mochila", "bag", "tap", "Mochila"],
-      ["Mapa", "map", "tap", "Mapa"], ["Auto", "autoAttack", "tap", "Ataque automático"],
+      ["Atributos", "U", "tap", "Pontos de atributo"], ["Mapa", "map", "tap", "Mapa"], ["Auto", "autoAttack", "tap", "Ataque automático"],
     ],
   };
 
