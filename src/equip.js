@@ -49,7 +49,7 @@ const EQUIP = {
   // escudos (Cavaleiro)
   wooden_shield:  { slot: "shield", name: "Escudo de Madeira",        def: 1,   lvl: 1,  voc: ["knight"], price: 0,    art: { f: "round", m: "wood", rim: "iron" } },
   copper_shield:  { slot: "shield", name: "Escudo de Cobre",          def: 1.5, lvl: 5,  voc: ["knight"], price: 110,  art: { f: "round", m: "copper", rim: "copper", boss: 1 } },
-  battle_shield:  { slot: "shield", name: "Escudo de Batalha",        def: 2,   lvl: 10, voc: ["knight"], price: 240,  art: { f: "heater", m: "iron", rim: "dark", emb: "bar" } },
+  battle_shield:  { slot: "shield", name: "Escudo de Batalha",        def: 2,   lvl: 10, voc: ["knight"], price: 240,  art: { f: "heater", m: "wood", rim: "iron", emb: "bar" } },
   guardian_shield:{ slot: "shield", name: "Escudo do Guardião",       def: 2.8, lvl: 16, voc: ["knight"], block: 0.02, price: 420, art: { f: "heater", m: "guardian", rim: "steel", emb: "cross" } },
   medusa_shield:  { slot: "shield", name: "Escudo da Medusa",         def: 3.2, lvl: 22, voc: ["knight"], res: { earth: 0.15 }, price: 700, art: { f: "round", m: "stone", rim: "serpent", emb: "medusa" } },
   dragon_shield:  { slot: "shield", name: "Escudo do Dragão",         def: 3.8, lvl: 28, voc: ["knight"], res: { fire: 0.15 }, price: 1000, art: { f: "kite", m: "dragon", rim: "gold", emb: "scales" } },
@@ -63,8 +63,8 @@ const EQUIP = {
   steel_helmet:   { slot: "helmet", name: "Elmo de Aço",              def: 1.4, lvl: 12, price: 260,  art: { f: "closed", m: "steel", trim: "iron" } },
   dark_helmet:    { slot: "helmet", name: "Elmo Sombrio",             def: 1.6, lvl: 16, res: { holy: -0.05, earth: 0.05 }, price: 380, art: { f: "closed", m: "dark", trim: "dark", spikes: 1 } },
   crusader_helmet:{ slot: "helmet", name: "Elmo do Cruzado",          def: 1.9, lvl: 20, res: { holy: 0.05 }, price: 520, art: { f: "great", m: "steel", trim: "gold", cross: 1 } },
-  royal_helmet:   { slot: "helmet", name: "Elmo Real",                def: 2.2, lvl: 26, ml: 1, price: 760, art: { f: "closed", m: "gold", trim: "royal", crown: 1 } },
-  demon_helmet:   { slot: "helmet", name: "Elmo Demoníaco",           def: 2.6, lvl: 34, res: { fire: 0.08 }, price: 1200, art: { f: "closed", m: "demon", trim: "dark", horns: 1 } },
+  royal_helmet:   { slot: "helmet", name: "Elmo Real",                def: 2.2, lvl: 26, ml: 1, price: 760, art: { f: "closed", m: "gold", trim: "crimson", crown: 1 } },
+  demon_helmet:   { slot: "helmet", name: "Elmo Demoníaco",           def: 2.6, lvl: 34, res: { fire: 0.08 }, price: 1200, art: { f: "closed", m: "dark", trim: "demon", horns: 1 } },
   golden_helmet:  { slot: "helmet", name: "Elmo Dourado",             def: 2.9, lvl: 42, ml: 1, hpReg: 0.5, price: 1700, art: { f: "great", m: "gold", trim: "gold", wingsH: 1 } },
   dragon_helmet:  { slot: "helmet", name: "Elmo de Escamas de Dragão", def: 3.3, lvl: 50, res: { fire: 0.1, earth: 0.05 }, price: 2400, art: { f: "closed", m: "dscale", trim: "gold", crest: 1 } },
   // armaduras
@@ -73,16 +73,16 @@ const EQUIP = {
   chain_armor:    { slot: "armor", name: "Armadura de Malha",         def: 2,   lvl: 8,  price: 180,  art: { f: "armor", m: "chain", trim: "leather" } },
   plate_armor:    { slot: "armor", name: "Armadura de Placas",        def: 2.8, lvl: 14, price: 360,  art: { f: "armor", m: "steel", trim: "iron", plates: 1 } },
   dark_armor:     { slot: "armor", name: "Armadura Sombria",          def: 3.2, lvl: 18, res: { earth: 0.05 }, price: 500, art: { f: "armor", m: "dark", trim: "dark", plates: 1 } },
-  knight_armor:   { slot: "armor", name: "Armadura de Cavaleiro",     def: 3.8, lvl: 24, voc: ["knight"], price: 760, art: { f: "armor", m: "steel", trim: "royal", plates: 1, cross: 1 } },
+  knight_armor:   { slot: "armor", name: "Armadura de Cavaleiro",     def: 3.8, lvl: 24, voc: ["knight"], price: 760, art: { f: "armor", m: "guardian", trim: "gold", plates: 1 } },
   golden_armor:   { slot: "armor", name: "Armadura Dourada",          def: 4.4, lvl: 32, price: 1200, art: { f: "armor", m: "gold", trim: "gold", plates: 1 } },
-  magic_plate:    { slot: "armor", name: "Armadura de Placas Mágica", def: 5,   lvl: 40, ml: 1, res: { energy: 0.1 }, price: 1800, art: { f: "armor", m: "magic", trim: "gold", plates: 1, rune: 1 } },
+  magic_plate:    { slot: "armor", name: "Armadura de Placas Mágica", def: 5,   lvl: 40, ml: 1, res: { energy: 0.1 }, price: 1800, art: { f: "armor", m: "gold", trim: "magic", plates: 1, rune: 1 } },
   dragon_mail:    { slot: "armor", name: "Malha de Escamas de Dragão", def: 5.6, lvl: 50, res: { fire: 0.12, earth: 0.06 }, price: 2600, art: { f: "armor", m: "dscale", trim: "gold", scales: 1 } },
   // calças
   leather_legs:   { slot: "legs", name: "Calça de Couro",             def: 0.5, lvl: 1,  price: 35,   art: { f: "legs", m: "leather", trim: "leather", stitch: 1 } },
   wooden_legs:    { slot: "legs", name: "Calça de Madeira",           def: 0.7, lvl: 3,  price: 60,   art: { f: "legs", m: "wood", trim: "leather" } },
   chain_legs:     { slot: "legs", name: "Calça de Malha",             def: 1.2, lvl: 8,  price: 150,  art: { f: "legs", m: "chain", trim: "leather" } },
   plate_legs:     { slot: "legs", name: "Calça de Placas",            def: 1.8, lvl: 14, price: 320,  art: { f: "legs", m: "steel", trim: "iron", plates: 1 } },
-  knight_legs:    { slot: "legs", name: "Calça de Cavaleiro",         def: 2.4, lvl: 24, voc: ["knight"], price: 650, art: { f: "legs", m: "steel", trim: "royal", plates: 1 } },
+  knight_legs:    { slot: "legs", name: "Calça de Cavaleiro",         def: 2.4, lvl: 24, voc: ["knight"], price: 650, art: { f: "legs", m: "guardian", trim: "gold", plates: 1 } },
   golden_legs:    { slot: "legs", name: "Calça Dourada",              def: 2.9, lvl: 32, price: 1100, art: { f: "legs", m: "gold", trim: "gold", plates: 1 } },
   magic_legs:     { slot: "legs", name: "Calça Mágica",               def: 3.2, lvl: 40, ml: 1, price: 1600, art: { f: "legs", m: "magic", trim: "gold", rune: 1 } },
   dragon_legs:    { slot: "legs", name: "Calça de Escamas de Dragão", def: 3.6, lvl: 50, res: { fire: 0.08 }, price: 2300, art: { f: "legs", m: "dscale", trim: "gold", scales: 1 } },
@@ -192,6 +192,8 @@ const MAT = {   // escuro, médio, claro, brilho
 };
 const OUTLINE = "#0a0808";
 
+// ícones do SpriteCook já recortados (assets/equip/<id>.png): têm prioridade sobre o desenho em código
+const EQUIP_ART = [];
 function makeEquipTextures(scene) {
   for (const id in EQUIP) {
     const k = "eq_" + id;
