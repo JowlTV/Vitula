@@ -403,6 +403,19 @@ class TownScene extends Phaser.Scene {
     // postes acendem ao anoitecer, com a chama tremendo
     const now = this.time.now / 1000;
     for (const gl of this.lampGlows) gl.setAlpha((0.12 + 0.55 * d) * (0.85 + 0.15 * Math.sin(now * 9 + gl.ph))).setScale(0.45 + 0.25 * d);
+    // luminária do herói: lampião (gasta óleo quando escurece) ou Pingente da Deusa
+    const dv = Save.voc(this.vocId), lg = dv.equip && dv.equip.light && EQUIP[dv.equip.light.id], h = this.hero;
+    if (!this.heroGlow) { this.heroGlow = this.add.image(0, 0, "light").setBlendMode(Phaser.BlendModes.ADD).setDepth(800002).setAlpha(0); this.world.add(this.heroGlow); }
+    let on = lg && lg.light && (!lg.light.fuel || dv.oil > 0);
+    if (on && lg.light.fuel && d > 0.3) {
+      const was = dv.oil; dv.oil = Math.max(0, dv.oil - dt);
+      if (Math.floor(was / 10) !== Math.floor(dv.oil / 10) || dv.oil <= 0) Save.save();
+      if (dv.oil <= 0) on = false;
+    }
+    if (on && h) {
+      const L = lg.light, m = Math.min(1.3, gearMult(dv.equip.light)), fl = L.fuel ? 0.9 + 0.1 * Math.sin(now * 11) * Math.sin(now * 3.7) : 0.97 + 0.03 * Math.sin(now * 2);
+      this.heroGlow.setPosition(h.px, h.py - 18).setTint(L.tint).setScale(L.r * T * m * fl / 128).setAlpha((0.08 + 0.4 * d) * fl);
+    } else this.heroGlow.setAlpha(0);
     // ícone
     const ic = this.skyIcon, cx = VIEW_W - 26, cy = 40, night = d > 0.5;
     ic.clear();
