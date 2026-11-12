@@ -238,14 +238,14 @@
   },
   {
    "id": 17,
-   "image": "objetos/estatua_magdha.png",
+   "image": "objetos/estatua_oraculo.png",
    "imagewidth": 128,
    "imageheight": 128,
    "properties": [
     {
      "name": "nome",
      "type": "string",
-     "value": "estatua_magdha"
+     "value": "estatua_oraculo"
     }
    ],
    "type": "altar"

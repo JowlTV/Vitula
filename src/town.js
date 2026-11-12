@@ -157,7 +157,7 @@ class TownScene extends Phaser.Scene {
     H(3, 14, 3); F("vk_depot", "v_depot", 7, 14, 5.4, 5); H(13, 14, 3); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
     H(23, 14, 4); H(28, 14, 3); H(32, 14, 4);
     // estátua da deusa no largo, com o feixe de luz; entrada do esgoto no fim da rua
-    const st = this.add.image(39 * T, 7 * T + T - 2, "altar_magdha").setOrigin(0.5, 1);   // 2× maior e uma casa acima, no alto do largo
+    const st = this.add.image(39 * T, 7 * T + T - 2, "altar_oraculo").setOrigin(0.5, 1);   // 2× maior e uma casa acima, no alto do largo
     st.setScale(T * 2.2 / st.width).setDepth(8 * T - 2).setTint(TOWN_TINT); this.world.add(st);
     { // sombra da estátua: rente ao chão, na largura do pedestal (antes ficava no meio do pedestal, larga demais)
       const sh = this.add.image(st.x, st.y - 3, "shadow").setScale(st.displayWidth * 0.5 / 64, 13 / 64).setAlpha(0.75).setDepth(st.depth - 1);
@@ -592,12 +592,12 @@ class TownScene extends Phaser.Scene {
   // como se a luz descesse sobre o herói. Usa a arte "vk_goddess_art" (SpriteCook) ou, se faltar, a própria estátua.
   blessingVision(done) {
     this.closeDialog();
-    const key = this.textures.exists("vk_goddess_art") ? "vk_goddess_art" : "altar_magdha";
+    const key = this.textures.exists("vk_goddess_art") ? "vk_goddess_art" : "altar_oraculo";
     const c = this.add.container(0, 0).setAlpha(0); this.uiLayer.add(c); this.dialog = c;
     c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x050406, 1).setOrigin(0).setInteractive());
     const img = this.add.image(VIEW_W / 2, VIEW_H / 2, key);
     img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-    const fit = key === "altar_magdha" ? (VIEW_H * 0.92) / img.height : Math.max(VIEW_W / img.width, VIEW_H / img.height);
+    const fit = key === "altar_oraculo" ? (VIEW_H * 0.92) / img.height : Math.max(VIEW_W / img.width, VIEW_H / img.height);
     img.setScale(fit); c.add(img);
     // raios dourados vindos do alto e partículas de luz subindo
     const rays = [];

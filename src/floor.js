@@ -144,7 +144,7 @@ Object.assign(DungeonScene.prototype, {
     }
     const a = this.altarMemo[this.floorN];
     if (!a || a.used) return;
-    const tex = this.textures.exists("altar_magdha") ? "altar_magdha" : "pillar";
+    const tex = this.textures.exists("altar_oraculo") ? "altar_oraculo" : "pillar";
     const p = this.cellPos(a.x, a.y);
     const img = this.add.image(p.x, p.y + T / 2 - 4, tex).setOrigin(0.5, 1).setDepth(p.y - 40);
     img.setScale(T * 2 / img.height);

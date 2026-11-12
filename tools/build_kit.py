@@ -137,7 +137,7 @@ CITY = [
     ("forja", A("town", "smith_forge.png"), 1, None),
     ("porta", A("town", "town_door.png"), 1, None),
     ("janela", A("town", "town_window.png"), 1, None),
-    ("estatua_magdha", A("art", "altar_magdha.png"), 128 / 162, "altar"),
+    ("estatua_oraculo", A("art", "altar_oraculo.png"), 128 / 162, "altar"),
 ]
 SEWER = [
     ("barril", A("art", "barrel.png"), 1, None), ("caixa", A("art", "crate_intact.png"), 1, None),
@@ -278,7 +278,7 @@ k.fill("chao", 30, cy - 2, 130, cy + 2, "paralelepipedo")       # avenida leste-
 k.fill("chao", cx - 8, cy - 8, cx + 8, cy + 8, "paralelepipedo")  # praça
 k.obj("objetos", "objetos_cidade", cityIdx, citySz, "fonte", cx - 2, cy + 1, label="Fonte da praça")
 k.block(cx - 2, cy - 1, cx + 1, cy + 2)
-k.obj("objetos", "objetos_cidade", cityIdx, citySz, "templo", cx - 6, cy - 10, label="Templo de Magdha")
+k.obj("objetos", "objetos_cidade", cityIdx, citySz, "templo", cx - 6, cy - 10, label="Templo da Oráculo")
 k.block(cx - 6, cy - 13, cx + 6, cy - 9)
 k.obj("objetos", "objetos_cidade", cityIdx, citySz, "casa_vermelha", cx - 14, cy - 4)
 k.block(cx - 14, cy - 6, cx - 10, cy - 3)

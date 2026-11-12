@@ -32,7 +32,7 @@ class BootScene extends Phaser.Scene {
     for (const a of ["idle", "walk", "attack"]) for (const d of ["down", "up", "side"]) this.load.spritesheet(`kn_${a}_${d}`, `assets/art/kn_${a}_${d}.png`, { frameWidth: 192, frameHeight: 192 });
     for (const f of TOWN_FILES.concat(TOWN_ART)) this.load.image(f, `assets/town/${f}.png`);
     this.load.image("rope_v2", "assets/art/rope_v2.png");
-    this.load.image("altar_magdha", "assets/art/altar_magdha.png");
+    this.load.image("altar_oraculo", "assets/art/altar_oraculo.png");
     const loadedMon = new Set(); for (const k in MON_ANIM) { const [fw, w, a, d] = MON_ANIM[k]; for (const n of [w, a, d]) if (!["am_cave_rat", "am_giant_rat"].includes(n) && !loadedMon.has(n) && loadedMon.add(n)) this.load.spritesheet(n, `assets/art/${n}.png`, { frameWidth: fw, frameHeight: fw }); }
     for (const n of ["kn_hurt", "kn_cast"]) this.load.spritesheet(n, `assets/art/${n}.png`, { frameWidth: 200, frameHeight: 200 });
     for (const n of ["npc_smith_idle", "npc_potion_seller_idle", "npc_depot_guard_idle"]) this.load.spritesheet(n, `assets/town/${n}.png`, { frameWidth: 200, frameHeight: 200 });
