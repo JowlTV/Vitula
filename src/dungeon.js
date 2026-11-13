@@ -61,7 +61,7 @@ class DungeonScene extends Phaser.Scene {
     (this.keysIn.attack || []).forEach(k => k.on("down", () => { this.hero.atkQueued = 0.35; }));
     (this.keysIn.autoAttack || []).forEach(k => k.on("down", () => {
       Settings.data.autoAttack = Settings.data.autoAttack === false; Settings.save();
-      this.msg(`Ataque automático ${Settings.data.autoAttack ? "ligado" : "desligado"}`);
+      this.msg(t(Settings.data.autoAttack ? "auto_attack_on" : "auto_attack_off"));
     }));
     (this.keysIn.bag || []).forEach(k => k.on("down", () => this.toggleBag()));
     this.input.keyboard.on("keydown-U", () => this.toggleAttrs());
@@ -86,7 +86,7 @@ class DungeonScene extends Phaser.Scene {
     this.cameras.main.ignore(this.uiLayer);
     this.buildFloor();
     this.buildHud();
-    this.msg(this.floorN < FLOORS ? `${this.region.name} — andar ${this.floorN}.` : "Último andar. Algo grande fareja você.");
+    this.msg(this.floorN < FLOORS ? t("floor_enter", { name: this.region.name, n: this.floorN }) : t("floor_last"));
   }
 
 

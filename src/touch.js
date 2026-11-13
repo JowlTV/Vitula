@@ -49,7 +49,7 @@
   document.addEventListener("visibilitychange", () => { if (document.hidden) releaseAll(); });
 
   // Botões: [rótulo, ação ou tecla fixa, tipo: "hold" (segura) ou "tap" (toque único), título]
-  const LAYOUT = {
+  const layout = () => ({
     pad: [
       ["▲", "up", "hold", t("touch_up"), 2, 1], ["◀", "left", "hold", t("touch_left"), 1, 2],
       ["▶", "right", "hold", t("touch_right"), 3, 2], ["▼", "down", "hold", t("touch_down"), 2, 3],
@@ -65,9 +65,9 @@
     ],
     util: [
       ["Esc", "ESC", "tap", t("touch_pause")], [t("touch_bag"), "bag", "tap", t("touch_bag")],
-      ["Atributos", "U", "tap", t("touch_attrs")], [t("touch_map"), "map", "tap", t("touch_map")], ["Auto", "autoAttack", "tap", t("touch_auto")],
+      [t("attributes"), "U", "tap", t("touch_attrs")], [t("touch_map"), "map", "tap", t("touch_map")], ["Auto", "autoAttack", "tap", t("touch_auto")],
     ],
-  };
+  });;
 
   function button(label, action, type, title, cls) {
     const b = document.createElement("button");
@@ -96,6 +96,8 @@
   }
 
   function build() {
+    const LAYOUT = layout();
+    const old = document.getElementById("vt"); if (old) old.remove();   // reconstrói ao trocar de idioma
     // Tamanho dos botões acompanha a altura da tela (paisagem no celular: ~40 px; tablet: até 62 px).
     // Tudo fica longe do entalhe (safe-area) e fora do topo, onde ficam vida, minimapa e janelas.
     const css = `
@@ -129,9 +131,7 @@
         #vt .toggle { top: auto; bottom: calc(var(--B) + var(--s) * .7 + 8px); left: calc(var(--L) + var(--s) * 3 + 24px); }
       }
     `;
-    const style = document.createElement("style");
-    style.textContent = css;
-    document.head.appendChild(style);
+    if (!document.getElementById("vt-style")) { const style = document.createElement("style"); style.id = "vt-style"; style.textContent = css; document.head.appendChild(style); }
 
     const root = document.createElement("div");
     root.id = "vt";
@@ -177,4 +177,5 @@
   // Monta os controles quando a página carregar (o Phaser já está disponível nesse ponto).
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();
+  window.addEventListener("vitula-lang", build);
 })();

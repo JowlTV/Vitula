@@ -39,7 +39,7 @@ Object.assign(DungeonScene.prototype, {
     if (!this.bigMap) { this.bigMap = this.add.graphics().setDepth(5); this.uiLayer.add(this.bigMap); }
     this.bigMap.setVisible(this.bigOpen);
     if (!this.bigTitle) { this.bigTitle = txt(this, VIEW_W / 2, 64, "", 30, "#e0c890").setOrigin(0.5).setDepth(6).setShadow(2, 2, "#000", 0, true, true); this.uiLayer.add(this.bigTitle); }
-    this.bigTitle.setText(`${this.region.name}\nAndar ${this.floorN} de ${FLOORS}`).setAlign("center").setVisible(this.bigOpen);
+    this.bigTitle.setText(t("floor_title", { name: this.region.name, n: this.floorN, total: FLOORS })).setAlign("center").setVisible(this.bigOpen);
     if (this.bigOpen) this.drawBigMap();
   },
 
@@ -126,7 +126,7 @@ Object.assign(DungeonScene.prototype, {
     // embaixo do minimapa (canto superior direito): nome do andar pequeno, ouro e chaves
     // posição fixa, abaixo do maior minimapa possível (150×110): cada andar tem um tamanho e o mapa maior cobria o ouro
     const mR = VIEW_W - 12, mB = 14 + 110 + 10;
-    this.hudFloor = txt(this, mR, mB + 2, `${this.region.name} · Andar ${this.floorN}/${FLOORS}`, 11, "#c8b890", { title: true }).setOrigin(1, 0);
+    this.hudFloor = txt(this, mR, mB + 2, t("floor_display", { name: this.region.name, n: this.floorN, total: FLOORS }), 11, "#c8b890", { title: true }).setOrigin(1, 0);
     ui.add(this.hudFloor);
     ui.add(this.add.image(mR - 92, mB + 26, "i_gold_coin").setScale(0.9));
     this.goldText = txt(this, mR - 84, mB + 19, "0", 11, COLORS.gold); ui.add(this.goldText);
@@ -170,7 +170,7 @@ Object.assign(DungeonScene.prototype, {
       this.basicAutoBg = this.add.rectangle(bx0 + size / 2, by0 - 9, 34, 11, 0x3a7a2e, 1).setStrokeStyle(1, 0x9fe08a); ui.add(this.basicAutoBg);
       this.basicAuto = txt(this, bx0 + size / 2, by0 - 9, "AUTO", 9, "#eaffd8").setOrigin(0.5); ui.add(this.basicAuto);
       const hit = this.add.rectangle(bx0, by0, size, size, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true }); ui.add(hit); this.basicHit = hit;
-      hit.on("pointerdown", () => { Settings.data.autoAttack = Settings.data.autoAttack === false; Settings.save(); this.msg(`Ataque automático ${Settings.data.autoAttack ? "ligado" : "desligado"}`); });
+      hit.on("pointerdown", () => { Settings.data.autoAttack = Settings.data.autoAttack === false; Settings.save(); this.msg(t(Settings.data.autoAttack ? "auto_attack_on" : "auto_attack_off")); });
     }
     this.buildBattleList(ui);
     this.buildSkillWin(ui);
@@ -347,7 +347,7 @@ Object.assign(DungeonScene.prototype, {
     if (this.skW && this.skW.vis) {
       const one = id => { const q = Save.skill(this.vocId, id), f = q.tries / skillTriesNeeded(id, q.lvl); return [`${SKILLS[id].name}`, `${q.lvl}  ${Math.floor(100 * f)}%`, f, 0x5a9a4a]; };
       const ml = Save.voc(this.vocId).ml, mlf = ml.spent / mlNeeded(this.vocId, ml.lvl);
-      const rows = [["Nível", String(h.level), null],
+      const rows = [[t("level_label"), String(h.level), null],
         [t("class_label"), this.promo() ? this.promo().name : VOCATIONS[this.vocId].name, null],
         [t("experience"), `${Math.floor(h.xp).toLocaleString("pt-BR")} / ${Math.round(this.xpNext()).toLocaleString("pt-BR")}`, h.xp / this.xpNext(), 0x8a7430],
         [t("magic_level"), `${this.mlEff()}  ${Math.floor(100 * mlf)}%`, mlf, 0x4a6ab8],
@@ -382,13 +382,13 @@ Object.assign(DungeonScene.prototype, {
     T_(X + W - 20, Y + 14, "U / ESC fecha", 11, COLORS.dim).setOrigin(1, 0);
     const free = this.attrFree();
     T_(VIEW_W / 2, Y + 52, free > 0 ? t("attrs_points", { n: free }) : t("attrs_none"), 14, free > 0 ? "#9fe08a" : COLORS.dim).setOrigin(0.5);
-    T_(VIEW_W / 2, Y + 72, `Nível ${this.hero.level} · ${this.hero.level - 1 - free} ponto(s) já distribuído(s)`, 11, COLORS.dim).setOrigin(0.5);
+    T_(VIEW_W / 2, Y + 72, t("attrs_spent", { n: this.hero.level, k: this.hero.level - 1 - free }), 11, COLORS.dim).setOrigin(0.5);
     ids.forEach((id, i) => {
       const A = ATTRS[id], y = Y + 96 + i * RH, n = this.attr(id);
       const name = id === "weapon" ? (this.ranged ? "Distance" : "Sword") : A.name;
       c.add(this.add.rectangle(X + 16, y, W - 32, RH - 4, 0x1a1612, 0.9).setOrigin(0).setStrokeStyle(1, 0x4a3e2c));
       T_(X + 26, y + 3, name, 14, COLORS.text);
-      T_(X + 26, y + 17, id === "weapon" ? `+1 de ${name}` : A.desc, 11, COLORS.dim);
+      T_(X + 26, y + 17, id === "weapon" ? t("attr_weapon_plus", { name }) : A.desc, 11, COLORS.dim);
       T_(X + W - 150, y + 8, `${n}`, 14, COLORS.gold).setOrigin(1, 0);
       T_(X + W - 140, y + 10, n ? A.show(n) : "", 11, "#9fd0ff");
       const on = free > 0;
@@ -431,8 +431,8 @@ Object.assign(DungeonScene.prototype, {
     this.paused = true; this.tweens.pauseAll();
     this.pauseBox = this.panel(t("pause_title"),
       t("pause_controls") + "\n" +
-      Object.values(this.spells).map(sp => `${sp.key} · ${sp.name} (nv ${sp.level})`).join("   ") +
-      "\n5 e 6: poções · I: mochila · U: atributos · TAB: mapa · roda do mouse: zoom\nBaús pedem chave de bronze.",
+      Object.values(this.spells).map(sp => `${sp.key} · ${sp.name} (${t("level_n", { n: sp.level })})`).join("   ") +
+      "\n" + t("pause_keys"),
       [[t("resume"), () => this.togglePause()], [t("abandon"), () => { this.togglePause(); this.finish(false); }]]);
   },
 
@@ -445,12 +445,12 @@ Object.assign(DungeonScene.prototype, {
     else this.tweens.add({ targets: h.spr, angle: 90, alpha: 0.7, duration: 400 });
     const fxs = [];
     try { for (const c of [this.cameras.main]) if (c && c.postFX) fxs.push(c.postFX.addColorMatrix()); } catch (e) {}
-    const t = { k: 0 };
-    this.tweens.add({ targets: t, k: 1, duration: 1600, ease: "Sine.easeIn", onUpdate: () => fxs.forEach(cm => { cm.reset(); cm.grayscale(t.k); }) });
+    const gk = { k: 0 };
+    this.tweens.add({ targets: gk, k: 1, duration: 1600, ease: "Sine.easeIn", onUpdate: () => fxs.forEach(cm => { cm.reset(); cm.grayscale(gk.k); }) });
     this.time.delayedCall(1300, () => {
       if (this.finished) return;
       const veil = this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 1).setOrigin(0).setAlpha(0).setDepth(40);
-      const msg = txt(this, VIEW_W / 2, VIEW_H / 2 - 20, "Você morreu", 46, "#e8e8e8").setOrigin(0.5).setAlpha(0).setDepth(41);
+      const msg = txt(this, VIEW_W / 2, VIEW_H / 2 - 20, t("death_title"), 46, "#e8e8e8").setOrigin(0.5).setAlpha(0).setDepth(41);
       this.uiLayer.add([veil, msg]);
       this.tweens.add({ targets: veil, alpha: 0.55, duration: 900 });
       this.tweens.add({ targets: msg, alpha: 1, scale: { from: 1.15, to: 1 }, duration: 1100, ease: "Sine.easeOut" });
@@ -462,8 +462,10 @@ Object.assign(DungeonScene.prototype, {
   // morte: perde experiência, equipamentos e ouro coletado, conforme as bênçãos da Oráculo
   deathPenalty() {
     const d = Save.voc(this.vocId), b = DEATH_LOSS[Math.min(3, d.bless || 0)];
-    const xpBefore = d.xpTotal || 0;
-    d.xpTotal = Math.floor(xpBefore * (1 - b.xp));
+    // perde só parte da experiência do nível atual: o nível nunca cai (antes perdia % do total,
+    // o herói despencava vários níveis e "subia tudo de novo" em poucos abates)
+    const xpBefore = d.xpTotal || 0, cur = Save.levelInfo(xpBefore).xp;
+    d.xpTotal = Math.max(0, xpBefore - cur * b.xp);
     const eqLost = [];
     for (const slot of Object.keys(d.equip || {})) if (b.equip >= 1 || Math.random() < b.equip) { eqLost.push(slot); delete d.equip[slot]; }
     const goldRaw = Math.round(this.goldRun * this.stats.greed);
@@ -484,9 +486,9 @@ Object.assign(DungeonScene.prototype, {
     }
     Save.save();
     const v = VOCATIONS[this.vocId];
-    const penText = pen ? `\n\nMorte — bênçãos da Oráculo: ${pen.bless}/3\nExperiência perdida: ${Math.round(pen.b.xp * 100)}%\nEquipamentos perdidos: ${pen.b.equip >= 1 ? "todos" : Math.round(pen.b.equip * 100) + "%"}\nOuro perdido: ${Math.round(pen.b.gold * 100)}% (${pen.goldLost})` : "";
+    const penText = pen ? t("death_pen", { bless: pen.bless, xp: Math.round(pen.b.xp * 100), eq: pen.b.equip >= 1 ? t("word_all") : Math.round(pen.b.equip * 100) + "%", gold: Math.round(pen.b.gold * 100), lost: pen.goldLost }) : "";
     this.panel(victory ? t("dungeon_won") : t("you_fell"),
-      `Dificuldade: ${Math.round(this.diff * 100)}%\nAndar alcançado: ${this.floorN}/${FLOORS}\nNível: ${this.hero.level}\nAbates: ${this.kills}\nOuro obtido: ${earned}   (bolsa do ${v.name}: ${Save.gold(this.vocId)})` + penText,
+      t("run_summary", { d: Math.round(this.diff * 100), f: this.floorN, total: FLOORS, lvl: this.hero.level, k: this.kills, g: earned, voc: v.name, bag: Save.gold(this.vocId) }) + penText,
       [[t("descend_again"), () => this.scene.restart()]]
         .concat(cityUnlocked() ? [[t("back_to_city"), () => { this.registry.set("townSpawn", "sewer"); this.scene.start("town"); }]] : [])
         .concat([[t("back_to_map"), () => this.scene.start("map")]]));

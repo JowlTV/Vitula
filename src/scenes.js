@@ -197,7 +197,7 @@ class TitleScene extends Phaser.Scene {
     this.tweens.add({ targets: logo, y: 168, duration: 2600, yoyo: true, repeat: -1, ease: "Sine.inOut" });
     button(this, VIEW_W / 2, 340, 260, t("play"), () => this.scene.start("select"), 18);
     button(this, VIEW_W / 2, 392, 260, t("options"), () => this.scene.start("options"), 16);
-    txt(this, VIEW_W / 2, 515, "Créditos a JowlTV", 12, COLORS.dim).setOrigin(0.5);
+    txt(this, VIEW_W / 2, 515, t("credits_jowl"), 12, COLORS.dim).setOrigin(0.5);
     this.input.once("pointerdown", () => menuMusic(this));
     this.input.keyboard.once("keydown", () => menuMusic(this));
     this.input.keyboard.on("keydown-ENTER", () => this.scene.start("select"));
@@ -224,7 +224,7 @@ class OptionsScene extends Phaser.Scene {
     const half = Math.ceil(ACTIONS.length / 2);
     ACTIONS.forEach(([id, label], i) => {
       const col = i < half ? 0 : 1, y = 204 + (i % half) * 21, lx = col ? 490 : 60;
-      txt(this, lx, y, label, 12, COLORS.text).setOrigin(0, 0.5);
+      txt(this, lx, y, t("bind_" + id) === "bind_" + id ? label : t("bind_" + id), 12, COLORS.text).setOrigin(0, 0.5);
       for (let slot = 0; slot < 2; slot++) {
         const x = lx + 268 + slot * 76;
         const box = this.add.rectangle(x, y, 70, 19, 0x1a1820).setStrokeStyle(1, 0x6a5a40).setInteractive({ useHandCursor: true });
@@ -348,16 +348,8 @@ class SelectScene extends Phaser.Scene {
 
 // Introdução: a vista da torre sobre os arredores de Karhyn, o título e o texto subindo devagar.
 // Qualquer tecla, clique ou toque pula. Ao fim, o jogo começa no portão de Karhyn, de dia.
-const INTRO_TITLE = "A Queda de Karhyn";
-const INTRO_TEXT = [
-  "No continente de Godoyr existe uma pequena cidade chamada Karhyn.",
-  "Uma cidade virtuosa, de gente carinhosa, calorosa e festeira, conhecida por sua forja, de onde saem as melhores espadas e os melhores escudos de todo o continente.",
-  "Dizem que o metal usado na forja nasce do ferro minerado nas montanhas próximas à Torre das Amazonas — ferro que, à noite, é banhado pela luz da deusa.",
-  "Mas Karhyn está em caos.",
-  "O mal assola os seus moradores. Cresce o ódio dos monstros da escuridão, e animais que antes eram inofensivos agora atacam com uma fúria pungente.",
-  "Na taverna A Harpa Dançante, os boatos correm de mesa em mesa: nos esgotos de Karhyn habita um mal tão perigoso que, se conseguir subir todos os andares e chegar à superfície...",
-  "...poderá ser o nosso fim.",
-].join("\n\n");
+const introTitle = () => t("intro_title");
+const introText = () => [1, 2, 3, 4, 5, 6, 7].map(i => t("intro_" + i)).join("\n\n");
 class IntroScene extends Phaser.Scene {
   constructor() { super("intro"); }
   create() {
@@ -376,7 +368,7 @@ class IntroScene extends Phaser.Scene {
     veil.fillStyle(0x050406, 0.42).fillRect(0, 0, VIEW_W, VIEW_H);
     veil.fillGradientStyle(0x050406, 0x050406, 0x050406, 0x050406, 0, 0, 0.9, 0.9).fillRect(0, VIEW_H - 150, VIEW_W, 150);
     // título dramático
-    const title = this.add.text(VIEW_W / 2, VIEW_H / 2 - 20, INTRO_TITLE, { fontFamily: FONT_TITLE, fontSize: "64px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 8, resolution: 2 })
+    const title = this.add.text(VIEW_W / 2, VIEW_H / 2 - 20, introTitle(), { fontFamily: FONT_TITLE, fontSize: "64px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 8, resolution: 2 })
       .setOrigin(0.5).setAlpha(0).setShadow(0, 4, "#000000", 8, true, true);
     const rule = this.add.rectangle(VIEW_W / 2, VIEW_H / 2 + 26, 360, 2, 0x8e2a2c).setAlpha(0).setScale(0, 1);
     this.tweens.add({ targets: title, alpha: 1, y: VIEW_H / 2 - 30, duration: 2200, ease: "Sine.out" });
@@ -384,7 +376,7 @@ class IntroScene extends Phaser.Scene {
     this.tweens.add({ targets: [title, rule], alpha: 0, delay: 5200, duration: 1600 });
     // texto em perspectiva, como a abertura de Star Wars: nasce grande embaixo, sobe devagar e some pequeno no horizonte.
     // O texto é desenhado uma vez (invisível) e redesenhado a cada quadro em faixas, cada uma mais estreita que a de baixo.
-    const src = this.add.text(0, 0, INTRO_TEXT, { fontFamily: FONT_TITLE, fontSize: "30px", color: "#f0d878", stroke: "#0c0608", strokeThickness: 5, resolution: 2,
+    const src = this.add.text(0, 0, introText(), { fontFamily: FONT_TITLE, fontSize: "30px", color: "#f0d878", stroke: "#0c0608", strokeThickness: 5, resolution: 2,
       align: "center", wordWrap: { width: 600 }, lineSpacing: 12, padding: { x: 8, y: 8 } }).setVisible(false);
     if (this.textures.exists("intro_crawl")) this.textures.remove("intro_crawl");
     const CW = VIEW_W * 2, CH = VIEW_H * 2, tex = this.textures.createCanvas("intro_crawl", CW, CH);
@@ -392,7 +384,7 @@ class IntroScene extends Phaser.Scene {
     this.crawl = { src: src.canvas, tex, ctx: tex.getContext(), scroll: -9999, CW, CH, started: false,
       horizon: CH * 0.16, top: CH * 0.30, depth: 520, speed: 46 };   // medidas em pixels do canvas (2× a tela)
     this.time.delayedCall(5600, () => { this.crawl.scroll = 0; this.crawl.started = true; });
-    const skip = txt(this, VIEW_W - 16, VIEW_H - 14, "Enter, clique ou toque: pular", 11, COLORS.dim).setOrigin(1, 1).setAlpha(0);
+    const skip = txt(this, VIEW_W - 16, VIEW_H - 14, t("intro_skip"), 11, COLORS.dim).setOrigin(1, 1).setAlpha(0);
     this.tweens.add({ targets: skip, alpha: 0.9, delay: 1500, duration: 800 });
     this.cameras.main.fadeIn(1200, 0, 0, 0);
     // só aceita pular depois de um instante (o clique que escolheu a vocação não conta)
@@ -509,8 +501,8 @@ class MapScene extends Phaser.Scene {
     this.sel = id;
     this.infoTitle.setText(r.name);
     const open = r.playable && this.unlocked(id);
-    this.infoTier.setText(r.town ? "Cidade + " + "☠".repeat(r.tier) + " esgoto de 5 andares" : "Dificuldade " + "☠".repeat(r.tier) + "   ·   5 andares");
-    this.infoDesc.setText(r.desc + (!r.playable ? "\n\nEm breve." : !open ? "\n\nAbre depois de vencer os Esgotos de Karhyn." : ""));
+    this.infoTier.setText(r.town ? t("region_town_tier", { skulls: "☠".repeat(r.tier) }) : t("region_tier", { skulls: "☠".repeat(r.tier) }));
+    this.infoDesc.setText(r.desc + (!r.playable ? t("region_coming_soon") : !open ? t("region_locked") : ""));
     this.startBtn.forEach(o => o.setAlpha(open ? 1 : 0.4));
     this.startBtn[1].setText(r.town ? "Entrar" : "Descer");
   }
@@ -525,7 +517,7 @@ class ShopScene extends Phaser.Scene {
     this.voc = this.registry.get("vocation") || "knight";
     const V = VOCATIONS[this.voc];
     this.add.nineslice(VIEW_W / 2, 282, "panel", null, 640, 440, 16, 16, 16, 16);
-    txt(this, VIEW_W / 2, 86, "Loja de Karhyn", 32, COLORS.gold).setOrigin(0.5);
+    txt(this, VIEW_W / 2, 86, t("shop_title"), 32, COLORS.gold).setOrigin(0.5);
     this.goldT = txt(this, VIEW_W / 2, 118, "", 16, COLORS.gold).setOrigin(0.5);
     if (V.passive) txt(this, VIEW_W / 2, 142, `Passiva — ${V.passive.name}: ${V.passive.desc}`, 12, COLORS.dim).setOrigin(0.5);
     this.rows = [];
@@ -544,7 +536,7 @@ class ShopScene extends Phaser.Scene {
     this.registry.set("shopFrom", null); this.registry.set("shopTab", null);
     const goBack = () => { if (back === "town") this.registry.set("townSpawn", "here"); this.scene.start(back); };
     button(this, VIEW_W / 2 - 90, 470, 160, "Voltar", goBack, 15);
-    const [, tb] = button(this, VIEW_W / 2 + 90, 470, 160, "Poções", () => { this.showPots(!this.potBox); tb.setText(this.potBox ? "Atributos" : "Poções"); }, 15);
+    const [, tb] = button(this, VIEW_W / 2 + 90, 470, 160, t("potions"), () => { this.showPots(!this.potBox); tb.setText(this.potBox ? t("attributes") : t("potions")); }, 15);
     this.input.keyboard.on("keydown-ESC", goBack);
     this.refresh();
     if (tab === "potions") { this.showPots(true); tb.setText("Atributos"); }
@@ -583,14 +575,14 @@ class ShopScene extends Phaser.Scene {
     this.refresh();
   }
   refresh() {
-    this.goldT.setText(`◉ ${Save.gold(this.voc)} de ouro`);
+    this.goldT.setText(t("gold_display", { n: Save.gold(this.voc) }));
     for (const r of this.rows) {
       const l = this.lvl(r.id), it = SHOP[r.id], max = l >= it.max;
-      r.desc.setText(l ? `Atual: ${it.desc(l)}` + (max ? "" : `  →  próximo: ${it.desc(l + 1)}`) : `Próximo: ${it.desc(1)}`);
+      r.desc.setText(l ? t("shop_current", { desc: it.desc(l) }) + (max ? "" : t("shop_next", { desc: it.desc(l + 1) })) : t("shop_first_next", { desc: it.desc(1) }));
       r.pips.clear();
       for (let k = 0; k < it.max; k++) r.pips.fillStyle(k < l ? 0xe0bc60 : 0x2c2a30, 1).fillRect(VIEW_W / 2 - 238 + k * 12, r.y + 18, 9, 5);
       const c = shopCost(r.id, l);
-      r.bt.setText(max ? "Máximo" : `◉ ${c}`).setColor(max ? COLORS.dim : Save.gold(this.voc) >= c ? COLORS.gold : COLORS.hurt);
+      r.bt.setText(max ? t("shop_max") : `◉ ${c}`).setColor(max ? COLORS.dim : Save.gold(this.voc) >= c ? COLORS.gold : COLORS.hurt);
     }
   }
 }

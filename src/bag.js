@@ -27,7 +27,7 @@ Object.assign(DungeonScene.prototype, {
     // detalhes do item sob o mouse (linha no rodapé da mochila)
     const tip = T_(X + 30, Y + H - 34, t("bag_tip"), 12, COLORS.dim, { wordWrap: { width: W - 60 } });
     const showTip = (g, extra = "") => { const E = EQUIP[g.id], R = RARITY[g.r], low = this.hero.level < E.lvl, bad = !equipOk(g.id, this.vocId);
-      tip.setText(`${gearName(g)} · ${R.name} · nível ${E.lvl}${bad ? " · não serve para a sua vocação" : ""}${extra}\n${equipStats(g)}${E.desc ? " — " + E.desc : ""}`).setColor(low || bad ? "#e08070" : R.color); };
+      tip.setText(`${gearName(g)} · ${R.name}${t("tip_level", { n: E.lvl })}${bad ? t("tip_wrong_voc") : ""}${extra}\n${equipStats(g)}${E.desc ? " — " + E.desc : ""}`).setColor(low || bad ? "#e08070" : R.color); };
     const _sn = n => { const m = { helmet: t("slot_helmet"), weapon: t("slot_weapon"), armor: t("slot_armor"), shield: t("slot_shield"), legs: t("slot_legs"), boots: t("slot_boots"), light: t("slot_light") }; return Object.fromEntries(Object.entries(m).map(([k, v]) => [v, k])); }; const slotOf = _sn();
     for (const [name, cx, cy] of slots) {
       const sx = ex + cx * (S + G), sy = ey + cy * (S + 22), sl = slotOf[name], g = sl && d.equip[sl], id = g && g.id;
@@ -38,7 +38,7 @@ Object.assign(DungeonScene.prototype, {
         c.add(this.add.image(sx + S / 2, sy + S / 2, "eq_" + id).setScale(1.25));
         if (g.p) T_(sx + S - 4, sy + S - 14, `+${g.p}`, 10, RARITY[g.r].color).setOrigin(1, 0);
         const hit = this.add.rectangle(sx, sy, S, S, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true }); c.add(hit);
-        hit.on("pointerover", () => showTip(g, " · vestido (clique para tirar)"));
+        hit.on("pointerover", () => showTip(g, t("tip_worn")));
         hit.on("pointerup", () => { this.unequipSlot(sl); this.buildBag(); });
       }
     }
@@ -51,7 +51,7 @@ Object.assign(DungeonScene.prototype, {
     const groups = [
       [t("attack_label"), [[t("base_dmg"), `${Math.round(mx * 0.6)}–${Math.round(mx)}` + (this.stats.weapon && !this.ranged && this.stats.weapon.elDmg ? ` +${this.stats.weapon.elDmg} ${ELEMENTS[this.stats.weapon.el].name.toLowerCase()}` : "")], [t("atk_speed"), `${this.attacksPerSec().toFixed(2)} ${t("hits_per_sec")}`], [t("critical"), `${(this.critChance() * 100).toFixed(1).replace(".", ",")}% (×1,8)`]]],
       [t("defense_label"), [[t("total_hp"), `${Math.ceil(h.hp)} / ${Math.round(h.maxHp)}`], [t("defense_value"), this.defenseValue().toFixed(1)], [t("block_chance"), `${Math.round(this.blockChance() * 100)}%`],
-        [t("regen_label"), `${(this.stats.recovery || 0).toFixed(1).replace(".", ",")} vida/s · ${(this.stats.manaReg || 0).toFixed(1).replace(".", ",")} ${VOCATIONS[this.vocId].mana ? "mana" : "fúria"}/s`],
+        [t("regen_label"), t("regen_line", { hp: (this.stats.recovery || 0).toFixed(1).replace(".", ","), res: (this.stats.manaReg || 0).toFixed(1).replace(".", ","), kind: VOCATIONS[this.vocId].mana ? t("word_mana") : t("word_fury") })],
         [t("resistances"), Object.keys(this.stats.res || {}).filter(k => this.stats.res[k]).map(k => `${ELEMENTS[k].name} ${this.stats.res[k] > 0 ? "+" : ""}${Math.round(this.stats.res[k] * 100)}%`).join(" · ") || t("no_resist")]]],
       [t("skills_label"), [this.ranged ? ["Distance", sk("distance") + (this.buffOn("hunter") ? "  +10" : "")] : ["Sword", sk("sword") + (this.buffOn("berserker") ? "  +10" : "")], ["Shield", sk("shield")],
         ["Magic level", `${ml.lvl}  (${mlPct}%)` + (this.buffOn("mage") ? "  +10" : "")]]],
@@ -92,7 +92,7 @@ Object.assign(DungeonScene.prototype, {
     }
     // equipamentos guardados: clique para vestir
     T_(ix, py + 8, t("stored_gear", { n: d.gear.length }) + (d.essence ? ` · ${t("essences_label", { n: d.essence })}` : ""), 13, COLORS.gold);
-    if (!d.gear.length) T_(ix, py + 28, "Nenhum. Monstros às vezes deixam cair.", 11, COLORS.dim);
+    if (!d.gear.length) T_(ix, py + 28, t("no_gear"), 11, COLORS.dim);
     const GS = 36, cols = 7, maxRows = Math.max(1, Math.floor((Y + H - 44 - (py + 28)) / GS));
     d.gear.slice(0, cols * maxRows).forEach((g, i) => {
       const id = g.id; if (!EQUIP[id]) return;
@@ -104,7 +104,7 @@ Object.assign(DungeonScene.prototype, {
       hit.on("pointerover", () => showTip(g));
       hit.on("pointerup", () => { if (this.equipItem(i)) this.buildBag(); else showTip(g); });
     });
-    if (d.gear.length > cols * maxRows) T_(ix, Y + H - 52, `+${d.gear.length - cols * maxRows} na mochila`, 11, COLORS.dim);
+    if (d.gear.length > cols * maxRows) T_(ix, Y + H - 52, t("more_in_bag", { n: d.gear.length - cols * maxRows }), 11, COLORS.dim);
     for (const o of c.list) if (o.type === "Text") o.setShadow(1, 1, "#000000", 0, true, true);
   },
 

@@ -175,7 +175,7 @@ Object.assign(DungeonScene.prototype, {
   usePotion(slot) {
     const h = this.hero, d = Save.voc(this.vocId), id = d.potionSlots[slot], P = POTIONS[id];
     if (!P || this.finished || this.paused || h.dead) return;
-    if (!potionOk(id, this.vocId)) { this.msg(`${P.name} não serve para ${VOCATIONS[this.vocId].name}.`); return; }
+    if (!potionOk(id, this.vocId)) { this.msg(t("potion_wrong_voc", { name: P.name, voc: VOCATIONS[this.vocId].name })); return; }
     h.potCd = h.potCd || {};
     if ((h.potCd[id] || 0) > 0) return;
     if (!(d.potions[id] > 0)) { this.msg(t("no_potion", { name: P.name.toLowerCase() })); return; }
@@ -251,7 +251,7 @@ Object.assign(DungeonScene.prototype, {
         this.time.delayedCall(260, () => {
           this.buildFloor();
           this.cameras.main.fadeIn(300);
-          this.msg(this.floorN === 3 ? "O esgoto desaba numa caverna natural. Fique perto da luz."
+          this.msg(this.floorN === 3 ? t("cave_collapse")
             : this.floorN < FLOORS ? t("floor_info", { region: this.region.name, n: this.floorN }) : t("last_floor"));
         });
       } else this.finish(true);
@@ -262,7 +262,7 @@ Object.assign(DungeonScene.prototype, {
   bumpProp(x, y) {
     const k = key(x, y), pr = this.props.get(k);
     if (pr.kind === "chest_closed") {
-      if (this.keys <= 0) { this.msg("O baú está trancado. Precisa de uma chave de bronze."); return; }
+      if (this.keys <= 0) { this.msg(t("chest_locked")); return; }
       this.keys--; pr.spr.setTexture("chest_open"); pr.kind = "chest_open";
       sfx(this, "chest", 0.6); this.msg(t("chest_open"));
       this.goldRun += Phaser.Math.Between(30, 60);
@@ -319,8 +319,8 @@ Object.assign(DungeonScene.prototype, {
     const pk = this.pickups.get(k); this.pickups.delete(k); pk.spr.destroy();
     const info = ITEMS[pk.item], h = this.hero, px = h.px, py = h.py - 60;
     switch (pk.item) {
-      case "gold": case "silver": if (this.buffOn("luck")) pk.amount = Math.round(pk.amount * 1.5); this.goldRun += pk.amount; this.floatText(px, py, `+${pk.amount} ouro`, COLORS.gold); sfx(this, "pickup", 0.35); break;
-      case "red_gem": this.goldRun += info.gold; this.floatText(px, py, `+${info.gold} ouro`, COLORS.gold); sfx(this, "gem"); break;
+      case "gold": case "silver": if (this.buffOn("luck")) pk.amount = Math.round(pk.amount * 1.5); this.goldRun += pk.amount; this.floatText(px, py, t("gold_float", { n: pk.amount }), COLORS.gold); sfx(this, "pickup", 0.35); break;
+      case "red_gem": this.goldRun += info.gold; this.floatText(px, py, t("gold_float", { n: info.gold }), COLORS.gold); sfx(this, "gem"); break;
       case "blue_gem": this.addXp(info.xp); this.floatText(px, py, `+${info.xp} exp`, COLORS.soul); sfx(this, "gem"); break;
       case "bronze_key": this.keys++; this.msg(t("got_key")); sfx(this, "pickup"); break;
       case "scroll": for (const s in h.cds) h.cds[s] = 0; this.addXp(40); this.msg("O pergaminho renova suas magias."); sfx(this, "levelup", 0.3); break;
@@ -435,13 +435,13 @@ Object.assign(DungeonScene.prototype, {
     if (!a || a.used || this.paused || this.bagOpen || this.finished || h.dead) return false;
     if (Math.abs(h.x - a.x) > 1 || Math.abs(h.y - a.y) > 1) return false;
     const d = Save.voc(this.vocId), n = d.bless || 0;
-    if (n >= 3) { this.msg("A Oráculo já lhe concedeu toda a sua bênção."); return true; }
+    if (n >= 3) { this.msg(t("blessing_max")); return true; }
     d.bless = n + 1; a.used = true; Save.save();
     if (this.altarImg) this.altarImg.setAlpha(0.55);
     sfx(this, "levelup", 0.3);
     this.floatText(h.px, h.py - 90, t("bless_float", { n: d.bless }), "#f2e2a0");
     this.paused = true;
-    const box = this.panel(t("bless_title"), BLESS_TEXT[n], [["Continuar", () => { box.destroy(); this.paused = false; }]]);
+    const box = this.panel(t("bless_title"), BLESS_TEXT[n], [[t("continue_label"), () => { box.destroy(); this.paused = false; }]]);
     return true;
   },
 

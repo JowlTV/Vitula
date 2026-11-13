@@ -6,7 +6,7 @@ Object.assign(DungeonScene.prototype, {
   cast(spell) {
     const h = this.hero, sp = this.spells[spell];
     if (this.finished || this.paused || h.dead) return;
-    if (h.level < sp.level) { this.msg(`${sp.name} é liberada no nível ${sp.level}.`); return; }
+    if (h.level < sp.level) { this.msg(t("spell_locked", { name: sp.name, n: sp.level })); return; }
     if (h.cds[spell] > 0) return;
     if (h.fury < sp.fury) { this.msg(t("fury_low", { resource: VOCATIONS[this.vocId].resource || t("fury_label"), name: sp.name, cost: sp.fury })); return; }
     h.fury -= sp.fury;

@@ -90,7 +90,7 @@ Object.assign(DungeonScene.prototype, {
     this.buildDarkness();
     this.updateFlow();
     this.reveal();
-    if (this.hudFloor) this.hudFloor.setText(`${this.region.name} · Andar ${this.floorN}/${FLOORS}`);
+    if (this.hudFloor) this.hudFloor.setText(t("floor_display", { name: this.region.name, n: this.floorN, total: FLOORS }));
   },
 
 

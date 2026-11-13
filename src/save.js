@@ -74,7 +74,7 @@ const Settings = {
   save() { try { localStorage.setItem(this.key, JSON.stringify(this.data)); } catch (e) {} },
   reset() { this.data.keys = {}; this.data.music = 0.6; this.data.sfx = 0.8; this.data.speed = 0.75; this.load(); this.save(); },
   keyLabel(name) {
-    const map = { UP: "Seta cima", DOWN: "Seta baixo", LEFT: "Seta esq.", RIGHT: "Seta dir.", ONE: "1", TWO: "2", THREE: "3", FOUR: "4", ESC: "Esc", SPACE: "Espaço",
+    const map = { UP: t("key_up"), DOWN: t("key_down"), LEFT: t("key_left"), RIGHT: t("key_right"), ONE: "1", TWO: "2", THREE: "3", FOUR: "4", ESC: "Esc", SPACE: t("key_space"),
       NUMPAD_ONE: "Num 1", NUMPAD_TWO: "Num 2", NUMPAD_THREE: "Num 3", NUMPAD_FOUR: "Num 4", SHIFT: "Shift", CTRL: "Ctrl", ENTER: "Enter",
       NUMPAD_ADD: "Num +", NUMPAD_SUBTRACT: "Num −", NUMPAD_FIVE: "Num 5", NUMPAD_SIX: "Num 6", NUMPAD_ZERO: "Num 0", PLUS: "+", MINUS: "−", FIVE: "5", SIX: "6", TAB: "Tab", HOME: "Home", END: "End", PAGE_UP: "PgUp", PAGE_DOWN: "PgDn", NUMPAD_SEVEN: "Num 7", NUMPAD_NINE: "Num 9" };
     return map[name] || (name.length <= 2 ? name : name.charAt(0) + name.slice(1).toLowerCase());

@@ -315,7 +315,7 @@ Object.assign(DungeonScene.prototype, {
       this.addXp(m.data.xp * (this.diff || 1) * (m.champion ? 5 : 1));
       { const ct = Save.voc(this.vocId).contract;   // contrato de caça do mural de Karhyn
         if (ct && ct.kind === m.kind && ct.got < ct.n) { ct.got++; Save.save();
-          this.msg(ct.got >= ct.n ? `Contrato cumprido: ${ct.n}/${ct.n} ${m.data.name}. Volte ao mural de Karhyn.` : `Contrato: ${ct.got}/${ct.n} ${m.data.name}`); } }
+          this.msg(ct.got >= ct.n ? t("contract_progress_done", { n: ct.n, name: m.data.name }) : t("contract_progress", { got: ct.got, n: ct.n, name: m.data.name })); } }
       // drop: ouro, às vezes comida ou chave (itens de equipamento entram depois)
       const before = this.pickups.size;
       if (Math.random() < 0.6 || m.elite || m.champion) this.drop(m.x, m.y, "gold");

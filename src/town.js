@@ -11,13 +11,13 @@ const TOWN_FILES = ["depot_chest"];
 function cityUnlocked() { return true; }
 
 // História e boatos de Karhyn (ligados à introdução "A Queda de Karhyn"): cada morador conta a sua parte, uma fala por vez.
-const TOWN_LORE = {
+const townLore = () => ({
   smith: [t("lore_smith_1"), t("lore_smith_2"), t("lore_smith_3"), t("lore_smith_4")],
   potions: [t("lore_potions_1"), t("lore_potions_2"), t("lore_potions_3"), t("lore_potions_4")],
   depot: [t("lore_depot_1"), t("lore_depot_2"), t("lore_depot_3"), t("lore_depot_4")],
   inn: [t("lore_inn_1"), t("lore_inn_2"), t("lore_inn_3"), t("lore_inn_4")],
   lodging: [t("lore_lodging_1"), t("lore_lodging_2"), t("lore_lodging_3")],
-};
+});
 
 class TownScene extends Phaser.Scene {
   constructor() { super("town"); }
@@ -275,7 +275,7 @@ class TownScene extends Phaser.Scene {
     const V = VOCATIONS[this.vocId], d = Save.voc(this.vocId);
     // história e boatos: cada morador conta um pedaço do que está acontecendo em Karhyn
     const lore = (title, key, back) => {
-      const L = TOWN_LORE[key], n = (this.loreN = this.loreN || {})[key] = ((this.loreN || {})[key] || 0);
+      const L = townLore()[key], n = (this.loreN = this.loreN || {})[key] = ((this.loreN || {})[key] || 0);
       return [t("ask_lore"), () => { const i = this.loreN[key] % L.length; this.loreN[key]++;
         this.say(title, L[i], [[this.loreN[key] % L.length ? t("lore_more") : t("lore_restart"), () => lore(title, key, back)[1]()], [t("lore_back"), back]]); }];
     };
@@ -309,11 +309,11 @@ class TownScene extends Phaser.Scene {
       this.say(t("lodging_title"), t("lodging_desc"), [[t("lodging_rest"), () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], lore(t("lodging_title"), "lodging", () => this.use(z)), [t("leave"), () => this.closeDialog()]]);
     } else if (z.kind === "hall" && !(d.bless > 0)) {
       d.bless = 1; Save.save();
-      this.blessingVision(() => this.say(t("zone_oracle"), t("bless_first"), [[t("thanks"), () => this.closeDialog()]]));
+      this.blessingVision(() => this.say(t("zone_oracle"), t("bless_first"), [[t("kneel_thank"), () => this.closeDialog()]]));
     } else if (z.kind === "hall") {
       this.say(t("zone_oracle"), t("bless_train_desc"),
-        [[t("bless_title"), () => this.blessingVision(() => this.say(t("zone_oracle"), t("bless_second"), [[t("leave"), () => this.closeDialog()]]))],
-         [t("attrs_title"), () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], [t("leave"), () => this.closeDialog()]]);
+        [[t("pray"), () => this.blessingVision(() => this.say(t("zone_oracle"), t("bless_second"), [[t("stand_up"), () => this.closeDialog()]]))],
+         [t("train_attrs"), () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], [t("leave"), () => this.closeDialog()]]);
     }
   }
 
@@ -529,8 +529,8 @@ class TownScene extends Phaser.Scene {
     grid(t("bag_label"), d.potions, d.depot.potions, x + 30);
     grid(t("depot_chest"), d.depot.potions, d.potions, x + w - 330);
     c.add(txt(this, VIEW_W / 2, y + 140, "⇄", 30, COLORS.gold).setOrigin(0.5));
-    c.add(txt(this, x + 30, y + h - 44, `Ouro: ◉ ${d.gold}   ·   equipamentos também ficarão aqui quando chegarem`, 12, COLORS.dim));
-    const [b, t] = button(this, x + w - 100, y + h - 38, 140, t("close"), () => this.closeDialog(), 14); c.add([b, t]);
+    c.add(txt(this, x + 30, y + h - 44, t("depot_footer", { gold: d.gold }), 12, COLORS.dim));
+    const [b, bt] = button(this, x + w - 100, y + h - 38, 140, t("close"), () => this.closeDialog(), 14); c.add([b, bt]);
   }
   // forja do ferreiro: escolhe um item (vestido ou na mochila) e aprimora em +1
   // custo: 2 itens da mesma raridade (o ferreiro pega os mais fracos da mochila) ou Essências de chefe (Lendário)
@@ -554,7 +554,7 @@ class TownScene extends Phaser.Scene {
     c.add(this.add.nineslice(x, y, "panel", null, w, h, 16, 16, 16, 16).setOrigin(0));
     const T_ = (tx, ty, s, size = 13, col = COLORS.text, o) => { const t = txt(this, tx, ty, s, size, col, o); c.add(t); return t; };
     T_(VIEW_W / 2, y + 24, t("forge_title"), 24, COLORS.gold).setOrigin(0.5);
-    T_(x + 24, y + 50, `Essências de chefe: ${d.essence || 0}`, 12, "#ffa030");
+    T_(x + 24, y + 50, t("forge_essences", { n: d.essence || 0 }), 12, "#ffa030");
     // lista de itens
     const GS = 44, cols = 8, gx0 = x + 24, gy0 = y + 74;
     if (!all.length) T_(gx0, gy0, t("no_equip"), 13, COLORS.dim);
@@ -573,33 +573,33 @@ class TownScene extends Phaser.Scene {
       const E = EQUIP[sel.id], R = RARITY[sel.r], nx = forgeNext(sel);
       c.add(this.add.image(rx + 28, y + 96, "eq_" + sel.id).setScale(1.6));
       T_(rx + 62, y + 76, gearName(sel), 16, R.color);
-      T_(rx + 62, y + 98, `${R.name} · nível ${E.lvl}`, 12, COLORS.dim);
+      T_(rx + 62, y + 98, t("forge_item_line", { rarity: R.name, n: E.lvl }), 12, COLORS.dim);
       T_(rx, y + 130, t("now_label"), 12, COLORS.dim); T_(rx, y + 146, equipStats(sel), 12, COLORS.text, { wordWrap: { width: rw } });
       let yy = y + 196;
       if (!nx) { T_(rx, yy, sel.r === 3 ? t("forge_max_ultra") : t("forge_max_legend"), 13, "#e0bc60", { wordWrap: { width: rw } }); }
       else {
         const after = { id: sel.id, r: nx.to.r, p: nx.to.p };
-        T_(rx, yy, `Depois: ${gearName(after)} · ${RARITY[after.r].name}`, 12, RARITY[after.r].color); yy += 16;
+        T_(rx, yy, t("forge_after", { name: gearName(after), rarity: RARITY[after.r].name }), 12, RARITY[after.r].color); yy += 16;
         T_(rx, yy, equipStats(after), 12, COLORS.text, { wordWrap: { width: rw } }); yy += 40;
         let ok = false, mats = [];
-        if (nx.essence) { ok = (d.essence || 0) >= nx.essence; T_(rx, yy, `Custo: ${nx.essence} Essências de chefe (você tem ${d.essence || 0})`, 12, ok ? COLORS.text : "#e08070"); }
+        if (nx.essence) { ok = (d.essence || 0) >= nx.essence; T_(rx, yy, t("forge_cost_ess", { n: nx.essence, have: d.essence || 0 }), 12, ok ? COLORS.text : "#e08070"); }
         else {
           // materiais: os 2 itens mais fracos da mochila com a mesma raridade (nunca os vestidos nem o escolhido)
           mats = d.gear.filter(g => g !== sel && g.r === sel.r).sort((a, b) => EQUIP[a.id].rank - EQUIP[b.id].rank || a.p - b.p).slice(0, nx.items);
           ok = mats.length >= nx.items;
-          T_(rx, yy, `Custo: ${nx.items} itens ${RARITY[sel.r].name} da mochila` + (ok ? " (derretidos)" : ` — você tem ${mats.length}`), 12, ok ? COLORS.text : "#e08070");
+          T_(rx, yy, t("forge_cost_items", { n: nx.items, rarity: RARITY[sel.r].name }) + (ok ? t("forge_melted") : t("forge_have", { n: mats.length })), 12, ok ? COLORS.text : "#e08070");
           mats.forEach((g, i) => { const mx = rx + i * 46, my = yy + 22; c.add(this.add.rectangle(mx, my, 40, 40, 0x1a1612).setOrigin(0).setStrokeStyle(2, RARITY[g.r].hex)); c.add(this.add.image(mx + 20, my + 20, "eq_" + g.id)); });
           if (mats.length) T_(rx + mats.length * 46 + 6, yy + 34, mats.map(gearName).join(", "), 11, COLORS.dim, { wordWrap: { width: rw - mats.length * 46 - 6 } });
         }
-        const [b, t] = button(this, rx + rw / 2, y + h - 80, 220, ok ? t("upgrade_btn") : t("need_materials"), () => {
+        const [b, bt] = button(this, rx + rw / 2, y + h - 80, 220, ok ? t("upgrade_btn") : t("need_materials"), () => {
           if (!ok) return;
           if (nx.essence) d.essence -= nx.essence; else d.gear = d.gear.filter(g => !mats.includes(g));
           const up = after.r > sel.r; sel.r = after.r; sel.p = after.p; Save.save();
           sfx(this, up ? "levelup" : "hit", 0.5); this.cameras.main.flash(200, 255, 190, 90);
           this.openForge(sel);
         }, 15);
-        if (!ok) { b.setAlpha(0.5); t.setAlpha(0.6); }
-        c.add([b, t]);
+        if (!ok) { b.setAlpha(0.5); bt.setAlpha(0.6); }
+        c.add([b, bt]);
       }
     } else T_(rx, y + 80, t("choose_left"), 13, COLORS.dim);
     const [b2, t2] = button(this, x + w - 100, y + h - 34, 140, t("close"), () => this.closeDialog(), 14); c.add([b2, t2]);
@@ -684,7 +684,7 @@ class TownScene extends Phaser.Scene {
     const c = d.contract, close = [t("leave"), () => this.closeDialog()];
     if (c) {
       const M = MONSTERS[c.kind], done = c.got >= c.n, T_ = CONTRACT_TIERS[c.tier];
-      const txt_ = `Contrato ${T_.name.toLowerCase()}: caçar ${c.n} ${c.n > 1 ? M.plural || M.name + "s" : M.name}.\nProgresso: ${Math.min(c.got, c.n)}/${c.n}.\n\nRecompensa: ${c.xp} de experiência, ${c.gold} de ouro e um item ${RARITY[c.item.r].name.toLowerCase()} (${EQUIP[c.item.id].name}).`;
+      const txt_ = t("contract_desc", { tier: T_.name.toLowerCase(), n: c.n, name: c.n > 1 ? M.plural || M.name + "s" : M.name, got: Math.min(c.got, c.n), xp: c.xp, gold: c.gold, rarity: RARITY[c.item.r].name.toLowerCase(), item: EQUIP[c.item.id].name });
       this.say(t("zone_board"), txt_, done ? [[t("deliver_contract"), () => {
         d.xpTotal += c.xp; Save.addGold(this.vocId, c.gold); d.gear.push(c.item); d.contract = null; d.contractOffers = rollContracts(L); Save.save();
         this.goldT && this.goldT.setText(`${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`);
@@ -695,9 +695,9 @@ class TownScene extends Phaser.Scene {
     }
     const opts = d.contractOffers.map(o => {
       const M = MONSTERS[o.kind], T_ = CONTRACT_TIERS[o.tier];
-      return [`${T_.name}: ${o.n} ${o.n > 1 ? M.plural || M.name + "s" : M.name} · ${o.xp} exp · ${o.gold} ouro · item ${RARITY[o.item.r].name.toLowerCase()}`,
+      return [t("contract_offer", { tier: T_.name, n: o.n, name: o.n > 1 ? M.plural || M.name + "s" : M.name, xp: o.xp, gold: o.gold, rarity: RARITY[o.item.r].name.toLowerCase() }),
         () => { d.contract = Object.assign({}, o, { got: 0 }); Save.save(); sfx(this, "pickup", 0.4);
-          this.say(t("zone_board"), `Você arrancou o papel do mural. Contrato aceito: caçar ${o.n} ${o.n > 1 ? M.plural || M.name + "s" : M.name} no esgoto.\n\nVolte aqui para receber a recompensa.`, [close]); }];
+          this.say(t("zone_board"), t("contract_taken", { n: o.n, name: o.n > 1 ? M.plural || M.name + "s" : M.name }), [close]); }];
     });
     this.say(t("zone_board"), t("board_desc"), [...opts, close]);
   }
@@ -716,8 +716,8 @@ class TownScene extends Phaser.Scene {
     if (this.textures.exists("vignette")) c.add(this.add.image(0, 0, "vignette").setOrigin(0));
     c.add(txt(this, VIEW_W / 2, 30, t("tower_view_title"), 24, COLORS.gold).setOrigin(0.5));
     c.add(txt(this, VIEW_W / 2, 58, t("tower_view_desc"), 12, COLORS.text).setOrigin(0.5));
-    const [b, t] = button(this, VIEW_W / 2, VIEW_H - 40, 200, t("sewer_go"), () => this.tweens.add({ targets: c, alpha: 0, duration: 500, onComplete: () => this.closeDialog() }), 15);
-    c.add([b, t]);
+    const [b, bt] = button(this, VIEW_W / 2, VIEW_H - 40, 200, t("sewer_go"), () => this.tweens.add({ targets: c, alpha: 0, duration: 500, onComplete: () => this.closeDialog() }), 15);
+    c.add([b, bt]);
     this.tweens.add({ targets: c, alpha: 1, duration: 700 });
   }
   dialogSelect(i) {
