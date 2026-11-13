@@ -17,11 +17,13 @@ class DungeonScene extends Phaser.Scene {
     this._stamps = {};
     this.floorN = 1;
     const fq = new URLSearchParams(location.search).get("floor");
-    if (fq) this.floorN = Phaser.Math.Clamp(+fq, 1, FLOORS);
+    if (fq) this.floorN = Math.max(1, +fq);
     this.bot = new URLSearchParams(location.search).has("bot");
     this.god = new URLSearchParams(location.search).has("god");
     this.regionId = this.registry.get("region") || "karhyn_sewers";
     this.region = REGIONS[this.regionId];
+    this.floors = this.region.floors || FLOORS;   // a encosta tem 8 andares; o esgoto, 5
+    { const sf = this.registry.get("startFloor"); if (sf) { this.floorN = Math.min(sf, this.floors); this.registry.set("startFloor", 0); } }   // portal de teste
     this.vocId = this.registry.get("vocation") || "knight";
     this.spells = vocSpells(this.vocId); this.ap = vocAnim(this.vocId); this.heroScale = vocScale(this.vocId);
     this.ranged = VOCATIONS[this.vocId].ranged || 0;
@@ -46,7 +48,7 @@ class DungeonScene extends Phaser.Scene {
     this.cameras.main.roundPixels = true;
     // música por região
     const regionMusic = { karhyn_sewers: "music_sewers", goblin_slope: "music_slope" };
-    playMusic(this, regionMusic[this.regionId] || "music_sewers", 0.5);
+    this._music = regionMusic[this.regionId] || "music_sewers"; playMusic(this, this._music, 0.5);
     this.input.keyboard.addCapture("UP,DOWN,LEFT,RIGHT,SPACE");
     // teclas vindas das Opções (remapeáveis)
     const K = Phaser.Input.Keyboard.KeyCodes, kb = this.input.keyboard;
@@ -86,7 +88,7 @@ class DungeonScene extends Phaser.Scene {
     this.cameras.main.ignore(this.uiLayer);
     this.buildFloor();
     this.buildHud();
-    this.msg(this.floorN < FLOORS ? t("floor_enter", { name: this.region.name, n: this.floorN }) : t("floor_last"));
+    this.msg(this.floorN < this.floors ? t("floor_enter", { name: this.region.name, n: this.floorN }) : t("floor_last"));
   }
 
 

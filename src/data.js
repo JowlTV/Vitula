@@ -32,7 +32,7 @@ const VOCATIONS = {
 // posições no mapa de Karhyn (tela 960×540)
 const REGIONS = {
   karhyn_sewers: { name: "Karhyn e seus Esgotos", town: true, desc: "Comece na Cidadela de Karhyn; desça ao esgoto pelo bueiro quando quiser. Túneis úmidos sob a cidade. Ratos e morcegos por toda parte.", pos: [505, 294], tier: 1, playable: true },
-  goblin_slope: { name: "Encosta dos Goblins", desc: "A montanha a oeste da cidade, cheia de tocas de goblins.", pos: [117, 240], tier: 2, after: "karhyn_sewers" },
+  goblin_slope: { name: "Encosta dos Goblins", desc: "A montanha a oeste da cidade, cheia de tocas de goblins. Oito andares de trilhas e tocas até o acampamento do Líder Goblin.", pos: [117, 240], tier: 2, after: "karhyn_sewers", playable: true, floors: 8, cave: true, theme: "slope", boss: "goblin_leader", escort: "goblin" },
   orc_camp: { name: "Acampamento Orc", desc: "Paliçadas e fogueiras ao norte, no caminho da torre.", pos: [348, 138], tier: 3, after: "goblin_slope" },
   amazon_tower: { name: "Torre das Amazonas", desc: "A torre guardada por amazonas, valquírias e bruxas.", pos: [564, 66], tier: 4, after: "orc_camp" },
   ghostlands: { name: "Terras Espectrais", desc: "Campos mortos a leste, cobertos de teias. Espectros vagam pela névoa.", pos: [810, 183], tier: 5, after: "amazon_tower" },
@@ -48,6 +48,11 @@ const MON_ANIM = {
   skeleton:  [200, "am_skeleton_walk_v2", "am_skeleton_attack", "am_skeleton_death", 0.42],
   cave_rat:  [72, "am_cave_rat", "am_cave_rat_attack", "am_cave_rat_death", 0.7],
   giant_rat: [108, "am_giant_rat", "am_giant_rat_attack", "am_giant_rat_death", 0.85],
+  // Encosta dos Goblins (SpriteCook, 8 quadros, de perfil olhando para a direita)
+  goblin:           [50, "am_goblin", "am_goblin_attack", "am_goblin_death", 1.2],
+  goblin_scavenger: [50, "am_goblin_scavenger", "am_goblin_scavenger_attack", "am_goblin_scavenger_death", 1.25],
+  goblin_assassin:  [50, "am_goblin_assassin", "am_goblin_assassin_attack", "am_goblin_assassin_death", 1.25],
+  goblin_leader:    [68, "am_goblin_leader", "am_goblin_leader_attack", "am_goblin_leader_death", 1.3],
   spider:        [SPIDER_FW, "am_spider_walk", "am_spider_attack", "am_spider_death", 0.32],
   poison_spider: [SPIDER_FW, "am_spider_walk", "am_spider_attack", "am_spider_death", 0.34],
 };
@@ -63,6 +68,11 @@ const MONSTERS = {
   // aranhas do esgoto (a partir do 2º andar). A venenosa usa a mesma arte, esverdeada, e envenena: 3% da vida máx./s por 5 s
   spider:        { name: "Aranha", tex: "am_spider_walk", hp: 175, arm: 2, dmg: 11, step: 0.36, atk: 1.9, xp: 26 },
   poison_spider: { name: "Aranha Venenosa", plural: "Aranhas Venenosas", tex: "am_spider_walk", tint: 0x9fe07a, hp: 205, arm: 2.5, dmg: 9, step: 0.4, atk: 2.0, xp: 34, poison: { pct: 0.03, dur: 5 } },
+  // Encosta dos Goblins: mais fortes que o fundo do esgoto (andar 5 ≈ esqueleto com 1,6× de vida)
+  goblin:           { name: "Goblin", tex: "am_goblin", hp: 430, arm: 5, dmg: 16, step: 0.5, atk: 1.9, xp: 52 },
+  goblin_scavenger: { name: "Goblin Saqueador", plural: "Goblins Saqueadores", tex: "am_goblin_scavenger", hp: 520, arm: 6, dmg: 15, step: 0.56, atk: 2.1, xp: 60, gold: 4 },
+  goblin_assassin:  { name: "Goblin Assassino", plural: "Goblins Assassinos", tex: "am_goblin_assassin", hp: 360, arm: 4, dmg: 22, step: 0.36, atk: 1.5, xp: 66 },
+  goblin_leader:    { name: "Líder Goblin", plural: "Líderes Goblins", tex: "am_goblin_leader", hp: 9000, arm: 12, dmg: 95, step: 0.42, atk: 1.7, xp: 1400, gold: 250, elite: true },
   giant_rat: { name: "Rato Gigante", plural: "Ratos Gigantes", tex: "m_giant_rat", anim: "am_giant_rat", scale: 0.85, hp: 2500, arm: 6, dmg: 50, step: 0.45, atk: 1.8, xp: 300, gold: 60, elite: true },
 };
 
@@ -72,6 +82,19 @@ const FLOOR_MONSTERS = {
   3: [["cave_rat", 28], ["skeleton", 20], ["slime", 15], ["bat", 12], ["spider", 15], ["poison_spider", 10]],
   4: [["cave_rat", 28], ["skeleton", 28], ["slime", 10], ["bat", 10], ["spider", 12], ["poison_spider", 12]],
   5: [["skeleton", 32], ["cave_rat", 28], ["slime", 10], ["bat", 8], ["spider", 10], ["poison_spider", 12]],
+};
+// monstros por andar de cada região (o esgoto usa FLOOR_MONSTERS)
+const REGION_MONSTERS = {
+  goblin_slope: {
+    1: [["goblin", 70], ["bat", 20], ["goblin_scavenger", 10]],
+    2: [["goblin", 55], ["goblin_scavenger", 30], ["bat", 15]],
+    3: [["goblin", 45], ["goblin_scavenger", 35], ["goblin_assassin", 10], ["spider", 10]],
+    4: [["goblin", 40], ["goblin_scavenger", 30], ["goblin_assassin", 20], ["spider", 10]],
+    5: [["goblin", 35], ["goblin_scavenger", 30], ["goblin_assassin", 25], ["poison_spider", 10]],
+    6: [["goblin", 30], ["goblin_scavenger", 30], ["goblin_assassin", 30], ["poison_spider", 10]],
+    7: [["goblin", 30], ["goblin_scavenger", 30], ["goblin_assassin", 40]],
+    8: [["goblin", 35], ["goblin_scavenger", 30], ["goblin_assassin", 35]],
+  },
 };
 
 const ITEMS = {
@@ -189,7 +212,7 @@ const vocAnim = voc => (VOCATIONS[voc] && VOCATIONS[voc].anim) || "kn_";
 // (antes ~1,25 casa: o herói passava da altura das portas e paredes).
 const WORLD_SCALE = 0.78;
 // altura alvo (px) de cada objeto da masmorra, em proporção ao herói (~60 px de corpo)
-const PROP_H = { barrel: 40, crate_intact: 32, crate_damaged: 32, chest_closed: 28, chest_open: 28, pot: 27, urn: 36, torch_stand: 62, pillar: 92 };
+const PROP_H = { slope_burrow: 72, slope_tent: 92, slope_totem: 84, slope_campfire: 44, slope_barricade: 50, slope_palisade: 56, slope_weapon_rack: 52, slope_stakes: 40, slope_cairn: 40, barrel: 40, crate_intact: 32, crate_damaged: 32, chest_closed: 28, chest_open: 28, pot: 27, urn: 36, torch_stand: 62, pillar: 92 };
 const vocScale = voc => ((VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42) * WORLD_SCALE * 1.12;   // heróis 12% maiores (nov/26)
 
 // sombra de contato: elipse escura colada na base de um sprite (origem 0.5,1), some junto com ele

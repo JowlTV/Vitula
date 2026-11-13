@@ -9,11 +9,11 @@ class DungeonGen {
 
   rand(a, b) { return a + Math.floor(this.rng() * (b - a + 1)); }
 
-  generate(seed, floor = 1) {
+  generate(seed, floor = 1, forceCave = false) {
     let s = seed >>> 0 || 1;
     this.rng = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
-    this.cave = floor >= 3;
-    if (this.cave) { this.generateCave(floor); return; }
+    this.cave = forceCave || floor >= 3;
+    if (this.cave) { this.generateCave(forceCave ? 3 + Math.min(2, Math.floor((floor - 1) / 3)) : floor); return; }
     // quanto mais fundo, mais cisternas na malha (e maior o mapa)
     // (limite: ~112×50 tiles, o máximo que a textura do chão aguenta com folga)
     const [COLS, ROWS, SX] = [[3, 2, 22], [3, 3, 22], [4, 3, 22], [4, 3, 26], [5, 3, 22]][Math.min(4, Math.max(0, floor - 1))];
@@ -202,13 +202,19 @@ class DungeonGen {
     }
     this.cells = c;
     // lagos subterrâneos (não podem cortar a caverna)
-    const reachAll = () => {
+    // o lago não pode cortar a caverna: tudo continua alcançável mesmo SEM a faixa de margem
+    // (as casas vizinhas da água não contam como passagem; assim nunca sobra só uma trilha espremida na beira)
+    const reachAll = () => reachFrom(false) && reachFrom(true);
+    const reachFrom = noShore => {
+      const shore = new Uint8Array(W * H);
+      if (noShore) for (let i = 0; i < W * H; i++) if (c[i] === 2) { const x = i % W, y = (i / W) | 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (inb(x + dx, y + dy)) shore[I(x + dx, y + dy)] = 1; }
       let start = -1, total = 0;
-      for (let i = 0; i < W * H; i++) if (c[i] === 1) { total++; if (start < 0) start = i; }
+      for (let i = 0; i < W * H; i++) if (c[i] === 1 && !shore[i]) { total++; if (start < 0) start = i; }
+      if (start < 0) return false;
       const seen = new Uint8Array(W * H), q = [start]; seen[start] = 1;
       for (let h = 0; h < q.length; h++) {
         const v = q[h], x = v % W, y = (v / W) | 0;
-        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const j = I(x + dx, y + dy); if (c[j] === 1 && !seen[j]) { seen[j] = 1; q.push(j); } }
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const j = I(x + dx, y + dy); if (c[j] === 1 && !shore[j] && !seen[j]) { seen[j] = 1; q.push(j); } }
       }
       return q.length === total;
     };

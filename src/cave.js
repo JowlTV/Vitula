@@ -5,12 +5,15 @@ Object.assign(DungeonScene.prototype, {
 
   // pixels das artes da caverna, já limpos: tira as linhas de "lajota" e as bordas transparentes
   caveTex() {
-    if (this._caveTex) return this._caveTex;
-    const read = k => {
+    const theme = this.slope ? "slope" : "cave";
+    if (this._caveTex && this._caveTex.theme === theme) return this._caveTex;
+    const read = (k, sx, sy) => {
       const src = this.textures.get(k).getSourceImage();
-      const cv = document.createElement("canvas"); cv.width = src.width; cv.height = src.height;
-      const cx = cv.getContext("2d"); cx.drawImage(src, 0, 0);
-      return { d: cx.getImageData(0, 0, src.width, src.height).data, w: src.width, h: src.height };
+      // recorte de 64×64 (a encosta usa artes maiores; o desenho lê blocos de 64)
+      const w = sx != null ? 64 : src.width, h = sx != null ? 64 : src.height;
+      const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+      const cx = cv.getContext("2d"); cx.drawImage(src, -(sx || 0), -(sy || 0));
+      return { d: cx.getImageData(0, 0, w, h).data, w, h };
     };
     const lum = (d, i) => d[i] * 0.3 + d[i + 1] * 0.6 + d[i + 2] * 0.1;
     // remove linhas escuras de rejunte (colunas/linhas bem mais escuras que a mediana) e a moldura
@@ -41,8 +44,11 @@ Object.assign(DungeonScene.prototype, {
       }
       return d;
     };
-    const moss = clean(read("cave_floor_moss"), true), red = clean(read("cave_floor_red"), true);
-    const top = clean(read("cave_rock_top"), true), face = clean(read("cave_wall_front"), false);
+    // Encosta dos Goblins: chão de terra e cascalho da montanha, rocha cinza (frente à esquerda, topo à direita)
+    const moss = this.slope ? clean(read("slope_floor", 40, 60), false) : clean(read("cave_floor_moss"), true);
+    const red = this.slope ? clean(read("slope_floor_b", 20, 120), false) : clean(read("cave_floor_red"), true);
+    const top = this.slope ? clean(read("slope_rocks", 64, 0), false) : clean(read("cave_rock_top"), true);
+    const face = this.slope ? clean(read("slope_rocks", 0, 0), false) : clean(read("cave_wall_front"), false);
     // paleta da água (miolo do cave_water, do escuro ao claro) e da lama (tons marrons do cave_shore)
     const pal = (img, ok) => {
       const set = new Map();
@@ -57,7 +63,7 @@ Object.assign(DungeonScene.prototype, {
     let mud = pal(read("cave_shore"), (r, g, b) => r > g && r > b + 14);
     if (mud.length < 2) mud = [[60, 44, 30], [92, 68, 44]];
     const pick = (arr, f) => arr[Math.max(0, Math.min(arr.length - 1, Math.floor(f * arr.length)))];
-    this._caveTex = { moss, red, top, face, water, foam: water[water.length - 1], mudD: pick(mud, 0.25), mudL: pick(mud, 0.7) };
+    this._caveTex = { theme, moss, red, top, face, water, foam: water[water.length - 1], mudD: pick(mud, 0.25), mudL: pick(mud, 0.7) };
     return this._caveTex;
   },
 
@@ -137,7 +143,9 @@ Object.assign(DungeonScene.prototype, {
           }
         } else {
           lastOpen[col] = y;
-          const wv = (mixW || WA[ti]) ? field(WA, x, y, 0) + (nB(x, y) - 0.5) * 0.3 + (nA(x, y) - 0.5) * 0.22 : 0;
+          let wv = (mixW || WA[ti]) ? field(WA, x, y, 0) + (nB(x, y) - 0.5) * 0.3 + (nA(x, y) - 0.5) * 0.22 : 0;
+          // o desenho obedece à colisão: casa de água é sempre água; casa andável nunca vira água (no máximo lama na beira)
+          wv = WA[ti] ? Math.max(wv, 0.52) : Math.min(wv, 0.48);
           if (wv > 0.5) {
             // lago: paleta da arte da água, mais escuro no fundo, ondulações finas e espuma na margem
             const depth = Math.min(1, (wv - 0.5) * 2.6), qv = nQ(x * 0.7, y * 1.3) * 0.7 + nG(x, y * 2) * 0.3;
@@ -172,6 +180,7 @@ Object.assign(DungeonScene.prototype, {
 
   // decoração plana da caverna: pedrinhas, ossos, ninhos nos cantos e cogumelos que brilham
   caveDecor() {
+    if (this.slope) return this.slopeDecor();
     const g = this.gen, rt = this.floorRT;
     const put = (kind, x, y, scale = 1, alpha = 1) => {
       this.decorUsed.add(key(x, y));
@@ -199,6 +208,7 @@ Object.assign(DungeonScene.prototype, {
 
   // mobília das câmaras: pedregulhos que bloqueiam, baú, e um acampamento abandonado por andar
   furnishChamber(i, isFar, blocked) {
+    if (this.slope) return this.slopeChamber(i, isFar, blocked);
     const g = this.gen;
     const cells = Phaser.Utils.Array.Shuffle(g.roomCells(i, false).filter(c => !blocked(c.x, c.y)));
     const wallCells = cells.filter(c => this.wallsAround(c.x, c.y) >= 1);
@@ -216,6 +226,40 @@ Object.assign(DungeonScene.prototype, {
     if ((isFar || g.rng() < 0.35) && wallCells.length) { const c = wallCells.pop(); if (!blocked(c.x, c.y)) this.addProp(c.x, c.y, "chest_closed"); }
   },
 
+  // Encosta dos Goblins: decoração plana (montes de pedra e ossos junto à rocha)
+  slopeDecor() {
+    const g = this.gen, rt = this.floorRT;
+    const put = (k, x, y, scale = 1, alpha = 1) => { this.decorUsed.add(key(x, y)); rt.draw(this.stamp(k).setOrigin(0.5).setScale(scale).setAlpha(alpha), x * T + T / 2 + Phaser.Math.Between(-8, 8), y * T + T / 2 + Phaser.Math.Between(-6, 6)); };
+    for (let i = 0; i < g.rooms.length; i++) {
+      const cells = Phaser.Utils.Array.Shuffle(g.roomCells(i, false).filter(c => !this.decorUsed.has(key(c.x, c.y))));
+      const wallCells = cells.filter(c => this.wallsAround(c.x, c.y) >= 1);
+      for (let k = 0; k < 2 && wallCells.length; k++) { const c = wallCells.pop(); put("cave_rocks", c.x, c.y, 0.55, 0.9); }
+      if (g.rng() < 0.5 && wallCells.length) { const c = wallCells.pop(); put("decor_bones", c.x, c.y, 0.85, 0.85); }
+    }
+  },
+
+  // Encosta: um acampamento goblin por andar (tenda, totem, cavalete de armas, fogueira acesa e paliçada);
+  // nas outras clareiras, tocas na rocha, marcos de pedra, estacas e barricadas
+  slopeChamber(i, isFar, blocked) {
+    const g = this.gen;
+    const cells = Phaser.Utils.Array.Shuffle(g.roomCells(i, false).filter(c => !blocked(c.x, c.y)));
+    const wallCells = cells.filter(c => this.wallsAround(c.x, c.y) >= 1);
+    const open = cells.filter(c => this.wallsAround(c.x, c.y) === 0);
+    if (this.campRoom === undefined) this.campRoom = i === 0 ? -1 : i;
+    const fire = c => { this.addProp(c.x, c.y, "slope_campfire"); const p = this.cellPos(c.x, c.y); this.lights.push({ x: p.x, y: p.y - 14, r: 4 * T, warm: true, ph: Math.random() * 10 }); this.addDust(p.x, p.y - 10); };
+    if (this.campRoom === i && wallCells.length >= 4 && open.length) {
+      const base = open[0]; fire(base);
+      const near = wallCells.filter(c => Math.abs(c.x - base.x) + Math.abs(c.y - base.y) <= 5);
+      ["slope_tent", "slope_totem", "slope_weapon_rack", "slope_palisade", "barrel"].forEach((k, n) => { if (near[n] && !blocked(near[n].x, near[n].y) && !this.props.has(key(near[n].x, near[n].y))) this.addProp(near[n].x, near[n].y, k); });
+      return;
+    }
+    if (wallCells.length && g.rng() < 0.6) { const c = wallCells.pop(); this.addProp(c.x, c.y, "slope_burrow"); }
+    const kinds = ["slope_cairn", "slope_stakes", "slope_barricade", "cave_rocks"];
+    for (let k = 0, n = g.rand(1, 3); k < n && wallCells.length; k++) { const c = wallCells.pop(); if (!blocked(c.x, c.y)) this.addProp(c.x, c.y, kinds[g.rand(0, kinds.length - 1)]); }
+    if (open.length > 6 && g.rng() < 0.35) fire(open[open.length - 1]);
+    if ((isFar || g.rng() < 0.35) && wallCells.length) { const c = wallCells.pop(); if (!blocked(c.x, c.y)) this.addProp(c.x, c.y, "chest_closed"); }
+  },
+
   // monstros soltos pelas passagens (longe do início)
   caveMonsters(start) {
     const g = this.gen, d = g.distances(start.x, start.y), cand = [];
@@ -225,7 +269,7 @@ Object.assign(DungeonScene.prototype, {
     }
     Phaser.Utils.Array.Shuffle(cand);
     const n = Math.floor(cand.length / 120) + 2;
-    for (let k = 0; k < n && cand.length; k++) { const c = cand.pop(); this.spawnMonster(weighted(FLOOR_MONSTERS[this.floorN]), c.x, c.y); }
+    for (let k = 0; k < n && cand.length; k++) { const c = cand.pop(); this.spawnMonster(weighted(this.floorMonsters()), c.x, c.y); }
   },
 
   // garantia: nenhum objeto que não quebra pode fechar uma passagem

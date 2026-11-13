@@ -172,6 +172,28 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: t("zone_oracle"), kind: "hall", x: 37, y: 8, w: 4, h: 1 });
     this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
     this.zones.push({ name: t("zone_gate"), kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
+    this.testPortals();
+  }
+
+  // PORTAIS DE TESTE (temporários): levam direto à Encosta dos Goblins e ao chefe dos ratos (5º andar do esgoto).
+  // Para remover: apagar esta função, a chamada acima e o trecho "portal" em use().
+  testPortals() {
+    const P = [
+      { x: 38, y: 10, region: "goblin_slope", floor: 1, color: 0x6fd06a, label: "Encosta" },
+      { x: 40, y: 10, region: "karhyn_sewers", floor: FLOORS, color: 0xd05a5a, label: "Chefe ratos" },
+    ];
+    for (const p of P) {
+      const cx = p.x * T + T / 2, cy = p.y * T + T / 2;
+      const glow = this.add.image(cx, cy, "light").setScale(0.55).setTint(p.color).setAlpha(0.5).setBlendMode(Phaser.BlendModes.ADD).setDepth(cy - 2);
+      const g = this.add.graphics().setDepth(cy - 1);
+      g.fillStyle(0x08060c, 0.85).fillEllipse(cx, cy + 4, 46, 22);
+      g.lineStyle(3, p.color, 1).strokeEllipse(cx, cy + 4, 46, 22).lineStyle(1, 0xffffff, 0.6).strokeEllipse(cx, cy + 4, 34, 15);
+      const lbl = this.add.text(cx, cy - 30, p.label, { fontFamily: "Bulletin, monospace", fontSize: "11px", color: "#ffffff", stroke: "#000", strokeThickness: 3, resolution: 2 }).setOrigin(0.5).setDepth(cy + 400);
+      this.world.add([glow, g, lbl]);
+      this.tweens.add({ targets: glow, alpha: 0.15, scale: 0.7, duration: 900, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+      this.tweens.add({ targets: g, scaleY: 1.06, duration: 700, yoyo: true, repeat: -1 });
+      this.zones.push({ name: "Portal de teste: " + p.label, kind: "portal", x: p.x, y: p.y, w: 1, h: 1, portal: p });
+    }
   }
 
   // ------------------------------------------------------------ herói
@@ -273,6 +295,10 @@ class TownScene extends Phaser.Scene {
 
   use(z) {
     const V = VOCATIONS[this.vocId], d = Save.voc(this.vocId);
+    if (z.kind === "portal") {   // portal de teste
+      this.registry.set("region", z.portal.region); this.registry.set("startFloor", z.portal.floor);
+      this.leave("dungeon"); return;
+    }
     // história e boatos: cada morador conta um pedaço do que está acontecendo em Karhyn
     const lore = (title, key, back) => {
       const L = townLore()[key], n = (this.loreN = this.loreN || {})[key] = ((this.loreN || {})[key] || 0);

@@ -47,7 +47,7 @@ Object.assign(DungeonScene.prototype, {
 
   drawDarkness(dt = 0.016) {
     const cam = this.cameras.main, rt = this.dark, b = this.lightBrush, h = this.hero;
-    rt.clear().fill(0x14151c, 1);
+    rt.clear().fill(this.slope ? 0x52505e : 0x14151c, 1);
     const pts = [];
     // raio de luz do herói (como a tocha/Utevo Lux do Tibia): pequeno
     h.light = h.light || {};

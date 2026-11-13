@@ -807,6 +807,7 @@ I18N.pt = {
   key_left: "Seta esq.",
   key_right: "Seta dir.",
   key_space: "Espaço",
+  mon_goblin_p: "Goblins",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -876,7 +877,7 @@ I18N.en = {
   region_karhyn_sewers: "Karhyn and its Sewers",
   region_karhyn_sewers_desc: "Start in the Citadel of Karhyn; descend into the sewer through the grate whenever you wish. Damp tunnels beneath the city. Rats and bats everywhere.",
   region_goblin_slope: "Goblin Slope",
-  region_goblin_slope_desc: "The mountain west of the city, full of goblin burrows. Eight floors of trails and dens up to the Goblin Leader's camp.",
+  region_goblin_slope_desc: "The mountain west of the city, riddled with goblin burrows. Eight levels of trails and burrows up to the Goblin Leader's camp.",
   region_orc_camp: "Orc Camp",
   region_orc_camp_desc: "Palisades and bonfires to the north, on the way to the tower.",
   region_amazon_tower: "Amazon Tower",
@@ -1560,6 +1561,7 @@ I18N.en = {
   key_left: "Left arrow",
   key_right: "Right arrow",
   key_space: "Space",
+  mon_goblin_p: "Goblins",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -1629,7 +1631,7 @@ I18N.es = {
   region_karhyn_sewers: "Karhyn y sus Alcantarillas",
   region_karhyn_sewers_desc: "Empieza en la Ciudadela de Karhyn; baja a las alcantarillas por la rejilla cuando quieras. Túneles húmedos bajo la ciudad. Ratas y murciélagos por todas partes.",
   region_goblin_slope: "Ladera de los Goblins",
-  region_goblin_slope_desc: "La montaña al oeste de la ciudad, llena de madrigueras de goblins. Ocho pisos de senderos y cuevas hasta el campamento del Líder Goblin.",
+  region_goblin_slope_desc: "La montaña al oeste de la ciudad, llena de madrigueras de goblins. Ocho niveles de senderos y madrigueras hasta el campamento del Líder Goblin.",
   region_orc_camp: "Campamento Orco",
   region_orc_camp_desc: "Empalizadas y hogueras al norte, camino a la torre.",
   region_amazon_tower: "Torre de las Amazonas",
@@ -1798,12 +1800,12 @@ I18N.es = {
   mon_poison_spider: "Araña Venenosa",
   mon_poison_spider_p: "Arañas Venenosas",
   mon_goblin: "Goblin",
-  mon_goblin_scavenger: "Goblin Carroñero",
-  mon_goblin_scavenger_p: "Goblins Carroñeros",
+  mon_goblin_scavenger: "Goblin Saqueador",
+  mon_goblin_scavenger_p: "Goblins Saqueadores",
   mon_goblin_assassin: "Goblin Asesino",
   mon_goblin_assassin_p: "Goblins Asesinos",
   mon_goblin_leader: "Líder Goblin",
-  mon_goblin_leader_p: "Líderes Goblins",
+  mon_goblin_leader_p: "Líderes Goblin",
   mon_giant_rat: "Rata Gigante",
   mon_giant_rat_p: "Ratas Gigantes",
 
@@ -2314,6 +2316,7 @@ I18N.es = {
   key_left: "Flecha izq.",
   key_right: "Flecha der.",
   key_space: "Espacio",
+  mon_goblin_p: "Goblins",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -2383,7 +2386,7 @@ I18N.de = {
   region_karhyn_sewers: "Karhyn und seine Kanalisation",
   region_karhyn_sewers_desc: "Beginne in der Zitadelle von Karhyn; steige jederzeit durch den Gully in die Kanalisation hinab. Feuchte Tunnel unter der Stadt. Ratten und Fledermäuse überall.",
   region_goblin_slope: "Goblinhang",
-  region_goblin_slope_desc: "Der Berg westlich der Stadt, voller Goblinbaue. Acht Stockwerke mit Pfaden und Höhlen bis zum Lager des Goblinanführers.",
+  region_goblin_slope_desc: "Der Berg westlich der Stadt, voller Goblin-Baue. Acht Ebenen aus Pfaden und Bauen bis zum Lager des Goblin-Anführers.",
   region_orc_camp: "Orklager",
   region_orc_camp_desc: "Palisaden und Lagerfeuer im Norden, auf dem Weg zum Turm.",
   region_amazon_tower: "Amazonenturm",
@@ -2554,10 +2557,10 @@ I18N.de = {
   mon_goblin: "Goblin",
   mon_goblin_scavenger: "Goblin-Plünderer",
   mon_goblin_scavenger_p: "Goblin-Plünderer",
-  mon_goblin_assassin: "Goblin-Assassine",
-  mon_goblin_assassin_p: "Goblin-Assassinen",
-  mon_goblin_leader: "Goblinanführer",
-  mon_goblin_leader_p: "Goblinanführer",
+  mon_goblin_assassin: "Goblin-Meuchler",
+  mon_goblin_assassin_p: "Goblin-Meuchler",
+  mon_goblin_leader: "Goblin-Anführer",
+  mon_goblin_leader_p: "Goblin-Anführer",
   mon_giant_rat: "Riesenratte",
   mon_giant_rat_p: "Riesenratten",
 
@@ -3068,6 +3071,7 @@ I18N.de = {
   key_left: "Pfeil links",
   key_right: "Pfeil rechts",
   key_space: "Leertaste",
+  mon_goblin_p: "Goblins",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -3137,7 +3141,7 @@ I18N.pl = {
   region_karhyn_sewers: "Karhyn i jego Kanały",
   region_karhyn_sewers_desc: "Zacznij w Cytadeli Karhyn; zejdź do kanałów przez kratkę, kiedy chcesz. Wilgotne tunele pod miastem. Szczury i nietoperze wszędzie.",
   region_goblin_slope: "Zbocze Goblinów",
-  region_goblin_slope_desc: "Góra na zachód od miasta, pełna nor goblinów. Osiem pięter ścieżek i jaskiń aż do obozu Przywódcy Goblinów.",
+  region_goblin_slope_desc: "Góra na zachód od miasta, pełna nor goblinów. Osiem poziomów ścieżek i nor aż do obozu Przywódcy Goblinów.",
   region_orc_camp: "Obóz Orków",
   region_orc_camp_desc: "Palisady i ogniska na północy, w drodze do wieży.",
   region_amazon_tower: "Wieża Amazonek",
@@ -3821,6 +3825,7 @@ I18N.pl = {
   key_left: "Strzałka w lewo",
   key_right: "Strzałka w prawo",
   key_space: "Spacja",
+  mon_goblin_p: "Gobliny",
 };
 
 // ── API pública ─────────────────────────────────────────────────

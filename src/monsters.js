@@ -17,7 +17,7 @@ Object.assign(DungeonScene.prototype, {
         const side = g.rng() < 0.5 ? -1 : 1, off = side * g.rand(1, 2);
         const x = t.h ? g.rand(t.x0 + 1, t.x1 - 1) : t.c + off, y = t.h ? t.c + off : g.rand(t.y0 + 1, t.y1 - 1);
         if (!this.walkable(x, y) || this.occ.has(key(x, y)) || this.spikes.has(key(x, y)) || g.isBridge(x, y)) continue;
-        this.spawnMonster(weighted(FLOOR_MONSTERS[this.floorN]), x, y);
+        this.spawnMonster(weighted(this.floorMonsters()), x, y);
       }
     }
   },
@@ -54,7 +54,7 @@ Object.assign(DungeonScene.prototype, {
 
   // invasão: uma horda com um campeão surge perto do herói (nunca nos 2 primeiros minutos)
   spawnWave() {
-    const h = this.hero, kinds = FLOOR_MONSTERS[this.floorN], spots = [];
+    const h = this.hero, kinds = this.floorMonsters(), spots = [];
     for (let y = h.y - 9; y <= h.y + 9; y++) for (let x = h.x - 9; x <= h.x + 9; x++) {
       const d = Math.max(Math.abs(x - h.x), Math.abs(y - h.y));
       if (d < 5 || !this.walkable(x, y) || this.occ.has(key(x, y)) || this.spikes.has(key(x, y)) || this.flowAt(x, y) < 0) continue;

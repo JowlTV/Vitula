@@ -3,7 +3,11 @@
 Object.assign(DungeonScene.prototype, {
 
   // ---------------------------------------------------------------- andar
+  // monstros do andar: cada região tem a sua tabela (o esgoto usa FLOOR_MONSTERS)
+  floorMonsters() { return (REGION_MONSTERS[this.regionId] || {})[this.floorN] || FLOOR_MONSTERS[Math.min(FLOORS, this.floorN)]; },
+
   buildFloor(arrive = "start") {
+    this.slope = this.region.theme === "slope";
     // libera as texturas do andar anterior (cada bloco do chão ocupa até 16 MB de vídeo)
     if (this.floorRT) { this.floorRT.destroy(); this.floorRT = null; }
     if (this.world) this.world.destroy(true);
@@ -13,10 +17,10 @@ Object.assign(DungeonScene.prototype, {
     this.pickups = new Map(); this.spikes = new Map(); this.plates = new Map(); this.clouds = [];
     this.lights = []; this.dusts = []; this.stairs = null; this.campRoom = undefined;
     this.explored = new Uint8Array(this.gen.w * this.gen.h);
-    const last = this.floorN === FLOORS;
+    const last = this.floorN === this.floors;
     if (!this.seeds) this.seeds = {};
     if (this.seeds[this.floorN] == null) this.seeds[this.floorN] = this.bot ? 1234 + this.floorN : (Math.random() * 1e9) | 0;
-    this.gen.generate(this.seeds[this.floorN], this.floorN);
+    this.gen.generate(this.seeds[this.floorN], this.floorN, !!this.region.cave);
     this.explored = new Uint8Array(this.gen.w * this.gen.h);
     const g = this.gen;
     // início: anel da cisterna 0 (o centro é o poço)
@@ -46,7 +50,7 @@ Object.assign(DungeonScene.prototype, {
     }
     for (let i = 0; i < g.rooms.length; i++) this.furnish(i, i === 0, i === far, last);
     // tom da luz do ambiente aplicado no herói (caverna esverdeada, esgoto amarronzado)
-    this.ambientTint = g.cave ? 0xa8b8a0 : 0xb8b4a6;
+    this.ambientTint = this.slope ? 0xc4bcae : g.cave ? 0xa8b8a0 : 0xb8b4a6;
     if (g.cave) { this.caveMonsters(start); this.fixBlockingProps(start); }
     this.drawSconces();
     this.waterLights();
@@ -90,7 +94,10 @@ Object.assign(DungeonScene.prototype, {
     this.buildDarkness();
     this.updateFlow();
     this.reveal();
-    if (this.hudFloor) this.hudFloor.setText(t("floor_display", { name: this.region.name, n: this.floorN, total: FLOORS }));
+    // música: chefe no último andar; ao subir de volta, a da região
+    { const rm = { karhyn_sewers: "music_sewers", goblin_slope: "music_slope" }[this.regionId] || "music_sewers";
+      const want = last ? "music_boss" : rm; if (this._music !== want) { this._music = want; if (this.cache.audio.exists(want)) playMusic(this, want, 0.5); } }
+    if (this.hudFloor) this.hudFloor.setText(t("floor_display", { name: this.region.name, n: this.floorN, total: this.floors }));
   },
 
 
@@ -126,7 +133,7 @@ Object.assign(DungeonScene.prototype, {
     if (this.altarMemo[this.floorN] === undefined) {
       const g = this.gen, n = Save.voc(this.vocId).bless || 0;
       let spot = null;
-      if (this.floorN >= 2 && this.floorN < FLOORS && n < 3 && Math.random() <= 0.4) {
+      if (this.floorN >= 2 && this.floorN < this.floors && n < 3 && Math.random() <= 0.4) {
         const cands = [];
         for (let y = 1; y < g.h - 1; y++) for (let x = 1; x < g.w - 1; x++) {
           if (!this.walkable(x, y) || this.occ.has(key(x, y)) || this.spikes.has(key(x, y)) || g.isBridge(x, y) || this.doorNear(x, y)) continue;
@@ -484,13 +491,13 @@ Object.assign(DungeonScene.prototype, {
     if (last && isFar) {
       const c = g.center(i);
       const spot = free.slice().sort((a, b) => (Math.abs(a.x - c.x) + Math.abs(a.y - c.y)) - (Math.abs(b.x - c.x) + Math.abs(b.y - c.y)))[0];
-      if (spot) { free.splice(free.indexOf(spot), 1); this.spawnMonster("giant_rat", spot.x, spot.y); }
-      for (let k = 0; k < 2 && free.length; k++) { const f = free.pop(); this.spawnMonster("cave_rat", f.x, f.y); }
+      if (spot) { free.splice(free.indexOf(spot), 1); this.spawnMonster(this.region.boss || "giant_rat", spot.x, spot.y); }
+      for (let k = 0; k < (this.region.escort ? 4 : 2) && free.length; k++) { const f = free.pop(); this.spawnMonster(this.region.escort || "cave_rat", f.x, f.y); }
       return;
     }
     const count = r.kind === "room" ? 1 + Math.ceil(this.floorN / 2) + g.rand(0, 1)
       : r.kind === "chamber" ? 1 + Math.ceil(this.floorN / 3) + g.rand(0, 1) : g.rand(1, 2);
-    for (let k = 0; k < count && free.length; k++) { const f = free.pop(); this.spawnMonster(weighted(FLOOR_MONSTERS[this.floorN]), f.x, f.y); }
+    for (let k = 0; k < count && free.length; k++) { const f = free.pop(); this.spawnMonster(weighted(this.floorMonsters()), f.x, f.y); }
   },
 
 

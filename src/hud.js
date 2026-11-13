@@ -39,7 +39,7 @@ Object.assign(DungeonScene.prototype, {
     if (!this.bigMap) { this.bigMap = this.add.graphics().setDepth(5); this.uiLayer.add(this.bigMap); }
     this.bigMap.setVisible(this.bigOpen);
     if (!this.bigTitle) { this.bigTitle = txt(this, VIEW_W / 2, 64, "", 30, "#e0c890").setOrigin(0.5).setDepth(6).setShadow(2, 2, "#000", 0, true, true); this.uiLayer.add(this.bigTitle); }
-    this.bigTitle.setText(t("floor_title", { name: this.region.name, n: this.floorN, total: FLOORS })).setAlign("center").setVisible(this.bigOpen);
+    this.bigTitle.setText(t("floor_title", { name: this.region.name, n: this.floorN, total: this.floors })).setAlign("center").setVisible(this.bigOpen);
     if (this.bigOpen) this.drawBigMap();
   },
 
@@ -126,7 +126,7 @@ Object.assign(DungeonScene.prototype, {
     // embaixo do minimapa (canto superior direito): nome do andar pequeno, ouro e chaves
     // posição fixa, abaixo do maior minimapa possível (150×110): cada andar tem um tamanho e o mapa maior cobria o ouro
     const mR = VIEW_W - 12, mB = 14 + 110 + 10;
-    this.hudFloor = txt(this, mR, mB + 2, t("floor_display", { name: this.region.name, n: this.floorN, total: FLOORS }), 11, "#c8b890", { title: true }).setOrigin(1, 0);
+    this.hudFloor = txt(this, mR, mB + 2, t("floor_display", { name: this.region.name, n: this.floorN, total: this.floors }), 11, "#c8b890", { title: true }).setOrigin(1, 0);
     ui.add(this.hudFloor);
     ui.add(this.add.image(mR - 92, mB + 26, "i_gold_coin").setScale(0.9));
     this.goldText = txt(this, mR - 84, mB + 19, "0", 11, COLORS.gold); ui.add(this.goldText);
@@ -480,15 +480,15 @@ Object.assign(DungeonScene.prototype, {
     const earned = pen ? pen.earned : Math.round(this.goldRun * this.stats.greed);
     Save.addGold(this.vocId, earned); Save.addKills(this.killsByType); Save.data.runs++;
     if (victory) {
-      Save.data.cleared["karhyn_sewers:" + this.vocId] = true;
-      const dm = Save.data.diffMax || (Save.data.diffMax = {}), k = "karhyn_sewers:" + this.vocId;
+      Save.data.cleared[this.regionId + ":" + this.vocId] = true;   // cada região registra a própria vitória
+      const dm = Save.data.diffMax || (Save.data.diffMax = {}), k = this.regionId + ":" + this.vocId;
       if (this.diff >= (dm[k] || 1) && (dm[k] || 1) < 4) dm[k] = Math.min(4, (dm[k] || 1) + 0.25);
     }
     Save.save();
     const v = VOCATIONS[this.vocId];
     const penText = pen ? t("death_pen", { bless: pen.bless, xp: Math.round(pen.b.xp * 100), eq: pen.b.equip >= 1 ? t("word_all") : Math.round(pen.b.equip * 100) + "%", gold: Math.round(pen.b.gold * 100), lost: pen.goldLost }) : "";
     this.panel(victory ? t("dungeon_won") : t("you_fell"),
-      t("run_summary", { d: Math.round(this.diff * 100), f: this.floorN, total: FLOORS, lvl: this.hero.level, k: this.kills, g: earned, voc: v.name, bag: Save.gold(this.vocId) }) + penText,
+      t("run_summary", { d: Math.round(this.diff * 100), f: this.floorN, total: this.floors, lvl: this.hero.level, k: this.kills, g: earned, voc: v.name, bag: Save.gold(this.vocId) }) + penText,
       [[t("descend_again"), () => this.scene.restart()]]
         .concat(cityUnlocked() ? [[t("back_to_city"), () => { this.registry.set("townSpawn", "sewer"); this.scene.start("town"); }]] : [])
         .concat([[t("back_to_map"), () => this.scene.start("map")]]));

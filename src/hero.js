@@ -244,15 +244,15 @@ Object.assign(DungeonScene.prototype, {
     if (this.pickups.has(k)) this.collect(k);
     if (this.plates.has(k)) this.triggerVent(this.plates.get(k));
     if (this.stairs && h.x === this.stairs.x && h.y === this.stairs.y) {
-      if (this.floorN < FLOORS) {
+      if (this.floorN < this.floors) {
         this.floorN++;
         sfx(this, "levelup", 0.3);
         this.cameras.main.fadeOut(250, 0, 0, 0);
         this.time.delayedCall(260, () => {
           this.buildFloor();
           this.cameras.main.fadeIn(300);
-          this.msg(this.floorN === 3 ? t("cave_collapse")
-            : this.floorN < FLOORS ? t("floor_info", { region: this.region.name, n: this.floorN }) : t("last_floor"));
+          this.msg(this.floorN === 3 && !this.slope ? t("cave_collapse")
+            : this.floorN < this.floors ? t("floor_info", { region: this.region.name, n: this.floorN }) : t("last_floor"));
         });
       } else this.finish(true);
     }
@@ -424,7 +424,7 @@ Object.assign(DungeonScene.prototype, {
     this.finished = true;
     const earned = Math.round(this.goldRun * this.stats.greed);
     Save.addGold(this.vocId, earned); Save.addKills(this.killsByType); Save.data.runs++; Save.save();
-    this.registry.set("townSpawn", "sewer");
+    this.registry.set("townSpawn", this.slope ? "gate" : "sewer");   // da encosta volta pelo portão
     this.cameras.main.fadeOut(400, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => this.scene.start("town"));
   },
