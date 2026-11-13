@@ -51,7 +51,7 @@ class TownScene extends Phaser.Scene {
     kb.addCapture("UP,DOWN,LEFT,RIGHT,SPACE");
     (this.keysIn.interact || []).forEach(k => k.on("down", () => this.interact()));
     this.input.keyboard.on("keydown", ev => this.dialogKey(ev));
-    (this.keysIn.pause || []).forEach(k => k.on("down", () => this.dialog ? this.closeDialog() : this.openMenu()));
+    (this.keysIn.pause || []).forEach(k => k.on("down", () => this.bagOpen ? this.toggleBag() : this.dialog ? this.closeDialog() : this.openMenu()));
     (this.keysIn.map || []).forEach(k => k.on("down", () => this.toggleMap()));
     this.bigMap = null;
     (this.keysIn.zoomIn || []).forEach(k => k.on("down", () => this.zoomBy(0.2)));
@@ -217,7 +217,7 @@ class TownScene extends Phaser.Scene {
   // ------------------------------------------------------------ herói
   spawnHero() {
     const from = this.registry.get("townSpawn") || "gate", pos = this.registry.get("townPos");
-    const [x, y] = from === "here" && pos ? pos : from === "sewer" ? [41, 9] : [4, 9];
+    const [x, y] = from === "here" && pos ? pos : from === "recall" ? RECALL_SPOT : from === "sewer" ? [41, 9] : [4, 9];
     const h = this.hero = { x, y, px: x * T + T / 2, py: y * T + T - 4, moveT: 0, facing: from === "sewer" ? [-1, 0] : [1, 0], lookLeft: false };
     h.shadow = this.add.image(h.px, h.py - 3, "shadow").setScale(0.9, 0.3);
     const ap = vocAnim(this.vocId);
@@ -241,7 +241,7 @@ class TownScene extends Phaser.Scene {
       h.px = Phaser.Math.Linear(h.fromX, h.toX, k); h.py = Phaser.Math.Linear(h.fromY, h.toY, k);
       if (h.moveT === 0) this.arrived();
     }
-    if (h.moveT === 0 && !this.dialog && !this.leaving) {
+    if (h.moveT === 0 && !this.dialog && !this.leaving && !this.bagOpen && !this.arriving) {
       const d = a => (this.keysIn[a] || []).some(k => k.isDown);
       let dx = (d("right") ? 1 : 0) - (d("left") ? 1 : 0), dy = (d("down") ? 1 : 0) - (d("up") ? 1 : 0);
       if (dx || dy) this.tryMove(dx, dy);

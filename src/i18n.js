@@ -858,6 +858,13 @@ I18N.pt = {
   arrows_bought: "Você comprou {n}× {name}.",
   arrows_full: "A aljava está cheia. Uma aljava maior carrega mais flechas.",
   bind_arrows: "Trocar o tipo de flecha (Arqueiro)",
+  bind_recall: "Retornar à cidade",
+  recall_start: "Retornando a Karhyn… não se mova.",
+  recall_moved: "Retorno interrompido: você se moveu.",
+  recall_cancel: "Retorno cancelado.",
+  recall_cd: "Retorno em recarga: {n}s.",
+  recall_in_town: "Você já está na cidade.",
+  touch_recall: "Voltar",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1662,6 +1669,13 @@ I18N.en = {
   arrows_bought: "You bought {n}× {name}.",
   arrows_full: "Your quiver is full. A bigger quiver holds more arrows.",
   bind_arrows: "Switch arrow type (Archer)",
+  bind_recall: "Return to town",
+  recall_start: "Returning to Karhyn… don't move.",
+  recall_moved: "Return interrupted: you moved.",
+  recall_cancel: "Return cancelled.",
+  recall_cd: "Return on cooldown: {n}s.",
+  recall_in_town: "You are already in town.",
+  touch_recall: "Recall",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2467,6 +2481,13 @@ I18N.es = {
   arrows_bought: "Compraste {n}× {name}.",
   arrows_full: "El carcaj está lleno. Un carcaj más grande lleva más flechas.",
   bind_arrows: "Cambiar tipo de flecha (Arquero)",
+  bind_recall: "Volver a la ciudad",
+  recall_start: "Volviendo a Karhyn… no te muevas.",
+  recall_moved: "Regreso interrumpido: te moviste.",
+  recall_cancel: "Regreso cancelado.",
+  recall_cd: "Regreso en recarga: {n}s.",
+  recall_in_town: "Ya estás en la ciudad.",
+  touch_recall: "Volver",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3272,6 +3293,13 @@ I18N.de = {
   arrows_bought: "Du hast {n}× {name} gekauft.",
   arrows_full: "Dein Köcher ist voll. Ein größerer Köcher fasst mehr Pfeile.",
   bind_arrows: "Pfeiltyp wechseln (Bogenschütze)",
+  bind_recall: "Zur Stadt zurückkehren",
+  recall_start: "Rückkehr nach Karhyn… nicht bewegen.",
+  recall_moved: "Rückkehr unterbrochen: du hast dich bewegt.",
+  recall_cancel: "Rückkehr abgebrochen.",
+  recall_cd: "Rückkehr lädt: {n}s.",
+  recall_in_town: "Du bist bereits in der Stadt.",
+  touch_recall: "Zurück",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4076,6 +4104,13 @@ I18N.pl = {
   arrows_bought: "Kupiłeś {n}× {name}.",
   arrows_full: "Kołczan jest pełny. Większy kołczan mieści więcej strzał.",
   bind_arrows: "Zmień rodzaj strzał (Łucznik)",
+  bind_recall: "Powrót do miasta",
+  recall_start: "Powrót do Karhyn… nie ruszaj się.",
+  recall_moved: "Powrót przerwany: poruszyłeś się.",
+  recall_cancel: "Powrót anulowany.",
+  recall_cd: "Powrót się odnawia: {n}s.",
+  recall_in_town: "Jesteś już w mieście.",
+  touch_recall: "Powrót",
 };
 
 // ── API pública ─────────────────────────────────────────────────

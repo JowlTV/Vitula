@@ -111,7 +111,8 @@ Object.assign(DungeonScene.prototype, {
   refreshPotionIcons() {
     const d = Save.voc(this.vocId);
     for (const pid of ["p0", "p1"]) {
-      const P = POTIONS[d.potionSlots[+pid[1]]], ic = this.slotIcons[pid];
+      const P = POTIONS[d.potionSlots[+pid[1]]], ic = this.slotIcons && this.slotIcons[pid];
+      if (!ic) continue;
       ic.setTexture(P.icon).setScale(1); ic.setScale(26 / Math.max(ic.width, ic.height));
       if (P.tint) ic.setTint(P.tint); else ic.clearTint();
     }

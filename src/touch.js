@@ -6,7 +6,7 @@
     up: ["W", "UP"], down: ["S", "DOWN"], left: ["A", "LEFT"], right: ["D", "RIGHT"],
     skill1: ["ONE"], skill2: ["TWO"], skill3: ["THREE"], skill4: ["FOUR"],
     potion1: ["FIVE"], potion2: ["SIX"], attack: ["SPACE"], interact: ["E"],
-    bag: ["I"], map: ["TAB"], autoAttack: ["R"], pause: ["ESC"],
+    bag: ["I"], recall: ["H"], map: ["TAB"], autoAttack: ["R"], pause: ["ESC"],
   };
   const FIXED = { ENTER: "ENTER", ESC: "ESC", U: "U" };
   const PREF = "vitula_touch_v1";
@@ -65,7 +65,7 @@
     ],
     util: [
       ["Esc", "ESC", "tap", t("touch_pause")], [t("touch_bag"), "bag", "tap", t("touch_bag")],
-      [t("attributes"), "U", "tap", t("touch_attrs")], [t("touch_map"), "map", "tap", t("touch_map")], ["Auto", "autoAttack", "tap", t("touch_auto")],
+      [t("attributes"), "U", "tap", t("touch_attrs")], [t("touch_map"), "map", "tap", t("touch_map")], ["Auto", "autoAttack", "tap", t("touch_auto")], [t("touch_recall"), "recall", "tap", t("touch_recall")],
     ],
   });;
 
