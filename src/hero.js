@@ -508,21 +508,22 @@ Object.assign(DungeonScene.prototype, {
   // tipo em uso (se acabou, volta para a normal); null = aljava vazia
   arrowType() {
     const d = Save.voc(this.vocId), a = d.arrows || {};
-    if ((a[d.arrowSel] || 0) > 0) return d.arrowSel;
-    return ARROW_IDS.find(k => (a[k] || 0) > 0) || null;
+    if (d.arrowSel !== "normal" && (a[d.arrowSel] || 0) > 0) return d.arrowSel;
+    return "normal";   // a normal é infinita
   },
   spendArrow() {
     const d = Save.voc(this.vocId), k = this.arrowType();
     if (!k) { if (!this._noArrowMsg || this.time_ - this._noArrowMsg > 4) { this.msg(t("no_arrows")); this._noArrowMsg = this.time_; } return null; }
+    if (k === "normal") return k;
     d.arrows[k]--; if (!d.arrows[k] && d.arrowSel === k) this.msg(t("arrows_out_type", { name: t("arrow_" + k) }));
     return k;
   },
   cycleArrow() {
     if (!this.ranged) return;
-    const d = Save.voc(this.vocId), a = d.arrows || {}, have = ARROW_IDS.filter(k => (a[k] || 0) > 0);
+    const d = Save.voc(this.vocId), a = d.arrows || {}, have = ARROW_IDS.filter(k => k === "normal" || (a[k] || 0) > 0);
     if (!have.length) { this.msg(t("no_arrows")); return; }
     d.arrowSel = have[(have.indexOf(d.arrowSel) + 1) % have.length]; Save.save();
-    this.msg(t("arrow_selected", { name: t("arrow_" + d.arrowSel), n: a[d.arrowSel] }));
+    this.msg(t("arrow_selected", { name: t("arrow_" + d.arrowSel), n: arrowN(d, d.arrowSel) }));
   },
   // dano de uma flecha que acertou: elemento do tipo; explosiva e sagrada acertam também as 8 casas em volta
   arrowHit(t, kind, mult) {

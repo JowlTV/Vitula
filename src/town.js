@@ -188,7 +188,7 @@ class TownScene extends Phaser.Scene {
       d.gold -= n * price; d.arrows[k] = (d.arrows[k] || 0) + n; if (!d.arrowSel) d.arrowSel = k; Save.save(); sfx(this, "pickup", 0.4);
       this.arrowShop(z, t("arrows_bought", { n, name: t("arrow_" + k) }));
     };
-    const opts = ARROW_IDS.map(k => [t("arrow_buy_line", { name: t("arrow_" + k), n: LOT[k], price: ARROWS[k].price * LOT[k], have: d.arrows[k] || 0 }), () => buy(k)]);
+    const opts = ARROW_IDS.filter(k => k !== "normal").map(k => [t("arrow_buy_line", { name: t("arrow_" + k), n: LOT[k], price: ARROWS[k].price * LOT[k], have: d.arrows[k] || 0 }), () => buy(k)]);
     opts.push([t("bye2"), () => this.closeDialog()]);
     this.say(t("smith_title"), (note ? note + "\n\n" : "") + t("arrow_shop_text", { n: have, cap, gold: d.gold }), opts);
   }

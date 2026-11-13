@@ -317,7 +317,7 @@ Object.assign(DungeonScene.prototype, {
         this.ui.add(this.arrowHud);
       }
       const d = Save.voc(this.vocId), k = this.arrowType();
-      this.arrowHud.setText(k ? t("arrow_hud", { name: t("arrow_" + k), n: d.arrows[k], total: arrowCount(d), cap: arrowCap(d) }) : t("no_arrows_short")).setColor(k ? "#e8dcc0" : "#ff7060");
+      this.arrowHud.setText(k ? t("arrow_hud", { name: t("arrow_" + k), n: arrowN(d, k), total: arrowCount(d), cap: arrowCap(d) }) : t("no_arrows_short")).setColor(k ? "#e8dcc0" : "#ff7060");
     }
     this.keyText.setText(String(this.keys));
     const cover = (id, f, secs, locked = false) => {
