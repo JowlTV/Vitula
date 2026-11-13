@@ -149,7 +149,7 @@ Object.assign(DungeonScene.prototype, {
     // herói
     const arr = arrive === "stairs" && this.stairs ? (this.nearStairs() || start) : start;
     this.hero.x = arr.x; this.hero.y = arr.y; this.hero.moveT = 0;
-    const p = this.cellPos(start.x, start.y);
+    const p = this.cellPos(arr.x, arr.y);   // sprite e câmera no mesmo lugar do herói (antes ficavam no início do andar e a tela ficava preta ao subir a corda)
     this.hero.shadow = this.add.image(p.x, p.y - 3, "shadow").setScale(0.9, 0.3);
     const ap = this.ap || "kn_", k4 = this.anims.exists(ap + "idle_down");
     this.hero.spr = this.add.sprite(p.x, p.y + 4, ap + "idle_down").setOrigin(0.5, 1).play(ap + "idle_down");
