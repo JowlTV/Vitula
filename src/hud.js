@@ -494,6 +494,14 @@ Object.assign(DungeonScene.prototype, {
       if (this.diff >= (dm[k] || 1) && (dm[k] || 1) < 4) dm[k] = Math.min(4, (dm[k] || 1) + 0.25);
     }
     Save.save();
+    // a Encosta dos Goblins é o fim da demo: em vez do painel, a tela de encerramento
+    if (victory && this.regionId === "goblin_slope") {
+      const info = { voc: this.vocId, level: this.hero.level, kills: this.kills, gold: earned, time: this.time_ };
+      window.__vitulaEnd = { victory, floor: this.floorN, level: this.hero.level, kills: this.kills, earned };
+      this.cameras.main.fadeOut(1400, 0, 0, 0);
+      this.cameras.main.once("camerafadeoutcomplete", () => this.scene.start("demoEnd", info));
+      return;
+    }
     const v = VOCATIONS[this.vocId];
     const penText = pen ? t("death_pen", { bless: pen.bless, xp: Math.round(pen.b.xp * 100), eq: pen.b.equip >= 1 ? t("word_all") : Math.round(pen.b.equip * 100) + "%", gold: Math.round(pen.b.gold * 100), lost: pen.goldLost }) : "";
     this.panel(victory ? t("dungeon_won") : t("you_fell"),

@@ -865,6 +865,18 @@ I18N.pt = {
   recall_cd: "Retorno em recarga: {n}s.",
   recall_in_town: "Você já está na cidade.",
   touch_recall: "Voltar",
+  leader_title: "Senhor da Encosta · chefe das tocas",
+  leader_horn: "O Líder sopra o chifre de guerra: goblins saem das tocas!",
+  leader_horn_short: "TOQUE DE GUERRA",
+  leader_enrage: "{name} entra em fúria: ataca e anda mais rápido!",
+  dodged: "desviou!",
+  leader_down: "O Líder Goblin caiu. A Encosta está livre!",
+  demo_end_sub: "A Encosta dos Goblins foi libertada. Karhyn respira mais uma noite.",
+  demo_end_stats: "{voc} · nível {lvl}\n{k} abates nesta descida · ◉ {g} de ouro · {time}",
+  demo_end_thanks: "Obrigado por jogar Vitula. Os esgotos e a encosta foram só o começo: a sombra que caiu sobre Karhyn veio de mais longe.",
+  demo_end_tease: "A jornada continua…",
+  demo_back_town: "Voltar a Karhyn",
+  demo_menu: "Menu inicial",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1280,7 +1292,7 @@ I18N.en = {
 
   death_title: "You died",
 
-  demo_end_title: "End of Demo",
+  demo_end_title: "End of the Demo",
   demo_end_text: "Thank you for playing Vitula! This is the first version of the demo. More content coming soon.",
 
   touch_up: "Up",
@@ -1676,6 +1688,18 @@ I18N.en = {
   recall_cd: "Return on cooldown: {n}s.",
   recall_in_town: "You are already in town.",
   touch_recall: "Recall",
+  leader_title: "Lord of the Slope · master of the burrows",
+  leader_horn: "The Leader blows the war horn: goblins pour out of the burrows!",
+  leader_horn_short: "WAR HORN",
+  leader_enrage: "{name} is enraged: faster attacks and steps!",
+  dodged: "dodged!",
+  leader_down: "The Goblin Leader has fallen. The Slope is free!",
+  demo_end_sub: "The Goblin Slope is free. Karhyn breathes for one more night.",
+  demo_end_stats: "{voc} · level {lvl}\n{k} kills this descent · ◉ {g} gold · {time}",
+  demo_end_thanks: "Thank you for playing Vitula. The sewers and the slope were only the beginning: the shadow over Karhyn came from farther away.",
+  demo_end_tease: "The journey continues…",
+  demo_back_town: "Back to Karhyn",
+  demo_menu: "Main menu",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2488,6 +2512,18 @@ I18N.es = {
   recall_cd: "Regreso en recarga: {n}s.",
   recall_in_town: "Ya estás en la ciudad.",
   touch_recall: "Volver",
+  leader_title: "Señor de la Ladera · amo de las madrigueras",
+  leader_horn: "¡El Líder sopla el cuerno de guerra: salen goblins de las madrigueras!",
+  leader_horn_short: "CUERNO DE GUERRA",
+  leader_enrage: "¡{name} se enfurece: ataca y camina más rápido!",
+  dodged: "¡esquivado!",
+  leader_down: "El Líder Goblin cayó. ¡La Ladera es libre!",
+  demo_end_sub: "La Ladera de los Goblins fue liberada. Karhyn respira una noche más.",
+  demo_end_stats: "{voc} · nivel {lvl}\n{k} muertes en este descenso · ◉ {g} de oro · {time}",
+  demo_end_thanks: "Gracias por jugar Vitula. Las cloacas y la ladera fueron solo el comienzo: la sombra sobre Karhyn vino de más lejos.",
+  demo_end_tease: "El viaje continúa…",
+  demo_back_town: "Volver a Karhyn",
+  demo_menu: "Menú principal",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3300,6 +3336,18 @@ I18N.de = {
   recall_cd: "Rückkehr lädt: {n}s.",
   recall_in_town: "Du bist bereits in der Stadt.",
   touch_recall: "Zurück",
+  leader_title: "Herr des Hangs · Meister der Baue",
+  leader_horn: "Der Anführer bläst das Kriegshorn: Goblins strömen aus den Bauen!",
+  leader_horn_short: "KRIEGSHORN",
+  leader_enrage: "{name} rast: schnellere Angriffe und Schritte!",
+  dodged: "ausgewichen!",
+  leader_down: "Der Goblin-Anführer ist gefallen. Der Hang ist frei!",
+  demo_end_sub: "Der Goblinhang ist befreit. Karhyn atmet eine weitere Nacht.",
+  demo_end_stats: "{voc} · Stufe {lvl}\n{k} Kills in diesem Abstieg · ◉ {g} Gold · {time}",
+  demo_end_thanks: "Danke, dass du Vitula gespielt hast. Kanäle und Hang waren nur der Anfang: Der Schatten über Karhyn kam von weiter her.",
+  demo_end_tease: "Die Reise geht weiter…",
+  demo_back_town: "Zurück nach Karhyn",
+  demo_menu: "Hauptmenü",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -3715,7 +3763,7 @@ I18N.pl = {
 
   death_title: "Zginąłeś",
 
-  demo_end_title: "Koniec Demo",
+  demo_end_title: "Koniec dema",
   demo_end_text: "Dziękujemy za grę w Vitula! To pierwsza wersja demo. Więcej treści wkrótce.",
 
   touch_up: "Góra",
@@ -4111,6 +4159,18 @@ I18N.pl = {
   recall_cd: "Powrót się odnawia: {n}s.",
   recall_in_town: "Jesteś już w mieście.",
   touch_recall: "Powrót",
+  leader_title: "Władca Zbocza · pan nor",
+  leader_horn: "Przywódca dmie w róg wojenny: gobliny wychodzą z nor!",
+  leader_horn_short: "RÓG WOJENNY",
+  leader_enrage: "{name} wpada w szał: szybsze ataki i ruchy!",
+  dodged: "unik!",
+  leader_down: "Przywódca Goblinów padł. Zbocze jest wolne!",
+  demo_end_sub: "Zbocze Goblinów jest wolne. Karhyn przetrwa kolejną noc.",
+  demo_end_stats: "{voc} · poziom {lvl}\n{k} zabójstw w tym zejściu · ◉ {g} złota · {time}",
+  demo_end_thanks: "Dziękujemy za grę w Vitulę. Kanały i zbocze to dopiero początek: cień nad Karhyn przyszedł z daleka.",
+  demo_end_tease: "Podróż trwa dalej…",
+  demo_back_town: "Wróć do Karhyn",
+  demo_menu: "Menu główne",
 };
 
 // ── API pública ─────────────────────────────────────────────────
