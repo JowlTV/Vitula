@@ -877,6 +877,7 @@ I18N.pt = {
   demo_end_tease: "A jornada continua…",
   demo_back_town: "Voltar a Karhyn",
   demo_menu: "Menu inicial",
+  leader_loot_cd: "Pegue o saque! A Encosta se despede em {n}s",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1700,6 +1701,7 @@ I18N.en = {
   demo_end_tease: "The journey continues…",
   demo_back_town: "Back to Karhyn",
   demo_menu: "Main menu",
+  leader_loot_cd: "Grab the loot! Leaving the Slope in {n}s",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2524,6 +2526,7 @@ I18N.es = {
   demo_end_tease: "El viaje continúa…",
   demo_back_town: "Volver a Karhyn",
   demo_menu: "Menú principal",
+  leader_loot_cd: "¡Recoge el botín! Dejas la Ladera en {n}s",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3348,6 +3351,7 @@ I18N.de = {
   demo_end_tease: "Die Reise geht weiter…",
   demo_back_town: "Zurück nach Karhyn",
   demo_menu: "Hauptmenü",
+  leader_loot_cd: "Schnapp dir die Beute! Der Hang endet in {n}s",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4171,6 +4175,7 @@ I18N.pl = {
   demo_end_tease: "Podróż trwa dalej…",
   demo_back_town: "Wróć do Karhyn",
   demo_menu: "Menu główne",
+  leader_loot_cd: "Zbierz łupy! Opuszczasz Zbocze za {n}s",
 };
 
 // ── API pública ─────────────────────────────────────────────────

@@ -1,7 +1,7 @@
 // Líder Goblin (último andar da Encosta): apresentação, toque de guerra que chama reforços,
 // pancada no chão com aviso (3×3 em volta do herói) e fúria abaixo de 40% de vida.
 // Ao morrer, a Encosta é libertada e abre a tela de fim da demo.
-const LEADER = { slamEvery: 7, slamWarn: 1.1, slamMult: 1.6, horns: [0.7, 0.35], enrageAt: 0.4 };
+const LEADER = { slamEvery: 7, slamWarn: 1.1, slamMult: 1.6, horns: [0.7, 0.35], enrageAt: 0.4, lootTime: 15 };
 
 Object.assign(DungeonScene.prototype, {
   leaderTick(m, dt) {
@@ -74,7 +74,19 @@ Object.assign(DungeonScene.prototype, {
     // a Encosta foi libertada: alguns segundos para respirar e pegar o saque, depois o fim da demo
     this.msg(t("leader_down"));
     this.cameras.main.flash(600, 255, 230, 180);
-    this.time.delayedCall(4500, () => { if (!this.finished && !this.hero.dead) this.finish(true); });
+    // contagem regressiva de 15 s reais (o relógio da cena anda no ritmo do jogo, por isso o passo é 1000 × ritmo)
+    let n = LEADER.lootTime;
+    const cd = txt(this, VIEW_W / 2, VIEW_H * 0.22, "", 18, "#e8d8a0", { align: "center" }).setOrigin(0.5).setDepth(26);
+    this.uiLayer.add(cd);
+    const tick = () => {
+      if (this.finished || this.hero.dead) { cd.destroy(); return; }
+      if (n <= 0) { cd.destroy(); this.finish(true); return; }
+      cd.setText(t("leader_loot_cd", { n })).setColor(n <= 5 ? "#ff9060" : "#e8d8a0");
+      if (n <= 5) this.tweens.add({ targets: cd, scale: 1.15, duration: 120, yoyo: true });
+      n--;
+      this.time.delayedCall(1000 * (Settings.data.speed || 0.75), tick);
+    };
+    tick();
   },
 });
 
