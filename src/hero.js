@@ -418,6 +418,7 @@ Object.assign(DungeonScene.prototype, {
   useRope() {
     const h = this.hero;
     if (this.tryAltar()) return;
+    if (this.tryHole()) return;
     if (!this.rope || h.dead || this.finished || this.paused || this.bagOpen) return;
     if (Math.abs(h.x - this.rope.x) > 1 || Math.abs(h.y - this.rope.y) > 1) return;
     if (this.floorN > 1) { this.floorN--; this.buildFloor("stairs"); this.msg(t("rope_up", { n: this.floorN })); return; }

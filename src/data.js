@@ -212,7 +212,7 @@ const vocAnim = voc => (VOCATIONS[voc] && VOCATIONS[voc].anim) || "kn_";
 // (antes ~1,25 casa: o herói passava da altura das portas e paredes).
 const WORLD_SCALE = 0.78;
 // altura alvo (px) de cada objeto da masmorra, em proporção ao herói (~60 px de corpo)
-const PROP_H = { slope_burrow: 72, slope_tent: 92, slope_totem: 84, slope_campfire: 44, slope_barricade: 50, slope_palisade: 56, slope_weapon_rack: 52, slope_stakes: 40, slope_cairn: 40, barrel: 40, crate_intact: 32, crate_damaged: 32, chest_closed: 28, chest_open: 28, pot: 27, urn: 36, torch_stand: 62, pillar: 92 };
+const PROP_H = { decor_rat_nest: 44, slope_burrow: 72, slope_tent: 92, slope_totem: 84, slope_campfire: 44, slope_barricade: 50, slope_palisade: 56, slope_weapon_rack: 52, slope_stakes: 40, slope_cairn: 40, barrel: 40, crate_intact: 32, crate_damaged: 32, chest_closed: 28, chest_open: 28, pot: 27, urn: 36, torch_stand: 62, pillar: 92 };
 const vocScale = voc => ((VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42) * WORLD_SCALE * 1.12;   // heróis 12% maiores (nov/26)
 
 // sombra de contato: elipse escura colada na base de um sprite (origem 0.5,1), some junto com ele

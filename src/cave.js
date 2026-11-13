@@ -47,8 +47,8 @@ Object.assign(DungeonScene.prototype, {
     // Encosta dos Goblins: chão de terra e cascalho da montanha, rocha cinza (frente à esquerda, topo à direita)
     const moss = this.slope ? clean(read("slope_floor", 40, 60), false) : clean(read("cave_floor_moss"), true);
     const red = this.slope ? clean(read("slope_floor_b", 20, 120), false) : clean(read("cave_floor_red"), true);
-    const top = this.slope ? clean(read("slope_rocks", 64, 0), false) : clean(read("cave_rock_top"), true);
-    const face = this.slope ? clean(read("slope_rocks", 0, 0), false) : clean(read("cave_wall_front"), false);
+    const top = this.slope ? clean(read("slope_rocks", 64, 0), true) : clean(read("cave_rock_top"), true);
+    const face = this.slope ? clean(read("slope_rocks", 0, 0), true) : clean(read("cave_wall_front"), false);
     // paleta da água (miolo do cave_water, do escuro ao claro) e da lama (tons marrons do cave_shore)
     const pal = (img, ok) => {
       const set = new Map();
@@ -143,9 +143,11 @@ Object.assign(DungeonScene.prototype, {
           }
         } else {
           lastOpen[col] = y;
-          let wv = (mixW || WA[ti]) ? field(WA, x, y, 0) + (nB(x, y) - 0.5) * 0.3 + (nA(x, y) - 0.5) * 0.22 : 0;
+          // contorno orgânico: o campo da água é lido em coordenadas entortadas por ruído
+          let wv = (mixW || WA[ti]) ? field(WA, x + (nWx(x, y) - 0.5) * 44, y + (nWy(x, y) - 0.5) * 44, 0) + (nB(x, y) - 0.5) * 0.3 + (nA(x, y) - 0.5) * 0.22 : 0;
           // o desenho obedece à colisão: casa de água é sempre água; casa andável nunca vira água (no máximo lama na beira)
-          wv = WA[ti] ? Math.max(wv, 0.52) : Math.min(wv, 0.48);
+          if (mixW || WA[ti]) wv -= 0.27;                      // a margem recua para dentro do lago
+          wv = WA[ti] ? Math.max(wv, 0.3) : Math.min(wv, 0.48);   // casa de lago sem água desenhada vira chão encharcado // casa de lago: no mínimo lama da margem; casa andável: nunca água
           if (wv > 0.5) {
             // lago: paleta da arte da água, mais escuro no fundo, ondulações finas e espuma na margem
             const depth = Math.min(1, (wv - 0.5) * 2.6), qv = nQ(x * 0.7, y * 1.3) * 0.7 + nG(x, y * 2) * 0.3;
@@ -162,6 +164,7 @@ Object.assign(DungeonScene.prototype, {
             let k = 0.8 + nG(x, y) * 0.35;
             if (mixS) { const occ = Math.max(0, Math.min(1, (sv - 0.12) / 0.38)); k *= 1 - 0.6 * occ; } // sombra junto à rocha
             r = src[i] * k; gg = src[i + 1] * k; b = src[i + 2] * k;
+            if (WA[ti]) { r *= 0.62; gg *= 0.64; b *= 0.7; }   // chão encharcado junto ao lago (não dá para pisar)
             if (wv > 0.43) { const m = wv > 0.47 ? TX.mudD : TX.mudL; r = m[0]; gg = m[1]; b = m[2]; } // lama da margem
           }
         }
@@ -246,7 +249,12 @@ Object.assign(DungeonScene.prototype, {
     const wallCells = cells.filter(c => this.wallsAround(c.x, c.y) >= 1);
     const open = cells.filter(c => this.wallsAround(c.x, c.y) === 0);
     if (this.campRoom === undefined) this.campRoom = i === 0 ? -1 : i;
-    const fire = c => { this.addProp(c.x, c.y, "slope_campfire"); const p = this.cellPos(c.x, c.y); this.lights.push({ x: p.x, y: p.y - 14, r: 4 * T, warm: true, ph: Math.random() * 10 }); this.addDust(p.x, p.y - 10); };
+    const fire = c => {
+      this.addProp(c.x, c.y, "slope_campfire"); const p = this.cellPos(c.x, c.y);
+      // sem brilho borrado nem fumaça em cima: a fogueira só ilumina em volta e deixa uma sombra escura no chão
+      this.lights.push({ x: p.x, y: p.y - 4, r: 4 * T, warm: true, noGlow: true, ph: Math.random() * 10 });
+      const sh = this.add.ellipse(p.x, p.y + 2, 58, 18, 0x000000, 0.45).setDepth(p.y - 2); this.ents.add(sh);
+    };
     if (this.campRoom === i && wallCells.length >= 4 && open.length) {
       const base = open[0]; fire(base);
       const near = wallCells.filter(c => Math.abs(c.x - base.x) + Math.abs(c.y - base.y) <= 5);
@@ -279,7 +287,7 @@ Object.assign(DungeonScene.prototype, {
       const d = g.distances(start.x, start.y, (x, y) => { const p = this.props.get(key(x, y)); return !p || p.kind in BREAKABLE; });
       const bad = [];
       for (const [k, p] of this.props) {
-        if (p.kind in BREAKABLE) continue;
+        if (p.kind in BREAKABLE || (this.holes && this.holes.has(k))) continue;
         if (DIRS4.some(([dx, dy]) => g.isWalk(p.x + dx, p.y + dy) && !this.props.has(key(p.x + dx, p.y + dy)) && d[(p.y + dy) * g.w + p.x + dx] < 0)) bad.push(k);
       }
       if (!bad.length) return;

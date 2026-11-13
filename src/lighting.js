@@ -15,7 +15,12 @@ Object.assign(DungeonScene.prototype, {
     this.lightBrush = this.stamp("light").setBlendMode(Phaser.BlendModes.ADD);
     // névoa da guerra estática: o que nunca foi visto fica preto
     if (this.fogG) this.fogG.destroy();
-    this.fogG = this.add.graphics().setDepth(900000); // acima do brilho das tochas
+    if (this.textures.exists("fog_mask")) this.textures.remove("fog_mask");
+    { // névoa: máscara de 1 pixel por casa, desfocada e ampliada (borda em degradê, não em quadrados)
+      const g = this.gen, F = 16, tex = this.textures.createCanvas("fog_mask", g.w * F, g.h * F);
+      this.fogTex = tex; this.fogF = F;
+      this.fogSmall = document.createElement("canvas"); this.fogSmall.width = g.w; this.fogSmall.height = g.h;
+      this.fogG = this.add.image(0, -6, "fog_mask").setOrigin(0).setScale(T / F, (T * g.h + 12) / (g.h * F)).setDepth(900000); } // acima do brilho das tochas
     this.uiCam.ignore(this.fogG);
     // vinheta pesada nas bordas (claustrofobia)
     if (!this.textures.exists("vignette")) {
@@ -87,7 +92,7 @@ Object.assign(DungeonScene.prototype, {
     }
     // brilho quente das tochas (imagens criadas uma vez por andar)
     for (const l of this.lights) {
-      if (l.water) continue;
+      if (l.water || l.noGlow) continue;
       if (!l.glow) { l.glow = this.add.image(l.x, l.y, "light").setScale(l.r * 1.4 / 256).setTint(0xff9a40).setBlendMode(Phaser.BlendModes.ADD); this.glow.add(l.glow); }
       l.glow.setAlpha(0.16 * (l.cur || 1) + 0.04);
     }
@@ -105,6 +110,16 @@ Object.assign(DungeonScene.prototype, {
   drawFog() {
     const g = this.gen, f = this.fogG;
     if (!f) return;
+    if (this.fogTex) {
+      const sm = this.fogSmall.getContext("2d"), img = sm.createImageData(g.w, g.h);
+      for (let i = 0; i < g.w * g.h; i++) img.data[i * 4 + 3] = this.explored[i] ? 0 : 255;
+      sm.putImageData(img, 0, 0);
+      const ctx = this.fogTex.getContext(), F = this.fogF;
+      ctx.clearRect(0, 0, g.w * F, g.h * F);
+      ctx.imageSmoothingEnabled = true; ctx.filter = "blur(" + (F * 0.6) + "px)";
+      ctx.drawImage(this.fogSmall, 0, 0, g.w * F, g.h * F);
+      ctx.filter = "none"; this.fogTex.refresh(); return;
+    }
     f.clear().fillStyle(0x000000, 1);
     for (let y = 0; y < g.h; y++) {
       let run = -1;

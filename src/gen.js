@@ -288,6 +288,25 @@ class DungeonGen {
   }
 
   // BFS de distâncias; passable(x,y) opcional para contornar obstáculos
+  // tocas: salinhas escavadas em rocha maciça, sem ligação com o resto do mapa (entra-se pela toca, com E)
+  carvePockets(n) {
+    const out = [], W = this.w, H = this.h;
+    for (let k = 0, tries = 0; k < n && tries < 4000; tries++) {
+      const big = tries < 2000, w = big ? this.rand(6, 7) : 5, h = big ? this.rand(4, 5) : 4, x0 = this.rand(2, W - w - 2), y0 = this.rand(2, H - h - 3);
+      let ok = true;   // rocha maciça em volta: 1 casa dos lados, 2 embaixo (a frente da rocha precisa de altura)
+      for (let y = y0 - 1; y < y0 + h + 2 && ok; y++) for (let x = x0 - 1; x < x0 + w + 1 && ok; x++) if (this.get(x, y) !== 0) ok = false;
+      for (const p of out) if (x0 < p.x + p.w + 3 && p.x < x0 + w + 3 && y0 < p.y + p.h + 3 && p.y < y0 + h + 3) ok = false;
+      if (!ok) continue;
+      const cells = [];
+      for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
+        if ((x === x0 || x === x0 + w - 1) && (y === y0 || y === y0 + h - 1)) continue;   // cantos arredondados
+        this.cells[y * W + x] = 1; cells.push({ x, y });
+      }
+      out.push({ x: x0, y: y0, w, h, cells }); k++;
+    }
+    return out;
+  }
+
   distances(fx, fy, passable, limit = 9999) {
     const d = new Int32Array(this.w * this.h).fill(-1);
     const q = [fx, fy]; d[fy * this.w + fx] = 0;

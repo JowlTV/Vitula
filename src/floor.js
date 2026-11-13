@@ -6,6 +6,66 @@ Object.assign(DungeonScene.prototype, {
   // monstros do andar: cada região tem a sua tabela (o esgoto usa FLOOR_MONSTERS)
   floorMonsters() { return (REGION_MONSTERS[this.regionId] || {})[this.floorN] || FLOOR_MONSTERS[Math.min(FLOORS, this.floorN)]; },
 
+  // liga cada toca do mapa a uma salinha: monstros da região, um baú e a saída de volta
+  linkPockets(start) {
+    const g = this.gen, kind = this.slope ? "slope_burrow" : "decor_rat_nest";
+    const inPocket = new Set(); for (const pk of this.pockets) for (const c of pk.cells) inPocket.add(key(c.x, c.y));
+    const d = g.distances(start.x, start.y);
+    this.holes = new Map();
+    // entradas: tocas já colocadas na encosta; se faltar, cava uma junto à rocha numa câmara
+    const entries = [...this.props.values()].filter(p => p.kind === kind && !inPocket.has(key(p.x, p.y)) && DIRS4.some(([dx, dy]) => d[(p.y + dy) * g.w + p.x + dx] >= 0));
+    for (const p of [...this.props.values()].filter(p => p.kind === kind && !entries.includes(p))) { p.spr.destroy(); this.props.delete(key(p.x, p.y)); }
+    const spots = Phaser.Utils.Array.Shuffle([...Array(g.w * g.h).keys()].map(i => ({ x: i % g.w, y: (i / g.w) | 0 }))
+      .filter(c => g.isWalk(c.x, c.y) && !inPocket.has(key(c.x, c.y)) && !this.props.has(key(c.x, c.y)) && !this.occ.has(key(c.x, c.y)) && this.wallsAround(c.x, c.y) >= 3 && d[c.y * g.w + c.x] > 10));   // só em becos: nunca fecha passagem
+    for (const pk of this.pockets) {
+      let ent = entries.shift();
+      while (!ent && spots.length) { const c = spots.pop(); if (this.props.has(key(c.x, c.y))) continue; this.addProp(c.x, c.y, kind); const p = this.props.get(key(c.x, c.y)); if (p) ent = p; }
+      if (!ent) continue;
+      // saída: no canto de cima da salinha
+      const ex = pk.cells.find(c => c.y === pk.y) || pk.cells[0];
+      this.addProp(ex.x, ex.y, kind);
+      const exit = this.props.get(key(ex.x, ex.y));
+      const arriveIn = pk.cells.find(c => c.y === pk.y + 1 && Math.abs(c.x - ex.x) <= 1 && !(c.x === ex.x)) || pk.cells.find(c => c.y === pk.y + 1);
+      const arriveOut = DIRS8.map(([dx, dy]) => ({ x: ent.x + dx, y: ent.y + dy })).find(c => g.isWalk(c.x, c.y) && !this.props.has(key(c.x, c.y)) && d[c.y * g.w + c.x] >= 0);
+      if (!arriveIn || !arriveOut) continue;
+      this.holes.set(key(ent.x, ent.y), { to: arriveIn, inside: true });
+      this.holes.set(key(ex.x, ex.y), { to: arriveOut, inside: false });
+      // dentro: cheia de monstros e um baú no fundo
+      const free = Phaser.Utils.Array.Shuffle(pk.cells.filter(c => !this.props.has(key(c.x, c.y)) && Math.abs(c.x - arriveIn.x) + Math.abs(c.y - arriveIn.y) > 2));
+      const chest = free.find(c => c.y === pk.y + pk.h - 1); if (chest) { free.splice(free.indexOf(chest), 1); this.addProp(chest.x, chest.y, "chest_closed"); }
+      const n = this.slope ? g.rand(5, 7) : g.rand(4, 6);
+      for (let k = 0; k < n && free.length; k++) { const c = free.pop(); this.spawnMonster(this.slope ? weighted(this.floorMonsters()) : weighted([["rat", 50], ["cave_rat", 50]]), c.x, c.y); }
+    }
+  },
+
+  // E perto de uma toca: entra na salinha (ou sai dela)
+  tryHole() {
+    const h = this.hero;
+    if (!this.holes || h.dead || this.finished || this.paused || this.bagOpen) return false;
+    if (this.holeBusy) return true;   // já atravessando
+    for (const [dx, dy] of DIRS8) {
+      const hole = this.holes.get(key(h.x + dx, h.y + dy));
+      if (!hole) continue;
+      // chegada: a casa marcada ou, se um monstro estiver nela, a casa livre mais próxima
+      const free = (x, y) => this.gen.isWalk(x, y) && !this.props.has(key(x, y)) && !this.occ.has(key(x, y));
+      let to = hole.to;
+      if (!free(to.x, to.y)) { let best = null, bd = 99; for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const x = to.x + dx, y = to.y + dy, dd = Math.abs(dx) + Math.abs(dy); if (dd < bd && free(x, y) && (hole.inside ? this.pockets.some(p => p.cells.some(c => c.x === x && c.y === y)) : true)) { bd = dd; best = { x, y }; } } if (!best) return true; to = best; }
+      this.holeBusy = true;
+      this.cameras.main.fade(180, 0, 0, 0, true);   // forçado: funciona mesmo durante outro fade
+      this.time.delayedCall(190, () => {
+        this.holeBusy = false;
+        const p = this.cellPos(to.x, to.y);
+        h.x = to.x; h.y = to.y; h.px = h.fromX = p.x; h.py = h.fromY = p.y; h.moveT = 0;
+        h.spr.setPosition(p.x, p.y + 4); h.shadow.setPosition(p.x, p.y - 3);
+        this.reveal(); this.updateFlow();
+        this.cameras.main.fadeIn(220);
+        this.msg(t(hole.inside ? "hole_enter" : "hole_exit"));
+      });
+      return true;
+    }
+    return false;
+  },
+
   buildFloor(arrive = "start") {
     this.slope = this.region.theme === "slope";
     // libera as texturas do andar anterior (cada bloco do chão ocupa até 16 MB de vídeo)
@@ -21,8 +81,10 @@ Object.assign(DungeonScene.prototype, {
     if (!this.seeds) this.seeds = {};
     if (this.seeds[this.floorN] == null) this.seeds[this.floorN] = this.bot ? 1234 + this.floorN : (Math.random() * 1e9) | 0;
     this.gen.generate(this.seeds[this.floorN], this.floorN, !!this.region.cave);
-    this.explored = new Uint8Array(this.gen.w * this.gen.h);
     const g = this.gen;
+    // tocas (encosta: 2 por andar; caverna do esgoto: 1), escavadas antes de desenhar o andar
+    this.pockets = g.cave ? g.carvePockets(this.slope ? 2 : 1) : [];
+    this.explored = new Uint8Array(this.gen.w * this.gen.h);
     // início: anel da cisterna 0 (o centro é o poço)
     const c0 = g.center(0);
     const start = [[c0.x - 2, c0.y - 2], [c0.x + 2, c0.y - 2], [c0.x - 2, c0.y + 2], [c0.x + 2, c0.y + 2]]
@@ -52,6 +114,8 @@ Object.assign(DungeonScene.prototype, {
     // tom da luz do ambiente aplicado no herói (caverna esverdeada, esgoto amarronzado)
     this.ambientTint = this.slope ? 0xc4bcae : g.cave ? 0xa8b8a0 : 0xb8b4a6;
     if (g.cave) { this.caveMonsters(start); this.fixBlockingProps(start); }
+    this.linkPockets(start);
+    if (g.cave) this.fixBlockingProps(start);
     this.drawSconces();
     this.waterLights();
     this.drawWallDrains();

@@ -808,6 +808,8 @@ I18N.pt = {
   key_right: "Seta dir.",
   key_space: "Espaço",
   mon_goblin_p: "Goblins",
+  hole_enter: "Você se espreme pela toca. Algo se mexe no escuro.",
+  hole_exit: "Você volta pela toca.",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1562,6 +1564,8 @@ I18N.en = {
   key_right: "Right arrow",
   key_space: "Space",
   mon_goblin_p: "Goblins",
+  hole_enter: "You squeeze through the burrow. Something stirs in the dark.",
+  hole_exit: "You crawl back through the burrow.",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2317,6 +2321,8 @@ I18N.es = {
   key_right: "Flecha der.",
   key_space: "Espacio",
   mon_goblin_p: "Goblins",
+  hole_enter: "Te deslizas por la madriguera. Algo se mueve en la oscuridad.",
+  hole_exit: "Vuelves por la madriguera.",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3072,6 +3078,8 @@ I18N.de = {
   key_right: "Pfeil rechts",
   key_space: "Leertaste",
   mon_goblin_p: "Goblins",
+  hole_enter: "Du zwängst dich durch den Bau. Etwas regt sich im Dunkeln.",
+  hole_exit: "Du kriechst durch den Bau zurück.",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -3826,6 +3834,8 @@ I18N.pl = {
   key_right: "Strzałka w prawo",
   key_space: "Spacja",
   mon_goblin_p: "Gobliny",
+  hole_enter: "Przeciskasz się przez norę. Coś porusza się w ciemności.",
+  hole_exit: "Wracasz przez norę.",
 };
 
 // ── API pública ─────────────────────────────────────────────────
