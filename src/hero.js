@@ -233,6 +233,7 @@ Object.assign(DungeonScene.prototype, {
     h.fromX = h.px; h.fromY = h.py;
     h.x = nx; h.y = ny;
     this.reveal();
+    this.holeNearHint();
     h.moveLen = 0.22 / this.stats.moveSpeed * (diag ? 1.35 : 1);
     h.moveT = h.moveLen;
     this.updateFlow();

@@ -810,6 +810,8 @@ I18N.pt = {
   mon_goblin_p: "Goblins",
   hole_enter: "Você se espreme pela toca. Algo se mexe no escuro.",
   hole_exit: "Você volta pela toca.",
+  hole_hint_in: "E · entrar na toca",
+  hole_hint_out: "E · sair da toca",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1566,6 +1568,8 @@ I18N.en = {
   mon_goblin_p: "Goblins",
   hole_enter: "You squeeze through the burrow. Something stirs in the dark.",
   hole_exit: "You crawl back through the burrow.",
+  hole_hint_in: "E · enter the burrow",
+  hole_hint_out: "E · leave the burrow",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2323,6 +2327,8 @@ I18N.es = {
   mon_goblin_p: "Goblins",
   hole_enter: "Te deslizas por la madriguera. Algo se mueve en la oscuridad.",
   hole_exit: "Vuelves por la madriguera.",
+  hole_hint_in: "E · entrar en la madriguera",
+  hole_hint_out: "E · salir de la madriguera",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3080,6 +3086,8 @@ I18N.de = {
   mon_goblin_p: "Goblins",
   hole_enter: "Du zwängst dich durch den Bau. Etwas regt sich im Dunkeln.",
   hole_exit: "Du kriechst durch den Bau zurück.",
+  hole_hint_in: "E · in den Bau kriechen",
+  hole_hint_out: "E · aus dem Bau kriechen",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -3836,6 +3844,8 @@ I18N.pl = {
   mon_goblin_p: "Gobliny",
   hole_enter: "Przeciskasz się przez norę. Coś porusza się w ciemności.",
   hole_exit: "Wracasz przez norę.",
+  hole_hint_in: "E · wejdź do nory",
+  hole_hint_out: "E · wyjdź z nory",
 };
 
 // ── API pública ─────────────────────────────────────────────────

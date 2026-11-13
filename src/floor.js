@@ -30,12 +30,22 @@ Object.assign(DungeonScene.prototype, {
       if (!arriveIn || !arriveOut) continue;
       this.holes.set(key(ent.x, ent.y), { to: arriveIn, inside: true });
       this.holes.set(key(ex.x, ex.y), { to: arriveOut, inside: false });
+      ent.linked = true;
       // dentro: cheia de monstros e um baú no fundo
       const free = Phaser.Utils.Array.Shuffle(pk.cells.filter(c => !this.props.has(key(c.x, c.y)) && Math.abs(c.x - arriveIn.x) + Math.abs(c.y - arriveIn.y) > 2));
       const chest = free.find(c => c.y === pk.y + pk.h - 1); if (chest) { free.splice(free.indexOf(chest), 1); this.addProp(chest.x, chest.y, "chest_closed"); }
       const n = this.slope ? g.rand(5, 7) : g.rand(4, 6);
       for (let k = 0; k < n && free.length; k++) { const c = free.pop(); this.spawnMonster(this.slope ? weighted(this.floorMonsters()) : weighted([["rat", 50], ["cave_rat", 50]]), c.x, c.y); }
     }
+    for (const p of [...this.props.values()]) if (p.kind === kind && !p.linked && !this.holes.has(key(p.x, p.y))) { p.spr.destroy(); this.props.delete(key(p.x, p.y)); }
+  },
+
+  // aviso ao chegar perto de uma toca
+  holeNearHint() {
+    const h = this.hero; if (!this.holes) return;
+    const k = DIRS8.map(([dx, dy]) => key(h.x + dx, h.y + dy)).find(kk => this.holes.has(kk));
+    if (k !== undefined && k !== this.holeHint) { this.msg(t(this.holes.get(k).inside ? "hole_hint_in" : "hole_hint_out")); }
+    this.holeHint = k;
   },
 
   // E perto de uma toca: entra na salinha (ou sai dela)
@@ -83,7 +93,7 @@ Object.assign(DungeonScene.prototype, {
     this.gen.generate(this.seeds[this.floorN], this.floorN, !!this.region.cave);
     const g = this.gen;
     // tocas (encosta: 2 por andar; caverna do esgoto: 1), escavadas antes de desenhar o andar
-    this.pockets = g.cave ? g.carvePockets(this.slope ? 2 : 1) : [];
+    this.pockets = g.cave ? g.carvePockets(this.slope ? 4 : 2) : []; this.holeBusy = false; this.holeHint = null;
     this.explored = new Uint8Array(this.gen.w * this.gen.h);
     // início: anel da cisterna 0 (o centro é o poço)
     const c0 = g.center(0);
@@ -484,7 +494,7 @@ Object.assign(DungeonScene.prototype, {
       // ninho de ratos num canto de baixo (canto interno de 90°)
       if (g.rng() < 0.6) {
         const cx = g.rng() < 0.5 ? r.x : r.x + r.w - 1, cy = r.y + r.h - 1;
-        if (okC(cx, cy)) put("rat_nest", cx, cy);
+        if (okC(cx, cy)) put("bones", cx, cy);   // (ninho pintado parecia toca)
       }
       // lodo e ossos encostados na parede de baixo
       for (let k = 0; k < 2; k++) {

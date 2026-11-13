@@ -69,10 +69,10 @@ const MONSTERS = {
   spider:        { name: "Aranha", tex: "am_spider_walk", hp: 175, arm: 2, dmg: 11, step: 0.36, atk: 1.9, xp: 26 },
   poison_spider: { name: "Aranha Venenosa", plural: "Aranhas Venenosas", tex: "am_spider_walk", tint: 0x9fe07a, hp: 205, arm: 2.5, dmg: 9, step: 0.4, atk: 2.0, xp: 34, poison: { pct: 0.03, dur: 5 } },
   // Encosta dos Goblins: mais fortes que o fundo do esgoto (andar 5 ≈ esqueleto com 1,6× de vida)
-  goblin:           { name: "Goblin", tex: "am_goblin", hp: 430, arm: 5, dmg: 16, step: 0.5, atk: 1.9, xp: 52 },
-  goblin_scavenger: { name: "Goblin Saqueador", plural: "Goblins Saqueadores", tex: "am_goblin_scavenger", hp: 520, arm: 6, dmg: 15, step: 0.56, atk: 2.1, xp: 60, gold: 4 },
-  goblin_assassin:  { name: "Goblin Assassino", plural: "Goblins Assassinos", tex: "am_goblin_assassin", hp: 360, arm: 4, dmg: 22, step: 0.36, atk: 1.5, xp: 66 },
-  goblin_leader:    { name: "Líder Goblin", plural: "Líderes Goblins", tex: "am_goblin_leader", hp: 9000, arm: 12, dmg: 95, step: 0.42, atk: 1.7, xp: 1400, gold: 250, elite: true },
+  goblin:           { name: "Goblin", tex: "am_goblin", hp: 430, arm: 5, dmg: 26, step: 0.5, atk: 1.9, xp: 52 },
+  goblin_scavenger: { name: "Goblin Saqueador", plural: "Goblins Saqueadores", tex: "am_goblin_scavenger", hp: 520, arm: 6, dmg: 24, step: 0.56, atk: 2.1, xp: 60, gold: 4 },
+  goblin_assassin:  { name: "Goblin Assassino", plural: "Goblins Assassinos", tex: "am_goblin_assassin", hp: 360, arm: 4, dmg: 35, step: 0.36, atk: 1.5, xp: 66 },
+  goblin_leader:    { name: "Líder Goblin", plural: "Líderes Goblins", tex: "am_goblin_leader", hp: 9000, arm: 12, dmg: 150, step: 0.42, atk: 1.7, xp: 1400, gold: 250, elite: true },
   giant_rat: { name: "Rato Gigante", plural: "Ratos Gigantes", tex: "m_giant_rat", anim: "am_giant_rat", scale: 0.85, hp: 2500, arm: 6, dmg: 50, step: 0.45, atk: 1.8, xp: 300, gold: 60, elite: true },
 };
 

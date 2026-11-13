@@ -196,7 +196,7 @@ Object.assign(DungeonScene.prototype, {
       const wallCells = cells.filter(c => this.wallsAround(c.x, c.y) >= 1);
       const corners = cells.filter(c => this.wallsAround(c.x, c.y) >= 2);
       // densidade: ~70% do chão limpo, ~20% detalhe pequeno, ~10% objetos
-      if (corners.length && g.rng() < 0.5 && i > 0) put("rat_nest", corners[0].x, corners[0].y, 0.85);
+      // ninhos pintados no chão foram tirados: buraco na caverna agora é sempre uma toca de verdade
       for (let k = 0; k < 2 && wallCells.length; k++) { const c = wallCells.pop(); if (!this.decorUsed.has(key(c.x, c.y))) put("cave_rocks", c.x, c.y, 0.55, 0.9); }
       if (g.rng() < 0.45 && wallCells.length) { const c = wallCells.pop(); put("bones", c.x, c.y, 0.85, 0.85); }
       // cogumelos luminosos: a única luz natural da caverna
