@@ -63,6 +63,7 @@ const ACTIONS = [
   ["autoAttack", "Ataque automático (liga/desliga)", ["R", "NUMPAD_ZERO"]],
   ["interact", "Falar / usar / subir a corda", ["E", "ENTER"]],
   ["pause", "Pausa", ["ESC", "P"]],
+  ["arrows", "Trocar o tipo de flecha (Arqueiro)", ["X", "SEVEN"]],
 ];
 const Settings = {
   key: "vitula_settings_v1",

@@ -310,6 +310,15 @@ Object.assign(DungeonScene.prototype, {
     this.lvlText.setText(`Nv ${h.level}`);
     this.promoText.setText(this.promo() ? this.promo().name : "");
     this.goldText.setText(String(this.goldRun));
+    // Arqueiro: flechas na aljava (clique ou X troca o tipo)
+    if (this.ranged) {
+      if (!this.arrowHud || !this.arrowHud.scene) {
+        this.arrowHud = txt(this, VIEW_W / 2 + 178, VIEW_H - 46, "", 11, "#e8dcc0").setInteractive({ useHandCursor: true }).on("pointerdown", () => this.cycleArrow());
+        this.ui.add(this.arrowHud);
+      }
+      const d = Save.voc(this.vocId), k = this.arrowType();
+      this.arrowHud.setText(k ? t("arrow_hud", { name: t("arrow_" + k), n: d.arrows[k], total: arrowCount(d), cap: arrowCap(d) }) : t("no_arrows_short")).setColor(k ? "#e8dcc0" : "#ff7060");
+    }
     this.keyText.setText(String(this.keys));
     const cover = (id, f, secs, locked = false) => {
       f = Phaser.Math.Clamp(f, 0, 1);

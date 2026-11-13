@@ -29,7 +29,9 @@ class DungeonScene extends Phaser.Scene {
     this.ranged = VOCATIONS[this.vocId].ranged || 0;
     { const d = Save.voc(this.vocId);   // equipamento inicial: uma vez por vocação
       if (!d.lightGear) { d.lightGear = true; d.equip.light = d.equip.light || gearNew("lantern"); d.oil = (d.oil || 0) + OIL_START * OIL_FLASK; Save.save(); }
-      if (!d.starterGear) { d.starterGear = true; if (this.vocId === "knight") { d.equip.weapon = d.equip.weapon || gearNew("karhyn_sword"); d.equip.shield = d.equip.shield || gearNew("wooden_shield"); } d.equip.armor = d.equip.armor || gearNew("leather_armor"); Save.save(); } }
+      if (!d.starterGear) { d.starterGear = true; if (this.vocId === "knight") { d.equip.weapon = d.equip.weapon || gearNew("karhyn_sword"); d.equip.shield = d.equip.shield || gearNew("wooden_shield"); } d.equip.armor = d.equip.armor || gearNew("leather_armor"); Save.save(); }
+        // Arqueiro: arco, aljava e 50 flechas (também para quem já tinha o personagem antes das flechas)
+        giveArcherKit(this.vocId); }
     this.stats = this.computeStats();
     this.hero = { hp: this.stats.maxHp, maxHp: this.stats.maxHp, level: 1, xp: 0, dead: false, atkT: 0,
       cds: { heal: 0, front: 0, spin: 0, aura: 0 }, facing: [1, 0], regen: 0, fury: VOCATIONS[this.vocId].mana ? this.furyMax : 0, furyIdle: 0, auraT: 0, auraTick: 0 };
@@ -60,6 +62,7 @@ class DungeonScene extends Phaser.Scene {
     (this.keysIn.potion1 || []).forEach(k => k.on("down", () => this.usePotion(0)));
     (this.keysIn.potion2 || []).forEach(k => k.on("down", () => this.usePotion(1)));
     (this.keysIn.interact || []).forEach(k => k.on("down", () => this.useRope()));
+    (this.keysIn.arrows || []).forEach(k => k.on("down", () => this.cycleArrow()));
     (this.keysIn.attack || []).forEach(k => k.on("down", () => { this.hero.atkQueued = 0.35; }));
     (this.keysIn.autoAttack || []).forEach(k => k.on("down", () => {
       Settings.data.autoAttack = Settings.data.autoAttack === false; Settings.save();
@@ -115,7 +118,7 @@ class DungeonScene extends Phaser.Scene {
     for (const slot in eq) {
       const g = eq[slot], E = g && EQUIP[g.id]; if (!E) continue;
       const m = gearMult(g);   // raridade e +N
-      if (E.slot === "weapon") { s.weapon = Object.assign({}, E, { elDmg: (E.elDmg || 0) * m }); if (!this.ranged) s.weaponAtk = E.atk * m; }
+      if (E.slot === "weapon") { s.weapon = Object.assign({}, E, { elDmg: (E.elDmg || 0) * m }); if (!this.ranged || E.bow) s.weaponAtk = E.atk * m; }
       s.gearDef += (E.def || 0) * m; s.gearBlock += E.block || 0; s.gearCrit += E.crit || 0; s.gearMl += E.ml || 0;
       s.recovery += E.hpReg || 0; s.manaReg += E.manaReg || 0; s.moveSpeed *= 1 + (E.speed || 0);
       for (const k in E.res || {}) s.res[k] = (s.res[k] || 0) + E.res[k];

@@ -93,6 +93,27 @@ const EQUIP = {
   crocodile_boots:{ slot: "boots", name: "Botas de Crocodilo",        def: 1.2, lvl: 15, res: { earth: 0.06 }, price: 380, art: { f: "boots", m: "croc", trim: "leather", scales: 1 } },
   golden_boots:   { slot: "boots", name: "Botas Douradas",            def: 1.6, lvl: 28, speed: 0.06, price: 1000, art: { f: "boots", m: "gold", trim: "gold" } },
   guardian_boots: { slot: "boots", name: "Botas do Guardião",         def: 2,   lvl: 36, block: 0.02, hpReg: 0.5, price: 1500, art: { f: "boots", m: "guardian", trim: "steel", plates: 1 } },
+  // arcos (Arqueiro): duas mãos; a aljava ocupa o lugar do escudo
+  bow:             { slot: "weapon", name: "Arco",                  voc: ["archer"], twoH: true, bow: true, price: 0,    desc: "Arco simples de teixo.", art: { f: "sword", m: "wood" } },
+  elvish_bow:      { slot: "weapon", name: "Arco Élfico",           voc: ["archer"], twoH: true, bow: true, crit: 0.02, price: 140, art: { f: "sword", m: "wood" } },
+  icicle_bow:      { slot: "weapon", name: "Arco de Gelo",          voc: ["archer"], twoH: true, bow: true, el: "ice", elDmg: 5, price: 300, art: { f: "sword", m: "crystal" } },
+  musician_bow:    { slot: "weapon", name: "Arco do Músico",        voc: ["archer"], twoH: true, bow: true, el: "energy", elDmg: 6, price: 420, art: { f: "sword", m: "iron" } },
+  refined_bow:     { slot: "weapon", name: "Arco Refinado",         voc: ["archer"], twoH: true, bow: true, crit: 0.04, price: 600, art: { f: "sword", m: "iron" } },
+  silkweaver_bow:  { slot: "weapon", name: "Arco Tecelão de Seda",  voc: ["archer"], twoH: true, bow: true, el: "earth", elDmg: 6, poison: { pct: 0.25, dur: 4 }, price: 800, desc: "Envenena o alvo.", art: { f: "sword", m: "iron" } },
+  umbral_bow:      { slot: "weapon", name: "Arco Umbral",           voc: ["archer"], twoH: true, bow: true, crit: 0.06, price: 1100, art: { f: "sword", m: "iron" } },
+  destruction_bow: { slot: "weapon", name: "Arco da Destruição",    voc: ["archer"], twoH: true, bow: true, el: "fire", elDmg: 10, price: 1600, art: { f: "sword", m: "crimson" } },
+  magic_bow:       { slot: "weapon", name: "Arco Mágico",           voc: ["archer"], twoH: true, bow: true, el: "energy", elDmg: 9, ml: 2, price: 2200, art: { f: "sword", m: "crystal" } },
+  dragon_bow:      { slot: "weapon", name: "Arco do Dragão",        voc: ["archer"], twoH: true, bow: true, el: "fire", elDmg: 12, crit: 0.05, price: 3200, art: { f: "sword", m: "crimson" } },
+  // aljavas (Arqueiro): quantas flechas ele carrega
+  quiver:          { slot: "shield", name: "Aljava",                voc: ["archer"], quiver: 50,  price: 0,    art: { f: "round", m: "wood", rim: "iron" } },
+  red_quiver:      { slot: "shield", name: "Aljava Vermelha",       voc: ["archer"], quiver: 75,  price: 120,  art: { f: "round", m: "wood", rim: "iron" } },
+  leather_quiver:  { slot: "shield", name: "Aljava de Couro",       voc: ["archer"], quiver: 100, price: 260,  art: { f: "round", m: "wood", rim: "iron" } },
+  pearl_quiver:    { slot: "shield", name: "Aljava de Pérolas",     voc: ["archer"], quiver: 125, manaReg: 0.5, price: 420, art: { f: "round", m: "wood", rim: "iron" } },
+  emerald_quiver:  { slot: "shield", name: "Aljava de Esmeralda",   voc: ["archer"], quiver: 150, res: { earth: 0.05 }, price: 600, art: { f: "round", m: "wood", rim: "iron" } },
+  diamond_quiver:  { slot: "shield", name: "Aljava de Diamante",    voc: ["archer"], quiver: 200, res: { ice: 0.05 }, price: 850, art: { f: "round", m: "wood", rim: "iron" } },
+  dragon_quiver:   { slot: "shield", name: "Aljava do Dragão",      voc: ["archer"], quiver: 250, res: { fire: 0.08 }, price: 1300, art: { f: "round", m: "wood", rim: "iron" } },
+  magic_quiver:    { slot: "shield", name: "Aljava Mágica",         voc: ["archer"], quiver: 300, ml: 1, manaReg: 1, price: 2000, art: { f: "round", m: "wood", rim: "iron" } },
+  blessed_quiver:  { slot: "shield", name: "Aljava Abençoada",      voc: ["archer"], quiver: 400, res: { holy: 0.1 }, hpReg: 1, price: 3000, art: { f: "round", m: "wood", rim: "iron" } },
   dragon_boots:   { slot: "boots", name: "Botas de Escamas de Dragão", def: 2.4, lvl: 50, res: { fire: 0.06 }, speed: 0.04, price: 2200, art: { f: "boots", m: "dscale", trim: "gold", scales: 1 } },
 };
 
@@ -105,15 +126,17 @@ const EQUIP_ORDER = {
   armor:  ["wooden_armor", "leather_armor", "chain_armor", "plate_armor", "dark_armor", "knight_armor", "golden_armor", "magic_plate", "dragon_mail"],
   legs:   ["leather_legs", "wooden_legs", "chain_legs", "plate_legs", "knight_legs", "golden_legs", "magic_legs", "dragon_legs"],
   boots:  ["leather_boots", "chain_boots", "sandals", "crocodile_boots", "golden_boots", "guardian_boots", "dragon_boots"],
+  bow:    ["bow", "elvish_bow", "icicle_bow", "musician_bow", "refined_bow", "silkweaver_bow", "umbral_bow", "destruction_bow", "magic_bow", "dragon_bow"],
+  quiver: ["quiver", "red_quiver", "leather_quiver", "pearl_quiver", "emerald_quiver", "diamond_quiver", "dragon_quiver", "magic_quiver", "blessed_quiver"],
 };
 // [mínimo, máximo] de ataque (armas) ou defesa (o resto), do 1º ao último da ordem
-const EQUIP_RANGE = { weapon: [24, 60], shield: [1, 6], helmet: [0.5, 3.4], armor: [1, 5.8], legs: [0.5, 3.8], boots: [0.4, 2.6] };
+const EQUIP_RANGE = { bow: [22, 56], quiver: [0.3, 2], weapon: [24, 60], shield: [1, 6], helmet: [0.5, 3.4], armor: [1, 5.8], legs: [0.5, 3.8], boots: [0.4, 2.6] };
 for (const slot in EQUIP_ORDER) EQUIP_ORDER[slot].forEach((id, i, arr) => {
   const E = EQUIP[id], f = arr.length > 1 ? i / (arr.length - 1) : 0, [a, b] = EQUIP_RANGE[slot];
   E.rank = f;                                     // 0 = mais fraco, 1 = mais forte do tipo
   E.lvl = Math.max(1, Math.round(1 + f * 49));    // nível 1 a 50
   const v = a + (b - a) * f;
-  if (slot === "weapon") E.atk = Math.round(v * (E.twoH ? 1.2 : 1)); else E.def = Math.round(v * 10) / 10;
+  if (slot === "weapon") E.atk = Math.round(v * (E.twoH ? 1.2 : 1)); else if (slot === "bow") E.atk = Math.round(v); else E.def = Math.round(v * 10) / 10;
   if (id === "sandals") E.def = 0.1;              // as mais fracas: compensam na regeneração
 });
 
@@ -178,6 +201,29 @@ function rollContracts(level) {
   });
 }
 
+// ---------------------------------------------------------------- flechas (Arqueiro)
+// cada disparo gasta 1 flecha do tipo escolhido; a aljava vestida define quantas cabem (sem aljava: 25)
+const ARROWS = {
+  normal:    { price: 1,    el: "physical", mult: 1,   color: 0xe8e0d0 },
+  fire:      { price: 25,   el: "fire",     mult: 1.15, color: 0xff8a30 },
+  ice:       { price: 25,   el: "ice",      mult: 1.15, color: 0x9ae4ff },
+  earth:     { price: 25,   el: "earth",    mult: 1.15, color: 0x9fe060 },
+  energy:    { price: 25,   el: "energy",   mult: 1.15, color: 0xc8a0ff },
+  explosive: { price: 150,  el: "physical", mult: 1.2, area: true, color: 0xffb060 },
+  holy:      { price: 1000, el: "holy",     mult: 1.5, area: true, color: 0xfff0a0 },
+};
+const ARROW_IDS = Object.keys(ARROWS);
+// kit do Arqueiro: arco, aljava e 50 flechas (também para quem já tinha o personagem antes das flechas)
+function giveArcherKit(vocId) {
+  if (vocId !== "archer") return;
+  const d = Save.voc(vocId); if (d.archerKit) return;
+  d.archerKit = true; d.equip = d.equip || {};
+  d.equip.weapon = d.equip.weapon || gearNew("bow"); d.equip.shield = d.equip.shield || gearNew("quiver");
+  d.arrows = Object.assign({ normal: 50 }, d.arrows || {}); d.arrowSel = d.arrowSel || "normal"; Save.save();
+}
+function arrowCap(d) { const q = d.equip && d.equip.shield && EQUIP[d.equip.shield.id]; return q && q.quiver ? q.quiver : 25; }
+function arrowCount(d) { let n = 0; for (const k in d.arrows || {}) n += d.arrows[k] || 0; return n; }
+
 function equipOk(id, vocId) { const E = EQUIP[id]; return !E.voc || E.voc.includes(vocId); }
 // texto curto de atributos do item (para a mochila e o ferreiro); g = { id, r, p }
 function equipStats(g) {
@@ -186,6 +232,7 @@ function equipStats(g) {
   if (E.atk) p.push(t("eq_atk", { v: Math.round(E.atk * m) }));
   if (E.def) p.push(t("eq_def", { v: n(E.def * m) }));
   if (E.twoH) p.push(t("eq_twoh"));
+  if (E.quiver) p.push(t("eq_quiver_cap", { n: E.quiver }));
   if (E.el && E.elDmg) p.push(t("eq_el_dmg", { v: Math.round(E.elDmg * m), el: ELEMENTS[E.el].name.toLowerCase() }));
   if (E.magic) p.push(t("eq_magic_atk"));
   if (E.poison) p.push(t("eq_poison"));

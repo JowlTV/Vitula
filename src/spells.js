@@ -13,7 +13,7 @@ Object.assign(DungeonScene.prototype, {
     this.trainMagic(sp.fury);
     h.cds[spell] = sp.cd * this.stats.cooldown;
     // cada magia tem a sua função em SPELL_FX (fácil de somar as das outras vocações)
-    if (spell === "heal" || spell === "aura" || spell === "eagle") { h.pose = this.ap + "cast"; h.poseT = 0.45; }
+    if (spell === "heal" || spell === "aura" || spell === "frenzy" || spell === "flee") { h.pose = this.ap + "cast"; h.poseT = 0.45; }
     const fx = SPELL_FX[spell];
     if (fx) fx.call(this, h, sp);
   },
@@ -150,6 +150,7 @@ Object.assign(SPELL_FX, {
   holy(h, sp) {
     const t = this.rangedTarget();
     if (!t) { this.msg(window.t("no_target")); h.cds.holy = 0; h.fury += sp.fury; return; }
+    if (!this.spendArrow()) { h.cds.holy = 0; h.fury += sp.fury; return; }
     const dx = Math.sign(t.x - h.x), dy = Math.sign(t.y - h.y), side = Math.abs(t.x - h.x) >= Math.abs(t.y - h.y);
     this.heroSwing(side ? dx : 0, side ? 0 : dy);
     this.time.delayedCall(250, () => {
@@ -168,25 +169,16 @@ Object.assign(SPELL_FX, {
       sfx(this, "gem", 0.4);
     });
   },
-  rain(h, sp) {
-    const t = this.rangedTarget(); let [fx, fy] = h.facing; if (!fx && !fy) fy = 1;
-    const cx = t ? t.x : h.x + fx * 3, cy = t ? t.y : h.y + fy * 3;
-    h.pose = this.ap + "cast"; h.poseT = 0.45;
-    const c = this.cellPos(cx, cy);
-    for (let i = 0; i < 9; i++) {
-      const ox = Phaser.Math.Between(-T, T), oy = Phaser.Math.Between(-T, T);
-      const a = this.add.image(c.x + ox, c.y + oy - 220, "arrow").setRotation(Math.PI / 2).setDepth(100000).setScale(1.2);
-      this.ents.add(a);
-      this.tweens.add({ targets: a, y: c.y + oy - 16, duration: 260, delay: 120 + i * 35, onComplete: () => a.destroy() });
-    }
-    this.time.delayedCall(420, () => {
-      for (const [dx, dy] of [[0, 0], ...DIRS8]) { const m = this.occ.get(key(cx + dx, cy + dy)); if (m) this.damageMonster(m, this.baseDamage() * 1.5); }
-      sfx(this, "explode", 0.25);
-    });
+  flee(h, sp) {
+    h.fleeT = sp.dur;
+    this.floatText(h.px, h.py - 90, window.t("flee_float"), "#9fe08a");
+    this.fx("heal", h.px, h.py - 20, 0.6);
+    sfx(this, "pickup", 0.4);
   },
-  eagle(h, sp) {
-    h.eagleT = sp.dur;
-    this.floatText(h.px, h.py - 90, t("eagle_eye"), "#e0d070");
+  frenzy(h, sp) {
+    h.frenzyT = sp.dur;
+    this.floatText(h.px, h.py - 90, window.t("frenzy_float"), "#ff9a50");
+    this.fx("heal", h.px, h.py - 28, 0.8);
     sfx(this, "levelup", 0.25);
   },
 });

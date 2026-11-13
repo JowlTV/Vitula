@@ -146,7 +146,7 @@ Object.assign(DungeonScene.prototype, {
     sfx(this, "gem", 0.3);
     return true;
   },
-  critChance() { return 0.1 + 0.005 * this.attr("crit") + (this.stats.gearCrit || 0); },
+  critChance() { return 0.1 + 0.005 * this.attr("crit") + (this.stats.gearCrit || 0) + ((this.hero.frenzyT || 0) > 0 ? 0.25 : 0); },
   swordEff() { return this.attr("weapon") + (this.ranged ? Save.skill(this.vocId, "distance").lvl + (this.buffOn("hunter") ? 10 : 0) : Save.skill(this.vocId, "sword").lvl + (this.buffOn("berserker") ? 10 : 0)); },
   shieldLvl() { return Save.skill(this.vocId, "shield").lvl + this.attr("shield"); },
   mlEff() { return Save.voc(this.vocId).ml.lvl + this.attr("ml") + (this.stats.gearMl || 0) + (this.buffOn("mage") ? 10 : 0); },
@@ -229,12 +229,13 @@ Object.assign(DungeonScene.prototype, {
         this.time.delayedCall(200, () => { if (!this.finished) this.fx(this.anims.exists("fx_basic_slash") ? "basic_slash" : "slash", c.x, c.y - 22, this.anims.exists("fx_basic_slash") ? 0.9 : 0.7, dx < 0, dx && dy ? 45 * dx * dy : 0); });
       }
       this.bumpProp(nx, ny); h.moveT = 0.18; h.moveLen = 0.18; h.fromX = h.px; h.fromY = h.py; return; }
-    if (this.occ.has(key(nx, ny)) || !this.gen.isWalk(nx, ny)) return;
+    // Fuga: atravessa os monstros (só não para em cima deles)
+    if ((this.occ.has(key(nx, ny)) && !((h.fleeT || 0) > 0)) || !this.gen.isWalk(nx, ny)) return;
     h.fromX = h.px; h.fromY = h.py;
     h.x = nx; h.y = ny;
     this.reveal();
     this.holeNearHint();
-    h.moveLen = 0.22 / this.stats.moveSpeed * (diag ? 1.35 : 1);
+    h.moveLen = 0.22 / this.stats.moveSpeed * (diag ? 1.35 : 1) / ((h.fleeT || 0) > 0 ? 1.75 : 1);
     h.moveT = h.moveLen;
     this.updateFlow();
   },
@@ -503,14 +504,54 @@ Object.assign(DungeonScene.prototype, {
     const dur = Math.max(80, Math.hypot(toX - fromX, toY - fromY) / speed * 1000);
     this.tweens.add({ targets: a, x: toX, y: toY, duration: dur, onComplete: () => { a.destroy(); onHit && onHit(); } });
   },
+  // ---------------------------------------------------------------- flechas
+  // tipo em uso (se acabou, volta para a normal); null = aljava vazia
+  arrowType() {
+    const d = Save.voc(this.vocId), a = d.arrows || {};
+    if ((a[d.arrowSel] || 0) > 0) return d.arrowSel;
+    return ARROW_IDS.find(k => (a[k] || 0) > 0) || null;
+  },
+  spendArrow() {
+    const d = Save.voc(this.vocId), k = this.arrowType();
+    if (!k) { if (!this._noArrowMsg || this.time_ - this._noArrowMsg > 4) { this.msg(t("no_arrows")); this._noArrowMsg = this.time_; } return null; }
+    d.arrows[k]--; if (!d.arrows[k] && d.arrowSel === k) this.msg(t("arrows_out_type", { name: t("arrow_" + k) }));
+    return k;
+  },
+  cycleArrow() {
+    if (!this.ranged) return;
+    const d = Save.voc(this.vocId), a = d.arrows || {}, have = ARROW_IDS.filter(k => (a[k] || 0) > 0);
+    if (!have.length) { this.msg(t("no_arrows")); return; }
+    d.arrowSel = have[(have.indexOf(d.arrowSel) + 1) % have.length]; Save.save();
+    this.msg(t("arrow_selected", { name: t("arrow_" + d.arrowSel), n: a[d.arrowSel] }));
+  },
+  // dano de uma flecha que acertou: elemento do tipo; explosiva e sagrada acertam também as 8 casas em volta
+  arrowHit(t, kind, mult) {
+    const A = ARROWS[kind] || ARROWS.normal, crit = Math.random() < this.critChance();
+    const dmg = this.baseDamage() * mult * A.mult * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? this.critMult() : 1);
+    this.damageMonster(t, dmg, A.el); this.lifeSteal(dmg);
+    if (crit) this.splat(t.px, t.py - 4, 5);
+    if (A.area) {
+      for (const [dx, dy] of DIRS8) { const m = this.occ.get(key(t.x + dx, t.y + dy)); if (m && !m.dead) { this.damageMonster(m, dmg * 0.7, A.el); this.lifeSteal(dmg * 0.7); } }
+      this.fx(kind === "holy" ? "heal" : "explosion", t.px, t.py - 20, kind === "holy" ? 0.9 : 0.75);
+      sfx(this, "explode", 0.25);
+    }
+  },
+  critMult() { return 1.8 + ((this.hero.frenzyT || 0) > 0 ? 0.25 : 0); },
+  lifeSteal(dmg) {
+    const h = this.hero; if (!((h.frenzyT || 0) > 0)) return;
+    h.hp = Math.min(h.maxHp, h.hp + dmg * 0.15);
+    if (VOCATIONS[this.vocId].mana) h.fury = Math.min(this.furyMax, h.fury + dmg * 0.15);
+  },
+
   archerAttack(autoAtk) {
-    const h = this.hero;
-    h.eagleT = Math.max(0, (h.eagleT || 0) - this.game.loop.delta / 1000);
+    const h = this.hero, dts = this.game.loop.delta / 1000;
+    h.eagleT = Math.max(0, (h.eagleT || 0) - dts); h.fleeT = Math.max(0, (h.fleeT || 0) - dts); h.frenzyT = Math.max(0, (h.frenzyT || 0) - dts);
     if (h.atkT > 0 || !(autoAtk || h.atkQueued > 0)) return;
     h.atkQueued = 0;
     const t = this.rangedTarget(true);
     if (!t) return;
-    h.atkT = 1.1 / 1.25 * this.stats.cooldown / (this.stats.atkSpeed || 1) * (h.eagleT > 0 ? 0.5 : 1);
+    const kind = this.spendArrow(); if (!kind) { h.atkT = 0.6; return; }
+    h.atkT = 1.1 / 1.25 * this.stats.cooldown / (this.stats.atkSpeed || 1) * (h.eagleT > 0 ? 0.5 : 1) / (h.frenzyT > 0 ? 1.45 : 1);
     const dx = Math.sign(t.x - h.x), dy = Math.sign(t.y - h.y);
     h.facing = [dx, dy];
     this.heroSwing(Math.abs(t.x - h.x) >= Math.abs(t.y - h.y) ? dx : 0, Math.abs(t.x - h.x) >= Math.abs(t.y - h.y) ? 0 : dy);
@@ -519,9 +560,7 @@ Object.assign(DungeonScene.prototype, {
       if (h.dead || this.finished) return;
       this.shootArrow(h.px, h.py - 40, t.px, t.py - 24, () => {
         if (t.dead || this.finished) return;
-        const crit = Math.random() < this.critChance();
-        this.damageMonster(t, this.baseDamage() * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? 1.8 : 1));
-        if (crit) this.splat(t.px, t.py - 4, 5);
+        this.arrowHit(t, kind, 1);
         this.addFury(8);
         this.trainSkill("distance");
         sfx(this, "hit", 0.25);

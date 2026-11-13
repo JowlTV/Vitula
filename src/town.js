@@ -23,6 +23,7 @@ class TownScene extends Phaser.Scene {
   constructor() { super("town"); }
 
   create() {
+    giveArcherKit(this.registry.get("vocation"));
     this.anims.globalTimeScale = 1;
     this.vocId = this.registry.get("vocation") || "knight";
     this.cameras.main.setBackgroundColor("#1a1c18");
@@ -173,6 +174,23 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
     this.zones.push({ name: t("zone_gate"), kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
     this.testPortals();
+  }
+
+  // flechas do Arqueiro no ferreiro: cada clique compra um lote (limitado pela aljava e pelo ouro)
+  arrowShop(z, note) {
+    const d = Save.voc(this.vocId); d.arrows = d.arrows || {};
+    const LOT = { normal: 50, fire: 10, ice: 10, earth: 10, energy: 10, explosive: 1, holy: 1 };
+    const cap = arrowCap(d), have = arrowCount(d);
+    const buy = k => {
+      const room = cap - arrowCount(d), price = ARROWS[k].price, n = Math.min(LOT[k], room, Math.floor(d.gold / price));
+      if (room <= 0) return this.arrowShop(z, t("arrows_full"));
+      if (n <= 0) return this.arrowShop(z, t("oil_no_gold"));
+      d.gold -= n * price; d.arrows[k] = (d.arrows[k] || 0) + n; if (!d.arrowSel) d.arrowSel = k; Save.save(); sfx(this, "pickup", 0.4);
+      this.arrowShop(z, t("arrows_bought", { n, name: t("arrow_" + k) }));
+    };
+    const opts = ARROW_IDS.map(k => [t("arrow_buy_line", { name: t("arrow_" + k), n: LOT[k], price: ARROWS[k].price * LOT[k], have: d.arrows[k] || 0 }), () => buy(k)]);
+    opts.push([t("bye2"), () => this.closeDialog()]);
+    this.say(t("smith_title"), (note ? note + "\n\n" : "") + t("arrow_shop_text", { n: have, cap, gold: d.gold }), opts);
   }
 
   // PORTAIS DE TESTE (temporários): levam direto à Encosta dos Goblins e ao chefe dos ratos (5º andar do esgoto).
@@ -326,7 +344,7 @@ class TownScene extends Phaser.Scene {
       this.openLocker();
     } else if (z.kind === "smith") {
       this.say(t("smith_title"), t("smith_greet"),
-        [[t("upgrade_gear"), () => this.openForge()], [t("buy_oil", { price: OIL_PRICE }), () => this.buyOil(z)], lore(t("smith_title"), "smith", () => this.use(z)), [t("bye2"), () => this.closeDialog()]]);
+        [[t("upgrade_gear"), () => this.openForge()], ...(this.vocId === "archer" ? [[t("buy_arrows"), () => this.arrowShop(z)]] : []), [t("buy_oil", { price: OIL_PRICE }), () => this.buyOil(z)], lore(t("smith_title"), "smith", () => this.use(z)), [t("bye2"), () => this.closeDialog()]]);
     } else if (z.kind === "tower") {
       this.say(t("tower_title"), t("tower_desc"), [[t("tower_go"), () => this.towerView()], [t("tower_stay"), () => this.closeDialog()]]);
     } else if (z.kind === "inn") {

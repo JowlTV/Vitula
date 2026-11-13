@@ -203,8 +203,8 @@ const BLESS_TEXT = [
 const ARCHER_SPELLS = {
   holy:   { name: "Flecha Sagrada", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Uma flecha de luz sagrada que acerta o alvo escolhido com 2× o dano." },
   heal:   { name: "Exura", key: "2", icon: "icon_exura", level: 2, fury: 30, cd: 6, desc: "Cura 15% da vida máxima + 1% por magic level." },
-  rain:   { name: "Chuva de Flechas", key: "3", icon: "icon_area", level: 10, fury: 40, cd: 4, desc: "Uma saraivada cai sobre o alvo e as 8 casas em volta." },
-  eagle:  { name: "Olho de Águia", key: "4", icon: "icon_aura_v2", level: 18, fury: 60, cd: 12, dur: 6, desc: "Por 6 s: atira duas vezes mais rápido e com +2 casas de alcance." },
+  flee:   { name: "Fuga", key: "3", icon: "spear", level: 8, fury: 25, cd: 10, dur: 3, desc: "Por 3 s: +75% de velocidade de movimento e atravessa os monstros." },
+  frenzy: { name: "Fúria do Caçador", key: "4", icon: "berserk", level: 18, fury: 50, cd: 15, dur: 4, desc: "Por 4 s: +45% de velocidade de ataque, +25% de chance de crítico, +25% de dano crítico e 15% de roubo de vida e mana." },
 };
 const vocSpells = voc => (voc === "archer" ? ARCHER_SPELLS : SPELLS);
 const vocAnim = voc => (VOCATIONS[voc] && VOCATIONS[voc].anim) || "kn_";
