@@ -92,7 +92,7 @@ Object.assign(DungeonScene.prototype, {
     const autoAtk = Settings.data.autoAttack !== false;
     if (this.ranged) { this.archerAttack(autoAtk); }
     else {
-    if (h.atkT <= 0 && !autoAtk && h.atkQueued > 0 && !(h.target && !h.target.dead) && !this.adjacentMonster(h.x, h.y, h.facing)) {
+    if (h.atkT <= 0 && h.atkQueued > 0 && !(h.target && !h.target.dead) && !this.adjacentMonster(h.x, h.y, h.facing)) {
       // golpe no vazio: só a animação, para frente
       h.atkQueued = 0; h.atkT = 0.5 * this.stats.cooldown / (this.stats.atkSpeed || 1); this.heroSwing(...h.facing);
     }

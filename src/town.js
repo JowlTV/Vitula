@@ -51,7 +51,7 @@ class TownScene extends Phaser.Scene {
     kb.addCapture("UP,DOWN,LEFT,RIGHT,SPACE");
     (this.keysIn.interact || []).forEach(k => k.on("down", () => this.interact()));
     this.input.keyboard.on("keydown", ev => this.dialogKey(ev));
-    (this.keysIn.pause || []).forEach(k => k.on("down", () => this.bagOpen ? this.toggleBag() : this.dialog ? this.closeDialog() : this.openMenu()));
+    (this.keysIn.pause || []).forEach(k => k.on("down", () => this.bestBox ? closeBestiary(this) : this.bagOpen ? this.toggleBag() : this.dialog ? this.closeDialog() : this.openMenu()));
     (this.keysIn.map || []).forEach(k => k.on("down", () => this.toggleMap()));
     this.bigMap = null;
     (this.keysIn.zoomIn || []).forEach(k => k.on("down", () => this.zoomBy(0.2)));
@@ -135,7 +135,7 @@ class TownScene extends Phaser.Scene {
     // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
     F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); H(10, 6, 3); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
     // Depot no lado norte (antes ficava embaixo, quase escondido na tela)
-    F("vk_depot", "v_depot", 25, 6, 5.4, 5); H(31, 6, 3);
+    F("vk_depot", "v_depot", 25, 6, 5.4, 5); H(31, 6, 3); this.librarySign(32.5, 6);
     // sul: Acomodação (+ casas pobres)
     H(3, 14, 3); H(7, 14, 3); H(10, 14, 3); H(13, 14, 3); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
     H(23, 14, 4); H(28, 14, 3); H(32, 14, 4);
@@ -169,6 +169,7 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: t("zone_depot_enter"), kind: "depot", x: 26, y: 7, w: 2, h: 1 });
     this.zones.push({ name: t("zone_locker"), kind: "locker", x: 28, y: 7, w: 2, h: 1 });
     this.zones.push({ name: t("zone_board"), kind: "board", x: 36, y: 8, w: 2, h: 1 });
+    this.zones.push({ name: t("zone_library"), kind: "library", x: 31, y: 7, w: 3, h: 1 });
     this.zones.push({ name: t("lodging_title"), kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
     this.zones.push({ name: t("zone_oracle"), kind: "hall", x: 37, y: 8, w: 4, h: 1 });
     this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
@@ -241,7 +242,7 @@ class TownScene extends Phaser.Scene {
       h.px = Phaser.Math.Linear(h.fromX, h.toX, k); h.py = Phaser.Math.Linear(h.fromY, h.toY, k);
       if (h.moveT === 0) this.arrived();
     }
-    if (h.moveT === 0 && !this.dialog && !this.leaving && !this.bagOpen && !this.arriving) {
+    if (h.moveT === 0 && !this.dialog && !this.leaving && !this.bagOpen && !this.arriving && !this.bestBox) {
       const d = a => (this.keysIn[a] || []).some(k => k.isDown);
       let dx = (d("right") ? 1 : 0) - (d("left") ? 1 : 0), dy = (d("down") ? 1 : 0) - (d("up") ? 1 : 0);
       if (dx || dy) this.tryMove(dx, dy);
@@ -323,6 +324,7 @@ class TownScene extends Phaser.Scene {
       return [t("ask_lore"), () => { const i = this.loreN[key] % L.length; this.loreN[key]++;
         this.say(title, L[i], [[this.loreN[key] % L.length ? t("lore_more") : t("lore_restart"), () => lore(title, key, back)[1]()], [t("lore_back"), back]]); }];
     };
+    if (z.kind === "library") { openBestiary(this); sfx(this, "pickup", 0.3); return; }
     this.showInterior(z.kind);
     if (z.kind === "gate") {
       this.say(t("zone_gate"), t("gate_ask"), [[t("gate_leave"), () => this.leave("map")], [t("gate_stay"), () => this.closeDialog()]]);
@@ -608,7 +610,8 @@ class TownScene extends Phaser.Scene {
       c.add(this.add.image(gx + (GS - 4) / 2, gy + (GS - 4) / 2, "eq_" + g.id));
       if (g.p) T_(gx + GS - 7, gy + GS - 18, `+${g.p}`, 10, RARITY[g.r].color).setOrigin(1, 0);
       if (o.worn) T_(gx + 3, gy + 1, t("worn_label"), 9, "#9fe08a");
-      c.add(this.add.rectangle(gx, gy, GS - 4, GS - 4, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true }).on("pointerup", () => this.openForge(g)));
+      c.add(this.add.rectangle(gx, gy, GS - 4, GS - 4, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true }).on("pointerup", () => { hideItemCard(this); this.openForge(g); })
+        .on("pointerover", () => showItemCard(this, g, { worn: o.worn })).on("pointerout", () => hideItemCard(this)));
     });
     T_(gx0, y + h - 40, t("worn_hint"), 11, COLORS.dim);
     // detalhes do item escolhido
@@ -777,7 +780,18 @@ class TownScene extends Phaser.Scene {
     if (ev.key === "ArrowDown" || ev.key === "ArrowRight") return this.dialogSelect(this.dialogSel + 1);
     if (ev.key === "Enter" || ev.key === " " || ev.key === "e" || ev.key === "E") this.dialogBtns[this.dialogSel || 0].fn();
   }
-  closeDialog() { if (this.dialog) { this.dialog.destroy(); this.dialog = null; } this.dialogBtns = null; this.chatWith = null; this.sending = false; }
+  // placa pendurada sobre a porta da biblioteca (o casebre vira a Biblioteca de Karhyn)
+  librarySign(x, y) {
+    const px = x * T, py = y * T - 8;
+    const g = this.add.graphics().setDepth((y + 1) * T + 2);
+    g.fillStyle(0x2a1a10, 1).fillRect(px - 52, py - 15, 104, 30); g.lineStyle(2, 0xa07a3a, 1).strokeRect(px - 52, py - 15, 104, 30);
+    g.fillStyle(0x6a5030, 1).fillRect(px - 40, py - 25, 3, 10).fillRect(px + 37, py - 25, 3, 10);
+    const tx = txt(this, px, py, t("library_name"), 13, "#e0c070").setOrigin(0.5).setDepth((y + 1) * T + 3).setShadow(1, 1, "#000", 0, true, true);
+    const glow = this.add.image(px, py + 4, "light").setScale(0.5, 0.25).setTint(0xffb050).setAlpha(0.18).setBlendMode(Phaser.BlendModes.ADD).setDepth((y + 1) * T + 1);
+    this.world.add([glow, g, tx]);
+  }
+
+  closeDialog() { hideItemCard(this); if (this.dialog) { this.dialog.destroy(); this.dialog = null; } this.dialogBtns = null; this.chatWith = null; this.sending = false; }
 
   showTitle(hold = 2500) {
     const tt = this.townTitle; if (!tt) return;
@@ -800,7 +814,7 @@ class TownScene extends Phaser.Scene {
       g.fillStyle(col, 1).fillRect(mx + x * S, my + y * S, S, S);
     }
     g.lineStyle(2, 0xc8a050, 0.9).strokeRect(mx - 3, my - 3, TOWN_W * S + 6, TOWN_H * S + 6);
-    const NAMES = { smith: t("smith_title"), inn: t("inn_name"), potions: t("potions_name"), depot: t("depot_name"), lodging: t("lodging_title"), hall: t("oracle_name"), board: t("contracts_name"), sewer: t("sewer_name"), gate: t("gate_name") };
+    const NAMES = { smith: t("smith_title"), inn: t("inn_name"), potions: t("potions_name"), depot: t("depot_name"), lodging: t("lodging_title"), hall: t("oracle_name"), board: t("contracts_name"), library: t("library_name"), sewer: t("sewer_name"), gate: t("gate_name") };
     for (const z of this.zones) if (NAMES[z.kind]) {
       const zx = mx + (z.x + z.w / 2) * S, zy = my + (z.y + z.h / 2) * S;
       g.fillStyle(0xe0bc60, 1).fillCircle(zx, zy, 4);

@@ -337,13 +337,13 @@ class SelectScene extends Phaser.Scene {
       const foot = open ? t("level_n", { n: Save.levelInfo(Save.voc(id).xpTotal).level }) : (v.soon ? t("coming_soon") : t("locked_cost", { n: v.unlockCost }));
       txt(this, x + cw / 2, y + 312, foot, 14, open ? COLORS.gold : COLORS.dim).setOrigin(0.5);
       if (open) {
-        this.add.zone(x, y, cw, 340).setOrigin(0).setInteractive({ useHandCursor: true }).on("pointerup", () => { this.registry.set("vocation", id); this.scene.start("intro"); });
+        this.add.zone(x, y, cw, 340).setOrigin(0).setInteractive({ useHandCursor: true }).on("pointerup", () => { this.registry.set("vocation", id); startAdventure(this); });
         this.tweens.add({ targets: card, alpha: 0.85, duration: 900, yoyo: true, repeat: -1 });
       }
     });
     button(this, VIEW_W / 2, 492, 200, t("back"), () => this.scene.start("title"));
     this.input.keyboard.on("keydown-ESC", () => this.scene.start("title"));
-    this.input.keyboard.on("keydown-ENTER", () => { this.registry.set("vocation", "knight"); this.scene.start("intro"); });
+    this.input.keyboard.on("keydown-ENTER", () => { this.registry.set("vocation", "knight"); startAdventure(this); });
     menuMusic(this);
   }
 }
@@ -449,6 +449,7 @@ class MapScene extends Phaser.Scene {
     this.startBtn = [sb, st]; this.unlocked = unlocked;
     button(this, px + 300, py + 166, 120, "Voltar", () => this.scene.start("select"), 14);
     for (const id in REGIONS) {
+      if (REGIONS[id].hidden) continue;
       const r = REGIONS[id], open = unlocked(id) && r.playable;
       const mk = cleared(id) ? "marker_cleared" : (open ? "marker_open" : "marker_locked");
       const m = this.add.image(r.pos[0], r.pos[1], mk).setScale(1.6).setInteractive({ useHandCursor: true });

@@ -87,13 +87,13 @@ Object.assign(DungeonScene.prototype, {
     this.pickups = new Map(); this.spikes = new Map(); this.plates = new Map(); this.clouds = [];
     this.lights = []; this.dusts = []; this.stairs = null; this.campRoom = undefined;
     this.explored = new Uint8Array(this.gen.w * this.gen.h);
-    const last = this.floorN === this.floors;
+    const last = this.floorN === this.floors && !this.region.tutorial;   // a floresta do tutorial tem saída, não chefe
     if (!this.seeds) this.seeds = {};
     if (this.seeds[this.floorN] == null) this.seeds[this.floorN] = this.bot ? 1234 + this.floorN : (Math.random() * 1e9) | 0;
     this.gen.generate(this.seeds[this.floorN], this.floorN, !!this.region.cave);
     const g = this.gen;
     // tocas (encosta: 2 por andar; caverna do esgoto: 1), escavadas antes de desenhar o andar
-    this.pockets = g.cave ? g.carvePockets(this.slope ? 4 : 2) : []; this.holeBusy = false; this.holeHint = null;
+    this.pockets = g.cave && !this.region.tutorial ? g.carvePockets(this.slope ? 4 : 2) : []; this.holeBusy = false; this.holeHint = null;
     this.explored = new Uint8Array(this.gen.w * this.gen.h);
     // início: anel da cisterna 0 (o centro é o poço)
     const c0 = g.center(0);
@@ -122,7 +122,7 @@ Object.assign(DungeonScene.prototype, {
     }
     for (let i = 0; i < g.rooms.length; i++) this.furnish(i, i === 0, i === far, last);
     // tom da luz do ambiente aplicado no herói (caverna esverdeada, esgoto amarronzado)
-    this.ambientTint = this.slope ? 0xc4bcae : g.cave ? 0xa8b8a0 : 0xb8b4a6;
+    this.ambientTint = this.region.tutorial ? 0x9cc488 : this.slope ? 0xc4bcae : g.cave ? 0xa8b8a0 : 0xb8b4a6;
     if (g.cave) { this.caveMonsters(start); this.fixBlockingProps(start); }
     this.linkPockets(start);
     if (g.cave) this.fixBlockingProps(start);
@@ -169,7 +169,7 @@ Object.assign(DungeonScene.prototype, {
     this.updateFlow();
     this.reveal();
     // música: chefe no último andar; ao subir de volta, a da região
-    { const rm = { karhyn_sewers: "music_sewers", goblin_slope: "music_slope" }[this.regionId] || "music_sewers";
+    { const rm = { karhyn_sewers: "music_sewers", goblin_slope: "music_slope", forest: "music_title" }[this.regionId] || "music_sewers";
       const want = last ? "music_boss" : rm; if (this._music !== want) { this._music = want; if (this.cache.audio.exists(want)) playMusic(this, want, 0.5); } }
     if (this.hudFloor) this.hudFloor.setText(t("floor_display", { name: this.region.name, n: this.floorN, total: this.floors }));
   },

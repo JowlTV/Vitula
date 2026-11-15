@@ -132,7 +132,10 @@ Object.assign(DungeonScene.prototype, {
     this.goldText = txt(this, mR - 84, mB + 19, "0", 11, COLORS.gold); ui.add(this.goldText);
     ui.add(this.add.image(mR - 40, mB + 26, "i_bronze_key").setScale(0.6));
     this.keyText = txt(this, mR - 32, mB + 19, "0", 11, COLORS.text); ui.add(this.keyText);
-    this.hudBelowMini = mB + 40;
+    // (nov/26) nome do andar, ouro e chaves saíram daqui: o relatório de saque e a mochila mostram isso
+    for (const o of [this.hudFloor, this.goldText, this.keyText]) o.setVisible(false);
+    ui.list.slice(-4).forEach(o => { if (o.texture && (o.texture.key === "i_gold_coin" || o.texture.key === "i_bronze_key")) o.setVisible(false); });
+    this.hudBelowMini = mB;
     // barra de magias
     const pslots = Save.voc(this.vocId).potionSlots;
     const list = [["basic", "icon_basic", ""], ...Object.entries(this.spells).map(([k, s]) => [k, s.icon, s.key]),

@@ -72,6 +72,9 @@ const Settings = {
   load() {
     try { const raw = localStorage.getItem(this.key); if (raw) Object.assign(this.data, JSON.parse(raw)); } catch (e) {}
     for (const [id, , def] of ACTIONS) if (!this.data.keys[id]) this.data.keys[id] = def.slice();
+    // Espaço é o ataque (nov/26): saves antigos ganham a tecla se ela estiver livre
+    const kk = this.data.keys, used = Object.keys(kk).some(a => a !== "attack" && (kk[a] || []).includes("SPACE"));
+    if (!used && !(kk.attack || []).includes("SPACE")) kk.attack = ["SPACE", ...(kk.attack || []).filter(k => k !== "SPACE")].slice(0, 2);
   },
   save() { try { localStorage.setItem(this.key, JSON.stringify(this.data)); } catch (e) {} },
   reset() { this.data.keys = {}; this.data.music = 0.6; this.data.sfx = 0.8; this.data.speed = 0.75; this.load(); this.save(); },
