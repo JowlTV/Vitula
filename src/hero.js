@@ -90,7 +90,7 @@ Object.assign(DungeonScene.prototype, {
     if (h.spr.anims.currentAnim.key !== anim) { h.spr.play(anim, true); if (anim.startsWith(this.ap)) h.spr.setScale(this.ap === "kn_" ? (anim === "kn_hurt" || anim === "kn_cast" ? 0.38 * WORLD_SCALE : this.heroScale) : this.heroScale); }
     // ataque básico automático em quem estiver colado
     h.atkQueued = Math.max(0, (h.atkQueued || 0) - dt);
-    const autoAtk = Settings.data.autoAttack !== false;
+    const autoAtk = Settings.data.autoAttack === true;
     if (this.ranged) { this.archerAttack(autoAtk); }
     else {
     if (h.atkT <= 0 && h.atkQueued > 0 && !(h.target && !h.target.dead) && !this.adjacentMonster(h.x, h.y, h.facing)) {

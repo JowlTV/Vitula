@@ -173,7 +173,7 @@ Object.assign(DungeonScene.prototype, {
       this.basicAutoBg = this.add.rectangle(bx0 + size / 2, by0 - 9, 34, 11, 0x3a7a2e, 1).setStrokeStyle(1, 0x9fe08a); ui.add(this.basicAutoBg);
       this.basicAuto = txt(this, bx0 + size / 2, by0 - 9, "AUTO", 9, "#eaffd8").setOrigin(0.5); ui.add(this.basicAuto);
       const hit = this.add.rectangle(bx0, by0, size, size, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true }); ui.add(hit); this.basicHit = hit;
-      hit.on("pointerdown", () => { Settings.data.autoAttack = Settings.data.autoAttack === false; Settings.save(); this.msg(t(Settings.data.autoAttack ? "auto_attack_on" : "auto_attack_off")); });
+      hit.on("pointerdown", () => { Settings.data.autoAttack = Settings.data.autoAttack !== true; Settings.save(); this.msg(t(Settings.data.autoAttack ? "auto_attack_on" : "auto_attack_off")); });
     }
     this.buildBattleList(ui);
     this.buildSkillWin(ui);
@@ -336,7 +336,7 @@ Object.assign(DungeonScene.prototype, {
       (this.slotWas ||= {})[id] = f;
     };
     cover("basic", h.atkT / this.stats.cooldown, h.atkT);
-    { const auto = Settings.data.autoAttack !== false, pulse = 0.55 + 0.45 * Math.sin(this.time_ * 6);
+    { const auto = Settings.data.autoAttack === true, pulse = 0.55 + 0.45 * Math.sin(this.time_ * 6);
       this.basicRing.setStrokeStyle(2, auto ? 0x9fe08a : 0xe0bc60, auto ? pulse : 0.9);
       this.basicAuto.setText(auto ? "AUTO" : "MANUAL").setColor(auto ? "#eaffd8" : "#d8c8a8");
       this.basicAutoBg.setFillStyle(auto ? 0x3a7a2e : 0x3a3028, 1).setStrokeStyle(1, auto ? 0x9fe08a : 0x7a6440).setSize(auto ? 34 : 44, 11).setOrigin(0.5); }

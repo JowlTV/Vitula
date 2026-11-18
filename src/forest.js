@@ -23,20 +23,25 @@ Object.assign(DungeonScene.prototype, {
   // a saída: o portão do castelo de Karhyn (mesma arte da muralha da cidade), com tochas dos dois lados
   forestGate() {
     const s = this.stairs; if (!s) return;
-    const W = 7, k = "tg_gate_" + W;
-    if (!this.textures.exists(k)) TG.make(this, k, "gate", W);
-    const img = this.add.image((s.x + 0.5) * T, (s.y + 1) * T + 6, k).setOrigin(0.5, 1);
-    img.setScale(W * T / img.width).setDepth((s.y + 1) * T + 4).setTint(0xb0b4a8);
+    // portão lateral de Karhyn, na vertical: a passagem fica alinhada à saída, na borda direita da floresta
+    const img = this.add.image(s.x * T - T * 0.2, (s.y + 0.5) * T, "vk_portao_lateral").setOrigin(0, 0.55);
+    img.setScale(3.34 * T / img.width).setDepth((s.y + 1.6) * T).setTint(0xb0b4a8);
     img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.world.add(img); this.gateImg = img;
     if (this.stairsGfx) this.stairsGfx.setVisible(false);
-    // as tochas do portal (pintadas na arte) iluminam a entrada
     const p = this.cellPos(s.x, s.y);
-    for (const dx of [-0.6, 0.6]) this.lights.push({ x: p.x + dx * T, y: p.y - 70, r: 4.5 * T, warm: true, ph: dx * 3 });
-    this.lights.push({ x: p.x, y: p.y - 3 * T, r: 6 * T, warm: true, ph: 2 });
+    for (const dy of [-1.6, 1.6]) this.lights.push({ x: p.x + T, y: p.y + dy * T, r: 4.5 * T, warm: true, ph: dy * 3 });
+    this.lights.push({ x: p.x - T, y: p.y, r: 6 * T, warm: true, ph: 2 });
+  },
+  // leva a saída para a célula mais à direita do mapa (encostada na parede), onde fica o portão
+  forestMoveExit() {
+    const g = this.gen; let best = null;
+    for (let y = 2; y < g.h - 2; y++) for (let x = 1; x < g.w - 1; x++)
+      if (g.isWalk(x, y) && g.isWalk(x - 1, y) && !g.isFloor(x + 1, y) && !g.isBridge(x, y) && (!best || x > best.x)) best = { x, y };
+    if (best) { this.stairs = best; this.clearCell(best.x, best.y); }
   },
 });
 { // quem passa atrás do portão fica escondido: o portão é desenhado por cima de tudo o que está acima dele
   const ds = DungeonScene.prototype.drawStairs;
-  DungeonScene.prototype.drawStairs = function (...a) { const r = ds.apply(this, a); if (this.forest) this.forestGate(); return r; };
+  DungeonScene.prototype.drawStairs = function (...a) { if (this.forest) this.forestMoveExit(); const r = ds.apply(this, a); if (this.forest) this.forestGate(); return r; };
 }

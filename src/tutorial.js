@@ -13,12 +13,11 @@ function startAdventure(scene) {
   } else scene.scene.start("map");
 }
 
-const keyOf = id => Settings.keyLabel((Settings.data.keys[id] || [])[0] || "?");
+// as teclas vão marcadas com «…» e o painel as desenha em destaque
+const keyOf = id => "«" + Settings.keyLabel((Settings.data.keys[id] || [])[0] || "?") + "»";
 const TUT_STEPS = [
   ["move", () => t("tut_move", { k: ["up", "left", "down", "right"].map(keyOf).join(" "), d: ["upLeft", "downLeft", "downRight", "upRight"].map(keyOf).join(" ") }), e => e.moves >= 6],
-  ["attack", () => t("tut_attack", { k: keyOf("attack") }), e => e.attackKey],
-  ["auto", () => t("tut_auto", { k: keyOf("autoAttack") }), e => e.auto],
-  ["kill", () => t("tut_kill", { n: 0 }), e => e.kills >= 3],
+  ["attack", () => t("tut_attack", { k: keyOf("attack"), a: keyOf("autoAttack") }), e => e.attackKey],
   ["loot", () => t("tut_loot"), e => e.loot],
   ["heal", () => t("tut_heal", { k: keyOf("skill2"), p: keyOf("potion1") }), e => e.heal || e.cast],
   ["bag", () => t("tut_bag", { k: keyOf("bag") }), e => e.bag],
@@ -28,15 +27,16 @@ const TUT_STEPS = [
 
 Object.assign(DungeonScene.prototype, {
   tutStart() {
+    Settings.data.autoAttack = false; Settings.save();   // começa no ataque manual
     this.tut = { moves: 0, kills: 0, step: -1 };
     // provisões para aprender a curar e algo no chão para aprender a pegar
     const d = Save.voc(this.vocId); if ((d.potions.health || 0) < 2) { d.potions.health = 2; Save.save(); this.refreshPotionIcons && this.refreshPotionIcons(); }
     const h = this.hero, spots = this.freeNeighbors(h.x, h.y);
-    // poucos bichos (só ratos e morcegos), mas ao menos 4 para o passo de derrotar 3
+    // ratos e morcegos espalhados pela trilha (não é objetivo matá-los)
     const alive = this.monsters.filter(m => !m.dead).length;
-    if (alive < 4) { const g = this.gen, far = [...Array(g.w * g.h).keys()].map(i => ({ x: i % g.w, y: (i / g.w) | 0 }))
+    if (alive < 8) { const g = this.gen, far = [...Array(g.w * g.h).keys()].map(i => ({ x: i % g.w, y: (i / g.w) | 0 }))
         .filter(c => g.isWalk(c.x, c.y) && !this.occ.has(key(c.x, c.y)) && Math.abs(c.x - h.x) + Math.abs(c.y - h.y) > 8);
-      Phaser.Utils.Array.Shuffle(far).slice(0, 4 - alive).forEach(c => this.spawnMonster(Math.random() < 0.6 ? "rat" : "bat", c.x, c.y)); }
+      Phaser.Utils.Array.Shuffle(far).slice(0, 8 - alive).forEach(c => this.spawnMonster(Math.random() < 0.6 ? "rat" : "bat", c.x, c.y)); }
     if (spots[1]) this.drop(spots[1].x, spots[1].y, "bread");
     if (spots[3]) this.drop(spots[3].x, spots[3].y, "gold");
     if (spots[5] && !this.props.has(key(spots[5].x, spots[5].y))) this.addProp(spots[5].x, spots[5].y, "forest_sign");
@@ -44,7 +44,7 @@ Object.assign(DungeonScene.prototype, {
     const c = this.add.container(VIEW_W / 2, 62).setDepth(16); this.uiLayer.add(c); this.tutBox = c;
     this.tutBg = this.add.nineslice(0, 0, "panel", null, 560, 70, 16, 16, 16, 16).setOrigin(0.5, 0);
     this.tutHead = txt(this, -262, 10, "", 12, COLORS.gold);
-    this.tutText = txt(this, -262, 28, "", 14, COLORS.text, { wordWrap: { width: 470 } });
+    this.tutText = this.add.container(-262, 28);
     this.tutSkip = txt(this, 262, 10, t("tut_skip"), 11, COLORS.dim).setOrigin(1, 0).setInteractive({ useHandCursor: true });
     this.tutSkip.on("pointerup", () => this.tutEnd(true));
     c.add([this.tutBg, this.tutHead, this.tutText, this.tutSkip]);
@@ -58,6 +58,22 @@ Object.assign(DungeonScene.prototype, {
     this.msg(t("tut_welcome"));
     this.tutCheck();
   },
+  // texto com as teclas em destaque: «W» vira uma plaquinha dourada; quebra de linha manual em 520 px
+  tutRich(s) {
+    const box = this.tutText; box.removeAll(true);
+    const W = 520, LH = 22; let x = 0, y = 0;
+    for (const tok of s.split(/(«[^»]*»|\s+)/).filter(Boolean)) {
+      if (/^\s+$/.test(tok)) { x += 5; continue; }
+      const isKey = tok[0] === "«";
+      const o = txt(this, 0, 0, isKey ? tok.slice(1, -1) : tok, 14, isKey ? "#ffd870" : COLORS.text).setShadow(1, 1, "#000", 0, true, true);
+      const w = o.width + (isKey ? 12 : 0);
+      if (x + w > W && x > 0) { x = 0; y += LH; }
+      if (isKey) { box.add(this.add.rectangle(x, y + 1, w, LH - 3, 0x4a2e10).setOrigin(0).setStrokeStyle(1, 0xe0bc60)); o.setPosition(x + 6, y + 2); }
+      else o.setPosition(x, y + 1);
+      box.add(o); x += w;
+    }
+    return y + LH;
+  },
   tutCheck() {
     const e = this.tut; if (!e) return;
     let i = TUT_STEPS.findIndex(([, , done]) => !done(e));
@@ -68,9 +84,8 @@ Object.assign(DungeonScene.prototype, {
     }
     const [id, text] = TUT_STEPS[i];
     this.tutHead.setText(t("tut_head", { n: i + 1, total: TUT_STEPS.length }));
-    let s = text(); if (id === "kill") s = t("tut_kill", { n: Math.min(3, e.kills) });
-    this.tutText.setText(s);
-    this.tutBg.setSize(560, Math.max(70, this.tutText.height + 44));
+    const hgt = this.tutRich(text());
+    this.tutBg.setSize(560, Math.max(70, hgt + 44));
   },
   // fim: achou a saída (ou pulou). Guarda o que ganhou, mostra a história e entra na cidade.
   tutEnd(skipped) {
@@ -82,7 +97,7 @@ Object.assign(DungeonScene.prototype, {
     this.msg(skipped ? t("tut_skipped") : t("tut_found"));
     this.registry.set("townSpawn", "gate");
     this.cameras.main.fadeOut(1200, 0, 0, 0);
-    this.cameras.main.once("camerafadeoutcomplete", () => { this.sound.stopAll(); this.scene.start("intro"); });
+    this.cameras.main.once("camerafadeoutcomplete", () => { stopAllButMusic(this); this.scene.start("intro"); });   // a música da floresta continua até Karhyn
   },
 });
 
@@ -139,7 +154,7 @@ if (typeof Lang !== "undefined" && Lang.apply) Lang.apply();
 // Rook Forest: poucos bichos (no máximo 6) e sem hordas
 { const sm = DungeonScene.prototype.spawnMonster;
   DungeonScene.prototype.spawnMonster = function (kind, x, y) {
-    if (this.region && this.region.tutorial && (this.monsters || []).filter(m => !m.dead).length >= 6) return null;
+    if (this.region && this.region.tutorial && (this.monsters || []).filter(m => !m.dead).length >= 12) return null;
     return sm.call(this, kind, x, y);
   };
   const sw = DungeonScene.prototype.spawnWave;

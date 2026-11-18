@@ -49,7 +49,7 @@ class DungeonScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#08070a");
     this.cameras.main.roundPixels = true;
     // música por região
-    const regionMusic = { karhyn_sewers: "music_sewers", goblin_slope: "music_slope" };
+    const regionMusic = { karhyn_sewers: "music_sewers", goblin_slope: "music_slope", forest: "music_title" };
     this._music = regionMusic[this.regionId] || "music_sewers"; playMusic(this, this._music, 0.5);
     this.input.keyboard.addCapture("UP,DOWN,LEFT,RIGHT,SPACE");
     // teclas vindas das Opções (remapeáveis)
@@ -66,7 +66,7 @@ class DungeonScene extends Phaser.Scene {
     (this.keysIn.arrows || []).forEach(k => k.on("down", () => this.cycleArrow()));
     (this.keysIn.attack || []).forEach(k => k.on("down", () => { this.hero.atkQueued = 0.35; }));
     (this.keysIn.autoAttack || []).forEach(k => k.on("down", () => {
-      Settings.data.autoAttack = Settings.data.autoAttack === false; Settings.save();
+      Settings.data.autoAttack = Settings.data.autoAttack !== true; Settings.save();
       this.msg(t(Settings.data.autoAttack ? "auto_attack_on" : "auto_attack_off"));
     }));
     (this.keysIn.bag || []).forEach(k => k.on("down", () => this.toggleBag()));
