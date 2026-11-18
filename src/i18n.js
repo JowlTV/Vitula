@@ -1022,6 +1022,10 @@ I18N.pt = {
   npct_title_lodging: "Acomodação",
   npct_lodging: "Descanse para passar o tempo e ouça as histórias da dona da casa sobre a cidade.",
   tut_zoom: "A câmera começa bem perto. Use a roda do mouse (ou {a} e {b}) para afastar ou aproximar — escolha o zoom que preferir, a qualquer momento.",
+  reset_chars: "Resetar personagens",
+  reset_confirm: "Apagar todos os personagens (nível, itens, ouro, bestiário e progresso)? As configurações são mantidas. Isso não pode ser desfeito.",
+  reset_yes: "Apagar",
+  reset_no: "Cancelar",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1990,6 +1994,10 @@ I18N.en = {
   npct_title_lodging: "Lodging",
   npct_lodging: "Rest to pass the time and listen to the landlady's stories about the town.",
   tut_zoom: "The camera starts very close. Use the mouse wheel (or {a} and {b}) to zoom out or in — pick whatever zoom you like, anytime.",
+  reset_chars: "Reset characters",
+  reset_confirm: "Delete all characters (level, items, gold, bestiary and progress)? Settings are kept. This cannot be undone.",
+  reset_yes: "Delete",
+  reset_no: "Cancel",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────

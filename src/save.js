@@ -39,7 +39,7 @@ const Save = {
 };
 Save.load();
 // reinício dos personagens (nov/26: Rook Forest). Configurações (teclas, idioma, volume) ficam.
-const SAVE_EPOCH = 3;
+const SAVE_EPOCH = 4;
 if ((Save.data.epoch || 0) < SAVE_EPOCH) { Save.data = { vocs: {}, runs: 0, cleared: {}, bestiary: {}, epoch: SAVE_EPOCH }; Save.save(); }
 
 // Configurações do jogador: volume e teclas (cada ação aceita 2 teclas; a 2ª é alternativa fixa).

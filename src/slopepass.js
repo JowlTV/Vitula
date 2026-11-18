@@ -3,11 +3,13 @@
 Object.assign(DungeonScene.prototype, {
   openSlopePass(bx, by) {
     const h = this.hero, cand = [];
-    for (let r = 2; r <= 4; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+    for (let r = 1; r <= 7; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
       const x = bx + dx, y = by + dy, k = key(x, y);
-      if (this.walkable(x, y) && !this.occ.has(k) && !this.pickups.has(k) && !(this.stairs && this.stairs.x === x && this.stairs.y === y) && !(h.x === x && h.y === y)) cand.push({ x, y, d: Math.abs(dx) + Math.abs(dy) });
+      // encostada numa parede (pelo menos uma casa vizinha de parede)
+      const wall = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([ax, ay]) => !this.gen.isFloor(x + ax, y + ay));
+      if (wall && this.walkable(x, y) && !this.occ.has(k) && !this.pickups.has(k) && !(this.stairs && this.stairs.x === x && this.stairs.y === y) && !(h.x === x && h.y === y)) cand.push({ x, y, d: Math.abs(dx) + Math.abs(dy) });
     }
-    const c = cand.sort((a, b) => b.d - a.d)[0] || cand[0]; if (!c) return;
+    const c = cand.sort((a, b) => a.d - b.d)[0];   // a parede mais próxima do chefe if (!c) return;
     const p = this.cellPos(c.x, c.y);
     const img = this.add.image(p.x, p.y + 4, this.textures.exists("slope_burrow") ? "slope_burrow" : "light").setOrigin(0.5, 1);
     img.setScale(T * 1.1 / img.width).setDepth(p.y - 2); this.world.add(img);

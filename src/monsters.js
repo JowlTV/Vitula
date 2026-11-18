@@ -340,9 +340,12 @@ Object.assign(DungeonScene.prototype, {
       sfx(this, "boss", 0.6);
       this.msg(t("boss_fell", { name: m.data.name }));
       this.goldRun += m.data.gold;
+      // no último andar do esgoto o Rei Rato não deixa saída: só a passagem para a Encosta (slopepass.js)
+      if (!(this.regionId === "karhyn_sewers" && this.floorN >= this.floors)) {
       this.stairs = { x: m.x, y: m.y };
       if (this.pickups.has(key(m.x, m.y))) { const pk = this.pickups.get(key(m.x, m.y)); this.pickups.delete(key(m.x, m.y)); const alt = this.freeNeighbors(m.x, m.y)[0]; pk.spr.destroy(); if (alt) this.drop(alt.x, alt.y, pk.item); }
       this.drawStairs();
+      }
     }
   },
 });

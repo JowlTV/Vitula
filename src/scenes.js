@@ -204,6 +204,20 @@ class TitleScene extends Phaser.Scene {
     this.tweens.add({ targets: logo, y: 168, duration: 2600, yoyo: true, repeat: -1, ease: "Sine.inOut" });
     button(this, VIEW_W / 2, 340, 260, t("play"), () => this.scene.start("select"), 18);
     button(this, VIEW_W / 2, 392, 260, t("options"), () => this.scene.start("options"), 16);
+    // apagar os personagens (pede confirmação); configurações ficam
+    button(this, VIEW_W / 2, 444, 260, t("reset_chars"), () => {
+      const c = this.add.container(0, 0).setDepth(50);
+      c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 0.75).setOrigin(0).setInteractive());
+      c.add(this.add.nineslice(VIEW_W / 2, VIEW_H / 2, "panel", null, 520, 210, 16, 16, 16, 16));
+      c.add(txt(this, VIEW_W / 2, VIEW_H / 2 - 62, t("reset_chars"), 24, COLORS.gold).setOrigin(0.5));
+      c.add(txt(this, VIEW_W / 2, VIEW_H / 2 - 18, t("reset_confirm"), 14, COLORS.text, { wordWrap: { width: 460 }, align: "center" }).setOrigin(0.5));
+      const [b1, t1] = button(this, VIEW_W / 2 - 120, VIEW_H / 2 + 56, 200, t("reset_yes"), () => {
+        Save.data = { vocs: {}, runs: 0, cleared: {}, bestiary: {}, epoch: SAVE_EPOCH }; Save.save();
+        c.destroy(); sfx(this, "explode", 0.3); this.cameras.main.flash(250, 120, 20, 20);
+      }, 14);
+      const [b2, t2] = button(this, VIEW_W / 2 + 120, VIEW_H / 2 + 56, 200, t("reset_no"), () => c.destroy(), 14);
+      c.add([b1, t1, b2, t2]);
+    }, 14);
     txt(this, VIEW_W / 2, 515, t("credits_jowl"), 12, COLORS.dim).setOrigin(0.5);
     this.input.once("pointerdown", () => menuMusic(this));
     this.input.keyboard.once("keydown", () => menuMusic(this));
