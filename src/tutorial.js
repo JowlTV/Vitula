@@ -9,14 +9,14 @@ function startAdventure(scene) {
   // cada personagem novo começa na Rook Forest; depois de achar Karhyn, escolhe onde cair no mapa
   if (!Save.voc(scene.registry.get("vocation") || "knight").foundKarhyn) {
     scene.registry.set("region", "forest"); scene.registry.set("startFloor", 1);
-    scene.sound.stopAll(); scene.scene.start("dungeon");
+    stopAllButMusic(scene); scene.scene.start("dungeon");
   } else { scene.registry.set("townSpawn", "gate"); scene.scene.start("town"); }   // sem mapa: sempre cai em Karhyn
 }
 
 // as teclas vão marcadas com «…» e o painel as desenha em destaque
 const keyOf = id => "«" + Settings.keyLabel((Settings.data.keys[id] || [])[0] || "?") + "»";
 const TUT_STEPS = [
-  ["move", () => t("tut_move", { k: ["up", "left", "down", "right"].map(keyOf).join(" "), d: ["upLeft", "downLeft", "downRight", "upRight"].map(keyOf).join(" ") }), e => e.moves >= 6],
+  ["move", () => t("tut_move", { k: ["up", "left", "down", "right"].map(keyOf).join(" ") }), e => e.moves >= 6],
   ["attack", () => t("tut_attack", { k: keyOf("attack"), a: keyOf("autoAttack") }), e => e.attackKey],
   ["loot", () => t("tut_loot"), e => e.loot],
   ["heal", () => t("tut_heal", { k: keyOf("heal"), p: keyOf("potion1") }), e => e.heal || e.cast],

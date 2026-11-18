@@ -583,6 +583,7 @@ Object.assign(DungeonScene.prototype, {
     h.fury = Math.min(this.furyMax, h.fury + v); h.furyIdle = 0; },
 
   addXp(v) {
+    v *= 0.95;   // experiência 5% menor (nov/26)
     const h = this.hero;
     h.xp += v * this.stats.growth;
     const d = Save.voc(this.vocId); d.xpTotal = (d.xpTotal || 0) + v * this.stats.growth; h.xpTotal = (h.xpTotal || 0) + v * this.stats.growth; Save.save();

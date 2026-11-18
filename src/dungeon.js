@@ -151,10 +151,14 @@ class DungeonScene extends Phaser.Scene {
   inputDir() {
     if (this.botDir) return this.botDir;
     const down = id => (this.keysIn[id] || []).some(k => k.isDown);
-    for (const [id, d] of [["upLeft", [-1, -1]], ["upRight", [1, -1]], ["downLeft", [-1, 1]], ["downRight", [1, 1]]]) if (down(id)) return d;
+    // diagonal: basta apertar duas direções juntas (ex.: baixo + esquerda)
     const dx = (down("right") ? 1 : 0) - (down("left") ? 1 : 0);
     const dy = (down("down") ? 1 : 0) - (down("up") ? 1 : 0);
-    return dx || dy ? [dx, dy] : null;
+    if (!dx && !dy) { this._dirT0 = null; return null; }
+    // ao começar a andar, espera um instante (70 ms) pela segunda tecla, para a diagonal não sair como um passo reto
+    const now = this.time.now; if (this._dirT0 == null) this._dirT0 = now;
+    if (!(dx && dy) && now - this._dirT0 < 70 && !(this.hero.moveT > 0)) return null;
+    return [dx, dy];
   }
 
 

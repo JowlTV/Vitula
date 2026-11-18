@@ -43,5 +43,10 @@ Object.assign(DungeonScene.prototype, {
 });
 { // quem passa atrás do portão fica escondido: o portão é desenhado por cima de tudo o que está acima dele
   const ds = DungeonScene.prototype.drawStairs;
-  DungeonScene.prototype.drawStairs = function (...a) { if (this.forest) this.forestMoveExit(); const r = ds.apply(this, a); if (this.forest) this.forestGate(); return r; };
+  DungeonScene.prototype.drawStairs = function (...a) {
+    if (!this.forest) return ds.apply(this, a);
+    // floresta: sem o piso de saída (a seta); a saída é o próprio portão de Karhyn
+    if (this.gateImg && this.gateImg.scene) return;
+    this.forestMoveExit(); this.stairsGfx = null; this.forestGate(); this.drawMinimap();
+  };
 }

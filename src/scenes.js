@@ -161,8 +161,10 @@ function playMusic(scene, key, vol = 0.55) {
   if (_curMusic === key) {
     // mesma faixa: só ajusta volume
     const m = scene.sound.get(key);
-    if (m) m.setVolume(v);
-    return;
+    if (m && m.isPlaying) { m.setVolume(v); return; }
+    // (foi parada por um stopAll: toca de novo — antes ficava em silêncio na floresta e na intro)
+    if (m) { m.setVolume(0); m.play(); scene.tweens.add({ targets: m, volume: v, duration: 1200 }); return; }
+    _curMusic = null;
   }
   // fade out a faixa anterior
   if (_curMusic) {

@@ -244,7 +244,9 @@ class TownScene extends Phaser.Scene {
     if (h.moveT === 0 && !this.dialog && !this.leaving && !this.bagOpen && !this.arriving && !this.bestBox) {
       const d = a => (this.keysIn[a] || []).some(k => k.isDown);
       let dx = (d("right") ? 1 : 0) - (d("left") ? 1 : 0), dy = (d("down") ? 1 : 0) - (d("up") ? 1 : 0);
-      if (dx || dy) this.tryMove(dx, dy);
+      // diagonal = duas direções juntas; espera 70 ms pela segunda tecla ao começar a andar
+      if (!dx && !dy) this._dirT0 = null;
+      else { if (this._dirT0 == null) this._dirT0 = this.time.now; if ((dx && dy) || this.time.now - this._dirT0 >= 70 || h.walkHold > 0) this.tryMove(dx, dy); }
     }
     if (h.moveT > 0) h.walkHold = 0.12; else h.walkHold = Math.max(0, (h.walkHold || 0) - dt);
     const [fx, fy] = h.facing, dir = fx ? "side" : (fy < 0 ? "up" : "down");
