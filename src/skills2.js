@@ -30,6 +30,32 @@ Object.assign(DungeonScene.prototype, {
     this.heroGlow("frenzy", 0xffb040, (h.frenzyT || 0) > 0);
     const g = h.glows || {}, p = 2.5 + Math.sin(this.time_ * 10) * 1.2;
     for (const k in g) if (g[k]) g[k].outerStrength = p;
+    // lentidão: anel azul tracejado girando nos pés + flocos de gelo descendo em volta da criatura
+    for (const m of this.monsters) {
+      const on = (m.slowT || 0) > 0 && !m.dead;
+      if (!on) { if (m.slowFx) { m.slowFx.destroy(); m.slowFx = null; } continue; }
+      if (!m.slowFx || !m.slowFx.scene) { m.slowFx = this.add.graphics(); this.ents.add(m.slowFx); }
+      const g2 = m.slowFx, a = this.time_ * 2.2, rx = T * 0.42, ry = T * 0.16, cx = m.px, cy = m.py - 2;
+      g2.clear().setDepth(m.py + 1);
+      g2.lineStyle(2, 0x8ab4ff, 0.85);
+      for (let k = 0; k < 8; k++) { const t0 = a + k * Math.PI / 4; g2.beginPath(); g2.arc(0, 0, 1, t0, t0 + 0.45); g2.closePath();
+        const x1 = cx + Math.cos(t0) * rx, y1 = cy + Math.sin(t0) * ry, x2 = cx + Math.cos(t0 + 0.45) * rx, y2 = cy + Math.sin(t0 + 0.45) * ry; g2.lineBetween(x1, y1, x2, y2); }
+      g2.fillStyle(0xcfe4ff, 0.9);
+      for (let k = 0; k < 3; k++) { const ph = (this.time_ * 0.9 + k / 3) % 1, x = cx + Math.sin((k + 1) * 2.1 + this.time_) * T * 0.3; g2.fillRect(x - 1, m.py - T * 0.9 + ph * T * 0.7, 2, 2); }
+    }
+    // lentidão: anel azul pulsando aos pés da criatura e grãos de gelo caindo, enquanto durar
+    for (const m of this.monsters) {
+      const on = (m.slowT || 0) > 0 && !m.dead;
+      if (on && !m.slowFx) { m.slowFx = this.add.graphics(); this.ents.add(m.slowFx); }
+      if (!m.slowFx) continue;
+      if (!on) { m.slowFx.destroy(); m.slowFx = null; continue; }
+      const g = m.slowFx, k = this.time_ * 4 + m.x, r = 20 + Math.sin(k) * 2;
+      g.clear().setPosition(m.px, m.py).setDepth(m.py - 1);
+      g.lineStyle(2, 0x8ab4ff, 0.75).strokeEllipse(0, 0, r * 2, r * 0.9);
+      g.lineStyle(1, 0xd8ecff, 0.5).strokeEllipse(0, 0, r * 1.5, r * 0.65);
+      for (let i = 0; i < 4; i++) { const a = k * 0.6 + i * 1.57, fy = -34 + ((this.time_ * 30 + i * 13) % 34);
+        g.fillStyle(0xcfe6ff, 0.8).fillRect(Math.cos(a) * r * 0.8 - 1, fy, 2, 2); }
+    }
     if (h.guardSpr && h.guardSpr.scene) {
       h.guardSpr.setVisible(h.guardT > 0).setPosition(h.px, h.py - 30).setDepth(h.py + 1).setAlpha(0.35 + 0.15 * Math.sin(this.time_ * 6));
     }
@@ -58,20 +84,19 @@ Object.assign(DungeonScene.prototype, {
 Object.assign(SPELL_FX, {
   quake(h, sp) {
     this.heroSwing(...h.facing);
-    this.cameras.main.shake(380, 0.006);
     sfx(this, "explode", 0.45);
-    // a onda cresce aos poucos até 3× o tamanho base, em volta do herói (uma só, não mais repetida)
+    // a onda cresce aos poucos até 2× o tamanho base, em volta do herói (uma só, não mais repetida)
     if (this.anims.exists("fx_ring_wave")) {
       const base = 3 * T / 200, s = this.add.sprite(h.px, h.py - 10, "fx_ring_wave").setScale(base).setDepth(h.py - 2).setTint(0xd8b080);
       this.ents.add(s); s.play({ key: "fx_ring_wave", repeat: 1 });
-      this.tweens.add({ targets: s, scale: base * 3, duration: 900, ease: "Sine.out" });
+      this.tweens.add({ targets: s, scale: base * 2, duration: 800, ease: "Sine.out" });
       this.tweens.add({ targets: s, alpha: 0, delay: 650, duration: 300, onComplete: () => s.destroy() });
     }
     for (let k = 0; k < 10; k++) { const a = Math.random() * Math.PI * 2, r = Phaser.Math.Between(20, 2 * T); this.splat(h.px + Math.cos(a) * r, h.py + Math.sin(a) * r * 0.7, 1); }
     for (const m of this.monsters) {
       if (m.dead || Math.max(Math.abs(m.x - h.x), Math.abs(m.y - h.y)) > 2) continue;
-      m.slowT = sp.dur; m.flash = 0.3;
-      this.floatText(m.px, m.py - 46, window.t("slow_float"), "#8ab4ff");
+      m.slowT = sp.dur;
+      this.damageMonster(m, this.baseDamage() * 3.0);   // 50% a mais que o Golpe Frontal (2× o dano base)
     }
   },
   guard(h, sp) {

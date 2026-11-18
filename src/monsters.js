@@ -133,7 +133,7 @@ Object.assign(DungeonScene.prototype, {
     // lentidão (Tremor de Terra / Saraivada): anda e ataca na metade do ritmo; fica azulado
     const slow = (m.slowT || 0) > 0; if (slow) m.slowT -= dt;
     m.atkT -= dt * (slow ? 0.5 : 1); m.stepT -= dt * (slow ? 0.5 : 1);
-    if (slow && !(m.flash > 0)) m.spr.setTint(0x8ab4ff);
+    if (slow && !(m.flash > 0)) m.spr.setTint(0xb8d0ff);
     if (m.bleedT > 0) {
       m.bleedT -= dt; m.bleedTick -= dt;
       if (Math.random() < dt * 6) this.splat(m.px + Phaser.Math.Between(-6, 6), m.py - 2, 1);
@@ -308,7 +308,7 @@ Object.assign(DungeonScene.prototype, {
 
   // morte: o corpo fica no chão. Com loot em cima dura 40 s; sem loot, 5 s (depois some com o que sobrou)
   monsterDied(m, byMonster = false) {
-    m.dead = true; m.bar.clear();
+    m.dead = true; m.bar.clear(); if (m.slowFx) { m.slowFx.destroy(); m.slowFx = null; }
     this.splat(m.px, m.py - 4, m.elite ? 26 : 12, m.kind === "slime" ? 0x2f5a1c : 0x5a0a0a);
     this.occ.delete(key(m.x, m.y));
     this.monsters = this.monsters.filter(o => o !== m);
