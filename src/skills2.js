@@ -168,9 +168,9 @@ Object.assign(SPELL_FX, {
   DungeonScene.prototype.update = function (time, delta) { const r = up.call(this, time, delta); if (!this.paused) this.skillTick(delta / 1000 * (Settings.data.speed || 1)); return r; };
   const cr = DungeonScene.prototype.create;
   DungeonScene.prototype.create = function (...a) { makeSkillAnims(this); return cr.apply(this, a); };
-  // Égide: +40% de defesa e devolve 10% do golpe a quem atacou
+  // Égide: +75% de defesa e devolve 10% do golpe a quem atacou
   const dv = DungeonScene.prototype.defenseValue;
-  DungeonScene.prototype.defenseValue = function () { const v = dv.call(this); return (this.hero && this.hero.guardT > 0) ? v * 1.4 : v; };
+  DungeonScene.prototype.defenseValue = function () { const v = dv.call(this); return (this.hero && this.hero.guardT > 0) ? v * 1.75 : v; };
   const hh = DungeonScene.prototype.hurtHero;
   DungeonScene.prototype.hurtHero = function (amount, pure = 0, el = "physical") {
     const m = this._attacker; this._attacker = null;
