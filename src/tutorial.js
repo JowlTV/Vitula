@@ -3,11 +3,11 @@
 // Depois disso (Save.data.foundKarhyn), escolher o personagem abre o mapa para decidir onde cair.
 REGIONS.forest = { name: "Rook Forest", desc: "A floresta antes de Karhyn.", pos: [0, 0], floors: 1, cave: true, theme: "slope", forest: true, tutorial: true, hidden: true };
 REGION_MONSTERS.forest = { 1: [["rat", 60], ["bat", 40]] };
-if (Save.data.foundKarhyn === undefined) { Save.data.foundKarhyn = (Save.data.runs || 0) > 0; Save.save(); }   // quem já jogava não repete
 
 // escolheu a classe: floresta na primeira vez, depois o mapa (cidade, encosta…)
 function startAdventure(scene) {
-  if (!Save.data.foundKarhyn) {
+  // cada personagem novo começa na Rook Forest; depois de achar Karhyn, escolhe onde cair no mapa
+  if (!Save.voc(scene.registry.get("vocation") || "knight").foundKarhyn) {
     scene.registry.set("region", "forest"); scene.registry.set("startFloor", 1);
     scene.sound.stopAll(); scene.scene.start("dungeon");
   } else scene.scene.start("map");
@@ -75,7 +75,7 @@ Object.assign(DungeonScene.prototype, {
   // fim: achou a saída (ou pulou). Guarda o que ganhou, mostra a história e entra na cidade.
   tutEnd(skipped) {
     if (this.tutDone) return; this.tutDone = true;
-    Save.data.foundKarhyn = true;
+    Save.voc(this.vocId).foundKarhyn = true;
     const earned = Math.round(this.goldRun * (this.stats.greed || 1));
     Save.addGold(this.vocId, earned); Save.addKills(this.killsByType); Save.save();
     this.finished = true;
