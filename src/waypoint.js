@@ -17,7 +17,7 @@ function wpDestinations(voc, here) {
 // desenho do piso (arte do SpriteCook; sem ela, um círculo com a harpa em código)
 function wpSprite(scene, cx, cy) {
   const parts = [];
-  if (scene.textures.exists("waypoint")) parts.push(scene.add.image(cx, cy, "waypoint").setDisplaySize(T * 1.05, T * 1.05));
+  if (scene.textures.exists("waypoint")) parts.push(scene.add.image(cx, cy, "waypoint").setDisplaySize(T * 0.82, T * 0.82));
   else { const g = scene.add.graphics(); g.fillStyle(0x3a3a44, 1).fillCircle(cx, cy, T * 0.48).lineStyle(3, 0x9ad0ff, 0.9).strokeCircle(cx, cy, T * 0.4); parts.push(g); }
   const glow = scene.add.image(cx, cy, "light").setScale(0.5).setTint(0x8ac8ff).setAlpha(0.35).setBlendMode(Phaser.BlendModes.ADD);
   scene.tweens.add({ targets: glow, alpha: 0.12, scale: 0.62, duration: 1100, yoyo: true, repeat: -1, ease: "Sine.inOut" });
@@ -35,7 +35,9 @@ Object.assign(DungeonScene.prototype, {
       const x = h.x + dx, y = h.y + dy, k = key(x, y);
       if ((dx || dy) && this.walkable(x, y) && !this.occ.has(k) && !this.pickups.has(k) && !this.plates.has(k) && !(this.stairs && this.stairs.x === x && this.stairs.y === y)) cells.push({ x, y });
     }
-    const c = cells.sort((a, b) => Math.abs(a.y - h.y) - Math.abs(b.y - h.y))[0]; if (!c) return;
+    // prefere casas sem parede encostada (o piso não "corta" o muro)
+    const open = c => [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => this.gen.isFloor(c.x + dx, c.y + dy)).length;
+    const c = cells.sort((a, b) => (open(b) - open(a)) || (Math.abs(a.y - h.y) - Math.abs(b.y - h.y)))[0]; if (!c) return;
     const p = this.cellPos(c.x, c.y), parts = wpSprite(this, p.x, p.y - T / 2 + 4);
     parts.forEach(o => { o.setDepth(p.y - T + 2); this.world.add(o); });
     this.wp = { x: c.x, y: c.y, parts };

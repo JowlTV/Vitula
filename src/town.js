@@ -171,7 +171,7 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: t("zone_board"), kind: "board", x: 36, y: 8, w: 2, h: 1 });
     this.zones.push({ name: t("zone_library"), kind: "library", x: 31, y: 7, w: 3, h: 1 });
     this.zones.push({ name: t("lodging_title"), kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
-    this.zones.push({ name: t("zone_oracle"), kind: "hall", x: 37, y: 8, w: 4, h: 1 });
+    this.zones.push({ name: t("zone_oracle"), kind: "hall", x: 37, y: 8, w: 4, h: 1, step: true });
     this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
     this.zones.push({ name: t("zone_gate"), kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
     this.testPortals(); this.townWaypoint();
@@ -198,7 +198,6 @@ class TownScene extends Phaser.Scene {
   // Para remover: apagar esta função, a chamada acima e o trecho "portal" em use().
   testPortals() {
     const P = [
-      { x: 40, y: 10, region: "karhyn_sewers", floor: FLOORS, color: 0xd05a5a, label: "Chefe ratos" },
     ];
     for (const p of P) {
       const cx = p.x * T + T / 2, cy = p.y * T + T / 2;

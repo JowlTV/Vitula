@@ -29,6 +29,7 @@ Object.assign(DungeonScene.prototype, {
     Settings.data.zoom = Math.round(Phaser.Math.Clamp(z, 2, 5) * 10) / 10; Settings.save();
     this.cameras.main.setZoom(this.camZoom());
     this.msg(`Zoom ${this.camZoom().toFixed(1)}×`);
+    if (this.tut && this.camZoom() < 5) { this.tut.zoomed = true; if (this.tutCheck) this.tutCheck(); }
   },
 
 
@@ -36,9 +37,9 @@ Object.assign(DungeonScene.prototype, {
   toggleBigMap() {
     if (this.finished) return;
     this.bigOpen = !this.bigOpen;
-    if (!this.bigMap) { this.bigMap = this.add.graphics().setDepth(5); this.uiLayer.add(this.bigMap); }
+    if (!this.bigMap) { this.bigMap = this.add.graphics().setDepth(30); this.uiLayer.add(this.bigMap); }
     this.bigMap.setVisible(this.bigOpen);
-    if (!this.bigTitle) { this.bigTitle = txt(this, VIEW_W / 2, 64, "", 30, "#e0c890").setOrigin(0.5).setDepth(6).setShadow(2, 2, "#000", 0, true, true); this.uiLayer.add(this.bigTitle); }
+    if (!this.bigTitle) { this.bigTitle = txt(this, VIEW_W / 2, 64, "", 30, "#e0c890").setOrigin(0.5).setDepth(31).setShadow(2, 2, "#000", 0, true, true); this.uiLayer.add(this.bigTitle); }
     this.bigTitle.setText(t("floor_title", { name: this.region.name, n: this.floorN, total: this.floors })).setAlign("center").setVisible(this.bigOpen);
     if (this.bigOpen) this.drawBigMap();
   },
@@ -48,7 +49,7 @@ Object.assign(DungeonScene.prototype, {
     const g = this.gen, gfx = this.bigMap.clear();
     const s = Math.min((VIEW_W - 120) / g.w, (VIEW_H - 140) / g.h);
     const ox = Math.round(VIEW_W / 2 - g.w * s / 2), oy = Math.round(VIEW_H / 2 - g.h * s / 2) + 6;
-    gfx.fillStyle(0x000000, 0.35).fillRect(0, 0, VIEW_W, VIEW_H);
+    gfx.fillStyle(0x000000, 0.78).fillRect(0, 0, VIEW_W, VIEW_H);   // fundo escuro por cima dos painéis (antes o mapa ficava embaixo das Habilidades)
     for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) {
       if (!this.explored[y * g.w + x]) continue;
       if (g.isFloor(x, y)) gfx.fillStyle(this.doors.has(key(x, y)) ? 0xc09a5a : g.isWater(x, y) ? 0x4a8a4a : 0x8a8478, 0.55).fillRect(ox + x * s, oy + y * s, s, s);

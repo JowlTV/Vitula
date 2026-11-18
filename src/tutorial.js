@@ -16,6 +16,7 @@ function startAdventure(scene) {
 // as teclas vão marcadas com «…» e o painel as desenha em destaque
 const keyOf = id => "«" + Settings.keyLabel((Settings.data.keys[id] || [])[0] || "?") + "»";
 const TUT_STEPS = [
+  ["zoom", () => t("tut_zoom", { a: keyOf("zoomOut"), b: keyOf("zoomIn") }), e => e.zoomed],
   ["move", () => t("tut_move", { k: ["up", "left", "down", "right"].map(keyOf).join(" ") }), e => e.moves >= 6],
   ["attack", () => t("tut_attack", { k: keyOf("attack"), a: keyOf("autoAttack") }), e => e.attackKey],
   ["loot", () => t("tut_loot"), e => e.loot],
@@ -29,6 +30,7 @@ Object.assign(DungeonScene.prototype, {
   tutStart() {
     Settings.data.autoAttack = false; Settings.save();   // começa no ataque manual
     this.tut = { moves: 0, kills: 0, step: -1 };
+    this.setCamZoom(5); this.msgT = 0;   // começa no zoom máximo: o 1º passo ensina a afastar a câmera
     // provisões para aprender a curar e algo no chão para aprender a pegar
     const d = Save.voc(this.vocId); if ((d.potions.health || 0) < 2) { d.potions.health = 2; Save.save(); this.refreshPotionIcons && this.refreshPotionIcons(); }
     const h = this.hero, spots = this.freeNeighbors(h.x, h.y);

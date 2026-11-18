@@ -43,6 +43,13 @@ Object.assign(DungeonScene.prototype, {
       g2.fillStyle(0xcfe4ff, 0.9);
       for (let k = 0; k < 3; k++) { const ph = (this.time_ * 0.9 + k / 3) % 1, x = cx + Math.sin((k + 1) * 2.1 + this.time_) * T * 0.3; g2.fillRect(x - 1, m.py - T * 0.9 + ph * T * 0.7, 2, 2); }
     }
+    // pulsos do Tremor de Terra
+    for (const m of this.monsters.slice()) {
+      const q = m.quakeDot; if (!q || m.dead) continue;
+      q.t -= dt; if (q.t > 0) continue;
+      q.t = 0.5; q.n--; this.damageMonster(m, q.dmg);
+      if (q.n <= 0) m.quakeDot = null;
+    }
     // lentidão: anel azul pulsando aos pés da criatura e grãos de gelo caindo, enquanto durar
     for (const m of this.monsters) {
       const on = (m.slowT || 0) > 0 && !m.dead;
@@ -96,7 +103,8 @@ Object.assign(SPELL_FX, {
     for (const m of this.monsters) {
       if (m.dead || Math.max(Math.abs(m.x - h.x), Math.abs(m.y - h.y)) > 2) continue;
       m.slowT = sp.dur;
-      this.damageMonster(m, this.baseDamage() * 3.0);   // 50% a mais que o Golpe Frontal (2× o dano base)
+      // 3× o dano base no total (50% a mais que o Golpe Frontal), aplicado ao longo de 2 s (4 pulsos de 0,5 s)
+      m.quakeDot = { n: 4, t: 0, dmg: this.baseDamage() * 0.75 };
     }
   },
   guard(h, sp) {
