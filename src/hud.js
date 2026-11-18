@@ -437,15 +437,49 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
+  // menu de pausa organizado: três colunas (Controles · Habilidades · Interface), cada linha com a tecla numa plaquinha
+  pausePanel() {
+    const K = id => Settings.keyLabel((Settings.data.keys[id] || [])[0] || "?");
+    const c = this.add.container(0, 0).setDepth(20); this.uiLayer.add(c);
+    c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 0.72).setOrigin(0).setInteractive());
+    const cols = [
+      [t("pm_controls"), [[K("up") + K("left") + K("down") + K("right"), t("pm_walk")], ["2×", t("pm_diag")], [K("attack"), t("pm_attack")], [K("autoAttack"), t("pm_auto")], [K("interact"), t("pm_interact")], [K("recall"), t("pm_recall")]]],
+      [t("pm_skills"), Object.values(this.spells).map(sp => [sp.key, sp.name, t("lv_prefix") + sp.level])],
+      [t("pm_ui"), [[K("bag"), t("pm_bag")], ["U", t("pm_attrs")], [K("map"), t("pm_map")], [K("potion1") + " " + K("potion2"), t("pm_potions")]].concat(this.ranged ? [[K("arrows"), t("pm_arrows")]] : [])],
+    ];
+    const W = 820, CW = (W - 60) / 3, rows = Math.max(...cols.map(c2 => c2[1].length)), H = 70 + 34 + rows * 30 + 90;
+    const x0 = VIEW_W / 2 - W / 2, y0 = VIEW_H / 2 - H / 2;
+    c.add(this.add.nineslice(x0, y0, "panel", null, W, H, 16, 16, 16, 16).setOrigin(0));
+    c.add(txt(this, VIEW_W / 2, y0 + 32, t("pause_title"), 30, COLORS.gold).setOrigin(0.5));
+    cols.forEach(([title, list], ci) => {
+      const cx = x0 + 30 + ci * CW;
+      c.add(txt(this, cx, y0 + 66, title, 15, COLORS.gold));
+      c.add(this.add.rectangle(cx, y0 + 88, CW - 20, 1, 0x6a5430).setOrigin(0));
+      list.forEach(([key, label, extra], ri) => {
+        const y = y0 + 100 + ri * 30;
+        const kt = txt(this, 0, 0, key, 12, "#ffd870"), kw = Math.max(26, kt.width + 12);
+        c.add(this.add.rectangle(cx, y, kw, 22, 0x2a1c0c).setOrigin(0).setStrokeStyle(1, 0xc8a050));
+        kt.setPosition(cx + kw / 2, y + 11).setOrigin(0.5); c.add(kt);
+        const lx = cx + Math.max(...list.map(r => Math.max(26, txt(this, -999, -999, r[0], 12, "#fff").setVisible(false).width + 12))) + 10;
+        const lt = txt(this, lx, y + 11, label, 13, COLORS.text).setOrigin(0, 0.5); c.add(lt);
+        if (lt.width > cx + CW - 30 - lx) lt.setScale((cx + CW - 30 - lx) / lt.width);
+        if (extra) { const e = txt(this, cx + CW - 22, y + 11, extra, 11, (this.hero.level >= +extra.replace(/\D/g, "")) ? "#9fe08a" : COLORS.dim).setOrigin(1, 0.5); c.add(e); }
+      });
+    });
+    [[t("resume"), () => this.togglePause()], [t("abandon"), () => { this.togglePause(); this.finish(false); }]].forEach(([label, fn], i) => {
+      const bx = VIEW_W / 2 + (i ? 180 : -180), by = y0 + H - 42;
+      const b = this.add.nineslice(bx, by, "button_normal", null, 340, 40, 18, 18, 6, 6).setInteractive({ useHandCursor: true });
+      b.on("pointerover", () => b.setTexture("button_hover")); b.on("pointerout", () => b.setTexture("button_normal")); b.on("pointerup", fn);
+      c.add([b, txt(this, bx, by, label, 16, COLORS.text).setOrigin(0.5)]);
+    });
+    return c;
+  },
+
   togglePause() {
     if (this.finished) return;
     if (this.pauseBox) { this.pauseBox.destroy(); this.pauseBox = null; this.paused = false; this.tweens.resumeAll(); return; }
     this.paused = true; this.tweens.pauseAll();
-    this.pauseBox = this.panel(t("pause_title"),
-      t("pause_controls") + "\n" +
-      Object.values(this.spells).map(sp => `${sp.key} · ${sp.name} (${t("level_n", { n: sp.level })})`).join("   ") +
-      "\n" + t("pause_keys"),
-      [[t("resume"), () => this.togglePause()], [t("abandon"), () => { this.togglePause(); this.finish(false); }]]);
+    this.pauseBox = this.pausePanel();
   },
 
 

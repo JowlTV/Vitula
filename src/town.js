@@ -135,7 +135,7 @@ class TownScene extends Phaser.Scene {
     // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
     F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); H(10, 6, 3); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
     // Depot no lado norte (antes ficava embaixo, quase escondido na tela)
-    F("vk_depot", "v_depot", 25, 6, 5.4, 5); if (this.textures.exists("vk_biblioteca")) this.art("vk_biblioteca", 31, 6, 3, 0); else H(31, 6, 3);
+    F("vk_depot", "v_depot", 25, 6, 5.4, 5); if (this.textures.exists("vk_biblioteca")) this.art("vk_biblioteca", 30.6, 6, 4.1, 0); else H(31, 6, 3);
     // sul: Acomodação (+ casas pobres)
     H(3, 14, 3); H(7, 14, 3); H(10, 14, 3); H(13, 14, 3); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
     H(23, 14, 4); H(28, 14, 3); H(32, 14, 4);
@@ -830,7 +830,7 @@ class TownScene extends Phaser.Scene {
     this.uiLayer.bringToTop(this.townTitle);
   }
   openMenu() {
-    this.say("Karhyn", t("what_to_do"), [[t("back_to_map"), () => this.leave("map")], [t("continue_label"), () => this.closeDialog()]]);
+    this.say("Karhyn", t("what_to_do"), [[t("continue_label"), () => this.closeDialog()]]);
   }
 
   // ------------------------------------------------------------ atmosfera
