@@ -40,6 +40,7 @@ class BootScene extends Phaser.Scene {
     for (const n of ["npc_smith_idle", "npc_potion_seller_idle", "npc_depot_guard_idle"]) this.load.spritesheet(n, `assets/town/${n}.png`, { frameWidth: 200, frameHeight: 200 });
     this.load.spritesheet("fx_recall", "assets/fx/recall.png", { frameWidth: 64, frameHeight: 72 });
     this.load.spritesheet("fx_basic_slash", "assets/art/fx_basic_slash.png", { frameWidth: 72, frameHeight: 72 });
+    this.load.image("waypoint", "assets/waypoint.png");
     for (const id of EQUIP_ART) this.load.image("eq_" + id, `assets/equip/${id}.png`);
     this.load.spritesheet("fx_ring_wave", "assets/art/fx_ring_wave.png", { frameWidth: 214, frameHeight: 214 });
     this.load.spritesheet("fx_front_cut", "assets/art/fx_front_cut.png", { frameWidth: 230, frameHeight: 230 });

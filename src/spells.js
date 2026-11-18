@@ -57,8 +57,8 @@ Object.assign(DungeonScene.prototype, {
 // Para uma nova vocação: adicione a magia em SPELLS (data.js) e a função dela aqui.
 const SPELL_FX = {
   heal(h, sp) {
-    // 15% da vida máxima + 1% por magic level
-    this.heal(h.maxHp * (0.15 + 0.01 * this.mlEff()));
+    // magia global sem custo: o Cavaleiro cura pela vida máxima; as outras vocações, pelo magic level
+    this.heal(this.vocId === "knight" ? h.maxHp * 0.25 : 10 + 6 * this.mlEff());
     this.fx("heal", h.px, h.py - 28, 0.7);
     sfx(this, "levelup", 0.2);
   },

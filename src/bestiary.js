@@ -60,10 +60,23 @@ function bestHabitat(id) {
         if (this.lootLog) this.lootLog("i_spell_book", t("best_unlock_short", { name, tier: t("best_tier_" + after) }), after === 4 ? "#ffa030" : COLORS.gold, { hex: 0x8a6a30 });
         sfx(this, "levelup", 0.25);
       }
+      if (!Save.data.bestTip) { Save.data.bestTip = true; Save.save(); this.bestTipShow(MONSTERS[m.kind].name); }
     }
     return r;
   };
 }
+
+// na primeira criatura derrotada: ensina o bestiário e onde lê-lo (Biblioteca de Karhyn)
+DungeonScene.prototype.bestTipShow = function (name) {
+  const W = 470, c = this.add.container(VIEW_W / 2 - W / 2, VIEW_H - 250).setDepth(45).setAlpha(0); this.uiLayer.add(c);
+  const body = txt(this, 66, 34, t("best_tip", { name }), 13, COLORS.text, { wordWrap: { width: W - 84 } });
+  const H = Math.max(84, body.height + 48);
+  c.add(this.add.nineslice(0, 0, "panel", null, W, H, 16, 16, 16, 16).setOrigin(0));
+  if (this.textures.exists("i_spell_book")) c.add(this.add.image(34, H / 2, "i_spell_book").setDisplaySize(40, 40));
+  c.add(txt(this, 66, 12, t("best_tip_title"), 14, COLORS.gold)); c.add(body);
+  this.tweens.add({ targets: c, alpha: 1, duration: 300 });
+  this.time.delayedCall(9000, () => this.tweens.add({ targets: c, alpha: 0, duration: 600, onComplete: () => c.destroy() }));
+};
 
 // ---------------------------------------------------------------- o livro (Biblioteca de Karhyn)
 function openBestiary(scene, sel) {

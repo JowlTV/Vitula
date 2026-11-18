@@ -11,7 +11,7 @@ const Save = {
     const d = this.data.vocs[v];
     if (!d.skills) d.skills = {};
     for (const id in SKILLS) if (!d.skills[id]) d.skills[id] = { lvl: SKILLS[id].start, tries: 0 };
-    if (!d.ml) d.ml = { lvl: 0, spent: 0 };          // magic level
+    if (!d.ml) d.ml = { lvl: v === "archer" ? 5 : 0, spent: 0 };          // magic level
     if (!d.potions) d.potions = { health: 3 };       // poções guardadas na mochila
     if (!d.potionSlots) d.potionSlots = ["health", v === "knight" || v === "archer" ? "fury" : "mana"];
     if (!d.xpTotal) d.xpTotal = 0;
@@ -39,7 +39,7 @@ const Save = {
 };
 Save.load();
 // reinício dos personagens (nov/26: Rook Forest). Configurações (teclas, idioma, volume) ficam.
-const SAVE_EPOCH = 2;
+const SAVE_EPOCH = 3;
 if ((Save.data.epoch || 0) < SAVE_EPOCH) { Save.data = { vocs: {}, runs: 0, cleared: {}, bestiary: {}, epoch: SAVE_EPOCH }; Save.save(); }
 
 // Configurações do jogador: volume e teclas (cada ação aceita 2 teclas; a 2ª é alternativa fixa).
@@ -52,8 +52,8 @@ const ACTIONS = [
   ["upRight", "Diagonal: cima-direita", ["PAGE_UP", "NUMPAD_NINE"]],
   ["downLeft", "Diagonal: baixo-esquerda", ["Z", "END"]],
   ["downRight", "Diagonal: baixo-direita", ["C", "PAGE_DOWN"]],
-  ["skill1", "Habilidade 1 (Golpe Frontal)", ["ONE", "NUMPAD_ONE"]],
-  ["skill2", "Habilidade 2 (Exura)", ["TWO", "NUMPAD_TWO"]],
+  ["skill1", "Exura (cura)", ["ONE", "NUMPAD_ONE"]],
+  ["skill2", "Habilidade 2 (Golpe Frontal)", ["TWO", "NUMPAD_TWO"]],
   ["skill3", "Habilidade 3 (Golpe em Área)", ["THREE", "NUMPAD_THREE"]],
   ["skill4", "Habilidade 4 (Aura)", ["FOUR", "NUMPAD_FOUR"]],
   ["map", "Abrir o mapa", ["TAB", "M"]],

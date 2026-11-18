@@ -10,7 +10,7 @@ function startAdventure(scene) {
   if (!Save.voc(scene.registry.get("vocation") || "knight").foundKarhyn) {
     scene.registry.set("region", "forest"); scene.registry.set("startFloor", 1);
     scene.sound.stopAll(); scene.scene.start("dungeon");
-  } else scene.scene.start("map");
+  } else { scene.registry.set("townSpawn", "gate"); scene.scene.start("town"); }   // sem mapa: sempre cai em Karhyn
 }
 
 // as teclas vão marcadas com «…» e o painel as desenha em destaque
@@ -19,7 +19,7 @@ const TUT_STEPS = [
   ["move", () => t("tut_move", { k: ["up", "left", "down", "right"].map(keyOf).join(" "), d: ["upLeft", "downLeft", "downRight", "upRight"].map(keyOf).join(" ") }), e => e.moves >= 6],
   ["attack", () => t("tut_attack", { k: keyOf("attack"), a: keyOf("autoAttack") }), e => e.attackKey],
   ["loot", () => t("tut_loot"), e => e.loot],
-  ["heal", () => t("tut_heal", { k: keyOf("skill2"), p: keyOf("potion1") }), e => e.heal || e.cast],
+  ["heal", () => t("tut_heal", { k: keyOf("skill1"), p: keyOf("potion1") }), e => e.heal || e.cast],
   ["bag", () => t("tut_bag", { k: keyOf("bag") }), e => e.bag],
   ["map", () => t("tut_map", { k: keyOf("map") }), e => e.map],
   ["exit", () => t("tut_exit", { e: keyOf("interact"), h: keyOf("recall") }), e => false],

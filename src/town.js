@@ -174,7 +174,7 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: t("zone_oracle"), kind: "hall", x: 37, y: 8, w: 4, h: 1 });
     this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
     this.zones.push({ name: t("zone_gate"), kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
-    this.testPortals();
+    this.testPortals(); this.townWaypoint();
   }
 
   // flechas do Arqueiro no ferreiro: cada clique compra um lote (limitado pela aljava e pelo ouro)
@@ -198,7 +198,6 @@ class TownScene extends Phaser.Scene {
   // Para remover: apagar esta função, a chamada acima e o trecho "portal" em use().
   testPortals() {
     const P = [
-      { x: 38, y: 10, region: "goblin_slope", floor: 1, color: 0x6fd06a, label: "Encosta" },
       { x: 40, y: 10, region: "karhyn_sewers", floor: FLOORS, color: 0xd05a5a, label: "Chefe ratos" },
     ];
     for (const p of P) {
@@ -218,7 +217,7 @@ class TownScene extends Phaser.Scene {
   // ------------------------------------------------------------ herói
   spawnHero() {
     const from = this.registry.get("townSpawn") || "gate", pos = this.registry.get("townPos");
-    const [x, y] = from === "here" && pos ? pos : from === "recall" ? RECALL_SPOT : from === "sewer" ? [41, 9] : [4, 9];
+    const [x, y] = from === "here" && pos ? pos : from === "recall" ? RECALL_SPOT : from === "waypoint" ? [WP_TOWN[0], WP_TOWN[1] + 1] : from === "sewer" ? [41, 9] : [4, 9];
     const h = this.hero = { x, y, px: x * T + T / 2, py: y * T + T - 4, moveT: 0, facing: from === "sewer" ? [-1, 0] : [1, 0], lookLeft: false };
     h.shadow = this.add.image(h.px, h.py - 3, "shadow").setScale(0.9, 0.3);
     const ap = vocAnim(this.vocId);

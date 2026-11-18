@@ -140,7 +140,8 @@ const FURY_MAX = 100;
 // custo do nível n → n+1 = ML_BASE × mult^n  (Tibia: 1600 de mana × 3,0 knight / 1,4 archer / 1,1 mago)
 const ML_BASE = 400;
 const ML_MULT = { knight: 3.0, archer: 1.4, sorcerer: 1.1, druid: 1.1 };
-const mlNeeded = (voc, lvl) => Math.round(ML_BASE * Math.pow(ML_MULT[voc] || 3, lvl));
+// Arqueiro começa no magic level 5 e sobe rápido até o 10 (80, 120, 160, 200, 240 de mana gasta)
+const mlNeeded = (voc, lvl) => voc === "archer" && lvl < 10 ? 80 + 40 * Math.max(0, lvl - 5) : Math.round(ML_BASE * Math.pow(ML_MULT[voc] || 3, lvl));
 
 // combate corpo a corpo no estilo Tibia: dano máx = 0,085 × ataque da arma × skill + nível / 5
 const FIST_ATTACK = 20;  // ataque do punho (sem arma); o arqueiro usa sempre este valor
@@ -170,8 +171,8 @@ const SHOP = {
 };
 const shopCost = (id, lvl) => Math.round(SHOP[id].base * Math.pow(SHOP[id].grow, lvl) / 5) * 5;
 const SPELLS = {
-  front: { name: "Golpe Frontal", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Um corte que avança pelas 3 casas à frente." },
-  heal:  { name: "Exura", key: "2", icon: "icon_exura", level: 2, fury: 30, cd: 6, desc: "Cura 15% da vida máxima + 1% por magic level." },
+  heal:  { name: "Exura", key: "1", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura 25% da vida máxima." },
+  front: { name: "Golpe Frontal", key: "2", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Um corte que avança pelas 3 casas à frente." },
   spin:  { name: "Golpe em Área", key: "3", icon: "icon_area", level: 10, fury: 40, cd: 4, desc: "Crava a espada no chão: atinge as 8 casas em volta e faz sangrar 5% da vida máxima por segundo durante 3 s." },
   aura:  { name: "Aura Sagrada", key: "4", icon: "icon_aura_v2", level: 18, fury: 60, cd: 12, dur: 5, desc: "Por 5 s: fere quem chega perto, regenera vida e ilumina uma área maior." },
 };
@@ -198,8 +199,8 @@ const BLESS_TEXT = [
 
 // Habilidades do Arqueiro (mesmas teclas 1–4; pagas com Mana).
 const ARCHER_SPELLS = {
-  holy:   { name: "Flecha Sagrada", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Uma flecha de luz sagrada que acerta o alvo escolhido com 2× o dano." },
-  heal:   { name: "Exura", key: "2", icon: "icon_exura", level: 2, fury: 30, cd: 6, desc: "Cura 15% da vida máxima + 1% por magic level." },
+  heal:   { name: "Exura", key: "1", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura 10 + 6 por magic level." },
+  holy:   { name: "Flecha Sagrada", key: "2", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Uma flecha de luz sagrada que acerta o alvo escolhido com 2× o dano." },
   flee:   { name: "Fuga", key: "3", icon: "spear", level: 8, fury: 25, cd: 10, dur: 3, desc: "Por 3 s: +75% de velocidade de movimento e atravessa os monstros." },
   frenzy: { name: "Fúria do Caçador", key: "4", icon: "berserk", level: 18, fury: 50, cd: 15, dur: 4, desc: "Por 4 s: +45% de velocidade de ataque, +25% de chance de crítico, +25% de dano crítico e 15% de roubo de vida e mana." },
 };
@@ -210,7 +211,7 @@ const vocAnim = voc => (VOCATIONS[voc] && VOCATIONS[voc].anim) || "kn_";
 const WORLD_SCALE = 0.78;
 // altura alvo (px) de cada objeto da masmorra, em proporção ao herói (~60 px de corpo)
 const PROP_H = { forest_bush: 46, forest_stump: 44, forest_mushrooms: 30, forest_log: 32, forest_deadtree: 86, forest_sign: 52, decor_rat_nest: 44, slope_burrow: 72, slope_tent: 92, slope_totem: 84, slope_campfire: 44, slope_barricade: 50, slope_palisade: 56, slope_weapon_rack: 52, slope_stakes: 40, slope_cairn: 40, barrel: 40, crate_intact: 32, crate_damaged: 32, chest_closed: 28, chest_open: 28, pot: 27, urn: 36, torch_stand: 62, pillar: 92 };
-const vocScale = voc => ((VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42) * WORLD_SCALE * 1.12;   // heróis 12% maiores (nov/26)
+const vocScale = voc => ((VOCATIONS[voc] && VOCATIONS[voc].scale) || 0.42) * WORLD_SCALE * 1.12 * 1.05;   // heróis 12% maiores (nov/26) e mais 5%
 
 // sombra de contato: elipse escura colada na base de um sprite (origem 0.5,1), some junto com ele
 function groundShadow(scene, spr, container, wf = 0.85, alpha = 1) {

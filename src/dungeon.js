@@ -169,7 +169,7 @@ class DungeonScene extends Phaser.Scene {
       if (d < best && d < 9) { best = d; goal = { x: m.x, y: m.y }; }
     }
     if (this.adjacentMonster(h.x, h.y, h.facing)) { for (const sp of ["aura", "spin", "front"]) if (h.level >= SPELLS[sp].level && h.fury >= SPELLS[sp].fury && h.cds[sp] <= 0) { this.cast(sp); break; } return; }
-    if (h.hp < h.maxHp * 0.4 && h.level >= 3 && h.fury >= 30) this.cast("heal");
+    if (h.hp < h.maxHp * 0.4 && h.cds.heal <= 0) this.cast("heal");
     if (!goal) return;
     const d = this.gen.distances(goal.x, goal.y, (x, y) => { const p = this.props.get(key(x, y)); return !p || p.kind in BREAKABLE; });
     const here = d[h.y * this.gen.w + h.x];

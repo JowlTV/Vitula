@@ -87,7 +87,7 @@ Object.assign(DungeonScene.prototype, {
       h.spr.setFlipX(dir === "side" && !!(atk ? h.atkLeft : h.lookLeft));
     }
     h.attackT = Math.max(0, (h.attackT || 0) - dt);
-    if (h.spr.anims.currentAnim.key !== anim) { h.spr.play(anim, true); if (anim.startsWith(this.ap)) h.spr.setScale(this.ap === "kn_" ? (anim === "kn_hurt" || anim === "kn_cast" ? 0.38 * WORLD_SCALE : this.heroScale) : this.heroScale); }
+    if (h.spr.anims.currentAnim.key !== anim) { h.spr.play(anim, true); if (anim.startsWith(this.ap)) h.spr.setScale(this.ap === "kn_" ? (anim === "kn_hurt" || anim === "kn_cast" ? 0.38 * WORLD_SCALE * 1.05 : this.heroScale) : this.heroScale); }
     // ataque básico automático em quem estiver colado
     h.atkQueued = Math.max(0, (h.atkQueued || 0) - dt);
     const autoAtk = Settings.data.autoAttack === true;
@@ -332,6 +332,8 @@ Object.assign(DungeonScene.prototype, {
           this.msg(t("got_item", { name: info.name, rarity: R.name })); this.floatText(px, py, info.name, R.color); sfx(this, "levelup", 0.25); break; }
         if (pk.item === "boss_essence") { const d = Save.voc(this.vocId); d.essence++; Save.save(); this.msg(t("got_essence", { n: d.essence })); this.floatText(px, py, t("got_essence", { n: "" }), "#ffa030"); sfx(this, "gem"); break; }
         this.heal(info.healPct ? h.maxHp * info.healPct : info.heal); sfx(this, "pickup", 0.35);
+        // comida também enche a mana na hora (% igual à cura); a Fúria não muda
+        if (info.heal && VOCATIONS[this.vocId].mana) { const m = Math.min(this.furyMax - h.fury, this.furyMax * info.heal / 100); if (m >= 1) { h.fury += m; this.floatText(px, py - 18, "+" + Math.round(m) + " mana", "#7ab0ff"); } }
     }
   },
 

@@ -55,7 +55,7 @@
       ["▶", "right", "hold", t("touch_right"), 3, 2], ["▼", "down", "hold", t("touch_down"), 2, 3],
     ],
     skills: [
-      ["1", "skill1", "tap", t("touch_frontal")], ["2", "skill2", "tap", t("touch_magic2")],
+      ["1", "skill1", "tap", "Exura"], ["2", "skill2", "tap", t("touch_frontal")],
       ["3", "skill3", "tap", t("touch_aoe")], ["4", "skill4", "tap", t("touch_aura")],
       ["5", "potion1", "tap", t("touch_pot1")], ["6", "potion2", "tap", t("touch_pot2")],
     ],

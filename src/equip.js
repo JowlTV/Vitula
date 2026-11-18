@@ -480,3 +480,18 @@ function drawEquipIcon(a) {
   }
   return out;
 }
+
+// ícones de equipamento agora vêm em 64×64 (mais nítidos); o jogo foi feito para 32×32, então toda imagem "eq_*"
+// nasce em escala 0,5 e qualquer setScale nela é dividido por 2 — o tamanho na tela não muda, só a resolução.
+{
+  const F = Phaser.GameObjects.GameObjectFactory.prototype, img = F.image;
+  F.image = function (x, y, key, frame) {
+    const o = img.call(this, x, y, key, frame);
+    if (typeof key === "string" && key.startsWith("eq_") && o.width >= 64) { o.__eqHalf = true; o.setScale(1); }
+    return o;
+  };
+  const P = Phaser.GameObjects.Image.prototype, ss = P.setScale;
+  P.setScale = function (x, y) { if (this.__eqHalf) { if (y === undefined) y = x; return ss.call(this, x * 0.5, y * 0.5); } return ss.call(this, x, y); };
+  const st = P.setTexture;
+  P.setTexture = function (key, frame) { const r = st.call(this, key, frame); const half = typeof key === "string" && key.startsWith("eq_") && this.width >= 64; if (half !== !!this.__eqHalf) { const s = this.scaleX * (this.__eqHalf ? 2 : 1); this.__eqHalf = half; this.setScale(s); } return r; };
+}

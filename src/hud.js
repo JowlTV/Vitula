@@ -510,8 +510,7 @@ Object.assign(DungeonScene.prototype, {
     this.panel(victory ? t("dungeon_won") : t("you_fell"),
       t("run_summary", { d: Math.round(this.diff * 100), f: this.floorN, total: this.floors, lvl: this.hero.level, k: this.kills, g: earned, voc: v.name, bag: Save.gold(this.vocId) }) + penText,
       [[t("descend_again"), () => this.scene.restart()]]
-        .concat(cityUnlocked() ? [[t("back_to_city"), () => { this.registry.set("townSpawn", "sewer"); this.scene.start("town"); }]] : [])
-        .concat([[t("back_to_map"), () => this.scene.start("map")]]));
+        .concat([[t("back_to_city"), () => { this.registry.set("townSpawn", "sewer"); this.scene.start("town"); }]]));
     window.__vitulaEnd = { victory, floor: this.floorN, level: this.hero.level, kills: this.kills, earned };
   },
 });
