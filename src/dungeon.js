@@ -58,6 +58,7 @@ class DungeonScene extends Phaser.Scene {
     for (const [id] of ACTIONS) this.keysIn[id] = Settings.data.keys[id].filter(n => K[n] !== undefined).map(n => kb.addKey(K[n]));
     const spells = Object.keys(this.spells);
     ["skill1", "skill2", "skill3", "skill4"].forEach((id, i) => this.keysIn[id].forEach(k => k.on("down", () => this.cast(spells[i]))));
+    this.input.keyboard.on("keydown-U", () => this.toggleAttrs());
     this.keysIn.pause.forEach(k => k.on("down", () => this.attrBox ? this.toggleAttrs() : this.bagOpen ? this.toggleBag() : this.togglePause()));
     (this.keysIn.potion1 || []).forEach(k => k.on("down", () => this.usePotion(0)));
     (this.keysIn.potion2 || []).forEach(k => k.on("down", () => this.usePotion(1)));
@@ -69,7 +70,6 @@ class DungeonScene extends Phaser.Scene {
       this.msg(t(Settings.data.autoAttack ? "auto_attack_on" : "auto_attack_off"));
     }));
     (this.keysIn.bag || []).forEach(k => k.on("down", () => this.toggleBag()));
-    this.input.keyboard.on("keydown-U", () => this.toggleAttrs());
     this.input.keyboard.addCapture("TAB");
     (this.keysIn.map || []).forEach(k => k.on("down", () => this.toggleBigMap()));
     (this.keysIn.zoomIn || []).forEach(k => k.on("down", () => this.setCamZoom(this.camZoom() + 0.2)));

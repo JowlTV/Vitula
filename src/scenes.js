@@ -46,7 +46,7 @@ class BootScene extends Phaser.Scene {
     // Karhyn nova (guia de estilo aprovado): prédios, objetos e autotiles de chão
     // a arquitetura de Karhyn é desenhada em código (towngfx.js); da arte gerada só fica o lampião
     this.load.image("k2_lamp", "assets/town2/k2_lamp.png");
-    for (const n of ["vk_ts_piso", "vk_ts_muro", "vk_ts_calcada", "vk_ts_grama", "vk_mural", "vk_goddess_art", "vk_ferreiro", "vk_harpa_dancante", "vk_pocoes", "vk_depot", "vk_acomodacao", "vk_portao_lateral", "vk_casebre_1", "vk_casebre_2", "vk_casebre_3", "vk_bueiro", "vk_int_ferreiro", "vk_int_harpa", "vk_int_pocoes", "vk_int_depot", "vk_int_acomodacao",
+    for (const n of ["vk_ts_piso", "vk_ts_muro", "vk_ts_calcada", "vk_ts_grama", "vk_mural", "vk_goddess_art", "vk_ferreiro", "vk_harpa_dancante", "vk_pocoes", "vk_depot", "vk_acomodacao", "vk_portao_lateral", "vk_biblioteca", "vk_casebre_1", "vk_casebre_2", "vk_casebre_3", "vk_bueiro", "vk_int_ferreiro", "vk_int_harpa", "vk_int_pocoes", "vk_int_depot", "vk_int_acomodacao",
       ...["barrel", "crate", "garbage", "cart", "laundry", "bench", "firewood", "wheel"].map(n => "vkp_" + n)]) this.load.image(n, `assets/town2/${n}.png`);   // tilesets da vila (SpriteCook, 32 px)
     this.load.image("tower_view", "assets/town/tower_view.png"); this.load.image("depot_counter", "assets/town/depot_counter.png");
     this.load.image("glow_mushrooms", "assets/art/glow_mushrooms.png");
@@ -523,9 +523,10 @@ class ShopScene extends Phaser.Scene {
     this.add.nineslice(VIEW_W / 2, 282, "panel", null, 640, 440, 16, 16, 16, 16);
     txt(this, VIEW_W / 2, 86, t("shop_title"), 32, COLORS.gold).setOrigin(0.5);
     this.goldT = txt(this, VIEW_W / 2, 118, "", 16, COLORS.gold).setOrigin(0.5);
-    if (V.passive) txt(this, VIEW_W / 2, 142, `Passiva — ${V.passive.name}: ${V.passive.desc}`, 12, COLORS.dim).setOrigin(0.5);
+
     this.rows = [];
-    Object.keys(SHOP).forEach((id, i) => {
+    // (nov/26) a loja virou só de poções: os atributos/treinos saíram do jogo
+    [].forEach((id, i) => {
       const y = 186 + i * 66, it = SHOP[id];
       this.add.nineslice(VIEW_W / 2, y, "slot", null, 580, 58, 4, 4, 4, 4);
       const ic = this.add.image(VIEW_W / 2 - 262, y, it.icon); ic.setScale(30 / Math.max(ic.width, ic.height));
@@ -539,11 +540,11 @@ class ShopScene extends Phaser.Scene {
     const back = this.registry.get("shopFrom") === "town" ? "town" : "map", tab = this.registry.get("shopTab");
     this.registry.set("shopFrom", null); this.registry.set("shopTab", null);
     const goBack = () => { if (back === "town") this.registry.set("townSpawn", "here"); this.scene.start(back); };
-    button(this, VIEW_W / 2 - 90, 470, 160, "Voltar", goBack, 15);
-    const [, tb] = button(this, VIEW_W / 2 + 90, 470, 160, t("potions"), () => { this.showPots(!this.potBox); tb.setText(this.potBox ? t("attributes") : t("potions")); }, 15);
+    button(this, VIEW_W / 2, 470, 160, t("back"), goBack, 15);
+
     this.input.keyboard.on("keydown-ESC", goBack);
     this.refresh();
-    if (tab === "potions") { this.showPots(true); tb.setText("Atributos"); }
+    this.showPots(true);
   }
   // aba de poções: compradas aqui, vão para a mochila (atalhos 5 e 6 no jogo)
   showPots(on) {

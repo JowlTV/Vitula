@@ -82,10 +82,9 @@ Object.assign(DungeonScene.prototype, {
     const ry = iy + 36;
     c.add(this.add.image(ix + 8, ry + 8, "i_gold_coin").setScale(1));
     T_(ix + 20, ry, t("bag_gold_line", { run: this.goldRun, saved: Save.gold(this.vocId) }), 11, COLORS.gold);
-    c.add(this.add.image(ix + 8, ry + 26, "i_bronze_key").setScale(0.7));
-    T_(ix + 20, ry + 19, String(this.keys), 11);
+
     { const L = d.equip.light && EQUIP[d.equip.light.id], oil = Math.ceil((d.oil || 0) / 60);
-      T_(ix + 60, ry + 19, L ? (L.light.fuel ? t("oil_label", { n: oil }) + (d.oil > 0 ? "" : " · " + t("oil_empty")) : t("goddess_light")) : t("no_light"), 11, L && (!L.light.fuel || d.oil > 0) ? "#ffd27a" : COLORS.dim); }
+      T_(ix, ry + 19, L ? (L.light.fuel ? t("oil_label", { n: oil }) + (d.oil > 0 ? "" : " · " + t("oil_empty")) : t("goddess_light")) : t("no_light"), 11, L && (!L.light.fuel || d.oil > 0) ? "#ffd27a" : COLORS.dim); }
     // capacidade (peso)
     { const cap = capOf(this.vocId, h.level), ld = loadOf(this.vocId), f = Math.min(1, ld / cap), st = capState(this);
       const col = st === 2 ? "#e07060" : st === 1 ? "#e0b060" : COLORS.text;

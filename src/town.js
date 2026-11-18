@@ -135,7 +135,7 @@ class TownScene extends Phaser.Scene {
     // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
     F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); H(10, 6, 3); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
     // Depot no lado norte (antes ficava embaixo, quase escondido na tela)
-    F("vk_depot", "v_depot", 25, 6, 5.4, 5); H(31, 6, 3); this.librarySign(32.5, 6);
+    F("vk_depot", "v_depot", 25, 6, 5.4, 5); if (this.textures.exists("vk_biblioteca")) this.art("vk_biblioteca", 31, 6, 3, 0); else H(31, 6, 3);
     // sul: Acomodação (+ casas pobres)
     H(3, 14, 3); H(7, 14, 3); H(10, 14, 3); H(13, 14, 3); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
     H(23, 14, 4); H(28, 14, 3); H(32, 14, 4);
@@ -155,10 +155,10 @@ class TownScene extends Phaser.Scene {
     // decadência: barris, caixas, lixo, varal, carroça, bancos
     // props do SpriteCook (vkp_*), com a versão em código de reserva
     const P = (n, code, x, y, w, wCode, fd = 1) => this.textures.exists("vkp_" + n) ? this.art("vkp_" + n, x + (1 - w) / 2, y, w, fd) : A(code, x, y, wCode, fd);
-    P("barrel", "barrels", 9, 6, 0.6, 0.8, 0); P("crate", "crates", 24, 6, 0.75, 0.8, 0); P("garbage", "garbage", 33, 7, 0.9, 0.9); P("garbage", "garbage", 12, 11, 0.9, 0.9);
+    P("barrel", "barrels", 9, 6, 0.6, 0.8, 0); P("crate", "crates", 24, 6, 0.75, 0.8, 0); 
     P("laundry", "laundry", 27, 11, 1.1, 1.4, 0); P("cart", "cart", 25, 11, 0.95, 1.5); P("barrel", "barrels", 16, 11, 0.6, 0.8); P("crate", "crates", 31, 11, 0.75, 0.8);
-    P("garbage", "garbage", 41, 11, 0.9, 0.9); P("bench", "bench", 34, 7, 0.95, 0.85); P("barrel", "barrels", 42, 7, 0.6, 0.8);
-    P("firewood", "crates", 13, 7, 0.8, 0.8); P("wheel", "garbage", 32, 7, 0.75, 0.9); P("firewood", "crates", 22, 11, 0.8, 0.8); P("barrel", "barrels", 35, 11, 0.6, 0.8);
+    P("bench", "bench", 34, 7, 0.95, 0.85); P("barrel", "barrels", 42, 7, 0.6, 0.8);
+    P("firewood", "crates", 13, 7, 0.8, 0.8); P("firewood", "crates", 22, 11, 0.8, 0.8); P("barrel", "barrels", 35, 11, 0.6, 0.8);
     // lampiões: as únicas luzes quentes da rua
     this.lamps = [];
     for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
@@ -315,7 +315,7 @@ class TownScene extends Phaser.Scene {
   use(z) {
     const V = VOCATIONS[this.vocId], d = Save.voc(this.vocId);
     if (z.kind === "portal") {   // portal de teste
-      this.registry.set("region", z.portal.region); this.registry.set("startFloor", z.portal.floor);
+      this.registry.set("region", z.portal.region); this.registry.set("startFloor", z.portal.floor); this.portalTrip = true;
       this.leave("dungeon"); return;
     }
     // história e boatos: cada morador conta um pedaço do que está acontecendo em Karhyn
@@ -359,7 +359,7 @@ class TownScene extends Phaser.Scene {
     } else if (z.kind === "hall") {
       this.say(t("zone_oracle"), t("bless_train_desc"),
         [[t("pray"), () => this.blessingVision(() => this.say(t("zone_oracle"), t("bless_second"), [[t("stand_up"), () => this.closeDialog()]]))],
-         [t("train_attrs"), () => { this.registry.set("shopFrom", "town"); this.registry.set("shopTab", "train"); this.leave("shop"); }], [t("leave"), () => this.closeDialog()]]);
+         [t("leave"), () => this.closeDialog()]]);
     }
   }
 
@@ -368,6 +368,8 @@ class TownScene extends Phaser.Scene {
     this.leaving = true; this.closeDialog();
     this.registry.set("townSpawn", scene === "dungeon" ? "sewer" : "gate");
     this.registry.set("townPos", [this.hero.x, this.hero.y]);
+    // o bueiro sempre leva ao esgoto de Karhyn (antes o jogo podia reaproveitar a última região, como a floresta ou a encosta)
+    if (scene === "dungeon" && !this.portalTrip) { this.registry.set("region", "karhyn_sewers"); }
     if (scene === "dungeon") this.sound.stopAll();
     this.cameras.main.fadeOut(400, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => this.scene.start(scene));

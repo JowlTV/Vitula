@@ -110,7 +110,7 @@ const ITEMS = {
   scroll:        { icon: "i_scroll", name: "pergaminho antigo" },
 };
 const LOOT = [["gold", 34], ["silver", 20], ["apple", 9], ["bread", 7], ["meat", 9],
-  ["blue_gem", 8], ["red_gem", 3], ["bronze_key", 7], ["none", 22]];
+  ["blue_gem", 8], ["red_gem", 3], ["none", 29]];   // (nov/26) chaves de bronze e baús trancados saíram do jogo
 const BREAKABLE = { barrel: 2, crate_intact: 2, pot: 1, urn: 1 };  // golpes para quebrar
 
 // Skills de combate estilo Tibia: sobem devagar com o uso e ficam salvas por vocação.
@@ -127,9 +127,6 @@ const ATTRS = {
   crit:   { name: "Chance crítica",       desc: "+0,5% de chance de crítico",   show: n => `${(10 + n * 0.5).toFixed(1).replace(".", ",")}%` },
   block:  { name: "Chance de bloqueio",   desc: "+0,5% de chance de bloquear",  show: n => `+${(n * 0.5).toFixed(1).replace(".", ",")}%` },
   armor:  { name: "Armadura",             desc: "+0,5 de defesa",               show: n => `+${(n * 0.5).toFixed(1).replace(".", ",")} de defesa` },
-  weapon: { name: "Sword",                desc: "+1 de Sword (ou Distance)",    show: n => `+${n}` },
-  ml:     { name: "Magic level",          desc: "+1 de magic level",            show: n => `+${n}` },
-  shield: { name: "Shield",               desc: "+1 de Shield",                 show: n => `+${n}` },
   aspd:   { name: "Velocidade de ataque", desc: "+0,25% de velocidade de ataque", show: n => `+${(n * 0.25).toFixed(2).replace(".", ",")}%` },
   hpreg:  { name: "Regeneração de vida",  desc: "+0,5 de vida por segundo",     show: n => `+${(n * 0.5).toFixed(1).replace(".", ",")} vida/s` },
   mpreg:  { name: "Regeneração de mana",  desc: "+0,5 de mana por segundo (Fúria: só em combate)", show: n => `+${(n * 0.5).toFixed(1).replace(".", ",")} /s` },

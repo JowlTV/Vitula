@@ -660,6 +660,7 @@ Object.assign(DungeonScene.prototype, {
 
 
   addProp(x, y, kind) {
+    if (kind === "chest_closed") return;   // (nov/26) sem baús trancados
     const k = key(x, y);
     if (this.props.has(k)) return;
     const p = this.cellPos(x, y);

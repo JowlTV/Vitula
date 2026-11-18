@@ -81,7 +81,8 @@ Object.assign(DungeonScene.prototype, {
       anim = this.ap + (atk ? "attack" : walking ? "walk" : "idle") + "_" + dir;
       // levar dano forte ou lançar magia: animação de frente por um instante
       h.poseT = Math.max(0, (h.poseT || 0) - dt);
-      if (h.poseT > 0 && h.pose && this.anims.exists(h.pose) && !atk) anim = h.pose;
+      // andando, não troca para a pose de magia (o quadro de magia tem outro tamanho e o herói "encolhia")
+      if (h.poseT > 0 && h.pose && this.anims.exists(h.pose) && !atk && !walking) anim = h.pose;
       if (!atk && fx) h.lookLeft = fx < 0;
       h.spr.setFlipX(dir === "side" && !!(atk ? h.atkLeft : h.lookLeft));
     }
