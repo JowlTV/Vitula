@@ -114,13 +114,13 @@ class DungeonScene extends Phaser.Scene {
     s.recovery += 0.5 * (at.hpreg || 0);
     s.manaReg = 0.5 * (at.mpreg || 0);
     // equipamentos vestidos
-    s.weaponAtk = FIST_ATTACK; s.gearDef = 0; s.gearBlock = 0; s.gearCrit = 0; s.gearMl = 0; s.res = {}; s.weapon = null;
+    s.weaponAtk = FIST_ATTACK; s.gearDef = 0; s.gearBlock = 0; s.gearDodge = 0; s.gearCrit = 0; s.gearMl = 0; s.res = {}; s.weapon = null;
     const eq = Save.voc(this.vocId).equip || {};
     for (const slot in eq) {
       const g = eq[slot], E = g && EQUIP[g.id]; if (!E) continue;
       const m = gearMult(g);   // raridade e +N
       if (E.slot === "weapon") { s.weapon = Object.assign({}, E, { elDmg: (E.elDmg || 0) * m }); if (!this.ranged || E.bow) s.weaponAtk = E.atk * m; }
-      s.gearDef += (E.def || 0) * m; s.gearBlock += E.block || 0; s.gearCrit += E.crit || 0; s.gearMl += E.ml || 0;
+      s.gearDef += (E.def || 0) * m; s.gearBlock += E.block || 0; s.gearDodge += E.dodge || 0; s.gearCrit += E.crit || 0; s.gearMl += E.ml || 0;
       s.recovery += E.hpReg || 0; s.manaReg += E.manaReg || 0; s.moveSpeed *= 1 + (E.speed || 0);
       for (const k in E.res || {}) s.res[k] = (s.res[k] || 0) + E.res[k];
     }

@@ -172,6 +172,9 @@ EQUIP.goddess_pendant = { slot: "light", name: "Pingente da Deusa", lvl: 1, pric
   art: { f: "pendant" }, desc: "Prata com uma pequena harpa. Brilha sozinho, sem óleo." };
 const OIL_FLASK = 300, OIL_PRICE = 15, OIL_START = 2;   // cada frasco dura 5 minutos dentro das masmorras
 // cada equipamento também é um item que pode cair no chão
+// aljavas trazem Dodge fighting: +1 nas mais simples até +5 na mais rara (Abençoada)
+{ const D = { quiver: 1, red_quiver: 1, leather_quiver: 2, pearl_quiver: 2, emerald_quiver: 3, diamond_quiver: 3, dragon_quiver: 4, magic_quiver: 4, blessed_quiver: 5 };
+  for (const id in D) if (EQUIP[id]) EQUIP[id].dodge = D[id]; }
 for (const id in EQUIP) ITEMS["eq_" + id] = { icon: "eq_" + id, name: EQUIP[id].name, gear: id };
 ITEMS.boss_essence = { icon: "i_red_gem", tint: 0xff9a30, name: "Essência de chefe" };
 
@@ -240,6 +243,7 @@ function equipStats(g) {
   if (E.poison) p.push(t("eq_poison"));
   if (E.crit) p.push(t("eq_crit", { v: pct(E.crit) }));
   if (E.block) p.push(t("eq_block", { v: pct(E.block) }));
+  if (E.dodge) p.push(t("eq_dodge", { v: E.dodge }));
   if (E.ml) p.push(`magic level +${E.ml}`);
   if (E.hpReg) p.push(t("eq_hpreg", { v: n(E.hpReg) }));
   if (E.manaReg) p.push(t("eq_manareg", { v: n(E.manaReg) }));

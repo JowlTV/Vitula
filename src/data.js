@@ -118,6 +118,7 @@ const SKILLS = {
   sword:  { name: "Sword", start: 10, base: 30, growth: 1.12, desc: "base do dano corpo a corpo" },
   shield: { name: "Shield", start: 10, base: 24, growth: 1.12, desc: "defesa e chance de bloqueio" },
   distance: { name: "Distance", start: 10, base: 30, growth: 1.12, desc: "base do dano a distância" },
+  dodge:  { name: "Dodge fighting", start: 10, base: 24, growth: 1.12, desc: "chance de esquivar (Arqueiro, que não usa escudo)" },
 };
 // Pontos de atributo: 1 por nível ganho, para gastar onde quiser (janela de Atributos, tecla U).
 // "weapon" vira Sword no Cavaleiro e Distance no Arqueiro.
@@ -201,9 +202,9 @@ const BLESS_TEXT = [
 
 // Habilidades do Arqueiro (mesmas teclas 1–4; pagas com Mana).
 const ARCHER_SPELLS = {
-  heal:   { name: "Exura", key: "G", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura 10 + 6 por magic level." },
+  heal:   { name: "Exura", key: "G", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura (10 + 6 por magic level) × 85%." },
   holy:   { name: "Flecha Sagrada", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Uma flecha de luz sagrada que acerta o alvo escolhido com 2× o dano." },
-  flee:   { name: "Aura do Vento", key: "2", icon: "spear", level: 8, fury: 30, cd: 12, dur: 4, desc: "Por 4 s: uma aura de energia contorna o arqueiro: +75% de velocidade, +40% de velocidade de ataque e atravessa os monstros." },
+  flee:   { name: "Aura do Vento", key: "2", icon: "spear", level: 8, fury: 30, cd: 12, dur: 4, desc: "Por 4 s: uma aura de energia contorna o arqueiro: +40% de velocidade, +40% de velocidade de ataque e atravessa os monstros." },
   volley: { name: "Saraivada", key: "3", icon: "icon_area", level: 12, fury: 40, cd: 8, dur: 3, desc: "Uma chuva de flechas na área do alvo (3×3): dano e marca os inimigos, que ficam lentos (−50%) por 3 s." },
   frenzy: { name: "Berserker", key: "4", icon: "berserk", level: 18, fury: 50, cd: 16, dur: 5, desc: "Por 5 s: +60% de dano de ataque e +15% de crítico; a flecha do ataque básico ricocheteia em até 3 inimigos e explode em luz sagrada." },
 };

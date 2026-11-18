@@ -54,10 +54,10 @@ Object.assign(DungeonScene.prototype, {
     const mx = this.maxDamage();
     const groups = [
       [t("attack_label"), [[t("base_dmg"), `${Math.round(mx * 0.6)}–${Math.round(mx)}` + (this.stats.weapon && !this.ranged && this.stats.weapon.elDmg ? ` +${this.stats.weapon.elDmg} ${ELEMENTS[this.stats.weapon.el].name.toLowerCase()}` : "")], [t("atk_speed"), `${this.attacksPerSec().toFixed(2)} ${t("hits_per_sec")}`], [t("critical"), `${(this.critChance() * 100).toFixed(1).replace(".", ",")}% (×1,8)`]].concat(this.ranged ? [[t("arrows_label"), `${arrowCount(Save.voc(this.vocId))} / ${arrowCap(Save.voc(this.vocId))}`]] : [])],
-      [t("defense_label"), [[t("total_hp"), `${Math.ceil(h.hp)} / ${Math.round(h.maxHp)}`], [t("defense_value"), this.defenseValue().toFixed(1)], [t("block_chance"), `${Math.round(this.blockChance() * 100)}%`],
+      [t("defense_label"), [[t("total_hp"), `${Math.ceil(h.hp)} / ${Math.round(h.maxHp)}`], [t("defense_value"), this.defenseValue().toFixed(1)], [t(this.ranged ? "dodge_chance" : "block_chance"), `${Math.round(this.blockChance() * 100)}%`],
         [t("regen_label"), t("regen_line", { hp: (this.stats.recovery || 0).toFixed(1).replace(".", ","), res: (this.stats.manaReg || 0).toFixed(1).replace(".", ","), kind: VOCATIONS[this.vocId].mana ? t("word_mana") : t("word_fury") })],
         [t("resistances"), Object.keys(this.stats.res || {}).filter(k => this.stats.res[k]).map(k => `${ELEMENTS[k].name} ${this.stats.res[k] > 0 ? "+" : ""}${Math.round(this.stats.res[k] * 100)}%`).join(" · ") || t("no_resist")]]],
-      [t("skills_label"), [this.ranged ? ["Distance", sk("distance") + (this.buffOn("hunter") ? "  +10" : "")] : ["Sword", sk("sword") + (this.buffOn("berserker") ? "  +10" : "")], ["Shield", sk("shield")],
+      [t("skills_label"), [this.ranged ? ["Distance", sk("distance") + (this.buffOn("hunter") ? "  +10" : "")] : ["Sword", sk("sword") + (this.buffOn("berserker") ? "  +10" : "")], this.ranged ? ["Dodge fighting", sk("dodge") + (this.stats.gearDodge ? `  +${this.stats.gearDodge}` : "")] : ["Shield", sk("shield")],
         ["Magic level", `${ml.lvl}  (${mlPct}%)` + (this.buffOn("mage") ? "  +10" : "")]]],
       [t("progress_label"), [[t("level_label"), String(h.level) + (this.promo() ? ` · ${this.promo().name}` : "")], [t("total_xp"), String(Math.floor(d.xpTotal || 0))],
         [t("xp_next"), String(Math.ceil(this.xpNext() - h.xp))]]],

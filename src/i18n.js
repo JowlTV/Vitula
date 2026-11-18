@@ -869,7 +869,7 @@ I18N.pt = {
   leader_horn: "O Líder sopra o chifre de guerra: goblins saem das tocas!",
   leader_horn_short: "TOQUE DE GUERRA",
   leader_enrage: "{name} entra em fúria: ataca e anda mais rápido!",
-  dodged: "desviou!",
+  dodged: "esquivou",
   leader_down: "O Líder Goblin caiu. A Encosta está livre!",
   demo_end_sub: "A Encosta dos Goblins foi libertada. Karhyn respira mais uma noite.",
   demo_end_stats: "{voc} · nível {lvl}\n{k} abates nesta descida · ◉ {g} de ouro · {time}",
@@ -1026,6 +1026,9 @@ I18N.pt = {
   reset_confirm: "Apagar todos os personagens (nível, itens, ouro, bestiário e progresso)? As configurações são mantidas. Isso não pode ser desfeito.",
   reset_yes: "Apagar",
   reset_no: "Cancelar",
+  harp_first: "Escuto o som de uma harpa...\nA Deusa está comigo.",
+  dodge_chance: "Chance de esquiva",
+  eq_dodge: "+{v} Dodge fighting",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1841,7 +1844,7 @@ I18N.en = {
   leader_horn: "The Leader blows the war horn: goblins pour out of the burrows!",
   leader_horn_short: "WAR HORN",
   leader_enrage: "{name} is enraged: faster attacks and steps!",
-  dodged: "dodged!",
+  dodged: "dodged",
   leader_down: "The Goblin Leader has fallen. The Slope is free!",
   demo_end_sub: "The Goblin Slope is free. Karhyn breathes for one more night.",
   demo_end_stats: "{voc} · level {lvl}\n{k} kills this descent · ◉ {g} gold · {time}",
@@ -1998,6 +2001,9 @@ I18N.en = {
   reset_confirm: "Delete all characters (level, items, gold, bestiary and progress)? Settings are kept. This cannot be undone.",
   reset_yes: "Delete",
   reset_no: "Cancel",
+  harp_first: "I hear the sound of a harp...\nThe Goddess is with me.",
+  dodge_chance: "Dodge chance",
+  eq_dodge: "+{v} Dodge fighting",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2814,7 +2820,6 @@ I18N.es = {
   leader_horn: "¡El Líder sopla el cuerno de guerra: salen goblins de las madrigueras!",
   leader_horn_short: "CUERNO DE GUERRA",
   leader_enrage: "¡{name} se enfurece: ataca y camina más rápido!",
-  dodged: "¡esquivado!",
   leader_down: "El Líder Goblin cayó. ¡La Ladera es libre!",
   demo_end_sub: "La Ladera de los Goblins fue liberada. Karhyn respira una noche más.",
   demo_end_stats: "{voc} · nivel {lvl}\n{k} muertes en este descenso · ◉ {g} de oro · {time}",
@@ -3764,7 +3769,6 @@ I18N.de = {
   leader_horn: "Der Anführer bläst das Kriegshorn: Goblins strömen aus den Bauen!",
   leader_horn_short: "KRIEGSHORN",
   leader_enrage: "{name} rast: schnellere Angriffe und Schritte!",
-  dodged: "ausgewichen!",
   leader_down: "Der Goblin-Anführer ist gefallen. Der Hang ist frei!",
   demo_end_sub: "Der Goblinhang ist befreit. Karhyn atmet eine weitere Nacht.",
   demo_end_stats: "{voc} · Stufe {lvl}\n{k} Kills in diesem Abstieg · ◉ {g} Gold · {time}",
@@ -4713,7 +4717,6 @@ I18N.pl = {
   leader_horn: "Przywódca dmie w róg wojenny: gobliny wychodzą z nor!",
   leader_horn_short: "RÓG WOJENNY",
   leader_enrage: "{name} wpada w szał: szybsze ataki i ruchy!",
-  dodged: "unik!",
   leader_down: "Przywódca Goblinów padł. Zbocze jest wolne!",
   demo_end_sub: "Zbocze Goblinów jest wolne. Karhyn przetrwa kolejną noc.",
   demo_end_stats: "{voc} · poziom {lvl}\n{k} zabójstw w tym zejściu · ◉ {g} złota · {time}",

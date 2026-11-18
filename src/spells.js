@@ -58,7 +58,7 @@ Object.assign(DungeonScene.prototype, {
 const SPELL_FX = {
   heal(h, sp) {
     // magia global sem custo: o Cavaleiro cura pela vida máxima; as outras vocações, pelo magic level
-    this.heal(this.vocId === "knight" ? h.maxHp * 0.25 : 10 + 6 * this.mlEff());
+    this.heal(this.vocId === "knight" ? h.maxHp * 0.25 : (10 + 6 * this.mlEff()) * 0.85);   // arqueiro: cura 15% menor
     this.fx("heal", h.px, h.py - 28, 0.7);
     sfx(this, "levelup", 0.2);
   },

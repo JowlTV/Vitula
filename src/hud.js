@@ -364,7 +364,7 @@ Object.assign(DungeonScene.prototype, {
         [t("class_label"), this.promo() ? this.promo().name : VOCATIONS[this.vocId].name, null],
         [t("experience"), `${Math.floor(h.xp).toLocaleString("pt-BR")} / ${Math.round(this.xpNext()).toLocaleString("pt-BR")}`, h.xp / this.xpNext(), 0x8a7430],
         [t("magic_level"), `${this.mlEff()}  ${Math.floor(100 * mlf)}%`, mlf, 0x4a6ab8],
-        one(this.ranged ? "distance" : "sword"), one("shield"),
+        one(this.ranged ? "distance" : "sword"), one(this.ranged ? "dodge" : "shield"),
         [t("attrs_label"), this.attrFree() > 0 ? t("attrs_free", { n: this.attrFree() }) : t("attrs_open"), null]];
       this.skW.v[6].setColor(this.attrFree() > 0 ? "#9fe08a" : COLORS.dim);
       rows.forEach((r, i) => {

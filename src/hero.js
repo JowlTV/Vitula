@@ -153,7 +153,9 @@ Object.assign(DungeonScene.prototype, {
   mlEff() { return Save.voc(this.vocId).ml.lvl + this.attr("ml") + (this.stats.gearMl || 0) + (this.buffOn("mage") ? 10 : 0); },
   // defesa: armadura + metade do Shield acima do inicial (itens de defesa vão somar aqui)
   defenseValue() { return this.stats.armor + (this.stats.gearDef || 0) + 0.25 * (this.shieldLvl() - SKILLS.shield.start); },
-  blockChance() { return Math.min(0.6, Math.min(0.35, 0.05 + 0.006 * (this.shieldLvl() - SKILLS.shield.start)) + 0.005 * this.attr("block") + (this.stats.gearBlock || 0)); },
+  // Arqueiro: esquiva (Dodge fighting + bônus das aljavas) no lugar do bloqueio com escudo
+  dodgeLvl() { return Save.skill(this.vocId, "dodge").lvl + (this.stats.gearDodge || 0); },
+  blockChance() { if (this.ranged) return Math.min(0.35, 0.05 + 0.006 * (this.dodgeLvl() - SKILLS.dodge.start)); return Math.min(0.6, Math.min(0.35, 0.05 + 0.006 * (this.shieldLvl() - SKILLS.shield.start)) + 0.005 * this.attr("block") + (this.stats.gearBlock || 0)); },
   attacksPerSec() { return (this.stats.atkSpeed || 1) / this.stats.cooldown; },
   buffOn(id) { const b = this.hero.buffs; return !!(b && b[id] > 0); },
 
@@ -236,7 +238,7 @@ Object.assign(DungeonScene.prototype, {
     h.x = nx; h.y = ny;
     this.reveal();
     this.holeNearHint();
-    h.moveLen = 0.22 / this.stats.moveSpeed * (diag ? 1.35 : 1) / ((h.fleeT || 0) > 0 ? 1.75 : 1);
+    h.moveLen = 0.22 / this.stats.moveSpeed * (diag ? 1.35 : 1) / ((h.fleeT || 0) > 0 ? 1.4 : 1);   // Aura do Vento: +40% de velocidade (era +75%)
     h.moveT = h.moveLen;
     this.updateFlow();
   },
@@ -400,9 +402,9 @@ Object.assign(DungeonScene.prototype, {
     const res = Math.min(0.8, (this.stats.res || {})[el] || 0);
     if (res) { amount *= 1 - res; pure = pure ? Math.max(1, Math.round(pure * (1 - res))) : 0; }
     if (pure) { h.hp -= pure; this.floatText(h.px + 8, h.py - 60, String(pure), "#7fd04a"); if (h.hp <= 0) h.hp = 0.0001, amount = 1, pure = 0; else return; }
-    this.trainSkill("shield");
+    this.trainSkill(this.ranged ? "dodge" : "shield");   // o Arqueiro não usa escudo: treina a esquiva
     // bloqueio com o escudo (chance cresce com o Shield): nenhum dano
-    if (Math.random() < this.blockChance()) { this.floatText(h.px, h.py - 66, t("blocked"), "#9fd0ff"); sfx(this, "hit", 0.2); return; }
+    if (Math.random() < this.blockChance()) { this.floatText(h.px, h.py - 66, t(this.ranged ? "dodged" : "blocked"), "#9fd0ff"); sfx(this, "hit", 0.2); return; }
     const real = Math.max(1, amount - this.defenseValue());
     h.hp -= real; h.flash = 1;
     this.addFury(4);
