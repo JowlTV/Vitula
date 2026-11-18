@@ -34,7 +34,7 @@ class DungeonScene extends Phaser.Scene {
         giveArcherKit(this.vocId); }
     this.stats = this.computeStats();
     this.hero = { hp: this.stats.maxHp, maxHp: this.stats.maxHp, level: 1, xp: 0, dead: false, atkT: 0,
-      cds: { heal: 0, front: 0, spin: 0, aura: 0 }, facing: [1, 0], regen: 0, fury: VOCATIONS[this.vocId].mana ? this.furyMax : 0, furyIdle: 0, auraT: 0, auraTick: 0 };
+      cds: Object.fromEntries(Object.keys(vocSpells(this.vocId)).map(s => [s, 0])), facing: [1, 0], regen: 0, fury: VOCATIONS[this.vocId].mana ? this.furyMax : 0, furyIdle: 0, auraT: 0, auraTick: 0 };
     const lv = +new URLSearchParams(location.search).get("lvl");
     // nível vem da experiência salva (não zera ao entrar de novo)
     { const L = Save.levelInfo(Save.voc(this.vocId).xpTotal); this.hero.level = L.level; this.hero.xp = L.xp; this.hero.maxHp += 10 * (L.level - 1); this.hero.hp = this.hero.maxHp;
@@ -56,8 +56,9 @@ class DungeonScene extends Phaser.Scene {
     const K = Phaser.Input.Keyboard.KeyCodes, kb = this.input.keyboard;
     this.keysIn = {};
     for (const [id] of ACTIONS) this.keysIn[id] = Settings.data.keys[id].filter(n => K[n] !== undefined).map(n => kb.addKey(K[n]));
-    const spells = Object.keys(this.spells);
-    ["skill1", "skill2", "skill3", "skill4"].forEach((id, i) => this.keysIn[id].forEach(k => k.on("down", () => this.cast(spells[i]))));
+    // cada tecla lança a magia que tem aquele atalho (G = Exura; 1–4 = habilidades)
+    const byKey = k => Object.keys(this.spells).find(s => this.spells[s].key === k);
+    [["heal", "G"], ["skill1", "1"], ["skill2", "2"], ["skill3", "3"], ["skill4", "4"]].forEach(([id, k]) => (this.keysIn[id] || []).forEach(o => o.on("down", () => { const s = byKey(k); if (s) this.cast(s); })));
     this.input.keyboard.on("keydown-U", () => this.toggleAttrs());
     this.keysIn.pause.forEach(k => k.on("down", () => this.attrBox ? this.toggleAttrs() : this.bagOpen ? this.toggleBag() : this.togglePause()));
     (this.keysIn.potion1 || []).forEach(k => k.on("down", () => this.usePotion(0)));
@@ -168,7 +169,7 @@ class DungeonScene extends Phaser.Scene {
       if (m.elite && !this.stairs) d = 0;
       if (d < best && d < 9) { best = d; goal = { x: m.x, y: m.y }; }
     }
-    if (this.adjacentMonster(h.x, h.y, h.facing)) { for (const sp of ["aura", "spin", "front"]) if (h.level >= SPELLS[sp].level && h.fury >= SPELLS[sp].fury && h.cds[sp] <= 0) { this.cast(sp); break; } return; }
+    if (this.adjacentMonster(h.x, h.y, h.facing)) { for (const sp of ["aura", "quake", "front"]) if (SPELLS[sp] && h.level >= SPELLS[sp].level && h.fury >= SPELLS[sp].fury && h.cds[sp] <= 0) { this.cast(sp); break; } return; }
     if (h.hp < h.maxHp * 0.4 && h.cds.heal <= 0) this.cast("heal");
     if (!goal) return;
     const d = this.gen.distances(goal.x, goal.y, (x, y) => { const p = this.props.get(key(x, y)); return !p || p.kind in BREAKABLE; });

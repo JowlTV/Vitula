@@ -130,7 +130,10 @@ Object.assign(DungeonScene.prototype, {
       const f = this.flowAt(m.x, m.y);
       if (dist <= 7 && f >= 0 && f <= 12) m.awake = true; else return;
     }
-    m.atkT -= dt; m.stepT -= dt;
+    // lentidão (Tremor de Terra / Saraivada): anda e ataca na metade do ritmo; fica azulado
+    const slow = (m.slowT || 0) > 0; if (slow) m.slowT -= dt;
+    m.atkT -= dt * (slow ? 0.5 : 1); m.stepT -= dt * (slow ? 0.5 : 1);
+    if (slow && !(m.flash > 0)) m.spr.setTint(0x8ab4ff);
     if (m.bleedT > 0) {
       m.bleedT -= dt; m.bleedTick -= dt;
       if (Math.random() < dt * 6) this.splat(m.px + Phaser.Math.Between(-6, 6), m.py - 2, 1);
@@ -149,7 +152,7 @@ Object.assign(DungeonScene.prototype, {
         m.lunge = { x: (h.x - m.x) / len * 7, y: (h.y - m.y) / len * 7 };
         if (h.x !== m.x) m.spr.setFlipX(h.x < m.x);
         this.monsterSwing(m);
-        const hp0 = h.hp;
+        const hp0 = h.hp; this._attacker = m;
         this.hurtHero(m.dmg * Phaser.Math.FloatBetween(0.85, 1.15), 0, MONSTER_ELEMENT[m.kind] || "physical");
         if (m.data.poison && h.hp < hp0) this.poisonHero(m.data.poison);
       }

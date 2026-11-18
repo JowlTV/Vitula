@@ -135,7 +135,7 @@ Object.assign(DungeonScene.prototype, {
   maxDamage() {
     return (0.085 * (this.stats.weaponAtk || FIST_ATTACK) * this.swordEff() + this.hero.level / 5) * this.stats.might * (this.promo() ? this.promo().dmgMult : 1);
   },
-  baseDamage() { return this.maxDamage() * 0.8; },
+  baseDamage() { return this.maxDamage() * 0.8 * ((this.hero && this.hero.frenzyT > 0) ? 1.6 : 1); },
   // pontos de atributo: quantos foram postos em cada um, quantos sobram (1 por nível acima do 1)
   attr(id) { return (Save.voc(this.vocId).attr || {})[id] || 0; },
   attrFree() { const a = Save.voc(this.vocId).attr || {}; let spent = 0; for (const k in a) spent += a[k]; return Math.max(0, this.hero.level - 1 - spent); },
@@ -147,7 +147,7 @@ Object.assign(DungeonScene.prototype, {
     sfx(this, "gem", 0.3);
     return true;
   },
-  critChance() { return 0.1 + 0.005 * this.attr("crit") + (this.stats.gearCrit || 0) + ((this.hero.frenzyT || 0) > 0 ? 0.25 : 0); },
+  critChance() { return 0.1 + 0.005 * this.attr("crit") + (this.stats.gearCrit || 0) + ((this.hero.frenzyT || 0) > 0 ? 0.15 : 0); },
   swordEff() { return this.attr("weapon") + (this.ranged ? Save.skill(this.vocId, "distance").lvl + (this.buffOn("hunter") ? 10 : 0) : Save.skill(this.vocId, "sword").lvl + (this.buffOn("berserker") ? 10 : 0)); },
   shieldLvl() { return Save.skill(this.vocId, "shield").lvl + this.attr("shield"); },
   mlEff() { return Save.voc(this.vocId).ml.lvl + this.attr("ml") + (this.stats.gearMl || 0) + (this.buffOn("mage") ? 10 : 0); },
@@ -545,9 +545,9 @@ Object.assign(DungeonScene.prototype, {
       sfx(this, "explode", 0.25);
     }
   },
-  critMult() { return 1.8 + ((this.hero.frenzyT || 0) > 0 ? 0.25 : 0); },
+  critMult() { return 1.8; },
   lifeSteal(dmg) {
-    const h = this.hero; if (!((h.frenzyT || 0) > 0)) return;
+    const h = this.hero; return;   // (o Berserker não rouba mais vida)
     h.hp = Math.min(h.maxHp, h.hp + dmg * 0.15);
     if (VOCATIONS[this.vocId].mana) h.fury = Math.min(this.furyMax, h.fury + dmg * 0.15);
   },
@@ -560,7 +560,7 @@ Object.assign(DungeonScene.prototype, {
     const t = this.rangedTarget(true);
     if (!t) return;
     const kind = this.spendArrow(); if (!kind) { h.atkT = 0.6; return; }
-    h.atkT = 1.1 / 1.25 * this.stats.cooldown / (this.stats.atkSpeed || 1) * (h.eagleT > 0 ? 0.5 : 1) / (h.frenzyT > 0 ? 1.45 : 1);
+    h.atkT = 1.1 / 1.25 * this.stats.cooldown / (this.stats.atkSpeed || 1) * (h.eagleT > 0 ? 0.5 : 1) / (h.fleeT > 0 ? 1.4 : 1);
     const dx = Math.sign(t.x - h.x), dy = Math.sign(t.y - h.y);
     h.facing = [dx, dy];
     this.heroSwing(Math.abs(t.x - h.x) >= Math.abs(t.y - h.y) ? dx : 0, Math.abs(t.x - h.x) >= Math.abs(t.y - h.y) ? 0 : dy);
@@ -570,6 +570,7 @@ Object.assign(DungeonScene.prototype, {
       this.shootArrow(h.px, h.py - 40, t.px, t.py - 24, () => {
         if (t.dead || this.finished) return;
         this.arrowHit(t, kind, 1);
+        if ((h.frenzyT || 0) > 0) this.berserkHit(t, kind);
         this.addFury(8);
         this.trainSkill("distance");
         sfx(this, "hit", 0.25);

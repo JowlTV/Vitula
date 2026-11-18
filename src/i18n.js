@@ -837,8 +837,8 @@ I18N.pt = {
   spell_flee_desc: "Por 3 s: +75% de velocidade de movimento e atravessa os monstros.",
   spell_frenzy: "Fúria do Caçador",
   spell_frenzy_desc: "Por 4 s: +45% de velocidade de ataque, +25% de chance de crítico, +25% de dano crítico e 15% de roubo de vida e mana.",
-  flee_float: "Fuga!",
-  frenzy_float: "Fúria do Caçador!",
+  flee_float: "Aura do Vento!",
+  frenzy_float: "Berserker!",
   arrow_normal: "Flecha",
   arrow_fire: "Flecha de Fogo",
   arrow_ice: "Flecha de Gelo",
@@ -984,6 +984,8 @@ I18N.pt = {
   wp_on: "Waypoint ativado: {region}, andar {n}.",
   wp_none: "Nenhum waypoint ativado ainda. Pise no piso da harpa na chegada de cada andar para ativá-lo.",
   slope_pass_open: "Com o Rei Rato morto, uma passagem se abre na sala: ela sobe para a Encosta dos Goblins.",
+  slow_float: "lento",
+  guard_float: "Égide!",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1767,8 +1769,8 @@ I18N.en = {
   spell_flee_desc: "For 3 s: +75% movement speed and pass through monsters.",
   spell_frenzy: "Hunter's Frenzy",
   spell_frenzy_desc: "For 4 s: +45% attack speed, +25% critical chance, +25% critical damage and 15% life and mana leech.",
-  flee_float: "Escape!",
-  frenzy_float: "Hunter's Frenzy!",
+  flee_float: "Wind Aura!",
+  frenzy_float: "Berserker!",
   arrow_normal: "Arrow",
   arrow_fire: "Fire Arrow",
   arrow_ice: "Ice Arrow",
@@ -1914,6 +1916,8 @@ I18N.en = {
   wp_on: "Waypoint activated: {region}, floor {n}.",
   wp_none: "No waypoints activated yet. Step on the harp floor at the start of each floor to activate it.",
   slope_pass_open: "With the Rat King dead, a passage opens in the chamber: it climbs to the Goblin Slope.",
+  slow_float: "slowed",
+  guard_float: "Aegis!",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2699,7 +2703,7 @@ I18N.es = {
   spell_frenzy: "Furia del Cazador",
   spell_frenzy_desc: "Durante 4 s: +45% de velocidad de ataque, +25% de probabilidad de crítico, +25% de daño crítico y 15% de robo de vida y maná.",
   flee_float: "¡Huida!",
-  frenzy_float: "¡Furia del Cazador!",
+  frenzy_float: "Berserker!",
   arrow_normal: "Flecha",
   arrow_fire: "Flecha de Fuego",
   arrow_ice: "Flecha de Hielo",
@@ -2845,6 +2849,8 @@ I18N.es = {
   wp_on: "Waypoint activado: {region}, piso {n}.",
   wp_none: "Aún no hay waypoints activados. Pisa el suelo del arpa al llegar a cada piso para activarlo.",
   slope_pass_open: "Con el Rey Rata muerto, se abre un pasaje en la sala: sube a la Ladera de los Goblins.",
+  slow_float: "lento",
+  guard_float: "¡Égida!",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3630,7 +3636,7 @@ I18N.de = {
   spell_frenzy: "Jägerrausch",
   spell_frenzy_desc: "4 s lang: +45% Angriffstempo, +25% kritische Trefferchance, +25% kritischer Schaden und 15% Lebens- und Manaraub.",
   flee_float: "Flucht!",
-  frenzy_float: "Jägerrausch!",
+  frenzy_float: "Berserker!",
   arrow_normal: "Pfeil",
   arrow_fire: "Feuerpfeil",
   arrow_ice: "Eispfeil",
@@ -3776,6 +3782,8 @@ I18N.de = {
   wp_on: "Wegpunkt aktiviert: {region}, Ebene {n}.",
   wp_none: "Noch keine Wegpunkte aktiviert. Betritt den Harfenboden am Anfang jeder Ebene, um ihn zu aktivieren.",
   slope_pass_open: "Mit dem Tod des Rattenkönigs öffnet sich ein Durchgang im Saal: Er führt hinauf zum Goblinhang.",
+  slow_float: "verlangsamt",
+  guard_float: "Ägide!",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4560,7 +4568,7 @@ I18N.pl = {
   spell_frenzy: "Szał Łowcy",
   spell_frenzy_desc: "Przez 4 s: +45% szybkości ataku, +25% szansy na krytyk, +25% obrażeń krytycznych i 15% kradzieży życia i many.",
   flee_float: "Ucieczka!",
-  frenzy_float: "Szał Łowcy!",
+  frenzy_float: "Berserker!",
   arrow_normal: "Strzała",
   arrow_fire: "Ognista Strzała",
   arrow_ice: "Lodowa Strzała",
@@ -4706,6 +4714,8 @@ I18N.pl = {
   wp_on: "Punkt podróży aktywowany: {region}, piętro {n}.",
   wp_none: "Brak aktywnych punktów podróży. Stań na płycie z harfą na początku każdego piętra, aby go aktywować.",
   slope_pass_open: "Po śmierci Króla Szczurów w komnacie otwiera się przejście: prowadzi na Zbocze Goblinów.",
+  slow_float: "spowolniony",
+  guard_float: "Egida!",
 };
 
 // ── API pública ─────────────────────────────────────────────────

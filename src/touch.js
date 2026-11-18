@@ -4,7 +4,7 @@
 (function () {
   const FALLBACK = {
     up: ["W", "UP"], down: ["S", "DOWN"], left: ["A", "LEFT"], right: ["D", "RIGHT"],
-    skill1: ["ONE"], skill2: ["TWO"], skill3: ["THREE"], skill4: ["FOUR"],
+    heal: ["G"], skill1: ["ONE"], skill2: ["TWO"], skill3: ["THREE"], skill4: ["FOUR"],
     potion1: ["FIVE"], potion2: ["SIX"], attack: ["SPACE"], interact: ["E"],
     bag: ["I"], recall: ["H"], map: ["TAB"], autoAttack: ["R"], pause: ["ESC"],
   };
@@ -55,8 +55,8 @@
       ["▶", "right", "hold", t("touch_right"), 3, 2], ["▼", "down", "hold", t("touch_down"), 2, 3],
     ],
     skills: [
-      ["1", "skill1", "tap", "Exura"], ["2", "skill2", "tap", t("touch_frontal")],
-      ["3", "skill3", "tap", t("touch_aoe")], ["4", "skill4", "tap", t("touch_aura")],
+      ["G", "heal", "tap", "Exura"], ["1", "skill1", "tap", t("touch_frontal")], ["2", "skill2", "tap", t("touch_aoe")],
+      ["3", "skill3", "tap", t("touch_aura")], ["4", "skill4", "tap", t("touch_aura")],
       ["5", "potion1", "tap", t("touch_pot1")], ["6", "potion2", "tap", t("touch_pot2")],
     ],
     main: [

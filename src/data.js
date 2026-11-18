@@ -171,9 +171,10 @@ const SHOP = {
 };
 const shopCost = (id, lvl) => Math.round(SHOP[id].base * Math.pow(SHOP[id].grow, lvl) / 5) * 5;
 const SPELLS = {
-  heal:  { name: "Exura", key: "1", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura 25% da vida máxima." },
-  front: { name: "Golpe Frontal", key: "2", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Um corte que avança pelas 3 casas à frente." },
-  spin:  { name: "Golpe em Área", key: "3", icon: "icon_area", level: 10, fury: 40, cd: 4, desc: "Crava a espada no chão: atinge as 8 casas em volta e faz sangrar 5% da vida máxima por segundo durante 3 s." },
+  heal:  { name: "Exura", key: "G", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura 25% da vida máxima." },
+  front: { name: "Golpe Frontal", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Um corte à frente que acerta até 2 inimigos em linha." },
+  quake: { name: "Tremor de Terra", key: "2", icon: "icon_area", level: 8, fury: 40, cd: 7, dur: 3, desc: "Crava a espada no chão: o tremor se espalha por 2 casas em volta e deixa os inimigos lentos (−50%) por 3 s." },
+  guard: { name: "Égide", key: "3", icon: "i_shield", level: 12, fury: 45, cd: 14, dur: 6, desc: "Por 6 s: uma aura protetora dá +40% de defesa e devolve 10% do dano recebido a quem atacou." },
   aura:  { name: "Aura Sagrada", key: "4", icon: "icon_aura_v2", level: 18, fury: 60, cd: 12, dur: 5, desc: "Por 5 s: fere quem chega perto, regenera vida e ilumina uma área maior." },
 };
 
@@ -199,10 +200,11 @@ const BLESS_TEXT = [
 
 // Habilidades do Arqueiro (mesmas teclas 1–4; pagas com Mana).
 const ARCHER_SPELLS = {
-  heal:   { name: "Exura", key: "1", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura 10 + 6 por magic level." },
-  holy:   { name: "Flecha Sagrada", key: "2", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Uma flecha de luz sagrada que acerta o alvo escolhido com 2× o dano." },
-  flee:   { name: "Fuga", key: "3", icon: "spear", level: 8, fury: 25, cd: 10, dur: 3, desc: "Por 3 s: +75% de velocidade de movimento e atravessa os monstros." },
-  frenzy: { name: "Fúria do Caçador", key: "4", icon: "berserk", level: 18, fury: 50, cd: 15, dur: 4, desc: "Por 4 s: +45% de velocidade de ataque, +25% de chance de crítico, +25% de dano crítico e 15% de roubo de vida e mana." },
+  heal:   { name: "Exura", key: "G", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura 10 + 6 por magic level." },
+  holy:   { name: "Flecha Sagrada", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Uma flecha de luz sagrada que acerta o alvo escolhido com 2× o dano." },
+  flee:   { name: "Aura do Vento", key: "2", icon: "spear", level: 8, fury: 30, cd: 12, dur: 4, desc: "Por 4 s: uma aura de energia contorna o arqueiro: +75% de velocidade, +40% de velocidade de ataque e atravessa os monstros." },
+  volley: { name: "Saraivada", key: "3", icon: "icon_area", level: 12, fury: 40, cd: 8, dur: 3, desc: "Uma chuva de flechas na área do alvo (3×3): dano e marca os inimigos, que ficam lentos (−50%) por 3 s." },
+  frenzy: { name: "Berserker", key: "4", icon: "berserk", level: 18, fury: 50, cd: 16, dur: 5, desc: "Por 5 s: +60% de dano de ataque e +15% de crítico; a flecha do ataque básico ricocheteia em até 3 inimigos e explode em luz sagrada." },
 };
 const vocSpells = voc => (voc === "archer" ? ARCHER_SPELLS : SPELLS);
 const vocAnim = voc => (VOCATIONS[voc] && VOCATIONS[voc].anim) || "kn_";

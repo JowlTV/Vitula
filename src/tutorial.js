@@ -19,7 +19,7 @@ const TUT_STEPS = [
   ["move", () => t("tut_move", { k: ["up", "left", "down", "right"].map(keyOf).join(" "), d: ["upLeft", "downLeft", "downRight", "upRight"].map(keyOf).join(" ") }), e => e.moves >= 6],
   ["attack", () => t("tut_attack", { k: keyOf("attack"), a: keyOf("autoAttack") }), e => e.attackKey],
   ["loot", () => t("tut_loot"), e => e.loot],
-  ["heal", () => t("tut_heal", { k: keyOf("skill1"), p: keyOf("potion1") }), e => e.heal || e.cast],
+  ["heal", () => t("tut_heal", { k: keyOf("heal"), p: keyOf("potion1") }), e => e.heal || e.cast],
   ["bag", () => t("tut_bag", { k: keyOf("bag") }), e => e.bag],
   ["map", () => t("tut_map", { k: keyOf("map") }), e => e.map],
   ["exit", () => t("tut_exit", { e: keyOf("interact"), h: keyOf("recall") }), e => false],

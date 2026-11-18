@@ -13,7 +13,7 @@ Object.assign(DungeonScene.prototype, {
     this.trainMagic(sp.fury);
     h.cds[spell] = sp.cd * this.stats.cooldown;
     // cada magia tem a sua função em SPELL_FX (fácil de somar as das outras vocações)
-    if (spell === "heal" || spell === "aura" || spell === "frenzy" || spell === "flee") { h.pose = this.ap + "cast"; h.poseT = 0.45; }
+    if (["heal", "aura", "frenzy", "flee", "guard", "quake"].includes(spell)) { h.pose = this.ap + "cast"; h.poseT = 0.45; }
     const fx = SPELL_FX[spell];
     if (fx) fx.call(this, h, sp);
   },
@@ -82,11 +82,12 @@ const SPELL_FX = {
     this.tweens.add({ targets: s, alpha: 0, delay: 220, duration: 140, onComplete: () => s.destroy() });
     }
     sfx(this, "hit", 0.5);
-    for (let k = 1; k <= 3; k++) {
+    let hits = 0;   // acerta no máximo 2 inimigos
+    for (let k = 1; k <= 3 && hits < 2; k++) {
       const x = h.x + dx * k, y = h.y + dy * k;
       if (!this.gen.isFloor(x, y) || this.isClosedDoor(x, y)) break;
       const m = this.occ.get(key(x, y));
-      if (m) this.damageMonster(m, this.baseDamage() * 2.0);
+      if (m) { hits++; this.damageMonster(m, this.baseDamage() * 2.0); }
       else if (this.props.has(key(x, y))) { if (this.props.get(key(x, y)).kind in BREAKABLE) this.bumpProp(x, y); break; }
     }
   },
