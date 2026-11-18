@@ -175,7 +175,7 @@ const SPELLS = {
   heal:  { name: "Exura", key: "G", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura 25% da vida máxima." },
   front: { name: "Golpe Frontal", key: "1", icon: "icon_front_v2", level: 3, fury: 25, cd: 2.5, desc: "Um corte à frente que acerta até 2 inimigos em linha." },
   quake: { name: "Tremor de Terra", key: "2", icon: "icon_area", level: 8, fury: 40, cd: 7, dur: 3, desc: "Crava a espada no chão: o tremor se espalha por 2 casas em volta, causa 3× o dano (50% a mais que o Golpe Frontal) e deixa os inimigos lentos (−50%) por 3 s." },
-  guard: { name: "Égide", key: "3", icon: "i_shield", level: 12, fury: 45, cd: 14, dur: 6, desc: "Por 6 s: uma aura protetora dá +75% de defesa e devolve 10% do dano recebido a quem atacou." },
+  guard: { name: "Égide", key: "3", icon: "i_shield", level: 12, fury: 45, cd: 14, dur: 6, desc: "Por 6 s: uma aura protetora dá +54% de defesa e devolve 10% do dano recebido a quem atacou." },
   aura:  { name: "Aura Sagrada", key: "4", icon: "icon_aura_v2", level: 18, fury: 60, cd: 12, dur: 5, desc: "Por 5 s: fere quem chega perto, regenera vida e ilumina uma área maior." },
 };
 
