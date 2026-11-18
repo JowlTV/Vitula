@@ -967,7 +967,7 @@ I18N.pt = {
   tut_loot: "Pise num item caído para pegá-lo. Tudo o que você coleta aparece no canto esquerdo.",
   tut_heal: "Cure-se com a habilidade {k} ou a poção do atalho {p}. As outras habilidades (2, 3 e 4) liberam conforme você sobe de nível.",
   tut_bag: "Abra a mochila com {k}: equipamentos, status, peso e poções. Passe o mouse num item para ver os detalhes.",
-  tut_map: "Abra o mapa com {k} para ver o caminho já explorado.",
+  tut_map: "O mapa da floresta já está todo aberto: use {k} para achar a saída. A partir dos esgotos, você mesmo terá que encontrar a saída.",
   tut_exit: "Siga a trilha até a saída da floresta: lá está Karhyn. Dicas: {e} fala e usa coisas; {h} volta à cidade.",
   tut_found: "As muralhas de Karhyn surgem diante de você.",
   tut_skipped: "Você segue direto para Karhyn.",
@@ -986,6 +986,7 @@ I18N.pt = {
   slope_pass_open: "Com o Rei Rato morto, uma passagem se abre na sala: ela sobe para a Encosta dos Goblins.",
   slow_float: "lento",
   guard_float: "Égide!",
+  tut_no_recall: "O Retorno não funciona na Rook Forest: siga a trilha até o portão de Karhyn.",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1899,7 +1900,7 @@ I18N.en = {
   tut_loot: "Step on a dropped item to pick it up. Everything you collect shows on the left.",
   tut_heal: "Heal with skill {k} or the shortcut potion {p}. Your other skills (2, 3 and 4) unlock as you level up.",
   tut_bag: "Open the backpack with {k}: gear, stats, weight and potions. Hover an item to see its details.",
-  tut_map: "Open the map with {k} to see the path you have explored.",
+  tut_map: "The forest map is fully revealed: press {k} to find the exit. From the sewers on, you will have to find the way out yourself.",
   tut_exit: "Follow the trail to the forest's exit: Karhyn lies there. Tips: {e} talks and uses things; {h} returns to town.",
   tut_found: "Karhyn's walls rise before you.",
   tut_skipped: "You head straight to Karhyn.",
@@ -1918,6 +1919,7 @@ I18N.en = {
   slope_pass_open: "With the Rat King dead, a passage opens in the chamber: it climbs to the Goblin Slope.",
   slow_float: "slowed",
   guard_float: "Aegis!",
+  tut_no_recall: "Recall doesn't work in Rook Forest: follow the trail to the gate of Karhyn.",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2832,7 +2834,7 @@ I18N.es = {
   tut_loot: "Pisa un objeto caído para recogerlo. Todo lo que recoges aparece a la izquierda.",
   tut_heal: "Cúrate con la habilidad {k} o la poción del atajo {p}. Las otras habilidades (2, 3 y 4) se liberan al subir de nivel.",
   tut_bag: "Abre la mochila con {k}: equipo, estado, peso y pociones. Pasa el ratón por un objeto para ver detalles.",
-  tut_map: "Abre el mapa con {k} para ver el camino explorado.",
+  tut_map: "El mapa del bosque ya está abierto: usa {k} para encontrar la salida. A partir de las cloacas, tendrás que encontrar la salida por tu cuenta.",
   tut_exit: "Sigue el sendero hasta la salida del bosque: allí está Karhyn. Consejos: {e} habla y usa cosas; {h} vuelve a la ciudad.",
   tut_found: "Las murallas de Karhyn aparecen ante ti.",
   tut_skipped: "Vas directo a Karhyn.",
@@ -2851,6 +2853,7 @@ I18N.es = {
   slope_pass_open: "Con el Rey Rata muerto, se abre un pasaje en la sala: sube a la Ladera de los Goblins.",
   slow_float: "lento",
   guard_float: "¡Égida!",
+  tut_no_recall: "El Retorno no funciona en Rook Forest: sigue el sendero hasta la puerta de Karhyn.",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3765,7 +3768,7 @@ I18N.de = {
   tut_loot: "Tritt auf einen Gegenstand, um ihn aufzuheben. Alles Gesammelte erscheint links.",
   tut_heal: "Heile dich mit Fähigkeit {k} oder dem Schnelltrank {p}. Deine anderen Fähigkeiten (2, 3 und 4) werden mit den Stufen frei.",
   tut_bag: "Öffne den Rucksack mit {k}: Ausrüstung, Werte, Gewicht und Tränke. Fahre über einen Gegenstand für Details.",
-  tut_map: "Öffne die Karte mit {k}, um den erkundeten Weg zu sehen.",
+  tut_map: "Die Karte des Waldes ist bereits aufgedeckt: Drücke {k}, um den Ausgang zu finden. Ab der Kanalisation musst du den Weg selbst finden.",
   tut_exit: "Folge dem Pfad zum Waldausgang: dort liegt Karhyn. Tipps: {e} spricht und benutzt; {h} kehrt zur Stadt zurück.",
   tut_found: "Karhyns Mauern erheben sich vor dir.",
   tut_skipped: "Du gehst direkt nach Karhyn.",
@@ -3784,6 +3787,7 @@ I18N.de = {
   slope_pass_open: "Mit dem Tod des Rattenkönigs öffnet sich ein Durchgang im Saal: Er führt hinauf zum Goblinhang.",
   slow_float: "verlangsamt",
   guard_float: "Ägide!",
+  tut_no_recall: "Die Rückkehr funktioniert im Rook Forest nicht: folge dem Pfad bis zum Tor von Karhyn.",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4697,7 +4701,7 @@ I18N.pl = {
   tut_loot: "Stań na przedmiocie, by go podnieść. Wszystko, co zbierasz, pojawia się po lewej.",
   tut_heal: "Ulecz się umiejętnością {k} lub miksturą ze skrótu {p}. Pozostałe umiejętności (2, 3 i 4) odblokujesz z poziomami.",
   tut_bag: "Otwórz plecak klawiszem {k}: ekwipunek, statystyki, ciężar i mikstury. Najedź na przedmiot, by zobaczyć szczegóły.",
-  tut_map: "Otwórz mapę klawiszem {k}, by zobaczyć odkrytą drogę.",
+  tut_map: "Mapa lasu jest już odkryta: naciśnij {k}, aby znaleźć wyjście. Od kanałów musisz sam znaleźć drogę.",
   tut_exit: "Idź szlakiem do wyjścia z lasu: tam leży Karhyn. Wskazówki: {e} rozmawia i używa; {h} wraca do miasta.",
   tut_found: "Przed tobą wznoszą się mury Karhyn.",
   tut_skipped: "Idziesz prosto do Karhyn.",
@@ -4716,6 +4720,7 @@ I18N.pl = {
   slope_pass_open: "Po śmierci Króla Szczurów w komnacie otwiera się przejście: prowadzi na Zbocze Goblinów.",
   slow_float: "spowolniony",
   guard_float: "Egida!",
+  tut_no_recall: "Powrót nie działa w Rook Forest: idź ścieżką do bramy Karhyn.",
 };
 
 // ── API pública ─────────────────────────────────────────────────

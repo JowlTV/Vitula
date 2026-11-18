@@ -159,3 +159,15 @@ if (typeof Lang !== "undefined" && Lang.apply) Lang.apply();
   };
   const sw = DungeonScene.prototype.spawnWave;
   DungeonScene.prototype.spawnWave = function (...a) { if (this.region && this.region.tutorial) return false; return sw.apply(this, a); }; }
+
+// Rook Forest: sem Recall, e o mapa já vem todo revelado para achar a saída (nos esgotos o jogador explora sozinho)
+{
+  const sr = DungeonScene.prototype.startRecall;
+  DungeonScene.prototype.startRecall = function (...a) { if (this.region && this.region.tutorial) { this.msg(t("tut_no_recall")); return; } return sr.apply(this, a); };
+  const bf = DungeonScene.prototype.buildFloor;
+  DungeonScene.prototype.buildFloor = function (...a) {
+    const r = bf.apply(this, a);
+    if (this.region && this.region.tutorial && this.explored) { this.explored.fill(1); if (this.drawMinimap) this.drawMinimap(); }
+    return r;
+  };
+}
