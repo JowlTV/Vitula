@@ -87,7 +87,7 @@ Object.assign(DungeonScene.prototype, {
       h.spr.setFlipX(dir === "side" && !!(atk ? h.atkLeft : h.lookLeft));
     }
     h.attackT = Math.max(0, (h.attackT || 0) - dt);
-    if (h.spr.anims.currentAnim.key !== anim) { h.spr.play(anim, true); if (anim.startsWith(this.ap)) h.spr.setScale(this.ap === "kn_" ? (anim === "kn_hurt" || anim === "kn_cast" ? 0.38 * WORLD_SCALE * 1.05 : this.heroScale) : this.heroScale); }
+    if (h.spr.anims.currentAnim.key !== anim) { h.spr.play(anim, true); if (anim.startsWith(this.ap)) h.spr.setScale(this.heroScale); }   // cura/dano: corpo do mesmo tamanho do andar (176 px) — mesma escala, não encolhe
     // ataque básico automático em quem estiver colado
     h.atkQueued = Math.max(0, (h.atkQueued || 0) - dt);
     const autoAtk = Settings.data.autoAttack === true;
