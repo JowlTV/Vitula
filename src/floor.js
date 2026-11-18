@@ -78,6 +78,7 @@ Object.assign(DungeonScene.prototype, {
 
   buildFloor(arrive = "start") {
     this.slope = this.region.theme === "slope";
+    this.forest = !!this.region.forest;
     // libera as texturas do andar anterior (cada bloco do chão ocupa até 16 MB de vídeo)
     if (this.floorRT) { this.floorRT.destroy(); this.floorRT = null; }
     if (this.world) this.world.destroy(true);
@@ -122,14 +123,14 @@ Object.assign(DungeonScene.prototype, {
     }
     for (let i = 0; i < g.rooms.length; i++) this.furnish(i, i === 0, i === far, last);
     // tom da luz do ambiente aplicado no herói (caverna esverdeada, esgoto amarronzado)
-    this.ambientTint = this.region.tutorial ? 0x9cc488 : this.slope ? 0xc4bcae : g.cave ? 0xa8b8a0 : 0xb8b4a6;
+    this.ambientTint = this.forest ? 0x8a9c90 : this.slope ? 0xc4bcae : g.cave ? 0xa8b8a0 : 0xb8b4a6;
     if (g.cave) { this.caveMonsters(start); this.fixBlockingProps(start); }
     this.linkPockets(start);
     if (g.cave) this.fixBlockingProps(start);
     this.drawSconces();
     this.waterLights();
     this.drawWallDrains();
-    this.tunnelMonsters();
+    if (!this.region.tutorial) this.tunnelMonsters();
     this.spawnCritters();
     this.groundFog();
     if (!last) {
@@ -144,7 +145,8 @@ Object.assign(DungeonScene.prototype, {
     // corda de volta para cima (andar 1: sai no bueiro da cidade)
     { const rp = this.cellPos(start.x, start.y);
       const ri = this.add.image(rp.x, rp.y + T / 2 - 4, "rope_v2").setOrigin(0.5, 1).setDepth(rp.y - 40);
-      ri.setScale(T * 1.5 / ri.height); this.ents.add(ri); this.rope = { x: start.x, y: start.y }; }
+      ri.setScale(T * 1.5 / ri.height); this.ents.add(ri); this.rope = { x: start.x, y: start.y };
+      if (this.region.tutorial) ri.setVisible(false); }   // na floresta não há corda
     this.placeAltar(start);
     // herói
     const arr = arrive === "stairs" && this.stairs ? (this.nearStairs() || start) : start;
@@ -569,7 +571,7 @@ Object.assign(DungeonScene.prototype, {
       for (let k = 0; k < (this.region.escort ? 4 : 2) && free.length; k++) { const f = free.pop(); this.spawnMonster(this.region.escort || "cave_rat", f.x, f.y); }
       return;
     }
-    const count = r.kind === "room" ? 1 + Math.ceil(this.floorN / 2) + g.rand(0, 1)
+    const count = this.region.tutorial ? (isStart ? 0 : g.rand(0, 1)) : r.kind === "room" ? 1 + Math.ceil(this.floorN / 2) + g.rand(0, 1)
       : r.kind === "chamber" ? 1 + Math.ceil(this.floorN / 3) + g.rand(0, 1) : g.rand(1, 2);
     for (let k = 0; k < count && free.length; k++) { const f = free.pop(); this.spawnMonster(weighted(this.floorMonsters()), f.x, f.y); }
   },

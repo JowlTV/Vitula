@@ -5,7 +5,7 @@ Object.assign(DungeonScene.prototype, {
 
   // pixels das artes da caverna, já limpos: tira as linhas de "lajota" e as bordas transparentes
   caveTex() {
-    const theme = this.slope ? "slope" : "cave";
+    const theme = this.forest ? "forest" : this.slope ? "slope" : "cave";
     if (this._caveTex && this._caveTex.theme === theme) return this._caveTex;
     const read = (k, sx, sy) => {
       const src = this.textures.get(k).getSourceImage();
@@ -45,10 +45,12 @@ Object.assign(DungeonScene.prototype, {
       return d;
     };
     // Encosta dos Goblins: chão de terra e cascalho da montanha, rocha cinza (frente à esquerda, topo à direita)
-    const moss = this.slope ? clean(read("slope_floor", 40, 60), false) : clean(read("cave_floor_moss"), true);
-    const red = this.slope ? clean(read("slope_floor_b", 20, 120), false) : clean(read("cave_floor_red"), true);
-    const top = this.slope ? clean(read("slope_rocks", 64, 0), true) : clean(read("cave_rock_top"), true);
-    const face = this.slope ? clean(read("slope_rocks", 0, 0), true) : clean(read("cave_wall_front"), false);
+    // Rook Forest: chão de mata e paredes de árvores (frente com troncos à esquerda, copas vistas de cima à direita)
+    const F = this.forest;
+    const moss = F ? clean(read("forest_floor", 0, 0), false) : this.slope ? clean(read("slope_floor", 40, 60), false) : clean(read("cave_floor_moss"), true);
+    const red = F ? clean(read("forest_floor_b", 0, 0), false) : this.slope ? clean(read("slope_floor_b", 20, 120), false) : clean(read("cave_floor_red"), true);
+    const top = F ? clean(read("forest_rocks", 64, 0), false) : this.slope ? clean(read("slope_rocks", 64, 0), true) : clean(read("cave_rock_top"), true);
+    const face = F ? clean(read("forest_rocks", 0, 0), false) : this.slope ? clean(read("slope_rocks", 0, 0), true) : clean(read("cave_wall_front"), false);
     // paleta da água (miolo do cave_water, do escuro ao claro) e da lama (tons marrons do cave_shore)
     const pal = (img, ok) => {
       const set = new Map();
@@ -183,6 +185,7 @@ Object.assign(DungeonScene.prototype, {
 
   // decoração plana da caverna: pedrinhas, ossos, ninhos nos cantos e cogumelos que brilham
   caveDecor() {
+    if (this.forest) return this.forestDecor();
     if (this.slope) return this.slopeDecor();
     const g = this.gen, rt = this.floorRT;
     const put = (kind, x, y, scale = 1, alpha = 1) => {
@@ -211,6 +214,7 @@ Object.assign(DungeonScene.prototype, {
 
   // mobília das câmaras: pedregulhos que bloqueiam, baú, e um acampamento abandonado por andar
   furnishChamber(i, isFar, blocked) {
+    if (this.forest) return this.forestChamber(i, isFar, blocked);
     if (this.slope) return this.slopeChamber(i, isFar, blocked);
     const g = this.gen;
     const cells = Phaser.Utils.Array.Shuffle(g.roomCells(i, false).filter(c => !blocked(c.x, c.y)));

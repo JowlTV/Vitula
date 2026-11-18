@@ -971,8 +971,8 @@ I18N.pt = {
   tut_exit: "Siga a trilha até a saída da floresta: lá está Karhyn. Dicas: {e} fala e usa coisas; {h} volta à cidade; U abre os atributos.",
   tut_found: "As muralhas de Karhyn surgem diante de você.",
   tut_skipped: "Você segue direto para Karhyn.",
-  region_forest: "Floresta de Karhyn",
-  region_forest_desc: "A mata fechada a oeste de Karhyn.",
+  region_forest: "Rook Forest",
+  region_forest_desc: "A floresta antes de Karhyn.",
   tut_no_rope: "Não há volta: siga a trilha até Karhyn.",
 };
 
@@ -1891,8 +1891,8 @@ I18N.en = {
   tut_exit: "Follow the trail to the forest's exit: Karhyn lies there. Tips: {e} talks and uses things; {h} returns to town; U opens attributes.",
   tut_found: "Karhyn's walls rise before you.",
   tut_skipped: "You head straight to Karhyn.",
-  region_forest: "Forest of Karhyn",
-  region_forest_desc: "The dense woods west of Karhyn.",
+  region_forest: "Rook Forest",
+  region_forest_desc: "The forest before Karhyn.",
   tut_no_rope: "There's no way back: follow the trail to Karhyn.",
 };
 
@@ -2812,8 +2812,8 @@ I18N.es = {
   tut_exit: "Sigue el sendero hasta la salida del bosque: allí está Karhyn. Consejos: {e} habla y usa cosas; {h} vuelve a la ciudad; U abre los atributos.",
   tut_found: "Las murallas de Karhyn aparecen ante ti.",
   tut_skipped: "Vas directo a Karhyn.",
-  region_forest: "Bosque de Karhyn",
-  region_forest_desc: "El bosque cerrado al oeste de Karhyn.",
+  region_forest: "Rook Forest",
+  region_forest_desc: "El bosque antes de Karhyn.",
   tut_no_rope: "No hay vuelta atrás: sigue el sendero hasta Karhyn.",
 };
 
@@ -3733,8 +3733,8 @@ I18N.de = {
   tut_exit: "Folge dem Pfad zum Waldausgang: dort liegt Karhyn. Tipps: {e} spricht und benutzt; {h} kehrt zur Stadt zurück; U öffnet die Attribute.",
   tut_found: "Karhyns Mauern erheben sich vor dir.",
   tut_skipped: "Du gehst direkt nach Karhyn.",
-  region_forest: "Wald von Karhyn",
-  region_forest_desc: "Der dichte Wald westlich von Karhyn.",
+  region_forest: "Rook Forest",
+  region_forest_desc: "Der Wald vor Karhyn.",
   tut_no_rope: "Es gibt kein Zurück: folge dem Pfad nach Karhyn.",
 };
 
@@ -4653,8 +4653,8 @@ I18N.pl = {
   tut_exit: "Idź szlakiem do wyjścia z lasu: tam leży Karhyn. Wskazówki: {e} rozmawia i używa; {h} wraca do miasta; U otwiera atrybuty.",
   tut_found: "Przed tobą wznoszą się mury Karhyn.",
   tut_skipped: "Idziesz prosto do Karhyn.",
-  region_forest: "Las Karhyn",
-  region_forest_desc: "Gęsty las na zachód od Karhyn.",
+  region_forest: "Rook Forest",
+  region_forest_desc: "Las przed Karhyn.",
   tut_no_rope: "Nie ma odwrotu: idź szlakiem do Karhyn.",
 };
 

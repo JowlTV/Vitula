@@ -1,7 +1,7 @@
 // Tutorial: a Floresta de Karhyn. Na primeira vez que se escolhe uma classe, o herói chega pela floresta,
 // aprende os comandos numa trilha curta e, ao achar a saída, vê a história e entra na cidade.
 // Depois disso (Save.data.foundKarhyn), escolher o personagem abre o mapa para decidir onde cair.
-REGIONS.forest = { name: "Floresta de Karhyn", desc: "A mata fechada a oeste de Karhyn.", pos: [0, 0], floors: 1, cave: true, theme: "slope", tutorial: true, hidden: true };
+REGIONS.forest = { name: "Rook Forest", desc: "A floresta antes de Karhyn.", pos: [0, 0], floors: 1, cave: true, theme: "slope", forest: true, tutorial: true, hidden: true };
 REGION_MONSTERS.forest = { 1: [["rat", 60], ["bat", 40]] };
 if (Save.data.foundKarhyn === undefined) { Save.data.foundKarhyn = (Save.data.runs || 0) > 0; Save.save(); }   // quem já jogava não repete
 
@@ -32,8 +32,14 @@ Object.assign(DungeonScene.prototype, {
     // provisões para aprender a curar e algo no chão para aprender a pegar
     const d = Save.voc(this.vocId); if ((d.potions.health || 0) < 2) { d.potions.health = 2; Save.save(); this.refreshPotionIcons && this.refreshPotionIcons(); }
     const h = this.hero, spots = this.freeNeighbors(h.x, h.y);
+    // poucos bichos (só ratos e morcegos), mas ao menos 4 para o passo de derrotar 3
+    const alive = this.monsters.filter(m => !m.dead).length;
+    if (alive < 4) { const g = this.gen, far = [...Array(g.w * g.h).keys()].map(i => ({ x: i % g.w, y: (i / g.w) | 0 }))
+        .filter(c => g.isWalk(c.x, c.y) && !this.occ.has(key(c.x, c.y)) && Math.abs(c.x - h.x) + Math.abs(c.y - h.y) > 8);
+      Phaser.Utils.Array.Shuffle(far).slice(0, 4 - alive).forEach(c => this.spawnMonster(Math.random() < 0.6 ? "rat" : "bat", c.x, c.y)); }
     if (spots[1]) this.drop(spots[1].x, spots[1].y, "bread");
     if (spots[3]) this.drop(spots[3].x, spots[3].y, "gold");
+    if (spots[5] && !this.props.has(key(spots[5].x, spots[5].y))) this.addProp(spots[5].x, spots[5].y, "forest_sign");
     // painel do tutorial
     const c = this.add.container(VIEW_W / 2, 62).setDepth(16); this.uiLayer.add(c); this.tutBox = c;
     this.tutBg = this.add.nineslice(0, 0, "panel", null, 560, 70, 16, 16, 16, 16).setOrigin(0.5, 0);
@@ -130,3 +136,11 @@ if (typeof Lang !== "undefined" && Lang.apply) Lang.apply();
     if (this.region && this.region.tutorial) { const h = this.hero; if (this.rope && h.x === this.rope.x && h.y === this.rope.y) { this.msg(t("tut_no_rope")); return; } }
     return ur.apply(this, a);
   }; }
+// Rook Forest: poucos bichos (no máximo 6) e sem hordas
+{ const sm = DungeonScene.prototype.spawnMonster;
+  DungeonScene.prototype.spawnMonster = function (kind, x, y) {
+    if (this.region && this.region.tutorial && (this.monsters || []).filter(m => !m.dead).length >= 6) return null;
+    return sm.call(this, kind, x, y);
+  };
+  const sw = DungeonScene.prototype.spawnWave;
+  DungeonScene.prototype.spawnWave = function (...a) { if (this.region && this.region.tutorial) return false; return sw.apply(this, a); }; }
