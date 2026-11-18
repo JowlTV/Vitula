@@ -850,7 +850,7 @@ I18N.pt = {
   no_arrows_short: "Sem flechas",
   arrows_out_type: "Acabaram as {name}s.",
   arrow_selected: "Usando: {name} ({n})",
-  arrow_hud: "{name} {n} · {total}/{cap}",
+  arrow_hud: "{name}: {n} · aljava {total}/{cap}",
   arrows_label: "Flechas na aljava",
   buy_arrows: "Comprar flechas",
   arrow_shop_text: "\"Flechas da forja, de ferro e de pena de corvo. As elementais e as explosivas eu faço sob encomenda.\"\n\nNa aljava: {n} de {cap}.  Ouro: ◉ {gold}",
@@ -987,6 +987,8 @@ I18N.pt = {
   slow_float: "lento",
   guard_float: "Égide!",
   tut_no_recall: "O Retorno não funciona na Rook Forest: siga a trilha até o portão de Karhyn.",
+  potion_filled: "+1 poção de vida",
+  infinite: "infinitas",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1783,7 +1785,7 @@ I18N.en = {
   no_arrows_short: "No arrows",
   arrows_out_type: "Out of {name}s.",
   arrow_selected: "Using: {name} ({n})",
-  arrow_hud: "{name} {n} · {total}/{cap}",
+  arrow_hud: "{name}: {n} · quiver {total}/{cap}",
   arrows_label: "Arrows in quiver",
   buy_arrows: "Buy arrows",
   arrow_shop_text: "\"Arrows from the forge, iron heads and raven feathers. Elemental and explosive ones I make to order.\"\n\nIn quiver: {n} of {cap}.  Gold: ◉ {gold}",
@@ -1920,6 +1922,8 @@ I18N.en = {
   slow_float: "slowed",
   guard_float: "Aegis!",
   tut_no_recall: "Recall doesn't work in Rook Forest: follow the trail to the gate of Karhyn.",
+  potion_filled: "+1 health potion",
+  infinite: "infinite",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2717,7 +2721,7 @@ I18N.es = {
   no_arrows_short: "Sin flechas",
   arrows_out_type: "Se acabaron las {name}s.",
   arrow_selected: "Usando: {name} ({n})",
-  arrow_hud: "{name} {n} · {total}/{cap}",
+  arrow_hud: "{name}: {n} · carcaj {total}/{cap}",
   arrows_label: "Flechas en el carcaj",
   buy_arrows: "Comprar flechas",
   arrow_shop_text: "\"Flechas de la forja, punta de hierro y pluma de cuervo. Las elementales y explosivas las hago por encargo.\"\n\nEn el carcaj: {n} de {cap}.  Oro: ◉ {gold}",
@@ -2854,6 +2858,8 @@ I18N.es = {
   slow_float: "lento",
   guard_float: "¡Égida!",
   tut_no_recall: "El Retorno no funciona en Rook Forest: sigue el sendero hasta la puerta de Karhyn.",
+  potion_filled: "+1 poción de vida",
+  infinite: "infinitas",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3651,7 +3657,7 @@ I18N.de = {
   no_arrows_short: "Keine Pfeile",
   arrows_out_type: "Keine {name}e mehr.",
   arrow_selected: "Verwende: {name} ({n})",
-  arrow_hud: "{name} {n} · {total}/{cap}",
+  arrow_hud: "{name}: {n} · Köcher {total}/{cap}",
   arrows_label: "Pfeile im Köcher",
   buy_arrows: "Pfeile kaufen",
   arrow_shop_text: "\"Pfeile aus der Schmiede, Eisenspitzen und Rabenfedern. Elementar- und Explosivpfeile mache ich auf Bestellung.\"\n\nIm Köcher: {n} von {cap}.  Gold: ◉ {gold}",
@@ -3788,6 +3794,8 @@ I18N.de = {
   slow_float: "verlangsamt",
   guard_float: "Ägide!",
   tut_no_recall: "Die Rückkehr funktioniert im Rook Forest nicht: folge dem Pfad bis zum Tor von Karhyn.",
+  potion_filled: "+1 Heiltrank",
+  infinite: "unendlich",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4584,7 +4592,7 @@ I18N.pl = {
   no_arrows_short: "Brak strzał",
   arrows_out_type: "Skończyły się: {name}.",
   arrow_selected: "Używasz: {name} ({n})",
-  arrow_hud: "{name} {n} · {total}/{cap}",
+  arrow_hud: "{name}: {n} · kołczan {total}/{cap}",
   arrows_label: "Strzały w kołczanie",
   buy_arrows: "Kup strzały",
   arrow_shop_text: "\"Strzały z kuźni, żelazne groty i krucze pióra. Żywiołowe i wybuchowe robię na zamówienie.\"\n\nW kołczanie: {n} z {cap}.  Złoto: ◉ {gold}",
@@ -4721,6 +4729,8 @@ I18N.pl = {
   slow_float: "spowolniony",
   guard_float: "Egida!",
   tut_no_recall: "Powrót nie działa w Rook Forest: idź ścieżką do bramy Karhyn.",
+  potion_filled: "+1 mikstura życia",
+  infinite: "bez limitu",
 };
 
 // ── API pública ─────────────────────────────────────────────────

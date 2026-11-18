@@ -323,7 +323,11 @@ Object.assign(DungeonScene.prototype, {
       const before = this.pickups.size;
       if (Math.random() < 0.6 || m.elite || m.champion) this.drop(m.x, m.y, "gold");
       if (Math.random() < 0.12) this.drop(m.x, m.y, ["apple", "bread", "meat"][Phaser.Math.Between(0, 2)]);
-      if (Math.random() < 0.06) this.drop(m.x, m.y, "bronze_key");
+      // poção de vida: enche com a vida dos monstros derrotados (não se compra mais na loja)
+      { const d = Save.voc(this.vocId); d.potFill = (d.potFill || 0) + m.maxHp;
+        while (d.potFill >= POTION_FILL) { d.potFill -= POTION_FILL; d.potions.health = (d.potions.health || 0) + 1;
+          this.floatText(this.hero.px, this.hero.py - 100, t("potion_filled"), "#ff7070"); if (this.lootLog) this.lootLog("i_health_potion", t("potion_filled"), "#ff9090", {}); sfx(this, "gem", 0.3); }
+        Save.save(); }
       const eqChance = m.elite ? 1 : m.champion ? 0.35 : 0.025;
       if (Math.random() < eqChance) { const g = this.rollEquip(m); if (g) this.drop(m.x, m.y, "eq_" + g.id, g); }
       if (m.elite || (m.champion && Math.random() < 0.25)) this.drop(m.x, m.y, "boss_essence");

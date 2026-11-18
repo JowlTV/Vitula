@@ -25,6 +25,7 @@ Object.assign(DungeonScene.prototype, {
     const s = this.stairs; if (!s) return;
     // portão lateral de Karhyn, na vertical: a passagem fica alinhada à saída, na borda direita da floresta
     const img = this.add.image(s.x * T - T * 0.2, (s.y + 0.5) * T, "vk_portao_lateral").setOrigin(0, 0.55);
+    img.setCrop(23, 0, img.width - 23, img.height);   // sem o pedaço de estrada (piso) à esquerda do portão
     img.setScale(3.34 * T / img.width).setDepth((s.y + 1.6) * T).setTint(0xb0b4a8);
     img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.world.add(img); this.gateImg = img;

@@ -224,7 +224,7 @@ function giveArcherKit(vocId) {
 }
 function arrowCap(d) { const q = d.equip && d.equip.shield && EQUIP[d.equip.shield.id]; return q && q.quiver ? q.quiver : 25; }
 function arrowCount(d) { let n = 0; for (const k in d.arrows || {}) if (k !== "normal") n += d.arrows[k] || 0; return n; }
-const arrowN = (d, k) => k === "normal" ? "∞" : ((d.arrows || {})[k] || 0);
+const arrowN = (d, k) => k === "normal" ? t("infinite") : ((d.arrows || {})[k] || 0);
 
 function equipOk(id, vocId) { const E = EQUIP[id]; return !E.voc || E.voc.includes(vocId); }
 // texto curto de atributos do item (para a mochila e o ferreiro); g = { id, r, p }

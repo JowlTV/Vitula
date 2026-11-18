@@ -156,6 +156,7 @@ const POTIONS = {
   hunter:    { name: "Poção do caçador", icon: "i_health_potion", tint: 0x70d070, cd: 60, dur: 30, price: 160, desc: "+10 de Distance por 30 s.", voc: ["archer"] },
   luck:      { name: "Poção da sorte", icon: "i_health_potion", tint: 0xffd040, cd: 300, dur: 10, price: 200, desc: "+50% de ouro coletado por 10 s." },
 };
+const POTION_FILL = 600;   // vida somada dos monstros derrotados para encher 1 poção de vida
 const potionOk = (id, voc) => !POTIONS[id].voc || POTIONS[id].voc.includes(voc);
 
 // promoção (como no Tibia): no nível 20 o Cavaleiro vira Cavaleiro de Elite

@@ -556,7 +556,7 @@ class ShopScene extends Phaser.Scene {
     if (!on) return;
     const c = this.add.container(0, 0); this.potBox = c;
     c.add(this.add.rectangle(VIEW_W / 2, 284, 600, 290, 0x16141a, 1));
-    const d = Save.voc(this.voc), ids = Object.keys(POTIONS).filter(id => potionOk(id, this.voc));
+    const d = Save.voc(this.voc), ids = Object.keys(POTIONS).filter(id => id !== "health" && potionOk(id, this.voc));   // poção de vida não se compra: enche matando monstros
     ids.forEach((id, i) => {
       const P = POTIONS[id], y = 162 + i * 46;
       const ic = this.add.image(VIEW_W / 2 - 270, y, P.icon); ic.setScale(26 / Math.max(ic.width, ic.height)); if (P.tint) ic.setTint(P.tint);
