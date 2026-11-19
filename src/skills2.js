@@ -136,8 +136,8 @@ Object.assign(SPELL_FX, {
     const cx = tg.x, cy = tg.y, p = this.cellPos(cx, cy);
     this.heroSwing(Math.sign(cx - h.x), 0);
     if (this.anims.exists("fx_volley")) {
-      const s = this.add.sprite(p.x, p.y - 8, "fx_volley").setOrigin(0.5, 0.8).setScale(2.65 * T / (this.textures.get("fx_volley").getSourceImage().width / 4)).setDepth(p.y + 2);
-      this.ents.add(s); s.play({ key: "fx_volley", frameRate: 12 });   // 15% mais lenta s.once("animationcomplete", () => s.destroy());
+      const s = this.add.sprite(p.x, p.y - 8, "fx_volley").setOrigin(0.5, 0.8).setScale(4.0 * T / (this.textures.get("fx_volley").getSourceImage().width / 4)).setDepth(p.y + 2);
+      this.ents.add(s); s.play({ key: "fx_volley", frameRate: 12 }); s.once("animationcomplete", () => s.destroy()); this.time.delayedCall(1400, () => { if (s.scene) s.destroy(); });   // garantia: não deixa o último quadro no chão   // animação 15% mais lenta
     } else for (let k = 0; k < 9; k++) this.time.delayedCall(k * 40, () => this.shootArrow(p.x + Phaser.Math.Between(-60, 60), p.y - 260, p.x + Phaser.Math.Between(-50, 50), p.y - 10, () => {}, 1400));
     sfx(this, "pickup", 0.3);
     this.time.delayedCall(390, () => {
