@@ -73,6 +73,7 @@ class DungeonScene extends Phaser.Scene {
     (this.keysIn.bag || []).forEach(k => k.on("down", () => this.toggleBag()));
     this.input.keyboard.addCapture("TAB");
     (this.keysIn.map || []).forEach(k => k.on("down", () => this.toggleBigMap()));
+    (this.keysIn.target || []).forEach(k => k.on("down", () => this.cycleTarget()));
     (this.keysIn.zoomIn || []).forEach(k => k.on("down", () => this.setCamZoom(this.camZoom() + 0.2)));
     (this.keysIn.zoomOut || []).forEach(k => k.on("down", () => this.setCamZoom(this.camZoom() - 0.2)));
     this.input.on("wheel", (_p, _o, _dx, dy) => this.setCamZoom(this.camZoom() + (dy > 0 ? -0.2 : 0.2)));

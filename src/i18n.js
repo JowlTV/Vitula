@@ -750,7 +750,7 @@ I18N.pt = {
   contract_progress_done: "Contrato cumprido: {n}/{n} {name}. Volte ao mural de Karhyn.",
   attrs_spent: "Nível {n} · {k} ponto(s) já distribuído(s)",
   attr_weapon_plus: "+1 de {name}",
-  pause_keys: "5 e 6: poções · I: mochila · U: atributos · TAB: mapa · roda do mouse: zoom\nBaús pedem chave de bronze.",
+  pause_keys: "Z e C: poções · I: mochila · U: talentos · M: mapa · TAB: trocar de alvo · N: bestiário · roda do mouse: zoom",
   death_pen: "\n\nMorte — bênçãos da Oráculo: {bless}/3\nExperiência perdida: {xp}% do nível atual\nEquipamentos perdidos: {eq}\nOuro perdido: {gold}% ({lost})",
   word_all: "todos",
   run_summary: "Dificuldade: {d}%\nAndar alcançado: {f}/{total}\nNível: {lvl}\nAbates: {k}\nOuro obtido: {g}   (bolsa do {voc}: {bag})",
@@ -1075,6 +1075,7 @@ I18N.pt = {
   eq_dragon_boots: "Botas de Escamas de Dragão",
   skillbar_locked: "Barra de habilidades travada.",
   skillbar_unlocked: "Barra de habilidades destravada: arraste pela alça à esquerda.",
+  bind_target: "Trocar de alvo",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1771,7 +1772,7 @@ I18N.en = {
   contract_progress_done: "Contract fulfilled: {n}/{n} {name}. Return to the Karhyn board.",
   attrs_spent: "Level {n} · {k} point(s) already spent",
   attr_weapon_plus: "+1 {name}",
-  pause_keys: "5 and 6: potions · I: backpack · U: attributes · TAB: map · mouse wheel: zoom\nChests need a bronze key.",
+  pause_keys: "Z and C: potions · I: backpack · U: talents · M: map · TAB: switch target · N: bestiary · mouse wheel: zoom",
   death_pen: "\n\nDeath — Oracle blessings: {bless}/3\nExperience lost: {xp}% of the current level\nEquipment lost: {eq}\nGold lost: {gold}% ({lost})",
   word_all: "all",
   run_summary: "Difficulty: {d}%\nFloor reached: {f}/{total}\nLevel: {lvl}\nKills: {k}\nGold earned: {g}   ({voc}'s purse: {bag})",
@@ -2095,6 +2096,7 @@ I18N.en = {
   eq_dragon_boots: "Dragon Scale Boots",
   skillbar_locked: "Skill bar locked.",
   skillbar_unlocked: "Skill bar unlocked: drag it by the handle on the left.",
+  bind_target: "Switch target",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────

@@ -98,6 +98,9 @@ const WP_TOWN = [38, 10];
 TownScene.prototype.townWaypoint = function () {
   const [x, y] = WP_TOWN, cx = x * T + T / 2, cy = y * T + T / 2;
   wpSprite(this, cx, cy).forEach(o => { o.setDepth(cy - T / 2); this.world.add(o); });
+  // brilho leve por cima da escuridão da cidade (pulsa devagar)
+  const gl = this.add.image(cx, cy, "light").setTint(0x9ac8ff).setBlendMode(Phaser.BlendModes.ADD).setScale(0.55).setAlpha(0.22).setDepth(800001); this.world.add(gl);
+  this.tweens.add({ targets: gl, alpha: 0.1, scale: 0.65, duration: 1400, yoyo: true, repeat: -1, ease: "Sine.inOut" });
   this.zones.push({ name: t("wp_title"), kind: "waypoint", x, y, w: 1, h: 1 });   // abre só com E
 };
 TownScene.prototype.townWpMenu = function () {

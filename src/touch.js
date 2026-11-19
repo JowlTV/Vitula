@@ -6,7 +6,7 @@
     up: ["W", "UP"], down: ["S", "DOWN"], left: ["A", "LEFT"], right: ["D", "RIGHT"],
     heal: ["G"], skill1: ["ONE"], skill2: ["TWO"], skill3: ["THREE"], skill4: ["FOUR"], skill5: ["FIVE"], skill6: ["SIX"], skill7: ["SEVEN"],
     potion1: ["Z"], potion2: ["C"], attack: ["SPACE"], interact: ["E"],
-    bag: ["I"], recall: ["H"], map: ["TAB"], autoAttack: ["R"], pause: ["ESC"],
+    bag: ["I"], recall: ["H"], map: ["M"], target: ["TAB"], autoAttack: ["R"], pause: ["ESC"],
   };
   const FIXED = { ENTER: "ENTER", ESC: "ESC", U: "U" };
   const PREF = "vitula_touch_v1";

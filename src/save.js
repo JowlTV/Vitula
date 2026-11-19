@@ -56,7 +56,8 @@ const ACTIONS = [
   ["skill5", "Habilidade 5", ["FIVE", "NUMPAD_FIVE"]],
   ["skill6", "Habilidade 6", ["SIX", "NUMPAD_SIX"]],
   ["skill7", "Habilidade 7", ["SEVEN", "NUMPAD_SEVEN"]],
-  ["map", "Abrir o mapa", ["TAB", "M"]],
+  ["map", "Abrir o mapa", ["M"]],
+  ["target", "Trocar de alvo", ["TAB"]],
   ["zoomIn", "Aproximar a câmera", ["PLUS", "NUMPAD_ADD"]],
   ["zoomOut", "Afastar a câmera", ["MINUS", "NUMPAD_SUBTRACT"]],
   ["potion1", "Poção do atalho 1", ["Z"]],
@@ -92,3 +93,4 @@ const Settings = {
   },
 };
 Settings.load(); Settings.migratePotions();
+{ const k = Settings.data.keys || {}; if ((k.map || []).includes("TAB")) { k.map = k.map.filter(x => x !== "TAB"); if (!k.map.length) k.map = ["M"]; k.target = ["TAB"]; Settings.save(); } }   // TAB passou a trocar de alvo
