@@ -1066,6 +1066,13 @@ I18N.pt = {
   best_tip_n: "Este é o seu Bestiário (tecla N): cada criatura derrotada revela mais sobre ela.",
   best_beh_giant_spider: "Corre cinco vezes mais rápido que um aventureiro. Não dá para fugir: lute.",
   best_lore_giant_spider: "Ela está sempre com fome. Os mineiros dizem que já foi do tamanho de uma aranha comum.",
+  eq_dragon_mail: "Malha de Escamas de Dragão",
+  eq_wooden_legs: "Calça de Madeira",
+  eq_magic_legs: "Calça Mágica",
+  eq_chain_boots: "Botas de Malha",
+  eq_sandals: "Sandálias",
+  eq_guardian_boots: "Botas do Guardião",
+  eq_dragon_boots: "Botas de Escamas de Dragão",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -2077,6 +2084,13 @@ I18N.en = {
   best_tip_n: "This is your Bestiary (N key): every creature you defeat reveals more about it.",
   best_beh_giant_spider: "Runs five times faster than an adventurer. You can't flee: fight.",
   best_lore_giant_spider: "She is always hungry. Miners say she was once the size of a common spider.",
+  eq_dragon_mail: "Dragon Scale Mail",
+  eq_wooden_legs: "Wooden Legs",
+  eq_magic_legs: "Magic Legs",
+  eq_chain_boots: "Chain Boots",
+  eq_sandals: "Sandals",
+  eq_guardian_boots: "Guardian Boots",
+  eq_dragon_boots: "Dragon Scale Boots",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
