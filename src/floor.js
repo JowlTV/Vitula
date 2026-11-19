@@ -167,6 +167,7 @@ Object.assign(DungeonScene.prototype, {
     if (this.glow) this.uiCam.ignore(this.glow);
     cam.startFollow(this.hero.spr, true, 0.35, 0.35, 0, 24); // câmera mais colada no herói (antes atrasava)
     this.floorRT.refresh();
+    if (LOW_MEM) this.floorRT.shrink();
     this.buildDarkness();
     this.updateFlow();
     this.reveal();
@@ -759,6 +760,8 @@ Object.assign(DungeonScene.prototype, {
 
 // ---------------------------------------------------------------- chão em canvas
 let FLOOR_SEQ = 0;
+// aparelhos com pouca memória de canvas (iPhone/iPad e celulares em geral)
+const LOW_MEM = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
 class FloorCanvas {
   constructor(scene, W, H) {
     this.scene = scene; this.chunks = []; this.tintCache = new Map();
@@ -775,7 +778,7 @@ class FloorCanvas {
   each(x0, y0, x1, y1, fn) {
     for (const c of this.chunks) {
       if (x1 < c.cx || y1 < c.cy || x0 > c.cx + c.w || y0 > c.cy + c.h) continue;
-      c.dirty = true; c.ctx.save(); c.ctx.translate(-c.cx, -c.cy); fn(c.ctx); c.ctx.restore();
+      c.dirty = true; c.ctx.save(); if (c.fs) c.ctx.scale(c.fs, c.fs); c.ctx.translate(-c.cx, -c.cy); fn(c.ctx); c.ctx.restore();
     }
   }
   tinted(src, fr, tint) {
@@ -819,6 +822,20 @@ class FloorCanvas {
       clear() { return g; }, destroy() {},
     };
     return g;
+  }
+  // celular (iPhone): depois de pronto, o chão fica em meia resolução — 4× menos memória de canvas (o iOS limita
+  // a memória total de canvas e o jogo travava ao carregar os mapas grandes)
+  shrink() {
+    for (const c of this.chunks) {
+      if (c.fs) continue;
+      const key = c.tex.key + "_h", w = Math.ceil(c.w / 2), h = Math.ceil(c.h / 2);
+      const tex = this.scene.textures.createCanvas(key, w, h), ctx = tex.getContext(); ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(c.tex.getSourceImage(), 0, 0, c.w, c.h, 0, 0, w, h); tex.refresh();
+      c.img.setTexture(key).setScale(2);
+      const old = c.tex.key; c.tex = tex; c.ctx = ctx; c.fs = 0.5; c.dirty = false;
+      this.scene.textures.remove(old);
+    }
+    this.tintCache.clear();
   }
   refresh() { for (const c of this.chunks) if (c.dirty) { c.tex.refresh(); c.dirty = false; } }
   destroy() {

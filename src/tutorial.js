@@ -30,7 +30,8 @@ Object.assign(DungeonScene.prototype, {
   tutStart() {
     Settings.data.autoAttack = false; Settings.save();   // começa no ataque manual
     this.tut = { moves: 0, kills: 0, step: -1 };
-    this.setCamZoom(5); this.msgT = 0;   // começa no zoom máximo: o 1º passo ensina a afastar a câmera
+    // no celular não há roda do mouse: o passo do zoom fica de fora
+    if (LOW_MEM || navigator.maxTouchPoints > 0 && !window.matchMedia("(pointer:fine)").matches) this.tut.zoomed = true; else { this.setCamZoom(5); this.msgT = 0; }   // começa no zoom máximo: o 1º passo ensina a afastar a câmera
     // provisões para aprender a curar e algo no chão para aprender a pegar
     const d = Save.voc(this.vocId); if ((d.potions.health || 0) < 2) { d.potions.health = 2; Save.save(); this.refreshPotionIcons && this.refreshPotionIcons(); }
     const h = this.hero, spots = this.freeNeighbors(h.x, h.y);
