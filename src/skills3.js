@@ -65,7 +65,7 @@ Object.assign(SPELL_FX, {
     const L = { x: a.x, y: a.y, r: 2.7 * T, warm: true, ph: 1 }; this.lights.push(L);
     const fly = Math.max(70, Math.hypot(end.x - h.px, end.y - 30 - (h.py - 40)) / 1600 * 1000);   // velocidade constante (perto = chega rápido)
     this.tweens.add({ targets: [a, halo, L], x: end.x, y: end.y - 30, duration: fly, onComplete: () => {
-      if (nm) { const b = this.add.sprite(end.x, end.y - 30, "fx_missile", "4").setScale(a.scaleX * 1.1).setBlendMode(Phaser.BlendModes.ADD).setDepth(100001); this.ents.add(b); b.play({ key: "fx_missile", startFrame: 4, frameRate: 10 }); b.once("animationcomplete", () => b.destroy()); }
+      if (nm) { const b = this.add.sprite(end.x, end.y - 30, "fx_missile", "4").setScale(a.scaleX * 1.1).setRotation(ang).setFlipY(dx < 0).setBlendMode(Phaser.BlendModes.ADD).setDepth(100001); this.ents.add(b); b.play({ key: "fx_missile", startFrame: 4, frameRate: 10 }); b.once("animationcomplete", () => b.destroy()); }
       a.destroy(); this.tweens.add({ targets: halo, scale: 1.3, alpha: 0, duration: 380, onComplete: () => halo.destroy() });
       this.time.delayedCall(350, () => { this.lights = this.lights.filter(o => o !== L); }); } });
     this.cameras.main.flash(120, 153, 144, 114, true);
