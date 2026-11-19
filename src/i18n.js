@@ -1028,7 +1028,7 @@ I18N.pt = {
   reset_no: "Cancelar",
   harp_first: "Escuto o som de uma harpa...\nA Deusa está comigo.",
   dodge_chance: "Chance de esquiva",
-  eq_dodge: "+{v} Dodge fighting",
+  eq_dodge: "+{v} Dodge",
   talents_title: "Árvore de Talentos",
   talents_close: "U / ESC fecha",
   talents_points: "{n} ponto(s) para gastar — clique num talento",
@@ -1042,7 +1042,7 @@ I18N.pt = {
   farsight_float: "Visão Além do Alcance!",
   crit_float: "CRÍTICO",
   talents_full: "Este talento já está no máximo.",
-  skill_dodge: "Dodge fighting",
+  skill_dodge: "Dodge",
   skill_dodge_desc: "chance de esquivar (Arqueiro)",
   note_title: "Caderno do Aventureiro",
   note_empty: "Nenhuma criatura anotada ainda.\nDerrote monstros para preencher o caderno.\nO Bestiário completo fica na Biblioteca de Karhyn.",
@@ -1054,7 +1054,14 @@ I18N.pt = {
   bind_notebook: "Caderno do aventureiro",
   pot_charging: "{name} ainda enchendo ({p}%) — derrote monstros",
   arrow_hud2: "Flechas: {n}/{cap}",
-  arrow_hud_inf: "Flechas: infinitas",
+  arrow_hud_inf: "Flechas: ∞",
+  wp_press: "Pedra de passagem ativa. Aperte {k} nela para viajar.",
+  note_intro: "Seu primeiro abate! Este é o Caderno do aventureiro (tecla N): aqui ficam as criaturas que você caça e suas missões ativas. O Bestiário completo está na Biblioteca de Karhyn.",
+  note_missions: "Missões ativas",
+  note_contract: "Contrato de caça: {name} {got}/{n}",
+  note_no_missions: "Nenhuma — pegue um contrato no mural de Karhyn.",
+  best_reward: "Bestiário completo! Recompensa: {gear} ({rarity}) foi para a mochila.",
+  note_foot2: "N fecha · detalhes completos na Biblioteca",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1840,7 +1847,6 @@ I18N.en = {
   spell_frenzy_desc: "For 4 s: +45% attack speed, +25% critical chance, +25% critical damage and 15% life and mana leech.",
   flee_float: "Wind Aura!",
   frenzy_float: "Berserker!",
-  arrow_hud: "Arrows: {n}",
   arrow_fire: "Fire Arrow",
   arrow_ice: "Ice Arrow",
   arrow_earth: "Earth Arrow",
@@ -2029,7 +2035,7 @@ I18N.en = {
   reset_no: "Cancel",
   harp_first: "I hear the sound of a harp...\nThe Goddess is with me.",
   dodge_chance: "Dodge chance",
-  eq_dodge: "+{v} Dodge fighting",
+  eq_dodge: "+{v} Dodge",
   talents_title: "Talent Tree",
   talents_close: "U / ESC closes",
   talents_points: "{n} point(s) to spend — click a talent",
@@ -2043,7 +2049,7 @@ I18N.en = {
   farsight_float: "Sight Beyond Sight!",
   crit_float: "CRIT",
   talents_full: "This talent is already maxed.",
-  skill_dodge: "Dodge fighting",
+  skill_dodge: "Dodge",
   skill_dodge_desc: "dodge chance (Archer)",
   note_title: "Adventurer's Notebook",
   note_empty: "No creatures noted yet.\nDefeat monsters to fill the notebook.\nThe full Bestiary is in the Karhyn Library.",
@@ -2055,7 +2061,14 @@ I18N.en = {
   bind_notebook: "Adventurer's notebook",
   pot_charging: "{name} still filling ({p}%) — defeat monsters",
   arrow_hud2: "Arrows: {n}/{cap}",
-  arrow_hud_inf: "Arrows: infinite",
+  arrow_hud_inf: "Arrows: ∞",
+  wp_press: "Waystone active. Press {k} on it to travel.",
+  note_intro: "Your first kill! This is the Adventurer's notebook (N key): the creatures you hunt and your active missions. The full Bestiary is in the Karhyn Library.",
+  note_missions: "Active missions",
+  note_contract: "Hunting contract: {name} {got}/{n}",
+  note_no_missions: "None — take a contract at the Karhyn board.",
+  best_reward: "Bestiary complete! Reward: {gear} ({rarity}) added to your bag.",
+  note_foot2: "N closes · full details at the Library",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -3005,6 +3018,7 @@ I18N.es = {
   pm_map: "Mapa",
   pm_potions: "Pociones",
   pm_arrows: "Cambiar flecha",
+  note_foot2: undefined,
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3954,6 +3968,7 @@ I18N.de = {
   pm_map: "Karte",
   pm_potions: "Tränke",
   pm_arrows: "Pfeil wechseln",
+  note_foot2: undefined,
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4902,6 +4917,7 @@ I18N.pl = {
   pm_map: "Mapa",
   pm_potions: "Mikstury",
   pm_arrows: "Zmień strzałę",
+  note_foot2: undefined,
 };
 
 // ── API pública ─────────────────────────────────────────────────

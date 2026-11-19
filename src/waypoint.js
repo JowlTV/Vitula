@@ -50,7 +50,7 @@ Object.assign(DungeonScene.prototype, {
       this.msg(t("wp_on", { region: this.region.name, n: f })); sfx(this, "levelup", 0.3);
       this.cameras.main.flash(200, 140, 190, 255);
     }
-    this.wpMenu();
+    this.msg(t("wp_press", { k: keyOf("interact") }));   // o menu abre só com E
   },
   wpMenu() {
     if (this.wpBox || this.finished) return;
@@ -76,6 +76,12 @@ Object.assign(DungeonScene.prototype, {
 {
   const bf = DungeonScene.prototype.buildFloor;
   DungeonScene.prototype.buildFloor = function (...a) { const r = bf.apply(this, a); this.wpBox = null; this.placeWaypoint(); return r; };
+  const ur = DungeonScene.prototype.useRope;
+  DungeonScene.prototype.useRope = function (...a) {
+    const h = this.hero, w = this.wp;
+    if (w && !this.finished && !this.wpBox && Math.max(Math.abs(h.x - w.x), Math.abs(h.y - w.y)) <= 1) { if (!wpHas(this.vocId, this.regionId, this.floorN)) this.wpStep(); this.wpMenu(); return; }
+    return ur.apply(this, a);
+  };
   const ha = DungeonScene.prototype.heroArrived;
   DungeonScene.prototype.heroArrived = function () {
     const r = ha.call(this), h = this.hero;
@@ -91,7 +97,7 @@ const WP_TOWN = [38, 10];
 TownScene.prototype.townWaypoint = function () {
   const [x, y] = WP_TOWN, cx = x * T + T / 2, cy = y * T + T / 2;
   wpSprite(this, cx, cy).forEach(o => { o.setDepth(cy - T / 2); this.world.add(o); });
-  this.zones.push({ name: t("wp_title"), kind: "waypoint", x, y, w: 1, h: 1, step: true });
+  this.zones.push({ name: t("wp_title"), kind: "waypoint", x, y, w: 1, h: 1 });   // abre só com E
 };
 TownScene.prototype.townWpMenu = function () {
   const dests = wpDestinations(this.vocId, { r: "town" });

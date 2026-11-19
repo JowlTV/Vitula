@@ -195,7 +195,8 @@ Object.assign(DungeonScene.prototype, {
   // e redimensionável pelo canto de baixo à direita. Posição e tamanho ficam salvos.
   buildBattleList(ui) {
     let st = {}; try { st = JSON.parse(localStorage.getItem("vitula_bl2") || "{}"); } catch (e) {}
-    this.bl = Object.assign({ x: VIEW_W - 140, y: this.hudBelowMini || 180, w: 128, rows: 6, min: false, open: true }, st);
+    this.bl = Object.assign({ x: VIEW_W - 140, y: (this.hudBelowMini || 180) + (this.ranged ? 18 : 0), w: 128, rows: 6, min: false, open: true }, st);
+    if (this.ranged && this.bl.x > VIEW_W - 200 && this.bl.y < (this.hudBelowMini || 134) + 18) this.bl.y = (this.hudBelowMini || 134) + 18;   // espaço para o contador de flechas
     const win = this.add.container(0, 0); ui.add(win); this.blWin = win;
     this.blBg = this.add.rectangle(0, 0, 10, 10, 0x0c0a08, 0.8).setOrigin(0).setStrokeStyle(1, 0x5a4a30).setInteractive();
     this.blBar = this.add.rectangle(0, 0, 10, 14, 0x2a2018, 1).setOrigin(0).setInteractive({ useHandCursor: true });
@@ -317,7 +318,7 @@ Object.assign(DungeonScene.prototype, {
     // Arqueiro: flechas na aljava (clique ou X troca o tipo)
     if (this.ranged) {
       if (!this.arrowHud || !this.arrowHud.scene) {
-        this.arrowHud = txt(this, VIEW_W - 12, (this.hudBelowMini || 134) + 4, "", 11, "#e8dcc0").setOrigin(1, 0).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.cycleArrow());
+        this.arrowHud = txt(this, VIEW_W - 12, (this.hudBelowMini || 134) - 2, "", 11, "#e8dcc0").setOrigin(1, 0).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.cycleArrow());
         this.ui.add(this.arrowHud);
       }
       const d = Save.voc(this.vocId), k = this.arrowType();

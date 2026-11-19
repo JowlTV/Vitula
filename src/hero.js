@@ -154,7 +154,7 @@ Object.assign(DungeonScene.prototype, {
   mlEff() { return Save.voc(this.vocId).ml.lvl + this.attr("ml") + (this.stats.gearMl || 0) + (this.buffOn("mage") ? 10 : 0); },
   // defesa: armadura + metade do Shield acima do inicial (itens de defesa vão somar aqui)
   defenseValue() { return this.stats.armor + (this.stats.gearDef || 0) + 0.25 * (this.shieldLvl() - SKILLS.shield.start); },
-  // Arqueiro: esquiva (Dodge fighting + bônus das aljavas) no lugar do bloqueio com escudo
+  // Arqueiro: esquiva (Dodge + bônus das aljavas) no lugar do bloqueio com escudo
   dodgeLvl() { return Save.skill(this.vocId, "dodge").lvl + (this.stats.gearDodge || 0); },
   blockChance() { if (this.ranged) return Math.min(0.35, 0.05 + 0.006 * (this.dodgeLvl() - SKILLS.dodge.start)); return Math.min(0.6, Math.min(0.35, 0.05 + 0.006 * (this.shieldLvl() - SKILLS.shield.start)) + 0.005 * this.attr("block") + (this.stats.gearBlock || 0)); },
   attacksPerSec() { return (this.stats.atkSpeed || 1) / this.stats.cooldown; },
@@ -184,9 +184,9 @@ Object.assign(DungeonScene.prototype, {
     if (potCharge(d, slot) < 1) { this.msg(t("pot_charging", { name: P.name, p: Math.floor(100 * potCharge(d, slot)) })); return; }
     d.charges[slot] = 0; h.potCd[id] = POT_CD; Save.save();
     h.buffs = h.buffs || {};
-    if (id === "health") this.heal(h.maxHp * 0.4);
-    else if (id === "mana") { h.fury = Math.min(this.furyMax, h.fury + this.furyMax * 0.6); this.floatText(h.px, h.py - 70, t("mana_full"), "#7ab0ff"); }
-    else if (id === "fury") { h.fury = this.furyMax; this.floatText(h.px, h.py - 70, VOCATIONS[this.vocId].mana ? t("mana_full") : t("fury_full"), VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#e08a4a"); }
+    if (id === "health") { this.heal(h.maxHp * 0.4, false); this.potGlow(0xff3030); }
+    else if (id === "mana") { h.fury = Math.min(this.furyMax, h.fury + this.furyMax * 0.6); this.potGlow(0x3a7aff); }
+    else if (id === "fury") { h.fury = this.furyMax; this.potGlow(0xff8a30); }
     else if (P.dur) { h.buffs[id] = P.dur; this.msg(`${P.name}: ${P.desc}`); }
     sfx(this, "gem", 0.4);
   },
@@ -367,8 +367,8 @@ Object.assign(DungeonScene.prototype, {
     if (d.equip[E.slot]) d.gear.push(d.equip[E.slot]);
     d.equip[E.slot] = g;
     // duas mãos não combinam com escudo
-    if (E.twoH && d.equip.shield) { d.gear.push(d.equip.shield); delete d.equip.shield; this.msg(t("two_hand_shield")); }
-    if (E.slot === "shield" && d.equip.weapon && EQUIP[d.equip.weapon.id].twoH) { d.gear.push(d.equip.weapon); delete d.equip.weapon; this.msg(t("shield_two_hand")); }
+    if (E.twoH && !E.bow && d.equip.shield && !EQUIP[d.equip.shield.id].quiver) { d.gear.push(d.equip.shield); delete d.equip.shield; this.msg(t("two_hand_shield")); }
+    if (E.slot === "shield" && !E.quiver && d.equip.weapon && EQUIP[d.equip.weapon.id].twoH && !EQUIP[d.equip.weapon.id].bow) { d.gear.push(d.equip.weapon); delete d.equip.weapon; this.msg(t("shield_two_hand")); }
     Save.save(); this.restat(); sfx(this, "pickup", 0.3); return true;
   },
   unequipSlot(slot) {
@@ -471,6 +471,12 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
+  // poção: só um brilho colorido no herói (vermelho = vida, azul = mana, laranja = fúria)
+  potGlow(col) {
+    const h = this.hero, g = this.add.image(h.px, h.py - 20, "light").setTint(col).setBlendMode(Phaser.BlendModes.ADD).setScale(0.3).setAlpha(0.9).setDepth(h.py + 5);
+    this.ents.add(g); this.tweens.add({ targets: g, scale: 1.1, alpha: 0, duration: 600, onComplete: () => g.destroy() });
+    if (h.spr) { h.spr.setTint(col); this.time.delayedCall(220, () => h.spr && h.spr.clearTint()); }
+  },
   heal(amount, show = true) {
     const h = this.hero;
     if (h.dead || amount <= 0) return;

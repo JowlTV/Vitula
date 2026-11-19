@@ -10,7 +10,7 @@
 // Efeitos (somados por ponto):
 //  dmg: +% dano · crit: +chance crítica · critDmg: +dano crítico · hp: +% vida · armor: +defesa · block: +bloqueio
 //  regen: +vida/s · fury: +Fúria/Mana máx. · aspd: +% vel. ataque · leech: % do dano vira vida · hpDmg: % da vida máx. somada ao dano
-//  speed: +% vel. de movimento · dodge: +Dodge fighting · mreg: +mana/s
+//  speed: +% vel. de movimento · dodge: +Dodge · mreg: +mana/s
 const TALENTS = {
   knight: {
     branches: ["Lâmina", "Bastião", "Fúria"],
@@ -60,11 +60,11 @@ const TALENTS = {
       { id: "a_berserk", b: 1, row: 3, name: "Fúria do Caçador", max: 3, fx: { dmg: 0.03 }, req: ["a_volley", 3], unlock: "frenzy", desc: "+3% de dano. No 3/3 libera o Berserker (nível 16)." },
       { id: "a_barrier", b: 1, row: 4, name: "Barreira de Luz", max: 3, fx: { taken: 0.02 }, req: ["a_berserk", 3], unlock: "barrier", desc: "−2% de dano recebido. No 3/3 libera a Barreira de Luz (nível 24)." },
       { id: "a_vit", b: 2, row: 0, name: "Resiliência", max: 5, fx: { hp: 0.05 }, desc: "+5% de vida máxima." },
-      { id: "a_reflex", b: 2, row: 1, name: "Reflexos", max: 5, fx: { dodge: 1 }, req: ["a_vit", 1], desc: "+1 de Dodge fighting." },
+      { id: "a_reflex", b: 2, row: 1, name: "Reflexos", max: 5, fx: { dodge: 1 }, req: ["a_vit", 1], desc: "+1 de Dodge." },
       { id: "a_wind", b: 2, row: 1, col: 1, name: "Pés de Vento", max: 3, fx: { speed: 0.03 }, req: ["a_vit", 1], unlock: "flee", desc: "+3% de velocidade. No 3/3 libera a Aura do Vento (nível 12)." },
       { id: "a_leech", b: 2, row: 2, name: "Sangue Frio", max: 3, fx: { leech: 0.01 }, req: ["a_reflex", 3], desc: "1% do dano causado vira vida." },
       { id: "a_light", b: 2, row: 2, col: 1, name: "Pele de Luz", max: 5, fx: { taken: 0.02 }, req: ["a_wind", 1], desc: "−2% de dano recebido." },
-      { id: "a_evasion", b: 2, row: 3, name: "Evasão", max: 5, fx: { dodge: 1 }, req: ["a_leech", 1], desc: "+1 de Dodge fighting." },
+      { id: "a_evasion", b: 2, row: 3, name: "Evasão", max: 5, fx: { dodge: 1 }, req: ["a_leech", 1], desc: "+1 de Dodge." },
       { id: "a_breath", b: 2, row: 3, col: 1, name: "Segundo Fôlego", max: 3, fx: { regen: 0.5, lowHp: 0.04 }, req: ["a_light", 2], desc: "+0,5 de vida/s e +4% de dano com menos de 50% de vida." },
     ],
   },

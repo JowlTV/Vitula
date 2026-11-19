@@ -57,10 +57,17 @@ function bestHabitat(id) {
       if (after > before) {
         const name = MONSTERS[m.kind].name;
         this.msg(t("best_unlock", { name, tier: t("best_tier_" + after) }) + (after === 4 ? " " + t("best_bonus_on") : ""));
+        // Bestiário completo: chance de ganhar um item; raridade conforme a dificuldade da espécie
+        if (after === 4 && Math.random() < 0.6) {
+          const M = MONSTERS[m.kind], r = M.elite ? 3 : (M.xp >= 60 || m.kind === "poison_spider") ? 2 : 1, d = Save.voc(this.vocId), lv = this.hero.level;
+          const pool = Object.keys(EQUIP).filter(id => equipOk(id, this.vocId) && (EQUIP[id].lvl || 1) <= lv + 3 && !EQUIP[id].light);
+          const id = pool[Math.floor(Math.random() * pool.length)];
+          if (id) { const g = gearNew(id, r); d.gear.push(g); Save.save(); this.msg(t("best_reward", { gear: gearName(g), rarity: RARITY[r].name })); if (this.lootLog) this.lootLog("i_spell_book", gearName(g), "#ffa030", { hex: 0x8a6a30 }); }
+        }
         if (this.lootLog) this.lootLog("i_spell_book", t("best_unlock_short", { name, tier: t("best_tier_" + after) }), after === 4 ? "#ffa030" : COLORS.gold, { hex: 0x8a6a30 });
         sfx(this, "levelup", 0.25);
       }
-      if (!Save.data.bestTip) { Save.data.bestTip = true; Save.save(); this.bestTipShow(MONSTERS[m.kind].name); }
+      if (!Save.data.bestTip) { Save.data.bestTip = true; Save.save(); openNotebook(this, m.kind, true); }
     }
     return r;
   };

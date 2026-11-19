@@ -100,7 +100,7 @@ Object.assign(TownScene.prototype, {
     this.tweens.add({ targets: this.townMsg, alpha: 0, delay: 2600, duration: 700 });
   },
   floatText(x, y, s, color) {
-    const o = txt(this, x, y, s, 14, color).setOrigin(0.5).setDepth(200000); this.world.add(o);
+    const o = txt(this, x, y, s, 10, color).setOrigin(0.5).setDepth(200000); this.world.add(o);
     this.tweens.add({ targets: o, y: y - 22, alpha: 0, duration: 900, onComplete: () => o.destroy() });
   },
   townToggleBag() {

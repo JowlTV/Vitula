@@ -46,7 +46,7 @@ Object.assign(DungeonScene.prototype, {
 
 
   floatText(x, y, s, color) {
-    const t = txt(this, x, y, s, 14, color).setOrigin(0.5).setDepth(200000);
+    const t = txt(this, x, y, s, 10, color).setOrigin(0.5).setDepth(200000);
     this.ents.add(t);
     this.tweens.add({ targets: t, y: y - 22, duration: 700 });
     this.tweens.add({ targets: t, alpha: 0, delay: 300, duration: 400, onComplete: () => t.destroy() });

@@ -118,7 +118,7 @@ const SKILLS = {
   sword:  { name: "Sword", start: 10, base: 30, growth: 1.12, desc: "base do dano corpo a corpo" },
   shield: { name: "Shield", start: 10, base: 24, growth: 1.12, desc: "defesa e chance de bloqueio" },
   distance: { name: "Distance", start: 10, base: 30, growth: 1.12, desc: "base do dano a distância" },
-  dodge:  { name: "Dodge fighting", start: 10, base: 24, growth: 1.12, desc: "chance de esquivar (Arqueiro, que não usa escudo)" },
+  dodge:  { name: "Dodge", start: 10, base: 24, growth: 1.12, desc: "chance de esquivar (Arqueiro, que não usa escudo)" },
 };
 // Pontos de atributo: 1 por nível ganho, para gastar onde quiser (janela de Atributos, tecla U).
 // "weapon" vira Sword no Cavaleiro e Distance no Arqueiro.

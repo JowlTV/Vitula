@@ -346,7 +346,7 @@ class TownScene extends Phaser.Scene {
       this.openLocker();
     } else if (z.kind === "smith") {
       this.say(t("smith_title"), t("smith_greet"),
-        [[t("upgrade_gear"), () => this.openForge()], ...(this.vocId === "archer" ? [[t("buy_arrows"), () => this.arrowShop(z)]] : []), [t("buy_oil", { price: OIL_PRICE }), () => this.buyOil(z)], lore(t("smith_title"), "smith", () => this.use(z)), [t("bye2"), () => this.closeDialog()]]);
+        [[t("upgrade_gear"), () => this.openForge()], ...(this.vocId === "archer" ? [[t("buy_arrows"), () => this.arrowShop(z)]] : []), lore(t("smith_title"), "smith", () => this.use(z)), [t("bye2"), () => this.closeDialog()]]);
     } else if (z.kind === "tower") {
       this.say(t("tower_title"), t("tower_desc"), [[t("tower_go"), () => this.towerView()], [t("tower_stay"), () => this.closeDialog()]]);
     } else if (z.kind === "inn") {

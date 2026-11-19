@@ -166,8 +166,8 @@ function forgeNext(g) {
 // ---------------------------------------------------------------- luminárias (slot "Luminária")
 // Lampião: todo personagem começa com ele; queima óleo (vendido pelo ferreiro) e dá uma luz amarelada pequena.
 // Pingente da Deusa: prata com uma harpa; cai raríssimo do primeiro chefe; luz prateada que não se apaga.
-EQUIP.lantern = { slot: "light", name: "Lampião", lvl: 1, price: 0, rank: 0, light: { r: 2.4, tint: 0xffc35a, fuel: true },
-  art: { f: "lantern" }, desc: "Luz amarelada em volta de você. Queima óleo de lampião." };
+EQUIP.lantern = { slot: "light", name: "Lampião", lvl: 1, price: 0, rank: 0, light: { r: 2.4, tint: 0xffc35a, fuel: false },
+  art: { f: "lantern" }, desc: "Luz amarelada em volta de você. Nunca se apaga." };
 EQUIP.goddess_pendant = { slot: "light", name: "Pingente da Deusa", lvl: 1, price: 0, rank: 0, light: { r: 3.4, tint: 0xd8e2ff }, res: { holy: 0.05 }, hpReg: 0.3,
   art: { f: "pendant" }, desc: "Prata com uma pequena harpa. Brilha sozinho, sem óleo." };
 const OIL_FLASK = 300, OIL_PRICE = 15, OIL_START = 2;   // cada frasco dura 5 minutos dentro das masmorras
@@ -247,7 +247,7 @@ function equipStats(g) {
   if (E.ml) p.push(`magic level +${E.ml}`);
   if (E.hpReg) p.push(t("eq_hpreg", { v: n(E.hpReg) }));
   if (E.manaReg) p.push(t("eq_manareg", { v: n(E.manaReg) }));
-  if (E.light) p.push(E.light.fuel ? t("eq_light_oil") : t("eq_light_free"));
+  if (E.light && E !== EQUIP.lantern) p.push(E.light.fuel ? t("eq_light_oil") : t("eq_light_free"));
   if (E.speed) p.push(t("eq_speed", { v: pct(E.speed) }));
   for (const k in E.res || {}) p.push(`${ELEMENTS[k].name} ${E.res[k] > 0 ? "+" : ""}${pct(E.res[k])}`);
   return p.join(" · ");
