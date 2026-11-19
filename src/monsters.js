@@ -33,7 +33,21 @@ Object.assign(DungeonScene.prototype, {
       if (!this.gen.isWalk(x, y) || this.occ.has(key(x, y))) continue; const d = Math.hypot(x - h.x, y - h.y); if (d > bd) { bd = d; best = { x, y }; } }
     if (best) this.spawnMonster("giant_spider", best.x, best.y);
   },
+  // casa boa para nascer: piso com pelo menos 5 vizinhos de piso (nada de buraco entre as pedras da caverna)
+  roomyCell(x, y) {
+    if (!this.gen.isWalk(x, y)) return false;
+    let n = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && this.gen.isWalk(x + dx, y + dy)) n++;
+    return n >= 5;
+  },
   spawnMonster(kind, x, y) {
+    if (!this.roomyCell(x, y)) {   // procura a casa espaçosa mais próxima
+      let found = null;
+      for (let r = 1; r <= 6 && !found; r++) for (let dy = -r; dy <= r && !found; dy++) for (let dx = -r; dx <= r; dx++) {
+        const nx = x + dx, ny = y + dy; if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        if (this.roomyCell(nx, ny) && !this.occ.has(key(nx, ny)) && !(this.hero && this.hero.x === nx && this.hero.y === ny)) { found = { x: nx, y: ny }; break; }
+      }
+      if (found) { x = found.x; y = found.y; }
+    }
     // arte ainda não instalada (ex.: aranhas antes do download): troca por um monstro que já tem arte
     if (MON_ANIM[kind] && !this.textures.exists(MON_ANIM[kind][1]) && !this.textures.exists(MONSTERS[kind].tex)) kind = this.floorN > 2 ? "cave_rat" : "rat";
     const data = MONSTERS[kind], mult = 1 + 0.17 * (this.floorN - 1);   // balanceamento com a árvore de talentos (talents.js)

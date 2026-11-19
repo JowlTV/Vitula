@@ -31,8 +31,9 @@ Object.assign(DungeonScene.prototype, {
     this.wp = null;
     if (this.region.tutorial || !WP_REGIONS.includes(this.regionId)) return;
     const h = this.hero, cells = [];
-    for (let r = 1; r <= 2 && !cells.length; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
-      const x = h.x + dx, y = h.y + dy, k = key(x, y);
+    const nearRope = (x, y) => this.rope && Math.abs(x - this.rope.x) <= 1 && y >= this.rope.y - 2 && y <= this.rope.y + 1;   // não tampa a corda
+    for (let r = 1; r <= 3 && !cells.length; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+      const x = h.x + dx, y = h.y + dy, k = key(x, y); if (nearRope(x, y)) continue;
       if ((dx || dy) && this.walkable(x, y) && !this.occ.has(k) && !this.pickups.has(k) && !this.plates.has(k) && !(this.stairs && this.stairs.x === x && this.stairs.y === y)) cells.push({ x, y });
     }
     // prefere casas sem parede encostada (o piso não "corta" o muro)
