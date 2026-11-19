@@ -1038,6 +1038,12 @@ I18N.pt = {
   talent_unlock: "Habilidade liberada: {name} (tecla {key}, a partir do nível {n})",
   spell_needs_talent: "{name} ainda não foi liberada na Árvore de Talentos (U).",
   level_up_talent: "Nível {n}! +1 ponto de talento (U).",
+  kberserk_float: "Modo Berserker!",
+  farsight_float: "Visão Além do Alcance!",
+  crit_float: "CRÍTICO",
+  talents_full: "Este talento já está no máximo.",
+  skill_dodge: "Dodge fighting",
+  skill_dodge_desc: "chance de esquivar (Arqueiro)",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -2022,6 +2028,12 @@ I18N.en = {
   talent_unlock: "Skill unlocked: {name} (key {key}, from level {n})",
   spell_needs_talent: "{name} is not unlocked yet in the Talent Tree (U).",
   level_up_talent: "Level {n}! +1 talent point (U).",
+  kberserk_float: "Berserker Mode!",
+  farsight_float: "Sight Beyond Sight!",
+  crit_float: "CRIT",
+  talents_full: "This talent is already maxed.",
+  skill_dodge: "Dodge fighting",
+  skill_dodge_desc: "dodge chance (Archer)",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────

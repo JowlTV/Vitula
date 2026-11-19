@@ -13,7 +13,7 @@ Object.assign(DungeonScene.prototype, {
     this.trainMagic(sp.fury);
     h.cds[spell] = sp.cd * this.stats.cooldown;
     // cada magia tem a sua função em SPELL_FX (fácil de somar as das outras vocações)
-    if (["heal", "aura", "frenzy", "flee", "guard", "quake"].includes(spell)) { h.pose = this.ap + "cast"; h.poseT = 0.45; }
+    if (["heal", "aura", "frenzy", "flee", "guard", "quake", "kberserk", "farsight", "barrier"].includes(spell)) { h.pose = this.ap + "cast"; h.poseT = 0.45; }
     const fx = SPELL_FX[spell];
     if (fx) fx.call(this, h, sp);
   },

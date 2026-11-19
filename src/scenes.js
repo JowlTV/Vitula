@@ -141,9 +141,12 @@ class BootScene extends Phaser.Scene {
 function button(scene, x, y, w, label, fn, size = 16) {
   const b = scene.add.nineslice(x, y, "button_normal", null, w, 40, 18, 18, 6, 6).setInteractive({ useHandCursor: true });
   const t = txt(scene, x, y, label, size, COLORS.text).setOrigin(0.5);
-  b.on("pointerover", () => b.setTexture("button_hover"));
-  b.on("pointerout", () => b.setTexture("button_normal"));
-  b.on("pointerup", fn);
+  // retorno visual: brilho ao passar o mouse, afunda ao apertar, pisca dourado ao soltar
+  const sc = (k, d = 80) => scene.tweens.add({ targets: [b, t], scaleX: k, scaleY: k, duration: d, ease: "Quad.out" });
+  b.on("pointerover", () => { b.setTexture("button_hover"); t.setColor("#ffe2a0"); sc(1.04); });
+  b.on("pointerout", () => { b.setTexture("button_normal"); t.setColor(COLORS.text); b.clearTint(); sc(1); });
+  b.on("pointerdown", () => { b.setTint(0xc8a050); sc(0.94, 50); });
+  b.on("pointerup", () => { b.clearTint(); sc(1.04, 60); if (scene.sound) sfx(scene, "pickup", 0.15); fn(); });
   return [b, t];
 }
 

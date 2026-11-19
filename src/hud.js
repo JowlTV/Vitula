@@ -140,7 +140,7 @@ Object.assign(DungeonScene.prototype, {
     // barra de magias
     const pslots = Save.voc(this.vocId).potionSlots;
     const list = [["basic", "icon_basic", ""], ...Object.entries(this.spells).map(([k, s]) => [k, s.icon, s.key]),
-      ["p0", POTIONS[pslots[0]].icon, "5"], ["p1", POTIONS[pslots[1]].icon, "6"]];
+      ["p0", POTIONS[pslots[0]].icon, Settings.keyLabel((Settings.data.keys.potion1 || ["Z"])[0])], ["p1", POTIONS[pslots[1]].icon, Settings.keyLabel((Settings.data.keys.potion2 || ["C"])[0])]];
     this.potCount = {};
     this.slotIcons = {}; this.slotLocks = {};
     const size = 38, gap = 6, x0 = VIEW_W / 2 - (list.length * (size + gap) - gap + 14) / 2;
@@ -317,7 +317,7 @@ Object.assign(DungeonScene.prototype, {
     // Arqueiro: flechas na aljava (clique ou X troca o tipo)
     if (this.ranged) {
       if (!this.arrowHud || !this.arrowHud.scene) {
-        this.arrowHud = txt(this, VIEW_W / 2 + 178, VIEW_H - 46, "", 11, "#e8dcc0").setInteractive({ useHandCursor: true }).on("pointerdown", () => this.cycleArrow());
+        this.arrowHud = txt(this, VIEW_W / 2, VIEW_H - 92, "", 11, "#e8dcc0").setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.cycleArrow());
         this.ui.add(this.arrowHud);
       }
       const d = Save.voc(this.vocId), k = this.arrowType();

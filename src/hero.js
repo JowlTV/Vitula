@@ -114,6 +114,7 @@ Object.assign(DungeonScene.prototype, {
           const crit = Math.random() < this.critChance();
           this.damageMonster(t, this.baseDamage() * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? this.critMult() : 1));
           this.weaponElement(t);
+          if ((h.kberT || 0) > 0) this.berserkCleave(t);   // Modo Berserker
           if (crit) { this.splat(t.px, t.py - 4, 5); }
           this.addFury(9);
           this.trainSkill("sword");

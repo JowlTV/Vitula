@@ -58,7 +58,7 @@ class DungeonScene extends Phaser.Scene {
     for (const [id] of ACTIONS) this.keysIn[id] = Settings.data.keys[id].filter(n => K[n] !== undefined).map(n => kb.addKey(K[n]));
     // cada tecla lança a magia que tem aquele atalho (G = Exura; 1–4 = habilidades)
     const byKey = k => Object.keys(this.spells).find(s => this.spells[s].key === k);
-    [["heal", "G"], ["skill1", "1"], ["skill2", "2"], ["skill3", "3"], ["skill4", "4"]].forEach(([id, k]) => (this.keysIn[id] || []).forEach(o => o.on("down", () => { const s = byKey(k); if (s) this.cast(s); })));
+    [["heal", "G"], ["skill1", "1"], ["skill2", "2"], ["skill3", "3"], ["skill4", "4"], ["skill5", "5"], ["skill6", "6"], ["skill7", "7"]].forEach(([id, k]) => (this.keysIn[id] || []).forEach(o => o.on("down", () => { const s = byKey(k); if (s) this.cast(s); })));
     this.input.keyboard.on("keydown-U", () => this.toggleAttrs());
     this.keysIn.pause.forEach(k => k.on("down", () => this.attrBox ? this.toggleAttrs() : this.bagOpen ? this.toggleBag() : this.togglePause()));
     (this.keysIn.potion1 || []).forEach(k => k.on("down", () => this.usePotion(0)));

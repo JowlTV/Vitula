@@ -53,17 +53,20 @@ const ACTIONS = [
   ["skill2", "Habilidade 2", ["TWO", "NUMPAD_TWO"]],
   ["skill3", "Habilidade 3", ["THREE", "NUMPAD_THREE"]],
   ["skill4", "Habilidade 4", ["FOUR", "NUMPAD_FOUR"]],
+  ["skill5", "Habilidade 5", ["FIVE", "NUMPAD_FIVE"]],
+  ["skill6", "Habilidade 6", ["SIX", "NUMPAD_SIX"]],
+  ["skill7", "Habilidade 7", ["SEVEN", "NUMPAD_SEVEN"]],
   ["map", "Abrir o mapa", ["TAB", "M"]],
   ["zoomIn", "Aproximar a câmera", ["PLUS", "NUMPAD_ADD"]],
   ["zoomOut", "Afastar a câmera", ["MINUS", "NUMPAD_SUBTRACT"]],
-  ["potion1", "Poção do atalho 1", ["FIVE", "NUMPAD_FIVE"]],
-  ["potion2", "Poção do atalho 2", ["SIX", "NUMPAD_SIX"]],
+  ["potion1", "Poção do atalho 1", ["Z"]],
+  ["potion2", "Poção do atalho 2", ["C"]],
   ["bag", "Abrir a mochila", ["I", "B"]],
   ["attack", "Ataque básico", ["SPACE", "F"]],
   ["autoAttack", "Ataque automático (liga/desliga)", ["R", "NUMPAD_ZERO"]],
   ["interact", "Falar / usar / subir a corda", ["E", "ENTER"]],
   ["pause", "Pausa", ["ESC", "P"]],
-  ["arrows", "Trocar o tipo de flecha (Arqueiro)", ["X", "SEVEN"]],
+  ["arrows", "Trocar o tipo de flecha (Arqueiro)", ["X"]],
   ["recall", "Retornar à cidade", ["H"]],
 ];
 const Settings = {
@@ -77,12 +80,14 @@ const Settings = {
     if (!used && !(kk.attack || []).includes("SPACE")) kk.attack = ["SPACE", ...(kk.attack || []).filter(k => k !== "SPACE")].slice(0, 2);
   },
   save() { try { localStorage.setItem(this.key, JSON.stringify(this.data)); } catch (e) {} },
+  // (nov/26) teclas 5–7 viraram habilidades: poções foram para Z e X
+  migratePotions() { const k = this.data.keys || {}; if ((k.potion1 || []).includes("FIVE") || (k.potion2 || []).includes("SIX")) { k.potion1 = ["Z"]; k.potion2 = ["C"]; k.arrows = ["X"]; this.save(); } },
   reset() { this.data.keys = {}; this.data.music = 0.6; this.data.sfx = 0.8; this.data.speed = 0.75; this.load(); this.save(); },
   keyLabel(name) {
     const map = { UP: t("key_up"), DOWN: t("key_down"), LEFT: t("key_left"), RIGHT: t("key_right"), ONE: "1", TWO: "2", THREE: "3", FOUR: "4", ESC: "Esc", SPACE: t("key_space"),
       NUMPAD_ONE: "Num 1", NUMPAD_TWO: "Num 2", NUMPAD_THREE: "Num 3", NUMPAD_FOUR: "Num 4", SHIFT: "Shift", CTRL: "Ctrl", ENTER: "Enter",
-      NUMPAD_ADD: "Num +", NUMPAD_SUBTRACT: "Num −", NUMPAD_FIVE: "Num 5", NUMPAD_SIX: "Num 6", NUMPAD_ZERO: "Num 0", PLUS: "+", MINUS: "−", FIVE: "5", SIX: "6", TAB: "Tab", HOME: "Home", END: "End", PAGE_UP: "PgUp", PAGE_DOWN: "PgDn", NUMPAD_SEVEN: "Num 7", NUMPAD_NINE: "Num 9" };
+      NUMPAD_ADD: "Num +", NUMPAD_SUBTRACT: "Num −", NUMPAD_FIVE: "Num 5", NUMPAD_SIX: "Num 6", NUMPAD_ZERO: "Num 0", PLUS: "+", MINUS: "−", FIVE: "5", SEVEN: "7", SIX: "6", TAB: "Tab", HOME: "Home", END: "End", PAGE_UP: "PgUp", PAGE_DOWN: "PgDn", NUMPAD_SEVEN: "Num 7", NUMPAD_NINE: "Num 9" };
     return map[name] || (name.length <= 2 ? name : name.charAt(0) + name.slice(1).toLowerCase());
   },
 };
-Settings.load();
+Settings.load(); Settings.migratePotions();
