@@ -23,6 +23,16 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
+  // primeira caverna natural (esgoto, andar 3): a Aranha Gigante, sempre com fome
+  hungrySpider() {
+    if (this.regionId !== "karhyn_sewers" || this.floorN !== 3) return;
+    this.time.delayedCall(900, () => { if (!this.finished) this.msg(t("hungry_spider")); });
+    if (this.monsters.some(m => m.kind === "giant_spider")) return;
+    const h = this.hero; let best = null, bd = 0;
+    for (let i = 0; i < 400; i++) { const x = Phaser.Math.Between(1, this.gen.w - 2), y = Phaser.Math.Between(1, this.gen.h - 2);
+      if (!this.gen.isWalk(x, y) || this.occ.has(key(x, y))) continue; const d = Math.hypot(x - h.x, y - h.y); if (d > bd) { bd = d; best = { x, y }; } }
+    if (best) this.spawnMonster("giant_spider", best.x, best.y);
+  },
   spawnMonster(kind, x, y) {
     // arte ainda não instalada (ex.: aranhas antes do download): troca por um monstro que já tem arte
     if (MON_ANIM[kind] && !this.textures.exists(MON_ANIM[kind][1]) && !this.textures.exists(MONSTERS[kind].tex)) kind = this.floorN > 2 ? "cave_rat" : "rat";

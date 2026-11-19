@@ -169,7 +169,6 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: t("zone_depot_enter"), kind: "depot", x: 26, y: 7, w: 2, h: 1 });
     this.zones.push({ name: t("zone_locker"), kind: "locker", x: 28, y: 7, w: 2, h: 1 });
     this.zones.push({ name: t("zone_board"), kind: "board", x: 36, y: 8, w: 2, h: 1 });
-    this.zones.push({ name: t("zone_library"), kind: "library", x: 31, y: 7, w: 3, h: 1 });
     this.zones.push({ name: t("lodging_title"), kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
     this.zones.push({ name: t("zone_oracle"), kind: "hall", x: 37, y: 8, w: 4, h: 1, step: true });
     this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 43, y: 9, w: 1, h: 1 });

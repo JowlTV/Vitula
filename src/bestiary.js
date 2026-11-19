@@ -2,7 +2,7 @@
 // Etapas: 1 Avistado (nome, imagem, onde vive) · 2 Conhecido (vida, dano, armadura, comportamento)
 //         3 Dominado (fraquezas, resistências, lore) · ★ Completo (+5% de dano e −5% de dano recebido contra a espécie)
 // Consultado na Biblioteca de Karhyn.
-const BEST_ORDER = ["rat", "bat", "cave_rat", "slime", "spider", "poison_spider", "skeleton", "giant_rat",
+const BEST_ORDER = ["rat", "bat", "cave_rat", "slime", "spider", "poison_spider", "giant_spider", "skeleton", "giant_rat",
   "goblin", "goblin_scavenger", "goblin_assassin", "goblin_leader"];
 const BEST_BONUS = 0.05;
 
@@ -67,7 +67,7 @@ function bestHabitat(id) {
         if (this.lootLog) this.lootLog("i_spell_book", t("best_unlock_short", { name, tier: t("best_tier_" + after) }), after === 4 ? "#ffa030" : COLORS.gold, { hex: 0x8a6a30 });
         sfx(this, "levelup", 0.25);
       }
-      if (!Save.data.bestTip) { Save.data.bestTip = true; Save.save(); openNotebook(this, m.kind, true); }
+      if (!Save.data.bestTip) { Save.data.bestTip = true; Save.save(); openBestiary(this, m.kind); this.msg(t("best_tip_n")); }
     }
     return r;
   };
@@ -94,14 +94,14 @@ function openBestiary(scene, sel) {
   c.add(scene.add.nineslice(X, Y, "panel", null, W, H, 16, 16, 16, 16).setOrigin(0));
   const T_ = (x, y, s, size = 13, col = COLORS.text, o) => { const o2 = txt(scene, x, y, s, size, col, o); c.add(o2); return o2; };
   T_(VIEW_W / 2, Y + 22, t("best_title"), 24, COLORS.gold).setOrigin(0.5);
-  const seen = BEST_ORDER.filter(id => bestTier(id) > 0).length, done = BEST_ORDER.filter(id => bestComplete(id)).length;
+  const seen = BEST_ORDER.filter(id => bestTier(id, scene) > 0).length, done = BEST_ORDER.filter(id => bestComplete(id, scene)).length;
   T_(VIEW_W / 2, Y + 48, t("best_progress", { s: seen, d: done, n: BEST_ORDER.length }), 12, COLORS.dim).setOrigin(0.5);
   T_(X + W - 22, Y + 16, "ESC", 11, COLORS.dim).setOrigin(1, 0);
-  sel = sel || BEST_ORDER.find(id => bestTier(id) > 0) || BEST_ORDER[0];
+  sel = sel || BEST_ORDER.find(id => bestTier(id, scene) > 0) || BEST_ORDER[0];
   // ---- lista
-  const lx = X + 22, ly = Y + 70, rowH = 34;
+  const lx = X + 22, ly = Y + 70, rowH = 31;
   BEST_ORDER.forEach((id, i) => {
-    const tier = bestTier(id), on = id === sel, y = ly + i * rowH;
+    const tier = bestTier(id, scene), on = id === sel, y = ly + i * rowH;
     const r = scene.add.rectangle(lx, y, 260, rowH - 4, on ? 0x3a2e1c : 0x16120f, 1).setOrigin(0).setStrokeStyle(1, on ? 0xe0bc60 : 0x3a3024).setInteractive({ useHandCursor: true });
     r.on("pointerup", () => openBestiary(scene, id)); c.add(r);
     const ma = MON_ANIM[id], key = ma && scene.textures.exists(ma[1]) ? ma[1] : MONSTERS[id].tex;
@@ -115,7 +115,7 @@ function openBestiary(scene, sel) {
     T_(lx + 252, y + 8, "★".repeat(Math.max(0, tier - 1)) + "☆".repeat(3 - Math.max(0, tier - 1)), 11, tier >= 4 ? "#ffb050" : COLORS.gold).setOrigin(1, 0);
   });
   // ---- página
-  const px = X + 310, py = Y + 70, pw = W - 330, M = MONSTERS[sel], tier = bestTier(sel), n = bestKills(sel), T = bestTiers(sel);
+  const px = X + 310, py = Y + 70, pw = W - 330, M = MONSTERS[sel], tier = bestTier(sel, scene), n = bestKills(sel, scene), T = bestTiers(sel);
   c.add(scene.add.rectangle(px, py, pw, H - 84, 0x120e0c, 0.85).setOrigin(0).setStrokeStyle(1, 0x5a4630));
   const ma = MON_ANIM[sel], key = ma && scene.textures.exists(ma[1]) ? ma[1] : M.tex;
   const ix = px + 110, iy = py + 120;

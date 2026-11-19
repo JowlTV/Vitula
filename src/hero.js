@@ -473,8 +473,8 @@ Object.assign(DungeonScene.prototype, {
 
   // poção: só um brilho colorido no herói (vermelho = vida, azul = mana, laranja = fúria)
   potGlow(col) {
-    const h = this.hero, g = this.add.image(h.px, h.py - 20, "light").setTint(col).setBlendMode(Phaser.BlendModes.ADD).setScale(0.3).setAlpha(0.9).setDepth(h.py + 5);
-    this.ents.add(g); this.tweens.add({ targets: g, scale: 1.1, alpha: 0, duration: 600, onComplete: () => g.destroy() });
+    const h = this.hero, g = this.add.image(h.px, h.py - 20, "light").setTint(col).setBlendMode(Phaser.BlendModes.ADD).setScale(0.21).setAlpha(0.63).setDepth(h.py + 5);
+    this.ents.add(g); this.tweens.add({ targets: g, scale: 0.77, alpha: 0, duration: 600, onComplete: () => g.destroy() });
     if (h.spr) { h.spr.setTint(col); this.time.delayedCall(220, () => h.spr && h.spr.clearTint()); }
   },
   heal(amount, show = true) {

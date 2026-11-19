@@ -55,6 +55,7 @@ const MON_ANIM = {
   goblin_leader:    [68, "am_goblin_leader", "am_goblin_leader_attack", "am_goblin_leader_death", 1.3],
   spider:        [SPIDER_FW, "am_spider_walk", "am_spider_attack", "am_spider_death", 0.32],
   poison_spider: [SPIDER_FW, "am_spider_walk", "am_spider_attack", "am_spider_death", 0.34],
+  giant_spider: [SPIDER_FW, "am_spider_walk", "am_spider_attack", "am_spider_death", 0.34],
 };
 const MONSTERS = {
   // (força −25% em vida, dano e armadura) ritmo "Tibia clássico": no nível 1 um rato leva ~15–30 s de luta e cada mordida tira ~10% da vida.
@@ -68,6 +69,7 @@ const MONSTERS = {
   // aranhas do esgoto (a partir do 2º andar). A venenosa usa a mesma arte, esverdeada, e envenena: 3% da vida máx./s por 5 s
   spider:        { name: "Aranha", tex: "am_spider_walk", hp: 175, arm: 2, dmg: 11, step: 0.36, atk: 1.9, xp: 26 },
   poison_spider: { name: "Aranha Venenosa", plural: "Aranhas Venenosas", tex: "am_spider_walk", tint: 0x9fe07a, hp: 205, arm: 2.5, dmg: 9, step: 0.4, atk: 2.0, xp: 34, poison: { pct: 0.03, dur: 5 } },
+  giant_spider: { name: "Aranha Gigante", plural: "Aranhas Gigantes", tex: "am_spider_walk", tint: 0x6fb04a, hp: 205 * 15, arm: 4, dmg: 9 * 10, step: 0.044, atk: 1.6, xp: 600, gold: 80, elite: true, poison: { pct: 0.04, dur: 5 } },   // primeira caverna (esgoto 3): sempre com fome
   // Encosta dos Goblins: mais fortes que o fundo do esgoto (andar 5 ≈ esqueleto com 1,6× de vida)
   goblin:           { name: "Goblin", tex: "am_goblin", hp: 538, arm: 5, dmg: 33, step: 0.5, atk: 1.9, xp: 52 },
   goblin_scavenger: { name: "Goblin Saqueador", plural: "Goblins Saqueadores", tex: "am_goblin_scavenger", hp: 650, arm: 6, dmg: 30, step: 0.56, atk: 2.1, xp: 60, gold: 4 },

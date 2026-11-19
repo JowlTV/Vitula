@@ -1,6 +1,6 @@
 // Karhyn: tutorial de cada estabelecimento (na primeira entrada, um resumo do que dá para fazer ali)
 // e a estátua da Oráculo: não se conversa mais com ela — ao passar na frente, ouve-se a harpa e a imagem dela aparece por 3 s.
-const NPC_TUT = ["smith", "inn", "potions", "depot", "locker", "board", "library", "lodging"];
+const NPC_TUT = ["smith", "inn", "potions", "depot", "locker", "board", "lodging"];
 {
   const use = TownScene.prototype.use;
   TownScene.prototype.use = function (z) {

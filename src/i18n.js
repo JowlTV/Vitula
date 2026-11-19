@@ -1062,6 +1062,10 @@ I18N.pt = {
   note_no_missions: "Nenhuma — pegue um contrato no mural de Karhyn.",
   best_reward: "Bestiário completo! Recompensa: {gear} ({rarity}) foi para a mochila.",
   note_foot2: "N fecha · detalhes completos na Biblioteca",
+  hungry_spider: "Ela está sempre com fome...",
+  best_tip_n: "Este é o seu Bestiário (tecla N): cada criatura derrotada revela mais sobre ela.",
+  best_beh_giant_spider: "Corre cinco vezes mais rápido que um aventureiro. Não dá para fugir: lute.",
+  best_lore_giant_spider: "Ela está sempre com fome. Os mineiros dizem que já foi do tamanho de uma aranha comum.",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -2069,6 +2073,10 @@ I18N.en = {
   note_no_missions: "None — take a contract at the Karhyn board.",
   best_reward: "Bestiary complete! Reward: {gear} ({rarity}) added to your bag.",
   note_foot2: "N closes · full details at the Library",
+  hungry_spider: "She is always hungry...",
+  best_tip_n: "This is your Bestiary (N key): every creature you defeat reveals more about it.",
+  best_beh_giant_spider: "Runs five times faster than an adventurer. You can't flee: fight.",
+  best_lore_giant_spider: "She is always hungry. Miners say she was once the size of a common spider.",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────

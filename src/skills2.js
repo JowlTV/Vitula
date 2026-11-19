@@ -160,7 +160,7 @@ Object.assign(SPELL_FX, {
         .sort((u, v) => Math.hypot(u.x - cx, u.y - cy) - Math.hypot(v.x - cx, v.y - cy)).slice(0, 6);
       for (const m of near) {
         m.slowT = sp.dur; m.holySlow = false;
-        this.damageMonster(m, this.baseDamage() * 2.0 * 0.3);   // 30% do dano da Flecha Sagrada (habilidade 1)
+        this.damageMonster(m, this.baseDamage() * 2.0 * 1.2);   // 120% do dano da Flecha Sagrada (habilidade 1)
       }
       sfx(this, "hit", 0.4);
     });

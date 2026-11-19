@@ -75,7 +75,7 @@ Object.assign(DungeonScene.prototype, {
 
 {
   const bf = DungeonScene.prototype.buildFloor;
-  DungeonScene.prototype.buildFloor = function (...a) { const r = bf.apply(this, a); this.wpBox = null; this.placeWaypoint(); return r; };
+  DungeonScene.prototype.buildFloor = function (...a) { const r = bf.apply(this, a); this.wpBox = null; this.placeWaypoint(); this.hungrySpider(); return r; };
   const ur = DungeonScene.prototype.useRope;
   DungeonScene.prototype.useRope = function (...a) {
     const h = this.hero, w = this.wp;
