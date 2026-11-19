@@ -147,7 +147,7 @@ Object.assign(DungeonScene.prototype, {
     // jogador arrasta para onde quiser e pode travar (posição salva)
     const size = 38, gap = 6, fixed = ["basic", "heal", "p0", "p1"];
     const bar1 = list.filter(e => fixed.includes(e[0])), bar2 = list.filter(e => !fixed.includes(e[0]));
-    const w1 = bar1.length * (size + gap) - gap + 14, x0 = VIEW_W / 2 - w1 / 2, y1 = VIEW_H - size - 10;
+    const w1 = bar1.length * (size + gap) - gap + 14, x0 = VIEW_W / 2 - w1 / 2, y1 = VIEW_H - 2 * size - 34;   // fixas em cima, habilidades embaixo
     const frame = (g, x, y, bw) => {
       g.fillStyle(0x050406, 0.92).fillRect(x - 8, y - 7, bw + 16, size + 20);
       g.fillStyle(0x2c2a30, 1).fillRect(x - 7, y - 6, bw + 14, 1).fillRect(x - 7, y + size + 12, bw + 14, 1);
@@ -155,26 +155,8 @@ Object.assign(DungeonScene.prototype, {
     };
     frame(fr, x0, y1, w1);
     const w2 = bar2.length * (size + gap) - gap;
-    let sb = {}; try { sb = JSON.parse(localStorage.getItem("vitula_skillbar") || "{}"); } catch (e) {}
-    const sbx = Phaser.Math.Clamp(sb.x != null ? sb.x : VIEW_W / 2 - w2 / 2, 30, VIEW_W - w2 - 10), sby = Phaser.Math.Clamp(sb.y != null ? sb.y : y1 - size - 78, 40, VIEW_H - size - 10);
-    const bar2c = this.add.container(sbx, sby); ui.add(bar2c); this.skillBar = bar2c; this.skillBarLocked = !!sb.locked;
-    if (bar2.length) {
-      const g2 = this.add.graphics(); frame(g2, 0, 0, w2); bar2c.add(g2);
-      // alça para arrastar (à esquerda) e cadeado para travar
-      const grip = this.add.rectangle(-22, -7, 13, size + 20, 0x2a2420, 1).setOrigin(0).setStrokeStyle(1, 0x6a5a40).setInteractive({ useHandCursor: true, draggable: true }); bar2c.add(grip);
-      const dots = this.add.graphics(); dots.fillStyle(0xb8a070, 1); for (let i = 0; i < 4; i++) dots.fillRect(-18, 2 + i * 7, 2, 2).fillRect(-13, 2 + i * 7, 2, 2); bar2c.add(dots);
-      const lock = this.add.rectangle(-22, size + 15, 13, 13, 0x2a2420, 1).setOrigin(0).setStrokeStyle(1, 0x6a5a40).setInteractive({ useHandCursor: true }); bar2c.add(lock);
-      const lockG = this.add.graphics(); bar2c.add(lockG);
-      const drawLock = () => { const L = this.skillBarLocked; lockG.clear().fillStyle(L ? 0xe0bc60 : 0x8a7a60, 1).fillRect(-19, size + 21, 7, 5); lockG.lineStyle(1.5, L ? 0xe0bc60 : 0x8a7a60, 1).beginPath(); lockG.arc(-15.5, size + 21, 2.5, Math.PI, 0); lockG.strokePath(); dots.setAlpha(L ? 0.3 : 1); };
-      drawLock();
-      const saveSB = () => { try { localStorage.setItem("vitula_skillbar", JSON.stringify({ x: bar2c.x, y: bar2c.y, locked: this.skillBarLocked })); } catch (e) {} };
-      lock.on("pointerdown", () => { this.skillBarLocked = !this.skillBarLocked; drawLock(); saveSB(); this.msg(t(this.skillBarLocked ? "skillbar_locked" : "skillbar_unlocked")); });
-      let off = null;
-      grip.on("dragstart", p => { off = { x: p.x - bar2c.x, y: p.y - bar2c.y }; });
-      grip.on("drag", p => { if (this.skillBarLocked || !off) return;
-        bar2c.x = Phaser.Math.Clamp(p.x - off.x, 30, VIEW_W - w2 - 10); bar2c.y = Phaser.Math.Clamp(p.y - off.y, 20, VIEW_H - size - 10); });
-      grip.on("dragend", saveSB);
-    }
+    const bar2c = this.add.container(VIEW_W / 2 - w2 / 2, VIEW_H - size - 10); ui.add(bar2c); this.skillBar = bar2c;
+    if (bar2.length) { const g2 = this.add.graphics(); frame(g2, 0, 0, w2); bar2c.add(g2); }
     this.slotCovers = {}; this.slotTimers = {}; this.slotBars = {}; this.slotReady = {};
     const place = (arr, cont, ox, oy, extra) => arr.forEach(([id, icon, k], i) => {
       const x = ox + i * (size + gap) + extra(id), y = oy, add = o => cont.add(o);
@@ -208,7 +190,7 @@ Object.assign(DungeonScene.prototype, {
     this.miniX = VIEW_W - this.gen.w * 2 - 12; this.miniY = VIEW_H - this.gen.h * 2 - 12;
     this.mini = this.add.graphics(); ui.add(this.mini);
     this.drawMinimap();
-    this.msgText = txt(this, VIEW_W / 2, VIEW_H - 74, "", 15, COLORS.text).setOrigin(0.5);
+    this.msgText = txt(this, VIEW_W / 2, VIEW_H - 142, "", 15, COLORS.text).setOrigin(0.5);
     ui.add(this.msgText);
     // sombra projetada em todos os textos do HUD (leitura no escuro)
     for (const o of ui.list) if (o.type === "Text") o.setShadow(2, 2, "#000000", 0, true, true);
