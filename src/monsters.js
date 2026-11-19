@@ -311,7 +311,8 @@ Object.assign(DungeonScene.prototype, {
     for (const [i, w] of pool) if ((x -= w) <= 0) { id = i; break; }
     if (!id) return null;
     // raridade: Lendário só de chefe (elite) e campeão
-    const W = m.elite ? [30, 34, 22, 10, 4] : m.champion ? [46, 30, 14, 8, 2] : [66, 23, 8, 3, 0];
+    // Aranha Gigante: sempre Raro ou melhor (Ultra raro e Lendário bem mais fáceis)
+    const W = m.kind === "giant_spider" ? [0, 0, 40, 42, 18] : m.elite ? [30, 34, 22, 10, 4] : m.champion ? [46, 30, 14, 8, 2] : [66, 23, 8, 3, 0];
     let s = W.reduce((a, b) => a + b), y = Math.random() * s, r = 0;
     for (; r < 4; r++) if ((y -= W[r]) <= 0) break;
     return gearNew(id, r);
