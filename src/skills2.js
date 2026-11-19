@@ -5,7 +5,7 @@
 
 // arte das folhas novas (4×2 quadros); se não carregaram, as magias usam os efeitos antigos
 function makeSkillAnims(scene) {
-  for (const [k, fr] of [["fx_holy_arrow", 8], ["fx_volley", 8], ["fx_xcut", 8]]) {
+  for (const [k, fr] of [["fx_holy_arrow", 8], ["fx_volley", 8], ["fx_xcut", 8], ["fx_slasher", 8], ["fx_missile", 8]]) {
     if (!scene.textures.exists(k) || scene.anims.exists(k)) continue;
     const tex = scene.textures.get(k), img = tex.getSourceImage(), fw = img.width / 4, fh = img.height / 2;
     if (!tex.has("0")) for (let i = 0; i < fr; i++) tex.add(String(i), 0, (i % 4) * fw, Math.floor(i / 4) * fh, fw, fh);

@@ -9,7 +9,9 @@ Object.assign(SPELL_FX, {
     this.time.delayedCall(180, () => {
       if (this.finished) return;
       const p = this.cellPos(h.x + dx * 2, h.y + dy * 2);
-      this.fx("slash", p.x, p.y - 22, 2.2, dx < 0, dx && dy ? 45 * dx * dy : (dy ? 90 : 0));
+      if (this.anims.exists("fx_slasher")) { const fw = this.textures.get("fx_slasher").getSourceImage().width / 4, sl = this.add.sprite(p.x, p.y - 22, "fx_slasher").setScale(3.2 * T / fw).setFlipX(dx < 0).setAngle(dy && !dx ? 90 * dy : 0).setBlendMode(Phaser.BlendModes.ADD).setDepth(100000);
+        this.ents.add(sl); sl.play("fx_slasher"); sl.once("animationcomplete", () => sl.destroy()); }
+      else this.fx("slash", p.x, p.y - 22, 2.2, dx < 0, dx && dy ? 45 * dx * dy : (dy ? 90 : 0));
       this.cameras.main.flash(90, 255, 230, 200);
       for (let k = 1; k <= 3; k++) {
         const x = h.x + dx * k, y = h.y + dy * k; if (!this.gen.isFloor(x, y) || this.isClosedDoor(x, y)) break;
