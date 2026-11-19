@@ -112,7 +112,7 @@ Object.assign(DungeonScene.prototype, {
           const sx = Math.sign(t.x - h.x), sy = Math.sign(t.y - h.y), ang = sx && sy ? 45 * sy * sx : 0;   // golpe na diagonal sai inclinado
           this.fx(this.anims.exists("fx_basic_slash") ? "basic_slash" : "slash", t.px, t.py - 22, this.anims.exists("fx_basic_slash") ? 0.9 : 0.7, t.x < h.x, ang);
           const crit = Math.random() < this.critChance();
-          this.damageMonster(t, this.baseDamage() * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? 1.8 : 1));
+          this.damageMonster(t, this.baseDamage() * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? this.critMult() : 1));
           this.weaponElement(t);
           if (crit) { this.splat(t.px, t.py - 4, 5); }
           this.addFury(9);
@@ -592,8 +592,7 @@ Object.assign(DungeonScene.prototype, {
     while (h.xp >= this.xpNext()) {
       h.xp -= this.xpNext(); h.level++; h.maxHp += 10; h.hp = h.maxHp; // subir de nível enche a vida
       this.floatText(h.px, h.py - 84, t("level_up_float", { n: h.level }), COLORS.gold);
-      const nova = Object.values(this.spells).find(sp => sp.level === h.level);
-      this.msg(nova ? t("level_up_skill", { n: h.level, name: nova.name, key: nova.key }) : t("level_up_plain", { n: h.level }));
+      this.msg(t("level_up_talent", { n: h.level }));
       sfx(this, "levelup", 0.4);
       this.checkPromotion();
     }

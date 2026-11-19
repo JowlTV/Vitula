@@ -26,9 +26,9 @@ Object.assign(DungeonScene.prototype, {
   spawnMonster(kind, x, y) {
     // arte ainda não instalada (ex.: aranhas antes do download): troca por um monstro que já tem arte
     if (MON_ANIM[kind] && !this.textures.exists(MON_ANIM[kind][1]) && !this.textures.exists(MONSTERS[kind].tex)) kind = this.floorN > 2 ? "cave_rat" : "rat";
-    const data = MONSTERS[kind], mult = 1 + 0.15 * (this.floorN - 1);
+    const data = MONSTERS[kind], mult = 1 + 0.17 * (this.floorN - 1);   // balanceamento com a árvore de talentos (talents.js)
     const p = this.cellPos(x, y);
-    const m = { kind, data, x, y, hp: data.hp * mult, maxHp: data.hp * mult, dmg: data.dmg * (1 + 0.1 * (this.floorN - 1)),
+    const m = { kind, data, x, y, hp: data.hp * mult, maxHp: data.hp * mult, dmg: data.dmg * (1 + 0.12 * (this.floorN - 1)),
       awake: false, dead: false, stepT: Math.random() * data.step, atkT: 0, flash: 0, bob: Math.random() * 10,
       fly: !!data.fly, elite: !!data.elite, px: p.x, py: p.y, fromX: p.x, fromY: p.y, moveT: 0, moveLen: 1, lunge: { x: 0, y: 0 } };
     const ma = MON_ANIM[kind], walkKey = ma && this.anims.exists(ma[1]) ? ma[1] : data.anim;

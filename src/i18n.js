@@ -626,7 +626,7 @@ I18N.pt = {
   class_label: "Classe",
   experience: "Experiência",
   magic_level: "Magic level",
-  attrs_label: "Atributos",
+  attrs_label: "Talentos",
   attrs_free: "+{n} ponto(s) · U",
   attrs_open: "abrir · U",
   attrs_title: "Atributos",
@@ -1029,6 +1029,15 @@ I18N.pt = {
   harp_first: "Escuto o som de uma harpa...\nA Deusa está comigo.",
   dodge_chance: "Chance de esquiva",
   eq_dodge: "+{v} Dodge fighting",
+  talents_title: "Árvore de Talentos",
+  talents_close: "U / ESC fecha",
+  talents_points: "{n} ponto(s) para gastar — clique num talento",
+  talents_none: "Sem pontos: você ganha 1 a cada nível",
+  talents_req: "requer {name} {n}",
+  talents_hint: "Passe o mouse num talento para ver o que ele faz. ★ = libera uma habilidade.",
+  talent_unlock: "Habilidade liberada: {name} (tecla {key}, a partir do nível {n})",
+  spell_needs_talent: "{name} ainda não foi liberada na Árvore de Talentos (U).",
+  level_up_talent: "Nível {n}! +1 ponto de talento (U).",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1601,7 +1610,7 @@ I18N.en = {
   class_label: "Class",
   experience: "Experience",
   magic_level: "Magic level",
-  attrs_label: "Attributes",
+  attrs_label: "Talents",
   attrs_free: "+{n} point(s) · U",
   attrs_open: "open · U",
   attrs_title: "Attributes",
@@ -2004,6 +2013,15 @@ I18N.en = {
   harp_first: "I hear the sound of a harp...\nThe Goddess is with me.",
   dodge_chance: "Dodge chance",
   eq_dodge: "+{v} Dodge fighting",
+  talents_title: "Talent Tree",
+  talents_close: "U / ESC closes",
+  talents_points: "{n} point(s) to spend — click a talent",
+  talents_none: "No points: you gain 1 per level",
+  talents_req: "requires {name} {n}",
+  talents_hint: "Hover a talent to see what it does. ★ = unlocks a skill.",
+  talent_unlock: "Skill unlocked: {name} (key {key}, from level {n})",
+  spell_needs_talent: "{name} is not unlocked yet in the Talent Tree (U).",
+  level_up_talent: "Level {n}! +1 talent point (U).",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2577,7 +2595,7 @@ I18N.es = {
   class_label: "Clase",
   experience: "Experiencia",
   magic_level: "Nivel mágico",
-  attrs_label: "Atributos",
+  attrs_label: "Talentos",
   attrs_free: "+{n} punto(s) · U",
   attrs_open: "abrir · U",
   attrs_title: "Atributos",

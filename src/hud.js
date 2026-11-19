@@ -166,7 +166,7 @@ Object.assign(DungeonScene.prototype, {
       const ready = this.add.rectangle(x, y, size, size).setOrigin(0).setStrokeStyle(2, 0xe0bc60, 1).setAlpha(0); ui.add(ready); this.slotReady[id] = ready;
       if (k) ui.add(txt(this, x + size - 9, y + size - 16, k, 12, COLORS.gold));
       if ((id === "p0" || id === "p1")) { const n = txt(this, x + 4, y + 1, "", 11, COLORS.white); ui.add(n); this.potCount[id] = n; }
-      else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, t("lv_prefix") + this.spells[id].level, 12, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
+      else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "★", 14, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
     });
     { // ataque básico em destaque: moldura dourada; no automático ela pulsa e aparece o selo "AUTO". Clicar no ícone liga/desliga.
       const bx0 = x0, by0 = VIEW_H - size - 10;
@@ -342,7 +342,7 @@ Object.assign(DungeonScene.prototype, {
       this.basicAuto.setText(auto ? "AUTO" : "MANUAL").setColor(auto ? "#eaffd8" : "#d8c8a8");
       this.basicAutoBg.setFillStyle(auto ? 0x3a7a2e : 0x3a3028, 1).setStrokeStyle(1, auto ? 0x9fe08a : 0x7a6440).setSize(auto ? 34 : 44, 11).setOrigin(0.5); }
     for (const s in this.spells) {
-      const sp = this.spells[s], locked = h.level < sp.level;
+      const sp = this.spells[s], locked = !spellUnlocked(this.vocId, s, h.level);
       cover(s, locked ? 1 : h.cds[s] / (sp.cd * this.stats.cooldown), h.cds[s], locked);
       this.slotLocks[s].setVisible(locked);
       this.slotIcons[s].setAlpha(locked ? 0.25 : (h.fury >= sp.fury ? 1 : 0.45));
