@@ -30,19 +30,6 @@ Object.assign(DungeonScene.prototype, {
     this.heroGlow("frenzy", 0xffb040, (h.frenzyT || 0) > 0);
     const g = h.glows || {}, p = 2.5 + Math.sin(this.time_ * 10) * 1.2;
     for (const k in g) if (g[k]) g[k].outerStrength = p;
-    // lentidão: anel azul tracejado girando nos pés + flocos de gelo descendo em volta da criatura
-    for (const m of this.monsters) {
-      const on = (m.slowT || 0) > 0 && !m.dead;
-      if (!on) { if (m.slowFx) { m.slowFx.destroy(); m.slowFx = null; } continue; }
-      if (!m.slowFx || !m.slowFx.scene) { m.slowFx = this.add.graphics(); this.ents.add(m.slowFx); }
-      const g2 = m.slowFx, a = this.time_ * 2.2, rx = T * 0.42, ry = T * 0.16, cx = m.px, cy = m.py - 2;
-      g2.clear().setDepth(m.py + 1);
-      g2.lineStyle(2, m.holySlow ? 0xffe080 : 0x8ab4ff, 0.85);
-      for (let k = 0; k < 8; k++) { const t0 = a + k * Math.PI / 4; g2.beginPath(); g2.arc(0, 0, 1, t0, t0 + 0.45); g2.closePath();
-        const x1 = cx + Math.cos(t0) * rx, y1 = cy + Math.sin(t0) * ry, x2 = cx + Math.cos(t0 + 0.45) * rx, y2 = cy + Math.sin(t0 + 0.45) * ry; g2.lineBetween(x1, y1, x2, y2); }
-      g2.fillStyle(m.holySlow ? 0xfff4c0 : 0xcfe4ff, 0.9);
-      for (let k = 0; k < 3; k++) { const ph = (this.time_ * 0.9 + k / 3) % 1, x = cx + Math.sin((k + 1) * 2.1 + this.time_) * T * 0.3; g2.fillRect(x - 1, m.py - T * 0.9 + ph * T * 0.7, 2, 2); }
-    }
     // pulsos do Tremor de Terra
     for (const m of this.monsters.slice()) {
       const q = m.quakeDot; if (!q || m.dead) continue;
