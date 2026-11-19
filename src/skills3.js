@@ -29,7 +29,9 @@ Object.assign(SPELL_FX, {
     const cx = h.x + dx, cy = h.y + dy, dmg = this.baseDamage() * 2.0 * 1.8, p = this.cellPos(cx, cy);
     this.time.delayedCall(180, () => {
       if (this.finished) return;
-      this.fx("slash", p.x, p.y - 22, 1.5, false, 45); this.fx("slash", p.x, p.y - 22, 1.5, true, -45);
+      if (this.anims.exists("fx_xcut")) { const fw = this.textures.get("fx_xcut").getSourceImage().width / 4, x = this.add.sprite(p.x, p.y - 26, "fx_xcut").setScale(3 * T / fw).setBlendMode(Phaser.BlendModes.ADD).setDepth(100000);
+        this.ents.add(x); x.play("fx_xcut"); x.once("animationcomplete", () => x.destroy()); }
+      else { this.fx("slash", p.x, p.y - 22, 1.5, false, 45); this.fx("slash", p.x, p.y - 22, 1.5, true, -45); }
       for (const [ox, oy] of [[0, 0], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {
         const m = this.occ.get(key(cx + ox, cy + oy)); if (!m || m.dead) continue;
         this.damageMonster(m, dmg);
@@ -60,7 +62,7 @@ Object.assign(SPELL_FX, {
       for (const m of hits) {
         if (m.dead) continue;
         this.damageMonster(m, dmg, "holy");
-        if (!m.dead) { const nx = m.x + dx, ny = m.y + dy; if (this.canEnter(nx, ny, m)) this.moveMonster(m, nx, ny); }   // empurra 1 casa
+        if (!m.dead) { const nx = m.x + dx, ny = m.y + dy; if (this.canEnter(nx, ny, m)) { this.moveMonster(m, nx, ny); if (!(m.slowT > 0) || m.holySlow) { m.slowT = 3; m.holySlow = true; } } }   // empurra 1 casa
       }
     });
     sfx(this, "gem", 0.5);

@@ -68,6 +68,7 @@ const ACTIONS = [
   ["pause", "Pausa", ["ESC", "P"]],
   ["arrows", "Trocar o tipo de flecha (Arqueiro)", ["X"]],
   ["recall", "Retornar à cidade", ["H"]],
+  ["notebook", "Caderno do aventureiro", ["N"]],
 ];
 const Settings = {
   key: "vitula_settings_v1",

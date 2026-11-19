@@ -138,7 +138,7 @@ Object.assign(DungeonScene.prototype, {
     ui.list.slice(-4).forEach(o => { if (o.texture && (o.texture.key === "i_gold_coin" || o.texture.key === "i_bronze_key")) o.setVisible(false); });
     this.hudBelowMini = mB;
     // barra de magias
-    const pslots = Save.voc(this.vocId).potionSlots;
+    const pslots = [potSlotId(this.vocId, 0), potSlotId(this.vocId, 1)];
     const list = [["basic", "icon_basic", ""], ...Object.entries(this.spells).map(([k, s]) => [k, s.icon, s.key]),
       ["p0", POTIONS[pslots[0]].icon, Settings.keyLabel((Settings.data.keys.potion1 || ["Z"])[0])], ["p1", POTIONS[pslots[1]].icon, Settings.keyLabel((Settings.data.keys.potion2 || ["C"])[0])]];
     this.potCount = {};
@@ -317,11 +317,11 @@ Object.assign(DungeonScene.prototype, {
     // Arqueiro: flechas na aljava (clique ou X troca o tipo)
     if (this.ranged) {
       if (!this.arrowHud || !this.arrowHud.scene) {
-        this.arrowHud = txt(this, VIEW_W / 2, VIEW_H - 92, "", 11, "#e8dcc0").setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.cycleArrow());
+        this.arrowHud = txt(this, VIEW_W - 12, (this.hudBelowMini || 134) + 4, "", 11, "#e8dcc0").setOrigin(1, 0).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.cycleArrow());
         this.ui.add(this.arrowHud);
       }
       const d = Save.voc(this.vocId), k = this.arrowType();
-      this.arrowHud.setText(k ? t("arrow_hud", { name: t("arrow_" + k), n: arrowN(d, k), total: arrowCount(d), cap: arrowCap(d) }) : t("no_arrows_short")).setColor(k ? "#e8dcc0" : "#ff7060");
+      this.arrowHud.setText(k && k !== "normal" ? t("arrow_hud2", { n: arrowN(d, k), cap: arrowCap(d) }) : k ? t("arrow_hud_inf") : t("arrow_hud2", { n: 0, cap: arrowCap(d) })).setColor(k ? "#e8dcc0" : "#ff7060");
     }
     this.keyText.setText(String(this.keys));
     const cover = (id, f, secs, locked = false) => {
@@ -349,10 +349,10 @@ Object.assign(DungeonScene.prototype, {
     }
     const d = Save.voc(this.vocId);
     for (const pid of ["p0", "p1"]) {
-      const id = d.potionSlots[+pid[1]], P = POTIONS[id], cd = (h.potCd && h.potCd[id]) || 0, n = d.potions[id] || 0;
-      cover(pid, cd / P.cd, cd);
-      this.potCount[pid].setText(String(n));
-      this.slotIcons[pid].setAlpha(n > 0 ? 1 : 0.3);
+      const id = potSlotId(this.vocId, +pid[1]), cd = (h.potCd && h.potCd[id]) || 0, ch = potCharge(d, +pid[1]);
+      cover(pid, cd > 0 ? cd / POT_CD : 1 - ch, cd);
+      this.potCount[pid].setText(ch >= 1 ? "1" : Math.floor(ch * 100) + "%");
+      this.slotIcons[pid].setAlpha(ch >= 1 ? 1 : 0.4);
     }
     this.furyFill.setSize(Math.max(1, 136 * Math.min(1, h.fury / this.furyMax)), 6);
     const sk = id => { const s = Save.skill(this.vocId, id); return `${SKILLS[id].name} ${s.lvl} (${Math.floor(100 * s.tries / skillTriesNeeded(id, s.lvl))}%)`; };

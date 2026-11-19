@@ -158,6 +158,9 @@ const POTIONS = {
   luck:      { name: "Poção da sorte", icon: "i_health_potion", tint: 0xffd040, cd: 300, dur: 10, price: 200, desc: "+50% de ouro coletado por 10 s." },
 };
 const POTION_FILL = 600;   // vida somada dos monstros derrotados para encher 1 poção de vida
+const POT_CD = 5;   // poções de carga única: enchem matando monstros, 5 s de recarga
+const potSlotId = (voc, slot) => slot === 0 ? "health" : (VOCATIONS[voc] && VOCATIONS[voc].mana ? "mana" : "fury");
+function potCharge(d, slot) { d.charges = d.charges || [0, 0]; return d.charges[slot] || 0; }
 const potionOk = (id, voc) => !POTIONS[id].voc || POTIONS[id].voc.includes(voc);
 
 // promoção (como no Tibia): no nível 20 o Cavaleiro vira Cavaleiro de Elite

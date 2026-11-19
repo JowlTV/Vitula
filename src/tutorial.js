@@ -33,7 +33,7 @@ Object.assign(DungeonScene.prototype, {
     // no celular não há roda do mouse: o passo do zoom fica de fora
     if (LOW_MEM || navigator.maxTouchPoints > 0 && !window.matchMedia("(pointer:fine)").matches) this.tut.zoomed = true; else { this.setCamZoom(5); this.msgT = 0; }   // começa no zoom máximo: o 1º passo ensina a afastar a câmera
     // provisões para aprender a curar e algo no chão para aprender a pegar
-    const d = Save.voc(this.vocId); if ((d.potions.health || 0) < 2) { d.potions.health = 2; Save.save(); this.refreshPotionIcons && this.refreshPotionIcons(); }
+    const d = Save.voc(this.vocId); { potCharge(d, 0); d.charges[0] = 1; Save.save(); this.refreshPotionIcons && this.refreshPotionIcons(); }
     const h = this.hero, spots = this.freeNeighbors(h.x, h.y);
     // ratos e morcegos espalhados pela trilha (não é objetivo matá-los)
     const alive = this.monsters.filter(m => !m.dead).length;
@@ -125,8 +125,8 @@ Object.assign(DungeonScene.prototype, {
   };
   const up = DungeonScene.prototype.usePotion;
   DungeonScene.prototype.usePotion = function (slot) {
-    const d = Save.voc(this.vocId), n0 = JSON.stringify(d.potions); const r = up.call(this, slot);
-    if (this.tut && JSON.stringify(d.potions) !== n0) { this.tut.heal = true; this.tutCheck(); }
+    const d = Save.voc(this.vocId), n0 = JSON.stringify(d.charges); const r = up.call(this, slot);
+    if (this.tut && JSON.stringify(d.charges) !== n0) { this.tut.heal = true; this.tutCheck(); }
     return r;
   };
   const md = DungeonScene.prototype.monsterDied;

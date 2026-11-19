@@ -5,7 +5,7 @@
 
 // arte das folhas novas (4×2 quadros); se não carregaram, as magias usam os efeitos antigos
 function makeSkillAnims(scene) {
-  for (const [k, fr] of [["fx_holy_arrow", 8], ["fx_volley", 8]]) {
+  for (const [k, fr] of [["fx_holy_arrow", 8], ["fx_volley", 8], ["fx_xcut", 8]]) {
     if (!scene.textures.exists(k) || scene.anims.exists(k)) continue;
     const tex = scene.textures.get(k), img = tex.getSourceImage(), fw = img.width / 4, fh = img.height / 2;
     if (!tex.has("0")) for (let i = 0; i < fr; i++) tex.add(String(i), 0, (i % 4) * fw, Math.floor(i / 4) * fh, fw, fh);
@@ -37,10 +37,10 @@ Object.assign(DungeonScene.prototype, {
       if (!m.slowFx || !m.slowFx.scene) { m.slowFx = this.add.graphics(); this.ents.add(m.slowFx); }
       const g2 = m.slowFx, a = this.time_ * 2.2, rx = T * 0.42, ry = T * 0.16, cx = m.px, cy = m.py - 2;
       g2.clear().setDepth(m.py + 1);
-      g2.lineStyle(2, 0x8ab4ff, 0.85);
+      g2.lineStyle(2, m.holySlow ? 0xffe080 : 0x8ab4ff, 0.85);
       for (let k = 0; k < 8; k++) { const t0 = a + k * Math.PI / 4; g2.beginPath(); g2.arc(0, 0, 1, t0, t0 + 0.45); g2.closePath();
         const x1 = cx + Math.cos(t0) * rx, y1 = cy + Math.sin(t0) * ry, x2 = cx + Math.cos(t0 + 0.45) * rx, y2 = cy + Math.sin(t0 + 0.45) * ry; g2.lineBetween(x1, y1, x2, y2); }
-      g2.fillStyle(0xcfe4ff, 0.9);
+      g2.fillStyle(m.holySlow ? 0xfff4c0 : 0xcfe4ff, 0.9);
       for (let k = 0; k < 3; k++) { const ph = (this.time_ * 0.9 + k / 3) % 1, x = cx + Math.sin((k + 1) * 2.1 + this.time_) * T * 0.3; g2.fillRect(x - 1, m.py - T * 0.9 + ph * T * 0.7, 2, 2); }
     }
     // pulsos do Tremor de Terra
@@ -58,10 +58,11 @@ Object.assign(DungeonScene.prototype, {
       if (!on) { m.slowFx.destroy(); m.slowFx = null; continue; }
       const g = m.slowFx, k = this.time_ * 4 + m.x, r = 20 + Math.sin(k) * 2;
       g.clear().setPosition(m.px, m.py).setDepth(m.py - 1);
-      g.lineStyle(2, 0x8ab4ff, 0.75).strokeEllipse(0, 0, r * 2, r * 0.9);
-      g.lineStyle(1, 0xd8ecff, 0.5).strokeEllipse(0, 0, r * 1.5, r * 0.65);
+      const H = m.holySlow; if (H) g.setBlendMode(Phaser.BlendModes.ADD);
+      g.lineStyle(2, H ? 0xffd860 : 0x8ab4ff, 0.75).strokeEllipse(0, 0, r * 2, r * 0.9);
+      g.lineStyle(1, H ? 0xfff0b0 : 0xd8ecff, 0.5).strokeEllipse(0, 0, r * 1.5, r * 0.65);
       for (let i = 0; i < 4; i++) { const a = k * 0.6 + i * 1.57, fy = -34 + ((this.time_ * 30 + i * 13) % 34);
-        g.fillStyle(0xcfe6ff, 0.8).fillRect(Math.cos(a) * r * 0.8 - 1, fy, 2, 2); }
+        g.fillStyle(H ? 0xfff4c0 : 0xcfe6ff, 0.8).fillRect(Math.cos(a) * r * 0.8 - 1, fy, 2, 2); }
     }
     if (h.guardSpr && h.guardSpr.scene) {
       h.guardSpr.setVisible(h.guardT > 0).setPosition(h.px, h.py - 30).setDepth(h.py + 1).setAlpha(0.35 + 0.15 * Math.sin(this.time_ * 6));
@@ -102,7 +103,7 @@ Object.assign(SPELL_FX, {
     for (let k = 0; k < 10; k++) { const a = Math.random() * Math.PI * 2, r = Phaser.Math.Between(20, 2 * T); this.splat(h.px + Math.cos(a) * r, h.py + Math.sin(a) * r * 0.7, 1); }
     for (const m of this.monsters) {
       if (m.dead || Math.max(Math.abs(m.x - h.x), Math.abs(m.y - h.y)) > 2) continue;
-      m.slowT = sp.dur;
+      m.slowT = sp.dur; m.holySlow = false;
       // 3× o dano base no total (50% a mais que o Golpe Frontal), aplicado ao longo de 2 s (4 pulsos de 0,5 s)
       m.quakeDot = { n: 4, t: 0, dmg: this.baseDamage() * 0.75 };
     }
@@ -154,10 +155,12 @@ Object.assign(SPELL_FX, {
     sfx(this, "pickup", 0.3);
     this.time.delayedCall(330, () => {
       if (this.finished) return;
-      for (const m of this.monsters.slice()) {
-        if (m.dead || Math.max(Math.abs(m.x - cx), Math.abs(m.y - cy)) > 1) continue;
-        m.slowT = sp.dur;
-        this.damageMonster(m, this.baseDamage() * 1.2);
+      // área: até 6 inimigos a partir do alvo (os mais próximos dele, raio de 2 casas)
+      const near = this.monsters.filter(m => !m.dead && Math.max(Math.abs(m.x - cx), Math.abs(m.y - cy)) <= 2)
+        .sort((u, v) => Math.hypot(u.x - cx, u.y - cy) - Math.hypot(v.x - cx, v.y - cy)).slice(0, 6);
+      for (const m of near) {
+        m.slowT = sp.dur; m.holySlow = false;
+        this.damageMonster(m, this.baseDamage() * 2.0 * 0.3);   // 30% do dano da Flecha Sagrada (habilidade 1)
       }
       sfx(this, "hit", 0.4);
     });

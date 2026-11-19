@@ -132,8 +132,9 @@ Object.assign(DungeonScene.prototype, {
     }
     // lentidão (Tremor de Terra / Saraivada): anda e ataca na metade do ritmo; fica azulado
     const slow = (m.slowT || 0) > 0; if (slow) m.slowT -= dt;
-    m.atkT -= dt * (slow ? 0.5 : 1); m.stepT -= dt * (slow ? 0.5 : 1);
-    if (slow && !(m.flash > 0)) m.spr.setTint(0xb8d0ff);
+    const sm = slow ? (m.holySlow ? 0.85 : 0.5) : 1;   // Míssil Sagrado: só 15% mais lento
+    m.atkT -= dt * sm; m.stepT -= dt * sm;
+    if (slow && !(m.flash > 0)) m.spr.setTint(m.holySlow ? 0xfff0c0 : 0xb8d0ff);
     if (m.bleedT > 0) {
       m.bleedT -= dt; m.bleedTick -= dt;
       if (Math.random() < dt * 6) this.splat(m.px + Phaser.Math.Between(-6, 6), m.py - 2, 1);
@@ -324,9 +325,9 @@ Object.assign(DungeonScene.prototype, {
       if (Math.random() < 0.6 || m.elite || m.champion) this.drop(m.x, m.y, "gold");
       if (Math.random() < 0.12) this.drop(m.x, m.y, ["apple", "bread", "meat"][Phaser.Math.Between(0, 2)]);
       // poção de vida: enche com a vida dos monstros derrotados (não se compra mais na loja)
-      { const d = Save.voc(this.vocId); d.potFill = (d.potFill || 0) + m.maxHp;
-        while (d.potFill >= POTION_FILL) { d.potFill -= POTION_FILL; d.potions.health = (d.potions.health || 0) + 1;
-          this.floatText(this.hero.px, this.hero.py - 100, t("potion_filled"), "#ff7070"); if (this.lootLog) this.lootLog("i_health_potion", t("potion_filled"), "#ff9090", {}); sfx(this, "gem", 0.3); }
+      { const d = Save.voc(this.vocId), add = m.maxHp / POTION_FILL;
+        for (const sl of [0, 1]) { const was = potCharge(d, sl); d.charges[sl] = Math.min(1, was + add);
+          if (was < 1 && d.charges[sl] >= 1) { this.floatText(this.hero.px, this.hero.py - 100 - sl * 16, t("potion_filled"), sl ? "#7ab0ff" : "#ff7070"); sfx(this, "gem", 0.3); } }
         Save.save(); }
       const eqChance = m.elite ? 1 : m.champion ? 0.35 : 0.025;
       if (Math.random() < eqChance) { const g = this.rollEquip(m); if (g) this.drop(m.x, m.y, "eq_" + g.id, g); }

@@ -177,15 +177,15 @@ Object.assign(DungeonScene.prototype, {
 
   // poções dos atalhos 1 e 2 (teclas 5 e 6)
   usePotion(slot) {
-    const h = this.hero, d = Save.voc(this.vocId), id = d.potionSlots[slot], P = POTIONS[id];
+    const h = this.hero, d = Save.voc(this.vocId), id = potSlotId(this.vocId, slot), P = POTIONS[id];
     if (!P || this.finished || this.paused || h.dead) return;
-    if (!potionOk(id, this.vocId)) { this.msg(t("potion_wrong_voc", { name: P.name, voc: VOCATIONS[this.vocId].name })); return; }
     h.potCd = h.potCd || {};
     if ((h.potCd[id] || 0) > 0) return;
-    if (!(d.potions[id] > 0)) { this.msg(t("no_potion", { name: P.name.toLowerCase() })); return; }
-    d.potions[id]--; h.potCd[id] = P.cd; Save.save();
+    if (potCharge(d, slot) < 1) { this.msg(t("pot_charging", { name: P.name, p: Math.floor(100 * potCharge(d, slot)) })); return; }
+    d.charges[slot] = 0; h.potCd[id] = POT_CD; Save.save();
     h.buffs = h.buffs || {};
     if (id === "health") this.heal(h.maxHp * 0.4);
+    else if (id === "mana") { h.fury = Math.min(this.furyMax, h.fury + this.furyMax * 0.6); this.floatText(h.px, h.py - 70, t("mana_full"), "#7ab0ff"); }
     else if (id === "fury") { h.fury = this.furyMax; this.floatText(h.px, h.py - 70, VOCATIONS[this.vocId].mana ? t("mana_full") : t("fury_full"), VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#e08a4a"); }
     else if (P.dur) { h.buffs[id] = P.dur; this.msg(`${P.name}: ${P.desc}`); }
     sfx(this, "gem", 0.4);
@@ -594,6 +594,7 @@ Object.assign(DungeonScene.prototype, {
       h.xp -= this.xpNext(); h.level++; h.maxHp += 10; h.hp = h.maxHp; // subir de nível enche a vida
       this.floatText(h.px, h.py - 84, t("level_up_float", { n: h.level }), COLORS.gold);
       this.msg(t("level_up_talent", { n: h.level }));
+      { const dv = Save.voc(this.vocId); potCharge(dv, 1); dv.charges[1] = 1; if (VOCATIONS[this.vocId].mana) h.fury = this.furyMax; Save.save(); }   // subir de nível também enche a mana
       sfx(this, "levelup", 0.4);
       this.checkPromotion();
     }
