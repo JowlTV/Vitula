@@ -63,12 +63,13 @@ Object.assign(SPELL_FX, {
     // brilho forte: halo dourado + luz que clareia a tela enquanto o míssil voa
     const halo = this.add.image(a.x, a.y, "light").setTint(0xfff0b0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.54).setAlpha(0.57).setDepth(99999); this.ents.add(halo);
     const L = { x: a.x, y: a.y, r: 2.7 * T, warm: true, ph: 1 }; this.lights.push(L);
-    this.tweens.add({ targets: [a, halo, L], x: end.x, y: end.y - 30, duration: 260, onComplete: () => {
+    const fly = Math.max(70, Math.hypot(end.x - h.px, end.y - 30 - (h.py - 40)) / 1600 * 1000);   // velocidade constante (perto = chega rápido)
+    this.tweens.add({ targets: [a, halo, L], x: end.x, y: end.y - 30, duration: fly, onComplete: () => {
       if (nm) { const b = this.add.sprite(end.x, end.y - 30, "fx_missile", "4").setScale(a.scaleX * 1.8).setBlendMode(Phaser.BlendModes.ADD).setDepth(100001); this.ents.add(b); b.play({ key: "fx_missile", startFrame: 4, frameRate: 10 }); b.once("animationcomplete", () => b.destroy()); }
       a.destroy(); this.tweens.add({ targets: halo, scale: 1.3, alpha: 0, duration: 380, onComplete: () => halo.destroy() });
       this.time.delayedCall(350, () => { this.lights = this.lights.filter(o => o !== L); }); } });
     this.cameras.main.flash(120, 153, 144, 114, true);
-    this.time.delayedCall(260, () => {
+    this.time.delayedCall(fly, () => {
       if (this.finished) return;
       for (const m of hits) {
         if (m.dead) continue;
