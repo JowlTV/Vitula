@@ -55,13 +55,16 @@ Object.assign(SPELL_FX, {
       const m = this.occ.get(key(x, y)); if (m && !m.dead) hits.push(m);
     }
     const end = this.cellPos(x, y), ang = Math.atan2(dy, dx);
-    const has = this.anims.exists("fx_holy_arrow");
-    const a = has ? this.add.sprite(h.px, h.py - 40, "fx_holy_arrow", "1").setScale(1.3) : this.add.image(h.px, h.py - 40, "arrow").setTint(0xfff0a0).setScale(3);
+    const nm = this.anims.exists("fx_missile"), has = nm || this.anims.exists("fx_holy_arrow");
+    const a = nm ? this.add.sprite(h.px, h.py - 40, "fx_missile", "1").setScale(1.6 * T / (this.textures.get("fx_missile").getSourceImage().width / 4))
+      : has ? this.add.sprite(h.px, h.py - 40, "fx_holy_arrow", "1").setScale(1.3) : this.add.image(h.px, h.py - 40, "arrow").setTint(0xfff0a0).setScale(3);
+    if (nm) a.play({ key: "fx_missile", repeat: -1, startFrame: 0, frameRate: 14 }).on("animationupdate", (an, fr) => { if (+fr.textureFrame > 3) a.setFrame("0"); });
     a.setRotation(ang).setBlendMode(Phaser.BlendModes.ADD).setDepth(100000); this.ents.add(a);
     // brilho forte: halo dourado + luz que clareia a tela enquanto o míssil voa
     const halo = this.add.image(a.x, a.y, "light").setTint(0xfff0b0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.54).setAlpha(0.57).setDepth(99999); this.ents.add(halo);
     const L = { x: a.x, y: a.y, r: 2.7 * T, warm: true, ph: 1 }; this.lights.push(L);
     this.tweens.add({ targets: [a, halo, L], x: end.x, y: end.y - 30, duration: 260, onComplete: () => {
+      if (nm) { const b = this.add.sprite(end.x, end.y - 30, "fx_missile", "4").setScale(a.scaleX * 1.3).setBlendMode(Phaser.BlendModes.ADD).setDepth(100001); this.ents.add(b); b.play({ key: "fx_missile", startFrame: 4 }); b.once("animationcomplete", () => b.destroy()); }
       a.destroy(); this.tweens.add({ targets: halo, scale: 1.3, alpha: 0, duration: 380, onComplete: () => halo.destroy() });
       this.time.delayedCall(350, () => { this.lights = this.lights.filter(o => o !== L); }); } });
     this.cameras.main.flash(120, 153, 144, 114, true);
