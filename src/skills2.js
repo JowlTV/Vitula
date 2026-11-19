@@ -149,14 +149,14 @@ Object.assign(SPELL_FX, {
     const cx = tg.x, cy = tg.y, p = this.cellPos(cx, cy);
     this.heroSwing(Math.sign(cx - h.x), 0);
     if (this.anims.exists("fx_volley")) {
-      const s = this.add.sprite(p.x, p.y - 8, "fx_volley").setOrigin(0.5, 0.8).setScale(2.3 * T / (this.textures.get("fx_volley").getSourceImage().width / 4)).setDepth(p.y + 2);
-      this.ents.add(s); s.play("fx_volley"); s.once("animationcomplete", () => s.destroy());
+      const s = this.add.sprite(p.x, p.y - 8, "fx_volley").setOrigin(0.5, 0.8).setScale(2.65 * T / (this.textures.get("fx_volley").getSourceImage().width / 4)).setDepth(p.y + 2);
+      this.ents.add(s); s.play({ key: "fx_volley", frameRate: 12 });   // 15% mais lenta s.once("animationcomplete", () => s.destroy());
     } else for (let k = 0; k < 9; k++) this.time.delayedCall(k * 40, () => this.shootArrow(p.x + Phaser.Math.Between(-60, 60), p.y - 260, p.x + Phaser.Math.Between(-50, 50), p.y - 10, () => {}, 1400));
     sfx(this, "pickup", 0.3);
-    this.time.delayedCall(330, () => {
+    this.time.delayedCall(390, () => {
       if (this.finished) return;
       // área: até 6 inimigos a partir do alvo (os mais próximos dele, raio de 2 casas)
-      const near = this.monsters.filter(m => !m.dead && Math.max(Math.abs(m.x - cx), Math.abs(m.y - cy)) <= 2)
+      const near = this.monsters.filter(m => !m.dead && Math.hypot(m.x - cx, m.y - cy) <= 2.9)   // área 15% maior
         .sort((u, v) => Math.hypot(u.x - cx, u.y - cy) - Math.hypot(v.x - cx, v.y - cy)).slice(0, 6);
       for (const m of near) {
         m.slowT = sp.dur; m.holySlow = false;
