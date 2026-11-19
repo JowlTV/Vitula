@@ -143,33 +143,59 @@ Object.assign(DungeonScene.prototype, {
       ["p0", POTIONS[pslots[0]].icon, Settings.keyLabel((Settings.data.keys.potion1 || ["Z"])[0])], ["p1", POTIONS[pslots[1]].icon, Settings.keyLabel((Settings.data.keys.potion2 || ["C"])[0])]];
     this.potCount = {};
     this.slotIcons = {}; this.slotLocks = {};
-    const size = 38, gap = 6, x0 = VIEW_W / 2 - (list.length * (size + gap) - gap + 14) / 2;
-    { // moldura da barra de habilidades (estilo Tibia)
-      const bw = list.length * (size + gap) - gap + 14, y = VIEW_H - size - 10;
-      fr.fillStyle(0x050406, 0.92).fillRect(x0 - 8, y - 7, bw + 16, size + 20);
-      fr.fillStyle(0x2c2a30, 1).fillRect(x0 - 7, y - 6, bw + 14, 1).fillRect(x0 - 7, y + size + 12, bw + 14, 1);
-      fr.fillStyle(0x4a464e, 1).fillRect(x0 - 7, y - 6, 1, size + 19).fillRect(x0 + bw + 6, y - 6, 1, size + 19);
+    // duas barras: 1) fixas (ataque básico, cura, poções) embaixo, no centro; 2) habilidades dos talentos, que o
+    // jogador arrasta para onde quiser e pode travar (posição salva)
+    const size = 38, gap = 6, fixed = ["basic", "heal", "p0", "p1"];
+    const bar1 = list.filter(e => fixed.includes(e[0])), bar2 = list.filter(e => !fixed.includes(e[0]));
+    const w1 = bar1.length * (size + gap) - gap + 14, x0 = VIEW_W / 2 - w1 / 2, y1 = VIEW_H - size - 10;
+    const frame = (g, x, y, bw) => {
+      g.fillStyle(0x050406, 0.92).fillRect(x - 8, y - 7, bw + 16, size + 20);
+      g.fillStyle(0x2c2a30, 1).fillRect(x - 7, y - 6, bw + 14, 1).fillRect(x - 7, y + size + 12, bw + 14, 1);
+      g.fillStyle(0x4a464e, 1).fillRect(x - 7, y - 6, 1, size + 19).fillRect(x + bw + 6, y - 6, 1, size + 19);
+    };
+    frame(fr, x0, y1, w1);
+    const w2 = bar2.length * (size + gap) - gap;
+    let sb = {}; try { sb = JSON.parse(localStorage.getItem("vitula_skillbar") || "{}"); } catch (e) {}
+    const sbx = Phaser.Math.Clamp(sb.x != null ? sb.x : VIEW_W / 2 - w2 / 2, 30, VIEW_W - w2 - 10), sby = Phaser.Math.Clamp(sb.y != null ? sb.y : y1 - size - 78, 40, VIEW_H - size - 10);
+    const bar2c = this.add.container(sbx, sby); ui.add(bar2c); this.skillBar = bar2c; this.skillBarLocked = !!sb.locked;
+    if (bar2.length) {
+      const g2 = this.add.graphics(); frame(g2, 0, 0, w2); bar2c.add(g2);
+      // alça para arrastar (à esquerda) e cadeado para travar
+      const grip = this.add.rectangle(-22, -7, 13, size + 20, 0x2a2420, 1).setOrigin(0).setStrokeStyle(1, 0x6a5a40).setInteractive({ useHandCursor: true, draggable: true }); bar2c.add(grip);
+      const dots = this.add.graphics(); dots.fillStyle(0xb8a070, 1); for (let i = 0; i < 4; i++) dots.fillRect(-18, 2 + i * 7, 2, 2).fillRect(-13, 2 + i * 7, 2, 2); bar2c.add(dots);
+      const lock = this.add.rectangle(-22, size + 15, 13, 13, 0x2a2420, 1).setOrigin(0).setStrokeStyle(1, 0x6a5a40).setInteractive({ useHandCursor: true }); bar2c.add(lock);
+      const lockG = this.add.graphics(); bar2c.add(lockG);
+      const drawLock = () => { const L = this.skillBarLocked; lockG.clear().fillStyle(L ? 0xe0bc60 : 0x8a7a60, 1).fillRect(-19, size + 21, 7, 5); lockG.lineStyle(1.5, L ? 0xe0bc60 : 0x8a7a60, 1).beginPath(); lockG.arc(-15.5, size + 21, 2.5, Math.PI, 0); lockG.strokePath(); dots.setAlpha(L ? 0.3 : 1); };
+      drawLock();
+      const saveSB = () => { try { localStorage.setItem("vitula_skillbar", JSON.stringify({ x: bar2c.x, y: bar2c.y, locked: this.skillBarLocked })); } catch (e) {} };
+      lock.on("pointerdown", () => { this.skillBarLocked = !this.skillBarLocked; drawLock(); saveSB(); this.msg(t(this.skillBarLocked ? "skillbar_locked" : "skillbar_unlocked")); });
+      let off = null;
+      grip.on("dragstart", p => { off = { x: p.x - bar2c.x, y: p.y - bar2c.y }; });
+      grip.on("drag", p => { if (this.skillBarLocked || !off) return;
+        bar2c.x = Phaser.Math.Clamp(p.x - off.x, 30, VIEW_W - w2 - 10); bar2c.y = Phaser.Math.Clamp(p.y - off.y, 20, VIEW_H - size - 10); });
+      grip.on("dragend", saveSB);
     }
     this.slotCovers = {}; this.slotTimers = {}; this.slotBars = {}; this.slotReady = {};
-    list.forEach(([id, icon, k], i) => {
-      const x = x0 + i * (size + gap) + ((id === "p0" || id === "p1") ? 14 : 0), y = VIEW_H - size - 10; // poções separadas das magias
-      ui.add(this.add.nineslice(x, y, "slot", null, size, size, 4, 4, 4, 4).setOrigin(0));
-      const ic = this.add.image(x + size / 2, y + size / 2, icon); ui.add(ic); this.slotIcons[id] = ic;
+    const place = (arr, cont, ox, oy, extra) => arr.forEach(([id, icon, k], i) => {
+      const x = ox + i * (size + gap) + extra(id), y = oy, add = o => cont.add(o);
+      add(this.add.nineslice(x, y, "slot", null, size, size, 4, 4, 4, 4).setOrigin(0));
+      const ic = this.add.image(x + size / 2, y + size / 2, icon); add(ic); this.slotIcons[id] = ic;
       if ((id === "p0" || id === "p1")) { const P = POTIONS[pslots[+id[1]]]; ic.setScale(24.7 / Math.max(ic.width, ic.height)); if (P.tint) ic.setTint(P.tint); }
       else ic.setDisplaySize(28.5, 28.5);
-      // recarga: sombra que desce, segundos restantes e barrinha embaixo do slot
       const cover = this.add.rectangle(x + 3, y + size - 3, size - 6, size - 6, 0x000000, 0.7).setOrigin(0, 1).setVisible(false);
-      ui.add(cover); this.slotCovers[id] = cover;
-      const timer = txt(this, x + size / 2, y + size / 2, "", 15, COLORS.white).setOrigin(0.5); ui.add(timer); this.slotTimers[id] = timer;
-      ui.add(this.add.rectangle(x + 2, y + size + 3, size - 4, 4, 0x1a1820).setOrigin(0));
-      const bar = this.add.rectangle(x + 2, y + size + 3, size - 4, 4, 0x9fd0ff).setOrigin(0); ui.add(bar); this.slotBars[id] = bar;
-      const ready = this.add.rectangle(x, y, size, size).setOrigin(0).setStrokeStyle(2, 0xe0bc60, 1).setAlpha(0); ui.add(ready); this.slotReady[id] = ready;
-      if (k) ui.add(txt(this, x + size - 9, y + size - 16, k, 12, COLORS.gold));
-      if ((id === "p0" || id === "p1")) { const n = txt(this, x + 4, y + 1, "", 11, COLORS.white); ui.add(n); this.potCount[id] = n; }
-      else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "★", 14, COLORS.dim).setOrigin(0.5); ui.add(lk); this.slotLocks[id] = lk; }
+      add(cover); this.slotCovers[id] = cover;
+      const timer = txt(this, x + size / 2, y + size / 2, "", 15, COLORS.white).setOrigin(0.5); add(timer); this.slotTimers[id] = timer;
+      add(this.add.rectangle(x + 2, y + size + 3, size - 4, 4, 0x1a1820).setOrigin(0));
+      const bar = this.add.rectangle(x + 2, y + size + 3, size - 4, 4, 0x9fd0ff).setOrigin(0); add(bar); this.slotBars[id] = bar;
+      const ready = this.add.rectangle(x, y, size, size).setOrigin(0).setStrokeStyle(2, 0xe0bc60, 1).setAlpha(0); add(ready); this.slotReady[id] = ready;
+      if (k) add(txt(this, x + size - 9, y + size - 16, k, 12, COLORS.gold));
+      if ((id === "p0" || id === "p1")) { const n = txt(this, x + 4, y + 1, "", 11, COLORS.white); add(n); this.potCount[id] = n; }
+      else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "★", 14, COLORS.dim).setOrigin(0.5); add(lk); this.slotLocks[id] = lk; }
     });
+    place(bar1, ui, x0, y1, id => (id === "p0" || id === "p1") ? 14 : 0);   // poções separadas
+    place(bar2, bar2c, 0, 0, () => 0);
     { // ataque básico em destaque: moldura dourada; no automático ela pulsa e aparece o selo "AUTO". Clicar no ícone liga/desliga.
-      const bx0 = x0, by0 = VIEW_H - size - 10;
+      const bx0 = x0, by0 = y1;
       this.basicRing = this.add.rectangle(bx0 - 2, by0 - 2, size + 4, size + 4).setOrigin(0).setStrokeStyle(2, 0xe0bc60, 1); ui.add(this.basicRing);
       this.basicAutoBg = this.add.rectangle(bx0 + size / 2, by0 - 9, 34, 11, 0x3a7a2e, 1).setStrokeStyle(1, 0x9fe08a); ui.add(this.basicAutoBg);
       this.basicAuto = txt(this, bx0 + size / 2, by0 - 9, "AUTO", 9, "#eaffd8").setOrigin(0.5); ui.add(this.basicAuto);

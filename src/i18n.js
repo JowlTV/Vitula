@@ -1073,6 +1073,8 @@ I18N.pt = {
   eq_sandals: "Sandálias",
   eq_guardian_boots: "Botas do Guardião",
   eq_dragon_boots: "Botas de Escamas de Dragão",
+  skillbar_locked: "Barra de habilidades travada.",
+  skillbar_unlocked: "Barra de habilidades destravada: arraste pela alça à esquerda.",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -2091,6 +2093,8 @@ I18N.en = {
   eq_sandals: "Sandals",
   eq_guardian_boots: "Guardian Boots",
   eq_dragon_boots: "Dragon Scale Boots",
+  skillbar_locked: "Skill bar locked.",
+  skillbar_unlocked: "Skill bar unlocked: drag it by the handle on the left.",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
