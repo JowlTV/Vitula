@@ -24,6 +24,7 @@ TownScene.prototype.harpPass = function () {
   if (first) { d.bless = 1; Save.save(); }
   sfx(this, "levelup", 0.25);
   if (first) return this.harpFirst();
+  return;   // (nov/26) a visão curta das passagens seguintes foi removida: só a primeira, em tela cheia
   const key = this.textures.exists("vk_goddess_art") ? "vk_goddess_art" : "altar_oraculo";
   const c = this.add.container(0, 0).setAlpha(0).setDepth(50); this.uiLayer.add(c);
   const img = this.add.image(VIEW_W / 2, VIEW_H / 2 - 20, key); img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
