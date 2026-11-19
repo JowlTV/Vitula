@@ -123,19 +123,15 @@ Object.assign(DungeonScene.prototype, {
       T_(ix, top, t("potion_hint"), 11, COLORS.dim, { wordWrap: { width: iw } });
       let py = top + 36;
       for (const id of Object.keys(POTIONS)) {
-        if (!potionOk(id, this.vocId)) continue;
+        if (!potionOk(id, this.vocId) || !POTIONS[id].dur) continue;   // vida/mana/fúria são de carga (Z/C); aqui só as de efeito
         const P = POTIONS[id], n = d.potions[id] || 0;
         c.add(this.add.rectangle(ix, py - 4, iw, 30, 0x1a1612, 1).setOrigin(0).setStrokeStyle(1, 0x3a3024));
         const ic = this.add.image(ix + 16, py + 11, P.icon); ic.setScale(22 / Math.max(ic.width, ic.height)); if (P.tint) ic.setTint(P.tint); if (!n) ic.setAlpha(0.35);
         c.add(ic);
         T_(ix + 34, py + 3, P.name, 12, n ? COLORS.text : COLORS.dim);
         T_(ix + 26, py + 14, String(n), 10, n ? "#ffffff" : COLORS.dim).setOrigin(0.5, 0);
-        [0, 1].forEach(sl => {
-          const on = d.potionSlots[sl] === id, bx = ix + iw - 50 + sl * 26;
-          const b = this.add.rectangle(bx, py + 11, 22, 20, on ? 0x6a5030 : 0x2a262e).setStrokeStyle(1, 0x6a5030).setInteractive({ useHandCursor: true });
-          b.on("pointerup", () => { d.potionSlots[sl] = id; Save.save(); this.refreshPotionIcons(); this.buildBag(); });
-          c.add(b); T_(bx, py + 11, String(5 + sl), 11, COLORS.gold).setOrigin(0.5);
-        });
+        if (n && this.drinkBuff) { const bx = ix + iw - 40, b = this.add.rectangle(bx, py + 11, 66, 20, 0x2a262e).setStrokeStyle(1, 0x6a5030).setInteractive({ useHandCursor: true });
+          b.on("pointerup", () => { this.drinkBuff(id); this.buildBag(); }); c.add(b); T_(bx, py + 11, t("drink"), 11, COLORS.gold).setOrigin(0.5); }
         py += 36;
       }
     }

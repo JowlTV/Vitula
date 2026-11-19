@@ -8,7 +8,6 @@ const TOWN_W = 46, TOWN_H = 17;   // vila de Karhyn: uma rua reta de oeste (port
 const TOWN_ART = [];   // a cidade é desenhada em código (towngfx.js)
 const TOWN_FILES = ["depot_chest"];
 
-function cityUnlocked() { return true; }
 
 // História e boatos de Karhyn (ligados à introdução "A Queda de Karhyn"): cada morador conta a sua parte, uma fala por vez.
 const townLore = () => ({
@@ -581,13 +580,6 @@ class TownScene extends Phaser.Scene {
   }
   // forja do ferreiro: escolhe um item (vestido ou na mochila) e aprimora em +1
   // custo: 2 itens da mesma raridade (o ferreiro pega os mais fracos da mochila) ou Essências de chefe (Lendário)
-  buyOil(z) {
-    const d = Save.voc(this.vocId);
-    if (Save.gold(this.vocId) < OIL_PRICE) return this.say(t("smith_title"), t("oil_no_gold"), [[t("bye2"), () => this.closeDialog()]]);
-    Save.addGold(this.vocId, -OIL_PRICE); d.oil = (d.oil || 0) + OIL_FLASK; Save.save();
-    this.goldT && this.goldT.setText(`${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`);
-    this.say(t("smith_title"), t("oil_bought", { min: Math.ceil(d.oil / 60) }), [[t("buy_more"), () => this.buyOil(z)], [t("bye2"), () => this.closeDialog()]]);
-  }
 
   openForge(sel) {
     this.closeDialog();
@@ -782,15 +774,6 @@ class TownScene extends Phaser.Scene {
     if (ev.key === "Enter" || ev.key === " " || ev.key === "e" || ev.key === "E") this.dialogBtns[this.dialogSel || 0].fn();
   }
   // placa pendurada sobre a porta da biblioteca (o casebre vira a Biblioteca de Karhyn)
-  librarySign(x, y) {
-    const px = x * T, py = y * T - 8;
-    const g = this.add.graphics().setDepth((y + 1) * T + 2);
-    g.fillStyle(0x2a1a10, 1).fillRect(px - 52, py - 15, 104, 30); g.lineStyle(2, 0xa07a3a, 1).strokeRect(px - 52, py - 15, 104, 30);
-    g.fillStyle(0x6a5030, 1).fillRect(px - 40, py - 25, 3, 10).fillRect(px + 37, py - 25, 3, 10);
-    const tx = txt(this, px, py, t("library_name"), 13, "#e0c070").setOrigin(0.5).setDepth((y + 1) * T + 3).setShadow(1, 1, "#000", 0, true, true);
-    const glow = this.add.image(px, py + 4, "light").setScale(0.5, 0.25).setTint(0xffb050).setAlpha(0.18).setBlendMode(Phaser.BlendModes.ADD).setDepth((y + 1) * T + 1);
-    this.world.add([glow, g, tx]);
-  }
 
   closeDialog() { hideItemCard(this); if (this.dialog) { this.dialog.destroy(); this.dialog = null; } this.dialogBtns = null; this.chatWith = null; this.sending = false; }
 

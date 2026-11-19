@@ -28,7 +28,7 @@ class DungeonScene extends Phaser.Scene {
     this.spells = vocSpells(this.vocId); this.ap = vocAnim(this.vocId); this.heroScale = vocScale(this.vocId);
     this.ranged = VOCATIONS[this.vocId].ranged || 0;
     { const d = Save.voc(this.vocId);   // equipamento inicial: uma vez por vocação
-      if (!d.lightGear) { d.lightGear = true; d.equip.light = d.equip.light || gearNew("lantern"); d.oil = (d.oil || 0) + OIL_START * OIL_FLASK; Save.save(); }
+      if (!d.lightGear) { d.lightGear = true; d.equip.light = d.equip.light || gearNew("lantern"); Save.save(); }
       if (!d.starterGear) { d.starterGear = true; if (this.vocId === "knight") { d.equip.weapon = d.equip.weapon || gearNew("karhyn_sword"); d.equip.shield = d.equip.shield || gearNew("wooden_shield"); } d.equip.armor = d.equip.armor || gearNew("leather_armor"); Save.save(); }
         // Arqueiro: arco, aljava e 50 flechas (também para quem já tinha o personagem antes das flechas)
         giveArcherKit(this.vocId); }

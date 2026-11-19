@@ -170,7 +170,6 @@ EQUIP.lantern = { slot: "light", name: "Lampião", lvl: 1, price: 0, rank: 0, li
   art: { f: "lantern" }, desc: "Luz amarelada em volta de você. Nunca se apaga." };
 EQUIP.goddess_pendant = { slot: "light", name: "Pingente da Deusa", lvl: 1, price: 0, rank: 0, light: { r: 3.4, tint: 0xd8e2ff }, res: { holy: 0.05 }, hpReg: 0.3,
   art: { f: "pendant" }, desc: "Prata com uma pequena harpa. Brilha sozinho, sem óleo." };
-const OIL_FLASK = 300, OIL_PRICE = 15, OIL_START = 2;   // cada frasco dura 5 minutos dentro das masmorras
 // cada equipamento também é um item que pode cair no chão
 // aljavas trazem Dodge fighting: +1 nas mais simples até +5 na mais rara (Abençoada)
 { const D = { quiver: 1, red_quiver: 1, leather_quiver: 2, pearl_quiver: 2, emerald_quiver: 3, diamond_quiver: 3, dragon_quiver: 4, magic_quiver: 4, blessed_quiver: 5 };

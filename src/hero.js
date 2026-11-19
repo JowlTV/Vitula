@@ -185,6 +185,14 @@ Object.assign(DungeonScene.prototype, {
     const i = list.indexOf(h.target); h.target = list[(i + 1) % list.length];
     sfx(this, "pickup", 0.15);
   },
+  // poções de efeito (compradas na loja): bebidas pela mochila
+  drinkBuff(id) {
+    const h = this.hero, d = Save.voc(this.vocId), P = POTIONS[id]; if (!P || !P.dur || h.dead) return;
+    h.potCd = h.potCd || {}; if ((h.potCd[id] || 0) > 0) { this.msg(t("pot_cd", { name: P.name, s: Math.ceil(h.potCd[id]) })); return; }
+    if (!(d.potions[id] > 0)) return;
+    d.potions[id]--; h.potCd[id] = P.cd; h.buffs = h.buffs || {}; h.buffs[id] = P.dur; Save.save();
+    this.msg(`${P.name}: ${P.desc}`); sfx(this, "gem", 0.4);
+  },
   usePotion(slot) {
     const h = this.hero, d = Save.voc(this.vocId), id = potSlotId(this.vocId, slot), P = POTIONS[id];
     if (!P || this.finished || this.paused || h.dead) return;

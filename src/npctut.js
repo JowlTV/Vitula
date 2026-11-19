@@ -8,7 +8,7 @@ const NPC_TUT = ["smith", "inn", "potions", "depot", "locker", "board", "lodging
     const seen = (Save.data.npcTut ||= {});
     if (NPC_TUT.includes(z.kind) && !seen[z.kind]) {
       seen[z.kind] = true; Save.save();
-      if (z.kind !== "library" && z.kind !== "board") this.showInterior(z.kind);
+      if (z.kind !== "board") this.showInterior(z.kind);
       this.say(t("npct_title_" + z.kind), t("npct_" + z.kind), [[t("npct_ok"), () => { this.closeDialog(); use.call(this, z); }]]);
       return;
     }
@@ -24,17 +24,7 @@ TownScene.prototype.harpPass = function () {
   if (first) { d.bless = 1; Save.save(); }
   sfx(this, "levelup", 0.25);
   if (first) return this.harpFirst();
-  return;   // (nov/26) a visão curta das passagens seguintes foi removida: só a primeira, em tela cheia
-  const key = this.textures.exists("vk_goddess_art") ? "vk_goddess_art" : "altar_oraculo";
-  const c = this.add.container(0, 0).setAlpha(0).setDepth(50); this.uiLayer.add(c);
-  const img = this.add.image(VIEW_W / 2, VIEW_H / 2 - 20, key); img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-  img.setScale(Math.min(VIEW_W * 0.62 / img.width, VIEW_H * 0.62 / img.height)).setAlpha(0.92);
-  const glow = this.add.image(VIEW_W / 2, VIEW_H / 2 - 20, "light").setScale(3.2, 2.2).setTint(0xffe2a0).setAlpha(0.25).setBlendMode(Phaser.BlendModes.ADD);
-  const tx = this.add.text(VIEW_W / 2, VIEW_H - 92, t("harp_hear"), { fontFamily: FONT_TITLE, fontSize: "26px", color: "#f0d888", stroke: "#0c0608", strokeThickness: 5, resolution: 2 }).setOrigin(0.5);
-  c.add([glow, img, tx]);
-  this.tweens.add({ targets: c, alpha: 1, duration: 450 });
-  this.tweens.add({ targets: img, scale: img.scale * 1.06, duration: 3000 });
-  this.tweens.add({ targets: c, alpha: 0, delay: 2500, duration: 500, onComplete: () => c.destroy() });
+  // (nov/26) a visão curta das passagens seguintes foi removida: só a primeira, em tela cheia
 };
 
 // primeira passagem: o herói para, a Deusa cobre a tela inteira e ele diz a frase; depois segue

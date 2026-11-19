@@ -455,7 +455,7 @@ Object.assign(DungeonScene.prototype, {
     const cols = [
       [t("pm_controls"), [[K("up") + K("left") + K("down") + K("right"), t("pm_walk")], ["2×", t("pm_diag")], [K("attack"), t("pm_attack")], [K("autoAttack"), t("pm_auto")], [K("interact"), t("pm_interact")], [K("recall"), t("pm_recall")]]],
       [t("pm_skills"), Object.values(this.spells).map(sp => [sp.key, sp.name, t("lv_prefix") + sp.level])],
-      [t("pm_ui"), [[K("bag"), t("pm_bag")], ["U", t("pm_attrs")], [K("map"), t("pm_map")], [K("potion1") + " " + K("potion2"), t("pm_potions")]].concat(this.ranged ? [[K("arrows"), t("pm_arrows")]] : [])],
+      [t("pm_ui"), [[K("bag"), t("pm_bag")], ["U", t("pm_attrs")], [K("map"), t("pm_map")], [K("target"), t("bind_target")], [K("notebook"), t("pm_bestiary")], [K("potion1") + " " + K("potion2"), t("pm_potions")]].concat(this.ranged ? [[K("arrows"), t("pm_arrows")]] : [])],
     ];
     const W = 820, CW = (W - 60) / 3, rows = Math.max(...cols.map(c2 => c2[1].length)), H = 70 + 34 + rows * 30 + 90;
     const x0 = VIEW_W / 2 - W / 2, y0 = VIEW_H / 2 - H / 2;

@@ -21,26 +21,14 @@ const I18N = {};
 I18N.pt = {
   // ── UI geral ──
   back: "Voltar",
-  confirm: "Confirmar",
-  cancel: "Cancelar",
   yes: "Sim",
   no: "Não",
-  ok: "OK",
-  enter: "Entrar",
   exit: "Sair",
-  descend: "Descer",
-  stay: "Ficar",
-  not_yet: "Ainda não",
-  goodbye: "Até mais",
-  see_you: "Até logo",
-  continue: "Continuar",
   options: "Configurações",
   language: "Idioma",
 
   // ── título e menus ──
   play: "Jogar",
-  new_game: "Novo Jogo",
-  settings: "Configurações",
   music_vol: "Música",
   sfx_vol: "Efeitos sonoros",
   keys_hint: "Teclas  (clique para trocar · Esc cancela)",
@@ -55,7 +43,6 @@ I18N.pt = {
 
   // ── seleção de vocação ──
   select_vocation: "Escolha sua vocação",
-  locked: "Bloqueada",
   locked_cost: "Bloqueada · {n} de ouro",
   coming_soon: "Em breve",
   level_n: "Nível {n}",
@@ -85,7 +72,6 @@ I18N.pt = {
   fury: "Fúria",
   mana: "Mana",
   gold: "ouro",
-  gold_coins: "moedas de ouro",
 
   // ── regiões ──
   region_karhyn_sewers: "Karhyn e seus Esgotos",
@@ -111,20 +97,13 @@ I18N.pt = {
   floor_title: "{name}\nAndar {n} de {total}",
   potions: "Poções",
   attributes: "Atributos",
-  skills_window: "Habilidades",
-  battle_list_closed: "Battle List fechada — L para abrir",
-  skills_closed: "Habilidades fechada — K para abrir",
   auto: "AUTO",
-  manual: "MANUAL",
   auto_attack_on: "Ataque automático ligado",
   auto_attack_off: "Ataque automático desligado",
 
   // ── dungeon / andares ──
   floor_enter: "{name} — andar {n}.",
   floor_last: "Último andar. Algo grande fareja você.",
-  cave_enter: "O esgoto desaba numa caverna natural. Fique perto da luz.",
-  go_up_rope: "Você sobe pela corda. Andar {n}.",
-  trap_gas: "Clique! Gás venenoso sai do respiradouro.",
 
   // ── itens ──
   item_gold_coin: "moedas de ouro",
@@ -143,13 +122,8 @@ I18N.pt = {
   contract_hard: "Difícil",
 
   // ── coleta ──
-  pickup_key: "Você pegou uma chave de bronze.",
-  scroll_renew: "O pergaminho renova suas magias.",
   boss_essence: "Essência de chefe! ({n}) O ferreiro usa para aprimorar itens Lendários.",
-  boss_essence_float: "Essência de chefe",
   chest_locked: "O baú está trancado. Precisa de uma chave de bronze.",
-  chest_opened: "Você abriu o baú.",
-  wrong_vocation: "Sua vocação não usa este item.",
   blessing_max: "A Oráculo já lhe concedeu toda a sua bênção.",
 
   // ── skills de combate ──
@@ -212,8 +186,6 @@ I18N.pt = {
   spell_eagle_eye: "Olho de Águia",
   spell_eagle_eye_desc: "Foco total: +30% de dano a distância e +10% de chance de crítico por 8 s.",
 
-  no_fury: "{resource} insuficiente para {name} ({cost}).",
-  eagle_eye_float: "Olho de Águia",
 
   // ── poções ──
   pot_health: "Poção de vida",
@@ -245,8 +217,6 @@ I18N.pt = {
   shop_first_next: "Próximo: {desc}",
   shop_max: "Máximo",
   gold_display: "◉ {n} de ouro",
-  points_free: "+{n} ponto(s) · U",
-  points_open: "abrir · U",
 
   // ── elementos ──
   el_physical: "Físico",
@@ -366,59 +336,25 @@ I18N.pt = {
   eq_goblin_totem_desc: "+3% de dano contra goblins. Regenera +0,5 vida/s.",
 
   // ── slots de equipamento ──
-  equip_wrong_voc: "não serve para a sua vocação",
 
   // ── bolsa / stats ──
-  base_damage: "Dano base",
-  attack_speed: "Velocidade de ataque",
-  total_armor: "Armadura total",
-  oil_minutes: "Óleo: {n} minutos",
 
   // ── NPCs e cidade ──
   npc_smith: "Ferreiro",
   npc_potion_seller: "Vendedora de Poções",
   npc_depot_guard: "Guarda do Depot",
-  npc_oracle: "Estátua da Oráculo",
-  npc_inn: "A Harpa Dançante",
-  npc_lodging: "Acomodação",
-  npc_board: "Mural de contratos",
-  npc_gate: "Portão de Karhyn",
-  npc_sewer: "Entrada dos Esgotos",
-  npc_tower: "Torre de Vigia",
 
   // ── diálogos da cidade ──
   intro_dialog: "Esta é Karhyn, uma cidade que já viveu dias melhores.\n\nConverse com os moradores e descubra mais sobre a sua história e os seus boatos. Compre poções, aprimore atributos, guarde seus itens no depot ou melhore-os com o ferreiro. Pegue contratos de caça no mural do largo.\n\nExplore o esgoto e salve a cidade antes que ela entre em colapso.",
 
-  smith_dialog: "\"Traga sua lâmina quando estiver cega. Me dê duas peças da mesma raridade que eu derreto e reforço a que você escolher.\"\n\nCada +1 consome 2 itens da mesma raridade. No +5 o item sobe de raridade (até Ultra raro). Lendários sobem com Essências de chefe, até +10.",
-  smith_upgrade: "Aprimorar equipamento",
-  smith_buy_oil: "Comprar óleo de lampião ({n} ouro)",
-  smith_no_gold: "\"Óleo não é de graça. Volte com ouro.\"",
-  smith_oil_bought: "\"Óleo de baleia, do bom. Queima limpo.\"\n\nÓleo do lampião: {n} minutos.",
 
-  depot_dialog: "\"Bem-vindo ao depot de Karhyn. Cada aventureiro tem seu baú nas cabines do fundo — o que guardar ali não se perde nas descidas.\"\n\nOuro guardado: ◉ {n}",
-  depot_open: "Abrir meu baú",
 
-  potion_dialog: "\"Frascos frescos, {voc}. Vida, fúria e outras misturas da casa.\"\n\nNa sua mochila: {n} poção(ões).  Ouro: ◉ {gold}",
-  potion_see: "Ver as poções",
 
-  gate_dialog: "Deixar a cidadela e voltar ao mapa?",
 
-  sewer_dialog: "A grade range com o vento que sobe lá de baixo. Ratos guincham na escuridão e semeiam o caos.\n\nDizem que, se descer demais, é possível ouvir os gritos de uma besta desconhecida.",
 
-  tower_dialog: "A porta range. Uma escada em caracol sobe no escuro até o terraço.",
-  tower_climb: "Subir ao topo",
 
-  inn_dialog: "Música abafada e cheiro de cerveja azeda. O taverneiro limpa um copo e te olha como quem já te viu antes.\n\n\"Você estava aqui ontem? Não lembra? Ninguém lembra de nada em Karhyn.\"",
 
-  lodging_dialog: "Quartos úmidos, cama de palha e uma vela. A dona cobra pouco e não faz perguntas.",
 
-  oracle_first_blessing: "A pedra está fria e gasta, mas a luz desce sobre você. Por um instante a chuva some, e uma voz que você quase reconhece diz o seu nome.\n\nVocê recebeu a primeira bênção da Oráculo (1/3): morrer agora custa menos.",
-  oracle_kneel: "Ajoelhar e agradecer",
-  oracle_dialog: "Os mestres de armas de Karhyn treinam quem paga em ouro: vida, velocidade de ataque, armadura e fúria.",
-  oracle_pray: "Rezar",
-  oracle_pray_result: "Você fecha os olhos. A chuva parece cair mais devagar, e por um instante a harpa da Oráculo toca só para você. a Oráculo ainda vela por Karhyn.",
-  oracle_rise: "Levantar-se",
-  oracle_train: "Treinar atributos",
 
   // ── bênçãos ──
   bless_1: "Você recebeu a primeira bênção da Oráculo.\n\nNa próxima morte, perderá 60% da experiência do nível atual, 75% dos equipamentos e 20% do ouro coletado (em vez de 80%, 100% e 25%).",
@@ -426,15 +362,8 @@ I18N.pt = {
   bless_3: "Você recebeu a terceira bênção da Oráculo.\n\nNa próxima morte, perderá 20% da experiência do nível atual, nenhum equipamento e nenhum ouro.",
 
   // ── contratos ──
-  board_intro: "Papéis pregados uns sobre os outros, molhados de chuva. Os moradores pagam a quem limpar o esgoto das criaturas que sobem à noite.\n\nQuanto mais difícil o contrato, maior a recompensa. Um contrato por vez.",
-  board_accept: "Você arrancou o papel do mural. Contrato aceito: caçar {n} {monster} no esgoto.\n\nVolte aqui para receber a recompensa.",
-  board_done: "Contrato cumprido! Você recebeu {xp} de experiência, {gold} de ouro e {item} ({rarity}), que foi para a mochila.",
-  board_deliver: "Entregar o contrato",
-  board_new: "Ver novos contratos",
 
   // ── forja ──
-  forge_upgrade: "Aprimorar",
-  forge_missing: "Faltam materiais",
 
   // ── lore ──
 
@@ -442,18 +371,10 @@ I18N.pt = {
   map_names: JSON.stringify({ smith: "Ferreiro", inn: "Harpa Dançante", potions: "Poções", depot: "Depot", lodging: "Acomodação", hall: "Oráculo", board: "Contratos", sewer: "Esgoto", gate: "Portão" }),
 
   // ── menu da cidade ──
-  town_menu: "O que deseja fazer?",
-  town_back_to_map: "Voltar ao mapa",
 
   // ── sky / clima ──
-  night: "Noite",
-  dawn: "Amanhecer",
-  dusk: "Entardecer",
-  day: "Dia",
-  rain: "chuva",
 
   // ── luz ──
-  lantern_out: "O lampião apagou. Você está no escuro!",
 
   // ── intro (lore) ──
   intro_1: "No continente de Godoyr existe uma pequena cidade chamada Karhyn.",
@@ -468,7 +389,6 @@ I18N.pt = {
 
   // ── demo end ──
   demo_end_title: "Fim da Demo",
-  demo_end_text: "Obrigado por jogar Vitula! Esta é a primeira versão da demo. Mais conteúdo em breve.",
 
   // ── touch controls ──
   touch_up: "Cima",
@@ -500,7 +420,6 @@ I18N.pt = {
   eq_speed: "velocidade +{v}",
 
   // ── zona de depósito ──
-  depot_enter: "Depot (entrar)",
   understood: "Entendi",
   zone_smith_enter: "Ferreiro (entrar)",
   zone_potions_enter: "Loja de Poções (entrar)",
@@ -523,8 +442,6 @@ I18N.pt = {
   depot_chest: "Baú do depot",
   close: "Fechar",
   oil_no_gold: "\"Óleo não é de graça. Volte com ouro.\"",
-  oil_bought: "\"Óleo de baleia, do bom. Queima limpo.\"\n\nÓleo do lampião: {min} minutos.",
-  buy_more: "Comprar mais",
   forge_title: "Forja de Karhyn",
   no_equip: "Você não tem equipamentos.",
   worn_label: "V",
@@ -573,12 +490,10 @@ I18N.pt = {
   lore_lodging_1: "A dona ajeita o xale.\n\n\"Metade dos quartos está vazia. As famílias que podiam foram embora para o sul. Ficou quem não tem para onde ir.\"",
   lore_lodging_2: "\"De noite dá para ouvir, sabe? Debaixo do assoalho. Um arranhar, e às vezes uma coisa mais pesada, se arrastando. Eu ponho a cama longe do ralo.\"",
   lore_lodging_3: "\"Você chegou pelo portão sem lembrar de nada, não foi? Não é o primeiro. A deusa manda gente quando a cidade precisa. Pelo menos é o que eu prefiro acreditar.\"",
-  contract_board: "Mural de contratos",
 
   // ── bag / inventory ──
   bag_title: "Mochila",
   equipment: "Equipamentos",
-  inventory: "Inventário",
   bag_tip: "Passe o mouse num item para ver os detalhes. Clique para vestir ou tirar.",
   slot_amulet: "Amuleto",
   slot_helmet: "Capacete",
@@ -602,7 +517,6 @@ I18N.pt = {
   defense_value: "Defesa",
   block_chance: "Chance de bloqueio",
   regen_label: "Regeneração",
-  regen_fmt: "{hp} vida/s · {mp} {resource}/s",
   resistances: "Resistências",
   no_resist: "nenhuma",
   level_label: "Nível",
@@ -612,7 +526,7 @@ I18N.pt = {
   oil_empty: "O lampião apagou. Compre óleo com o ferreiro.",
   goddess_light: "Luz da Deusa",
   no_light: "Sem luminária",
-  potion_hint: "Poções — clique em 5 ou 6 para pôr no atalho",
+  potion_hint: "Poções de efeito: beba na masmorra.",
   stored_gear: "Equipamentos guardados ({n})",
   essences_label: "Essências: {n}",
 
@@ -633,22 +547,17 @@ I18N.pt = {
   attrs_points: "Pontos para distribuir: {n}",
   attrs_none: "Sem pontos. Cada nível ganho dá 1 ponto.",
   pause_title: "Pausa",
-  pause_controls: "Mover: WASD ou setas (diagonal vale)\nAtaque básico: Espaço · R liga/desliga o automático · E na corda: subir\nFúria enche ao golpear e apanhar e paga as habilidades.",
   resume: "Continuar",
   abandon: "Abandonar (conta como morte)",
   dungeon_won: "Masmorra Vencida",
   you_fell: "Você Caiu",
   descend_again: "Descer de novo",
   back_to_city: "Voltar à cidade",
-  back_to_map: "Voltar ao mapa",
   credits_jowl: "Créditos a JowlTV",
 
   // ── hero messages ──
   ml_up: "Você avançou para o magic level {n}.",
   ml_float: "Magic level {n}",
-  no_potion: "Sem {name} na mochila. Compre na Loja.",
-  mana_full: "Mana cheia",
-  fury_full: "Fúria cheia",
   skill_up: "Você avançou em {name} para {n}.",
   floor_info: "{region} — andar {n}.",
   last_floor: "Último andar. Algo grande fareja você.",
@@ -666,14 +575,11 @@ I18N.pt = {
   bless_float: "Bênção {n}/3",
   bless_title: "Bênção da Oráculo",
   level_up_float: "Nível {n}!",
-  level_up_skill: "Nível {n}: você aprendeu {name}! (tecla {key}) · +1 ponto de atributo (U)",
-  level_up_plain: "Você subiu para o nível {n}. +1 ponto de atributo (U)",
   promoted: "Você foi promovido a {name}! Regeneração ×{regen} e +{dmg}% de dano.",
 
   // ── spells ──
   fury_low: "{resource} insuficiente para {name} ({cost}).",
   no_target: "Nenhum alvo ao alcance.",
-  eagle_eye: "Olho de Águia",
 
   // ── floor ──
   gas_trap: "Clique! Gás venenoso sai do respiradouro.",
@@ -683,20 +589,12 @@ I18N.pt = {
   boss_fell: "O {name} caiu! Uma passagem se abre.",
 
   // ── lighting ──
-  oil_warning: "Sua lanterna está fraca. Óleo restante: {n} min.",
-  oil_out: "O óleo acabou. Escuridão total.",
 
   // ── town ──
   town_welcome: "Esta é Karhyn, uma cidade que já viveu dias melhores.\n\nConverse com os moradores e descubra mais sobre a sua história e os seus boatos. Compre poções, aprimore atributos, guarde seus itens no depot ou melhore-os com o ferreiro. Pegue contratos de caça no mural do largo.\n\nExplore o esgoto e salve a cidade antes que ela entre em colapso.",
-  town_understood: "Entendi",
-  zone_smith: "Ferreiro (entrar)",
-  zone_potions: "Loja de Poções (entrar)",
-  zone_depot: "Depot (entrar)",
   zone_locker: "Seu baú do depot",
   zone_board: "Mural de contratos",
-  zone_lodging: "Acomodação",
   zone_oracle: "Estátua da Oráculo",
-  zone_sewer: "Descer ao esgoto",
   zone_gate: "Portão de Karhyn",
   ask_lore: "Perguntar sobre Karhyn e os boatos",
   lore_more: "E o que mais se fala?",
@@ -720,7 +618,6 @@ I18N.pt = {
   smith_title: "Ferreiro",
   smith_greet: "\"Traga sua lâmina quando estiver cega. Me dê duas peças da mesma raridade que eu derreto e reforço a que você escolher.\"\n\nCada +1 consome 2 itens da mesma raridade. No +5 o item sobe de raridade (até Ultra raro). Lendários sobem com Essências de chefe, até +10.",
   upgrade_gear: "Aprimorar equipamento",
-  buy_oil: "Comprar óleo de lampião ({price} ouro)",
   bye2: "Até mais",
   tower_title: "Torre de Vigia",
   tower_desc: "A porta range. Uma escada em caracol sobe no escuro até o terraço.",
@@ -732,17 +629,14 @@ I18N.pt = {
   lodging_title: "Acomodação",
   lodging_desc: "Quartos úmidos, cama de palha e uma vela. A dona cobra pouco e não faz perguntas.",
   lodging_rest: "Descansar (recupera tudo)",
-  two_hands: "duas mãos",
   tip_level: " · nível {n}",
   tip_wrong_voc: " · não serve para a sua vocação",
   tip_worn: " · vestido (clique para tirar)",
   regen_line: "{hp} vida/s · {res} {kind}/s",
   word_fury: "fúria",
   word_mana: "mana",
-  no_gear: "Nenhum. Monstros às vezes deixam cair.",
   more_in_bag: "+{n} na mochila",
   err_title: "Erro no jogo (tire um print e mande):",
-  potion_wrong_voc: "{name} não serve para {voc}.",
   cave_collapse: "O esgoto desaba numa caverna natural. Fique perto da luz.",
   gold_float: "+{n} ouro",
   spell_locked: "{name} é liberada no nível {n}.",
@@ -750,7 +644,6 @@ I18N.pt = {
   contract_progress_done: "Contrato cumprido: {n}/{n} {name}. Volte ao mural de Karhyn.",
   attrs_spent: "Nível {n} · {k} ponto(s) já distribuído(s)",
   attr_weapon_plus: "+1 de {name}",
-  pause_keys: "Z e C: poções · I: mochila · U: talentos · M: mapa · TAB: trocar de alvo · N: bestiário · roda do mouse: zoom",
   death_pen: "\n\nMorte — bênçãos da Oráculo: {bless}/3\nExperiência perdida: {xp}% do nível atual\nEquipamentos perdidos: {eq}\nOuro perdido: {gold}% ({lost})",
   word_all: "todos",
   run_summary: "Dificuldade: {d}%\nAndar alcançado: {f}/{total}\nNível: {lvl}\nAbates: {k}\nOuro obtido: {g}   (bolsa do {voc}: {bag})",
@@ -768,7 +661,6 @@ I18N.pt = {
   pray: "Rezar",
   stand_up: "Levantar-se",
   kneel_thank: "Ajoelhar e agradecer",
-  train_attrs: "Treinar atributos",
   oil_low: "O lampião está quase sem óleo.",
   touch_frontal: "Golpe Frontal",
   touch_magic2: "Magia 2",
@@ -847,7 +739,6 @@ I18N.pt = {
   arrow_explosive: "Flecha Explosiva",
   arrow_holy: "Flecha Sagrada",
   no_arrows: "A aljava está vazia. Compre flechas no ferreiro de Karhyn.",
-  no_arrows_short: "Sem flechas",
   arrows_out_type: "Acabaram as {name}s.",
   arrow_selected: "Usando: {name} ({n})",
   arrow_hud: "Flechas: {n}",
@@ -886,8 +777,6 @@ I18N.pt = {
   card_hint_equip: "Clique para vestir",
   card_hint_unequip: "Vestido · clique para tirar",
   loot_gold: "+{n} de ouro",
-  loot_xp: "{name} · +{n} exp",
-  zone_library: "Biblioteca de Karhyn",
   library_name: "Biblioteca",
   best_title: "Bestiário de Karhyn",
   best_progress: "{s} de {n} espécies avistadas · {d} completas",
@@ -984,7 +873,6 @@ I18N.pt = {
   wp_on: "Waypoint ativado: {region}, andar {n}.",
   wp_none: "Nenhum waypoint ativado ainda. Pise no piso da harpa na chegada de cada andar para ativá-lo.",
   slope_pass_open: "Com o Rei Rato morto, uma passagem se abre na sala: ela sobe para a Encosta dos Goblins.",
-  slow_float: "lento",
   guard_float: "Égide!",
   tut_no_recall: "O Retorno não funciona na Rook Forest: siga a trilha até o portão de Karhyn.",
   potion_filled: "Poção cheia!",
@@ -999,12 +887,11 @@ I18N.pt = {
   pm_interact: "Falar / usar / corda",
   pm_recall: "Retorno à cidade",
   pm_bag: "Mochila",
-  pm_attrs: "Atributos",
+  pm_attrs: "Talentos",
   pm_map: "Mapa",
   pm_potions: "Poções",
   pm_arrows: "Trocar flecha",
   npct_ok: "Entendi",
-  harp_hear: "Ouço o som de uma harpa...",
   npct_title_smith: "Ferreiro de Karhyn",
   npct_smith: "Aqui você pode:\n• Aprimorar seus equipamentos na forja, usando ouro e materiais.\n• Comprar óleo para a lamparina, que ilumina os andares escuros.\n• Arqueiros: comprar flechas especiais (fogo, gelo, sagrada...).\n• Perguntar sobre a história da forja de Karhyn.",
   npct_title_inn: "A Harpa Dançante",
@@ -1044,24 +931,12 @@ I18N.pt = {
   talents_full: "Este talento já está no máximo.",
   skill_dodge: "Dodge",
   skill_dodge_desc: "chance de esquivar (Arqueiro)",
-  note_title: "Caderno do Aventureiro",
-  note_empty: "Nenhuma criatura anotada ainda.\nDerrote monstros para preencher o caderno.\nO Bestiário completo fica na Biblioteca de Karhyn.",
-  note_next: "{n}/{need} abates",
-  note_bonus: "+5% dano / −5% recebido",
-  note_stats: "Vida {hp} · Dano {dmg} · Armadura {arm}",
-  note_unknown: "Vida e dano: ainda desconhecidos",
-  note_foot: "Página {p}/{n} · N fecha · detalhes completos na Biblioteca",
   bind_notebook: "Caderno do aventureiro",
   pot_charging: "{name} ainda enchendo ({p}%) — derrote monstros",
   arrow_hud2: "Flechas: {n}/{cap}",
   arrow_hud_inf: "Flechas: ∞",
   wp_press: "Pedra de passagem ativa. Aperte {k} nela para viajar.",
-  note_intro: "Seu primeiro abate! Este é o Caderno do aventureiro (tecla N): aqui ficam as criaturas que você caça e suas missões ativas. O Bestiário completo está na Biblioteca de Karhyn.",
-  note_missions: "Missões ativas",
-  note_contract: "Contrato de caça: {name} {got}/{n}",
-  note_no_missions: "Nenhuma — pegue um contrato no mural de Karhyn.",
   best_reward: "Bestiário completo! Recompensa: {gear} ({rarity}) foi para a mochila.",
-  note_foot2: "N fecha · detalhes completos na Biblioteca",
   hungry_spider: "Ela está sempre com fome...",
   best_tip_n: "Este é o seu Bestiário (tecla N): cada criatura derrotada revela mais sobre ela.",
   best_beh_giant_spider: "Corre cinco vezes mais rápido que um aventureiro. Não dá para fugir: lute.",
@@ -1073,33 +948,23 @@ I18N.pt = {
   eq_sandals: "Sandálias",
   eq_guardian_boots: "Botas do Guardião",
   eq_dragon_boots: "Botas de Escamas de Dragão",
-  skillbar_locked: "Barra de habilidades travada.",
-  skillbar_unlocked: "Barra de habilidades destravada: arraste pela alça à esquerda.",
   bind_target: "Trocar de alvo",
+  drink: "Beber",
+  pot_cd: "{name}: aguarde {s} s.",
+  mon_giant_spider: "Aranha Gigante",
+  pm_bestiary: "Bestiário",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
 I18N.en = {
   back: "Back",
-  confirm: "Confirm",
-  cancel: "Cancel",
   yes: "Yes",
   no: "No",
-  ok: "OK",
-  enter: "Enter",
   exit: "Leave",
-  descend: "Descend",
-  stay: "Stay",
-  not_yet: "Not yet",
-  goodbye: "Goodbye",
-  see_you: "See you",
-  continue: "Continue",
   options: "Settings",
   language: "Language",
 
   play: "Play",
-  new_game: "New Game",
-  settings: "Settings",
   music_vol: "Music",
   sfx_vol: "Sound effects",
   keys_hint: "Keys  (click to rebind · Esc cancels)",
@@ -1113,7 +978,6 @@ I18N.en = {
   speed_original: "Original",
 
   select_vocation: "Choose your vocation",
-  locked: "Locked",
   coming_soon: "Coming soon",
   level_n: "Level {n}",
   passive_prefix: "Passive — ",
@@ -1140,7 +1004,6 @@ I18N.en = {
   fury: "Fury",
   mana: "Mana",
   gold: "gold",
-  gold_coins: "gold coins",
 
   region_karhyn_sewers: "Karhyn and its Sewers",
   region_karhyn_sewers_desc: "Start in the Citadel of Karhyn; descend into the sewer through the grate whenever you wish. Damp tunnels beneath the city. Rats and bats everywhere.",
@@ -1164,19 +1027,12 @@ I18N.en = {
   floor_title: "{name}\nFloor {n} of {total}",
   potions: "Potions",
   attributes: "Attributes",
-  skills_window: "Skills",
-  battle_list_closed: "Battle List closed — L to open",
-  skills_closed: "Skills closed — K to open",
   auto: "AUTO",
-  manual: "MANUAL",
   auto_attack_on: "Auto attack on",
   auto_attack_off: "Auto attack off",
 
   floor_enter: "{name} — floor {n}.",
   floor_last: "Last floor. Something big is sniffing you out.",
-  cave_enter: "The sewer collapses into a natural cave. Stay near the light.",
-  go_up_rope: "You climb the rope. Floor {n}.",
-  trap_gas: "Click! Poisonous gas pours from the vent.",
 
   item_gold_coin: "gold coins",
   item_silver_coin: "silver coins",
@@ -1193,13 +1049,8 @@ I18N.en = {
   contract_medium: "Medium",
   contract_hard: "Hard",
 
-  pickup_key: "You picked up a bronze key.",
-  scroll_renew: "The scroll renews your spells.",
   boss_essence: "Boss essence! ({n}) The smith uses it to upgrade Legendary items.",
-  boss_essence_float: "Boss Essence",
   chest_locked: "The chest is locked. You need a bronze key.",
-  chest_opened: "You opened the chest.",
-  wrong_vocation: "Your vocation cannot use this item.",
   blessing_max: "The Oracle has already granted you her full blessing.",
 
   skill_sword: "Sword",
@@ -1257,8 +1108,6 @@ I18N.en = {
   spell_eagle_eye: "Eagle Eye",
   spell_eagle_eye_desc: "Total focus: +30% ranged damage and +10% critical chance for 8 s.",
 
-  no_fury: "Not enough {resource} for {name} ({cost}).",
-  eagle_eye_float: "Eagle Eye",
 
   pot_health: "Health Potion",
   pot_health_desc: "Heals 40% of max HP.",
@@ -1288,8 +1137,6 @@ I18N.en = {
   shop_first_next: "Next: {desc}",
   shop_max: "Max",
   gold_display: "◉ {n} gold",
-  points_free: "+{n} point(s) · U",
-  points_open: "open · U",
 
   el_physical: "Physical",
   el_fire: "Fire",
@@ -1404,83 +1251,34 @@ I18N.en = {
   eq_goblin_totem: "Goblin War Totem",
   eq_goblin_totem_desc: "+3% damage against goblins. Regenerates +0.5 HP/s.",
 
-  equip_wrong_voc: "your vocation can't use this",
 
-  base_damage: "Base damage",
-  attack_speed: "Attack speed",
-  total_armor: "Total armor",
-  oil_minutes: "Oil: {n} minutes",
 
   npc_smith: "Smith",
   npc_potion_seller: "Potion Seller",
   npc_depot_guard: "Depot Guard",
-  npc_oracle: "Oracle Statue",
-  npc_inn: "The Dancing Harp",
-  npc_lodging: "Lodging",
-  npc_board: "Contract Board",
-  npc_gate: "Karhyn Gate",
-  npc_sewer: "Sewer Entrance",
-  npc_tower: "Watchtower",
 
   intro_dialog: "This is Karhyn, a city that has seen better days.\n\nTalk to the townsfolk and learn about its history and rumors. Buy potions, improve attributes, store items in the depot or upgrade them at the smith. Pick up hunting contracts at the board in the square.\n\nExplore the sewer and save the city before it collapses.",
 
-  smith_dialog: "\"Bring your blade when it's gone dull. Give me two pieces of the same rarity and I'll melt them down and strengthen the one you choose.\"\n\nEach +1 consumes 2 items of the same rarity. At +5 the item upgrades in rarity (up to Ultra Rare). Legendary items upgrade with Boss Essences, up to +10.",
-  smith_upgrade: "Upgrade equipment",
-  smith_buy_oil: "Buy lantern oil ({n} gold)",
-  smith_no_gold: "\"Oil isn't free. Come back with gold.\"",
-  smith_oil_bought: "\"Whale oil, the good stuff. Burns clean.\"\n\nLantern oil: {n} minutes.",
 
-  depot_dialog: "\"Welcome to the Karhyn depot. Every adventurer has a chest in the back rooms — what you store there won't be lost on descents.\"\n\nGold stored: ◉ {n}",
-  depot_open: "Open my chest",
 
-  potion_dialog: "\"Fresh vials, {voc}. Health, fury and other house blends.\"\n\nIn your bag: {n} potion(s).  Gold: ◉ {gold}",
-  potion_see: "See the potions",
 
-  gate_dialog: "Leave the citadel and return to the map?",
 
-  sewer_dialog: "The grate rattles with the wind from below. Rats squeal in the darkness and spread chaos.\n\nThey say that if you go too deep, you can hear the screams of an unknown beast.",
 
-  tower_dialog: "The door creaks. A spiral staircase climbs into the dark up to the terrace.",
-  tower_climb: "Climb to the top",
 
-  inn_dialog: "Muffled music and the smell of sour beer. The innkeeper wipes a glass and looks at you as if he's seen you before.\n\n\"Were you here yesterday? Don't remember? Nobody remembers anything in Karhyn.\"",
 
-  lodging_dialog: "Damp rooms, straw beds and a candle. The landlady charges little and asks no questions.",
 
-  oracle_first_blessing: "The stone is cold and worn, but light descends upon you. For a moment the rain stops, and a voice you almost recognize says your name.\n\nYou received the Oracle's first blessing (1/3): dying now costs less.",
-  oracle_kneel: "Kneel and give thanks",
-  oracle_dialog: "Karhyn's weapon masters train those who pay in gold: health, attack speed, armor and fury.",
-  oracle_pray: "Pray",
-  oracle_pray_result: "You close your eyes. The rain seems to fall slower, and for a moment the Oracle's harp plays just for you. The Oracle still watches over Karhyn.",
-  oracle_rise: "Rise",
-  oracle_train: "Train attributes",
 
   bless_1: "You received the Oracle's first blessing.\n\nOn your next death you will lose 60% of your current level's experience, 75% of your equipment and 20% of the gold collected (instead of 80%, 100% and 25%).",
   bless_2: "You received the Oracle's second blessing.\n\nOn your next death you will lose 35% of your current level's experience, 35% of your equipment and 10% of the gold collected.",
   bless_3: "You received the Oracle's third blessing.\n\nOn your next death you will lose 20% of your current level's experience, no equipment and no gold.",
 
-  board_intro: "Papers stuck on top of each other, wet with rain. The townsfolk pay those who clear the sewer of the creatures that climb up at night.\n\nThe harder the contract, the greater the reward. One contract at a time.",
-  board_accept: "You ripped the paper from the board. Contract accepted: hunt {n} {monster} in the sewer.\n\nCome back here to collect the reward.",
-  board_done: "Contract fulfilled! You received {xp} experience, {gold} gold and {item} ({rarity}), which went to your bag.",
-  board_deliver: "Deliver the contract",
-  board_new: "See new contracts",
 
-  forge_upgrade: "Upgrade",
-  forge_missing: "Missing materials",
 
 
   map_names: JSON.stringify({ smith: "Smith", inn: "Dancing Harp", potions: "Potions", depot: "Depot", lodging: "Lodging", hall: "Oracle", board: "Contracts", sewer: "Sewer", gate: "Gate" }),
 
-  town_menu: "What would you like to do?",
-  town_back_to_map: "Back to map",
 
-  night: "Night",
-  dawn: "Dawn",
-  dusk: "Dusk",
-  day: "Day",
-  rain: "rain",
 
-  lantern_out: "The lantern went out. You are in the dark!",
 
   intro_1: "In the continent of Godoyr there is a small city called Karhyn.",
   intro_2: "A virtuous city of kind, warm and festive people, known for its forge, from which the finest swords and shields in the entire continent are crafted.",
@@ -1492,7 +1290,6 @@ I18N.en = {
   death_title: "You died",
 
   demo_end_title: "End of the Demo",
-  demo_end_text: "Thank you for playing Vitula! This is the first version of the demo. More content coming soon.",
 
   touch_up: "Up",
   touch_down: "Down",
@@ -1522,7 +1319,6 @@ I18N.en = {
   eq_light_free: "silver light no oil",
   eq_speed: "speed +{v}",
 
-  depot_enter: "Depot (enter)",
   understood: "Got it",
   zone_smith_enter: "Smith (enter)",
   zone_potions_enter: "Potion Shop (enter)",
@@ -1545,8 +1341,6 @@ I18N.en = {
   depot_chest: "Depot chest",
   close: "Close",
   oil_no_gold: "\"Oil isn't free. Come back with gold.\"",
-  oil_bought: "\"Whale oil, the good kind. Burns clean.\"\n\nLantern oil: {min} minutes.",
-  buy_more: "Buy more",
   forge_title: "Karhyn Forge",
   no_equip: "You have no equipment.",
   worn_label: "W",
@@ -1595,12 +1389,10 @@ I18N.en = {
   lore_lodging_1: "The owner adjusts her shawl.\n\n\"Half the rooms are empty. The families that could left for the south. Those with nowhere to go stayed.\"",
   lore_lodging_2: "\"At night you can hear it, you know? Under the floor. A scratching, and sometimes something heavier, dragging. I keep the bed away from the drain.\"",
   lore_lodging_3: "\"You came through the gate without remembering anything, didn't you? You're not the first. The goddess sends people when the city needs them. At least that's what I prefer to believe.\"",
-  contract_board: "Contract board",
 
   // ── bag / inventory ──
   bag_title: "Backpack",
   equipment: "Equipment",
-  inventory: "Inventory",
   bag_tip: "Hover an item for details. Click to equip or unequip.",
   slot_amulet: "Amulet",
   slot_helmet: "Helmet",
@@ -1624,7 +1416,6 @@ I18N.en = {
   defense_value: "Defense",
   block_chance: "Block chance",
   regen_label: "Regeneration",
-  regen_fmt: "{hp} hp/s · {mp} {resource}/s",
   resistances: "Resistances",
   no_resist: "none",
   level_label: "Level",
@@ -1634,7 +1425,7 @@ I18N.en = {
   oil_empty: "The lantern went out. Buy oil from the smith.",
   goddess_light: "Goddess Light",
   no_light: "No light source",
-  potion_hint: "Potions — click 5 or 6 to assign shortcut",
+  potion_hint: "Effect potions: drink them in the dungeon.",
   stored_gear: "Stored gear ({n})",
   essences_label: "Essences: {n}",
 
@@ -1655,22 +1446,17 @@ I18N.en = {
   attrs_points: "Points to distribute: {n}",
   attrs_none: "No points. Each level grants 1 point.",
   pause_title: "Paused",
-  pause_controls: "Move: WASD or arrows (diagonal ok)\nBasic attack: Space · R toggles auto-attack · E on rope: climb\nFury fills on hit and taking damage and pays for abilities.",
   resume: "Resume",
   abandon: "Abandon (counts as death)",
   dungeon_won: "Dungeon Cleared",
   you_fell: "You Fell",
   descend_again: "Descend again",
   back_to_city: "Back to city",
-  back_to_map: "Back to map",
   credits_jowl: "Credits to JowlTV",
 
   // ── hero messages ──
   ml_up: "You advanced to magic level {n}.",
   ml_float: "Magic level {n}",
-  no_potion: "No {name} in your bag. Buy at the Shop.",
-  mana_full: "Mana full",
-  fury_full: "Fury full",
   skill_up: "You advanced {name} to {n}.",
   floor_info: "{region} — floor {n}.",
   last_floor: "Last floor. Something big stalks you.",
@@ -1688,14 +1474,11 @@ I18N.en = {
   bless_float: "Blessing {n}/3",
   bless_title: "Oracle's Blessing",
   level_up_float: "Level {n}!",
-  level_up_skill: "Level {n}: you learned {name}! (key {key}) · +1 attribute point (U)",
-  level_up_plain: "You reached level {n}. +1 attribute point (U)",
   promoted: "You were promoted to {name}! Regen ×{regen} and +{dmg}% damage.",
 
   // ── spells ──
   fury_low: "Not enough {resource} for {name} ({cost}).",
   no_target: "No target in range.",
-  eagle_eye: "Eagle Eye",
 
   // ── floor ──
   gas_trap: "Click! Poison gas hisses from the vent.",
@@ -1705,20 +1488,12 @@ I18N.en = {
   boss_fell: "{name} has fallen! A passage opens.",
 
   // ── lighting ──
-  oil_warning: "Your lantern is dim. Oil left: {n} min.",
-  oil_out: "Oil ran out. Total darkness.",
 
   // ── town ──
   town_welcome: "This is Karhyn, a city that has seen better days.\n\nTalk to the townsfolk and learn about their stories and rumors. Buy potions, upgrade attributes, store items at the depot or improve them at the blacksmith. Pick up hunting contracts at the square board.\n\nExplore the sewer and save the city before it collapses.",
-  town_understood: "Got it",
-  zone_smith: "Blacksmith (enter)",
-  zone_potions: "Potion Shop (enter)",
-  zone_depot: "Depot (enter)",
   zone_locker: "Your depot chest",
   zone_board: "Contract board",
-  zone_lodging: "Lodging",
   zone_oracle: "Oracle Statue",
-  zone_sewer: "Descend to sewers",
   zone_gate: "Karhyn Gate",
   ask_lore: "Ask about Karhyn and the rumors",
   lore_more: "What else do they say?",
@@ -1742,7 +1517,6 @@ I18N.en = {
   smith_title: "Blacksmith",
   smith_greet: "\"Bring your blade when it's dull. Give me two pieces of the same rarity and I'll melt and reinforce the one you choose.\"\n\nEach +1 consumes 2 items of the same rarity. At +5 the item rises in rarity (up to Ultra Rare). Legendaries rise with Boss Essences, up to +10.",
   upgrade_gear: "Upgrade equipment",
-  buy_oil: "Buy lantern oil ({price} gold)",
   bye2: "See you",
   tower_title: "Watchtower",
   tower_desc: "The door creaks. A spiral staircase climbs into the dark up to the terrace.",
@@ -1754,17 +1528,14 @@ I18N.en = {
   lodging_title: "Lodging",
   lodging_desc: "Damp rooms, straw bed and a candle. The landlady charges little and asks no questions.",
   lodging_rest: "Rest (recovers everything)",
-  two_hands: "two-handed",
   tip_level: " · level {n}",
   tip_wrong_voc: " · not for your vocation",
   tip_worn: " · worn (click to remove)",
   regen_line: "{hp} hp/s · {res} {kind}/s",
   word_fury: "fury",
   word_mana: "mana",
-  no_gear: "None. Monsters sometimes drop some.",
   more_in_bag: "+{n} in backpack",
   err_title: "Game error (take a screenshot and send it):",
-  potion_wrong_voc: "{name} can't be used by a {voc}.",
   cave_collapse: "The sewer collapses into a natural cave. Stay near the light.",
   gold_float: "+{n} gold",
   spell_locked: "{name} unlocks at level {n}.",
@@ -1772,7 +1543,6 @@ I18N.en = {
   contract_progress_done: "Contract fulfilled: {n}/{n} {name}. Return to the Karhyn board.",
   attrs_spent: "Level {n} · {k} point(s) already spent",
   attr_weapon_plus: "+1 {name}",
-  pause_keys: "Z and C: potions · I: backpack · U: talents · M: map · TAB: switch target · N: bestiary · mouse wheel: zoom",
   death_pen: "\n\nDeath — Oracle blessings: {bless}/3\nExperience lost: {xp}% of the current level\nEquipment lost: {eq}\nGold lost: {gold}% ({lost})",
   word_all: "all",
   run_summary: "Difficulty: {d}%\nFloor reached: {f}/{total}\nLevel: {lvl}\nKills: {k}\nGold earned: {g}   ({voc}'s purse: {bag})",
@@ -1790,7 +1560,6 @@ I18N.en = {
   pray: "Pray",
   stand_up: "Stand up",
   kneel_thank: "Kneel and give thanks",
-  train_attrs: "Train attributes",
   oil_low: "The lantern is almost out of oil.",
   touch_frontal: "Frontal Strike",
   touch_magic2: "Spell 2",
@@ -1868,7 +1637,6 @@ I18N.en = {
   arrow_explosive: "Explosive Arrow",
   arrow_holy: "Holy Arrow",
   no_arrows: "Your quiver is empty. Buy arrows from the Karhyn smith.",
-  no_arrows_short: "No arrows",
   arrows_out_type: "Out of {name}s.",
   arrow_selected: "Using: {name} ({n})",
   arrow_hud: "Flechas: {n}",
@@ -1907,8 +1675,6 @@ I18N.en = {
   card_hint_equip: "Click to equip",
   card_hint_unequip: "Equipped · click to remove",
   loot_gold: "+{n} gold",
-  loot_xp: "{name} · +{n} exp",
-  zone_library: "Library of Karhyn",
   library_name: "Library",
   best_title: "Bestiary of Karhyn",
   best_progress: "{s} of {n} species sighted · {d} completed",
@@ -2005,7 +1771,6 @@ I18N.en = {
   wp_on: "Waypoint activated: {region}, floor {n}.",
   wp_none: "No waypoints activated yet. Step on the harp floor at the start of each floor to activate it.",
   slope_pass_open: "With the Rat King dead, a passage opens in the chamber: it climbs to the Goblin Slope.",
-  slow_float: "slowed",
   guard_float: "Aegis!",
   tut_no_recall: "Recall doesn't work in Rook Forest: follow the trail to the gate of Karhyn.",
   potion_filled: "Potion full!",
@@ -2020,12 +1785,11 @@ I18N.en = {
   pm_interact: "Talk / use / rope",
   pm_recall: "Recall to town",
   pm_bag: "Backpack",
-  pm_attrs: "Attributes",
+  pm_attrs: "Talents",
   pm_map: "Map",
   pm_potions: "Potions",
   pm_arrows: "Switch arrow",
   npct_ok: "Got it",
-  harp_hear: "I hear the sound of a harp...",
   npct_title_smith: "Karhyn's Blacksmith",
   npct_smith: "Here you can:\n• Upgrade your gear at the forge with gold and materials.\n• Buy oil for your lantern, which lights the dark floors.\n• Archers: buy special arrows (fire, ice, holy...).\n• Ask about the history of Karhyn's forge.",
   npct_title_inn: "The Dancing Harp",
@@ -2065,24 +1829,12 @@ I18N.en = {
   talents_full: "This talent is already maxed.",
   skill_dodge: "Dodge",
   skill_dodge_desc: "dodge chance (Archer)",
-  note_title: "Adventurer's Notebook",
-  note_empty: "No creatures noted yet.\nDefeat monsters to fill the notebook.\nThe full Bestiary is in the Karhyn Library.",
-  note_next: "{n}/{need} kills",
-  note_bonus: "+5% dmg / −5% taken",
-  note_stats: "HP {hp} · Damage {dmg} · Armor {arm}",
-  note_unknown: "HP and damage: still unknown",
-  note_foot: "Page {p}/{n} · N closes · full details at the Library",
   bind_notebook: "Adventurer's notebook",
   pot_charging: "{name} still filling ({p}%) — defeat monsters",
   arrow_hud2: "Arrows: {n}/{cap}",
   arrow_hud_inf: "Arrows: ∞",
   wp_press: "Waystone active. Press {k} on it to travel.",
-  note_intro: "Your first kill! This is the Adventurer's notebook (N key): the creatures you hunt and your active missions. The full Bestiary is in the Karhyn Library.",
-  note_missions: "Active missions",
-  note_contract: "Hunting contract: {name} {got}/{n}",
-  note_no_missions: "None — take a contract at the Karhyn board.",
   best_reward: "Bestiary complete! Reward: {gear} ({rarity}) added to your bag.",
-  note_foot2: "N closes · full details at the Library",
   hungry_spider: "She is always hungry...",
   best_tip_n: "This is your Bestiary (N key): every creature you defeat reveals more about it.",
   best_beh_giant_spider: "Runs five times faster than an adventurer. You can't flee: fight.",
@@ -2094,33 +1846,23 @@ I18N.en = {
   eq_sandals: "Sandals",
   eq_guardian_boots: "Guardian Boots",
   eq_dragon_boots: "Dragon Scale Boots",
-  skillbar_locked: "Skill bar locked.",
-  skillbar_unlocked: "Skill bar unlocked: drag it by the handle on the left.",
   bind_target: "Switch target",
+  drink: "Drink",
+  pot_cd: "{name}: wait {s} s.",
+  mon_giant_spider: "Giant Spider",
+  pm_bestiary: "Bestiary",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
 I18N.es = {
   back: "Volver",
-  confirm: "Confirmar",
-  cancel: "Cancelar",
   yes: "Sí",
   no: "No",
-  ok: "OK",
-  enter: "Entrar",
   exit: "Salir",
-  descend: "Bajar",
-  stay: "Quedarme",
-  not_yet: "Aún no",
-  goodbye: "Hasta luego",
-  see_you: "Nos vemos",
-  continue: "Continuar",
   options: "Opciones",
   language: "Idioma",
 
   play: "Jugar",
-  new_game: "Nueva Partida",
-  settings: "Opciones",
   music_vol: "Música",
   sfx_vol: "Efectos de sonido",
   keys_hint: "Teclas  (clic para cambiar · Esc cancela)",
@@ -2134,7 +1876,6 @@ I18N.es = {
   speed_original: "Original",
 
   select_vocation: "Elige tu vocación",
-  locked: "Bloqueada",
   coming_soon: "Próximamente",
   level_n: "Nivel {n}",
   passive_prefix: "Pasiva — ",
@@ -2161,7 +1902,6 @@ I18N.es = {
   fury: "Furia",
   mana: "Maná",
   gold: "oro",
-  gold_coins: "monedas de oro",
 
   region_karhyn_sewers: "Karhyn y sus Alcantarillas",
   region_karhyn_sewers_desc: "Empieza en la Ciudadela de Karhyn; baja a las alcantarillas por la rejilla cuando quieras. Túneles húmedos bajo la ciudad. Ratas y murciélagos por todas partes.",
@@ -2185,19 +1925,12 @@ I18N.es = {
   floor_title: "{name}\nPiso {n} de {total}",
   potions: "Pociones",
   attributes: "Atributos",
-  skills_window: "Habilidades",
-  battle_list_closed: "Lista de Batalla cerrada — L para abrir",
-  skills_closed: "Habilidades cerrada — K para abrir",
   auto: "AUTO",
-  manual: "MANUAL",
   auto_attack_on: "Ataque automático activado",
   auto_attack_off: "Ataque automático desactivado",
 
   floor_enter: "{name} — piso {n}.",
   floor_last: "Último piso. Algo grande te está olfateando.",
-  cave_enter: "La alcantarilla se derrumba en una cueva natural. Quédate cerca de la luz.",
-  go_up_rope: "Subes por la cuerda. Piso {n}.",
-  trap_gas: "¡Clic! Gas venenoso sale de la rejilla.",
 
   item_gold_coin: "monedas de oro",
   item_silver_coin: "monedas de plata",
@@ -2214,13 +1947,8 @@ I18N.es = {
   contract_medium: "Medio",
   contract_hard: "Difícil",
 
-  pickup_key: "Recogiste una llave de bronce.",
-  scroll_renew: "El pergamino renueva tus magias.",
   boss_essence: "¡Esencia de jefe! ({n}) El herrero la usa para mejorar objetos Legendarios.",
-  boss_essence_float: "Esencia de jefe",
   chest_locked: "El cofre está cerrado. Necesitas una llave de bronce.",
-  chest_opened: "Abriste el cofre.",
-  wrong_vocation: "Tu vocación no puede usar este objeto.",
   blessing_max: "El Oráculo ya te concedió toda su bendición.",
 
   skill_sword: "Sword",
@@ -2278,8 +2006,6 @@ I18N.es = {
   spell_eagle_eye: "Ojo de Águila",
   spell_eagle_eye_desc: "Foco total: +30% de daño a distancia y +10% de probabilidad de crítico por 8 s.",
 
-  no_fury: "{resource} insuficiente para {name} ({cost}).",
-  eagle_eye_float: "Ojo de Águila",
 
   pot_health: "Poción de vida",
   pot_health_desc: "Cura 40% de la vida máxima.",
@@ -2309,8 +2035,6 @@ I18N.es = {
   shop_first_next: "Siguiente: {desc}",
   shop_max: "Máximo",
   gold_display: "◉ {n} de oro",
-  points_free: "+{n} punto(s) · U",
-  points_open: "abrir · U",
 
   el_physical: "Físico",
   el_fire: "Fuego",
@@ -2426,83 +2150,34 @@ I18N.es = {
   eq_goblin_totem: "Tótem de Guerra Goblin",
   eq_goblin_totem_desc: "+3% de daño contra goblins. Regenera +0,5 vida/s.",
 
-  equip_wrong_voc: "tu vocación no puede usar esto",
 
-  base_damage: "Daño base",
-  attack_speed: "Velocidad de ataque",
-  total_armor: "Armadura total",
-  oil_minutes: "Aceite: {n} minutos",
 
   npc_smith: "Herrero",
   npc_potion_seller: "Vendedora de Pociones",
   npc_depot_guard: "Guardia del Depósito",
-  npc_oracle: "Estatua del Oráculo",
-  npc_inn: "El Arpa Danzante",
-  npc_lodging: "Alojamiento",
-  npc_board: "Tablón de contratos",
-  npc_gate: "Puerta de Karhyn",
-  npc_sewer: "Entrada de las Alcantarillas",
-  npc_tower: "Torre de Vigía",
 
   intro_dialog: "Esta es Karhyn, una ciudad que ha visto días mejores.\n\nHabla con los habitantes y descubre su historia y rumores. Compra pociones, mejora atributos, guarda objetos en el depósito o mejóralos con el herrero. Recoge contratos de caza en el tablón de la plaza.\n\nExplora las alcantarillas y salva la ciudad antes de que caiga.",
 
-  smith_dialog: "\"Trae tu hoja cuando esté sin filo. Dame dos piezas de la misma rareza y las fundiré para reforzar la que elijas.\"\n\nCada +1 consume 2 objetos de la misma rareza. En el +5 el objeto sube de rareza (hasta Ultra raro). Los Legendarios suben con Esencias de jefe, hasta +10.",
-  smith_upgrade: "Mejorar equipo",
-  smith_buy_oil: "Comprar aceite de farol ({n} oro)",
-  smith_no_gold: "\"El aceite no es gratis. Vuelve con oro.\"",
-  smith_oil_bought: "\"Aceite de ballena, del bueno. Quema limpio.\"\n\nAceite del farol: {n} minutos.",
 
-  depot_dialog: "\"Bienvenido al depósito de Karhyn. Cada aventurero tiene su cofre en las cabinas del fondo — lo que guardes ahí no se pierde en los descensos.\"\n\nOro guardado: ◉ {n}",
-  depot_open: "Abrir mi cofre",
 
-  potion_dialog: "\"Frascos frescos, {voc}. Vida, furia y otras mezclas de la casa.\"\n\nEn tu mochila: {n} poción(es).  Oro: ◉ {gold}",
-  potion_see: "Ver las pociones",
 
-  gate_dialog: "¿Dejar la ciudadela y volver al mapa?",
 
-  sewer_dialog: "La rejilla tiembla con el viento de abajo. Las ratas chillan en la oscuridad y siembran el caos.\n\nDicen que, si bajas demasiado, puedes oír los gritos de una bestia desconocida.",
 
-  tower_dialog: "La puerta cruje. Una escalera de caracol sube en la oscuridad hasta la terraza.",
-  tower_climb: "Subir a la cima",
 
-  inn_dialog: "Música amortiguada y olor a cerveza agria. El tabernero limpia un vaso y te mira como si te hubiera visto antes.\n\n\"¿Estabas aquí ayer? ¿No recuerdas? Nadie recuerda nada en Karhyn.\"",
 
-  lodging_dialog: "Habitaciones húmedas, cama de paja y una vela. La dueña cobra poco y no hace preguntas.",
 
-  oracle_first_blessing: "La piedra está fría y gastada, pero la luz desciende sobre ti. Por un instante la lluvia desaparece, y una voz que casi reconoces dice tu nombre.\n\nRecibiste la primera bendición del Oráculo (1/3): morir ahora cuesta menos.",
-  oracle_kneel: "Arrodillarme y agradecer",
-  oracle_dialog: "Los maestros de armas de Karhyn entrenan a quien pague en oro: vida, velocidad de ataque, armadura y furia.",
-  oracle_pray: "Rezar",
-  oracle_pray_result: "Cierras los ojos. La lluvia parece caer más lento, y por un instante el arpa del Oráculo toca solo para ti. El Oráculo aún vela por Karhyn.",
-  oracle_rise: "Levantarme",
-  oracle_train: "Entrenar atributos",
 
   bless_1: "Recibiste la primera bendición del Oráculo.\n\nEn tu próxima muerte perderás el 60% de la experiencia del nivel actual, el 75% del equipo y el 20% del oro recogido (en vez de 80%, 100% y 25%).",
   bless_2: "Recibiste la segunda bendición del Oráculo.\n\nEn tu próxima muerte perderás el 35% de la experiencia del nivel actual, el 35% del equipo y el 10% del oro recogido.",
   bless_3: "Recibiste la tercera bendición del Oráculo.\n\nEn tu próxima muerte perderás el 20% de la experiencia del nivel actual, nada de equipo y nada de oro.",
 
-  board_intro: "Papeles pegados unos sobre otros, mojados por la lluvia. Los habitantes pagan a quien limpie las alcantarillas de las criaturas que suben por la noche.\n\nCuanto más difícil el contrato, mayor la recompensa. Un contrato a la vez.",
-  board_accept: "Arrancaste el papel del tablón. Contrato aceptado: cazar {n} {monster} en las alcantarillas.\n\nVuelve aquí para recibir la recompensa.",
-  board_done: "¡Contrato cumplido! Recibiste {xp} de experiencia, {gold} de oro y {item} ({rarity}), que fue a tu mochila.",
-  board_deliver: "Entregar el contrato",
-  board_new: "Ver nuevos contratos",
 
-  forge_upgrade: "Mejorar",
-  forge_missing: "Faltan materiales",
 
 
   map_names: JSON.stringify({ smith: "Herrero", inn: "Arpa Danzante", potions: "Pociones", depot: "Depósito", lodging: "Alojamiento", hall: "Oráculo", board: "Contratos", sewer: "Alcantarilla", gate: "Puerta" }),
 
-  town_menu: "¿Qué deseas hacer?",
-  town_back_to_map: "Volver al mapa",
 
-  night: "Noche",
-  dawn: "Amanecer",
-  dusk: "Atardecer",
-  day: "Día",
-  rain: "lluvia",
 
-  lantern_out: "¡El farol se apagó. Estás a oscuras!",
 
   intro_1: "En el continente de Godoyr existe una pequeña ciudad llamada Karhyn.",
   intro_2: "Una ciudad virtuosa, de gente amable, cálida y festiva, conocida por su forja, de donde salen las mejores espadas y escudos de todo el continente.",
@@ -2514,7 +2189,6 @@ I18N.es = {
   death_title: "Has muerto",
 
   demo_end_title: "Fin de la Demo",
-  demo_end_text: "¡Gracias por jugar Vitula! Esta es la primera versión de la demo. Más contenido próximamente.",
 
   touch_up: "Arriba",
   touch_down: "Abajo",
@@ -2544,7 +2218,6 @@ I18N.es = {
   eq_light_free: "luz plateada sin aceite",
   eq_speed: "velocidad +{v}",
 
-  depot_enter: "Depósito (entrar)",
   understood: "Entendido",
   zone_smith_enter: "Herrero (entrar)",
   zone_potions_enter: "Tienda de Pociones (entrar)",
@@ -2567,8 +2240,6 @@ I18N.es = {
   depot_chest: "Cofre del depósito",
   close: "Cerrar",
   oil_no_gold: "\"El aceite no es gratis. Vuelve con oro.\"",
-  oil_bought: "\"Aceite de ballena, del bueno. Quema limpio.\"\n\nAceite del farol: {min} minutos.",
-  buy_more: "Comprar más",
   forge_title: "Forja de Karhyn",
   no_equip: "No tienes equipamiento.",
   worn_label: "P",
@@ -2617,12 +2288,10 @@ I18N.es = {
   lore_lodging_1: "La dueña acomoda su chal.\n\n\"La mitad de las habitaciones están vacías. Las familias que podían se fueron al sur. Quedó quien no tiene a dónde ir.\"",
   lore_lodging_2: "\"De noche se oye, ¿sabes? Debajo del piso. Un arañar, y a veces algo más pesado, arrastrándose. Pongo la cama lejos del desagüe.\"",
   lore_lodging_3: "\"Llegaste por el portón sin recordar nada, ¿verdad? No eres el primero. La diosa envía gente cuando la ciudad lo necesita. Al menos eso es lo que prefiero creer.\"",
-  contract_board: "Tablón de contratos",
 
   // ── bag / inventory ──
   bag_title: "Mochila",
   equipment: "Equipamiento",
-  inventory: "Inventario",
   bag_tip: "Pasa el ratón por un objeto para ver los detalles. Haz clic para equipar o desequipar.",
   slot_amulet: "Amuleto",
   slot_helmet: "Casco",
@@ -2646,7 +2315,6 @@ I18N.es = {
   defense_value: "Defensa",
   block_chance: "Probabilidad de bloqueo",
   regen_label: "Regeneración",
-  regen_fmt: "{hp} vida/s · {mp} {resource}/s",
   resistances: "Resistencias",
   no_resist: "ninguna",
   level_label: "Nivel",
@@ -2677,22 +2345,17 @@ I18N.es = {
   attrs_points: "Puntos para distribuir: {n}",
   attrs_none: "Sin puntos. Cada nivel otorga 1 punto.",
   pause_title: "Pausa",
-  pause_controls: "Mover: WASD o flechas (diagonal vale)\nAtaque básico: Espacio · R activa/desactiva automático · E en cuerda: subir\nFuria se llena al golpear y recibir daño y paga las habilidades.",
   resume: "Continuar",
   abandon: "Abandonar (cuenta como muerte)",
   dungeon_won: "Mazmorra Superada",
   you_fell: "Has Caído",
   descend_again: "Bajar de nuevo",
   back_to_city: "Volver a la ciudad",
-  back_to_map: "Volver al mapa",
   credits_jowl: "Créditos a JowlTV",
 
   // ── hero messages ──
   ml_up: "Avanzaste al nivel mágico {n}.",
   ml_float: "Nivel mágico {n}",
-  no_potion: "Sin {name} en la mochila. Cómpralas en la Tienda.",
-  mana_full: "Maná lleno",
-  fury_full: "Furia llena",
   skill_up: "Avanzaste en {name} a {n}.",
   floor_info: "{region} — piso {n}.",
   last_floor: "Último piso. Algo grande te acecha.",
@@ -2710,14 +2373,11 @@ I18N.es = {
   bless_float: "Bendición {n}/3",
   bless_title: "Bendición del Oráculo",
   level_up_float: "¡Nivel {n}!",
-  level_up_skill: "Nivel {n}: ¡aprendiste {name}! (tecla {key}) · +1 punto de atributo (U)",
-  level_up_plain: "Subiste al nivel {n}. +1 punto de atributo (U)",
   promoted: "¡Fuiste promovido a {name}! Regeneración ×{regen} y +{dmg}% de daño.",
 
   // ── spells ──
   fury_low: "{resource} insuficiente para {name} ({cost}).",
   no_target: "Ningún objetivo al alcance.",
-  eagle_eye: "Ojo de Águila",
 
   // ── floor ──
   gas_trap: "¡Clic! Gas venenoso sale de la rejilla.",
@@ -2727,20 +2387,12 @@ I18N.es = {
   boss_fell: "¡{name} ha caído! Se abre un pasaje.",
 
   // ── lighting ──
-  oil_warning: "Tu lámpara está débil. Aceite restante: {n} min.",
-  oil_out: "Se acabó el aceite. Oscuridad total.",
 
   // ── town ──
   town_welcome: "Esta es Karhyn, una ciudad que ha visto días mejores.\n\nHabla con los habitantes y descubre más sobre su historia y rumores. Compra pociones, mejora atributos, guarda objetos en el depósito o mejóralos con el herrero. Recoge contratos de caza en el tablón de la plaza.\n\nExplora la alcantarilla y salva la ciudad antes de que colapse.",
-  town_understood: "Entendido",
-  zone_smith: "Herrero (entrar)",
-  zone_potions: "Tienda de Pociones (entrar)",
-  zone_depot: "Depósito (entrar)",
   zone_locker: "Tu cofre del depósito",
   zone_board: "Tablón de contratos",
-  zone_lodging: "Alojamiento",
   zone_oracle: "Estatua del Oráculo",
-  zone_sewer: "Bajar a la alcantarilla",
   zone_gate: "Puerta de Karhyn",
   ask_lore: "Preguntar sobre Karhyn y los rumores",
   lore_more: "¿Qué más se dice?",
@@ -2764,7 +2416,6 @@ I18N.es = {
   smith_title: "Herrero",
   smith_greet: "\"Trae tu hoja cuando esté sin filo. Dame dos piezas de la misma rareza y las fundo para reforzar la que elijas.\"\n\nCada +1 consume 2 objetos de la misma rareza. En +5 sube de rareza (hasta Ultra raro). Legendarios suben con Esencias de jefe, hasta +10.",
   upgrade_gear: "Mejorar equipamiento",
-  buy_oil: "Comprar aceite de lámpara ({price} oro)",
   bye2: "Hasta luego",
   tower_title: "Torre de Vigía",
   tower_desc: "La puerta cruje. Una escalera de caracol sube en la oscuridad hasta la terraza.",
@@ -2776,17 +2427,14 @@ I18N.es = {
   lodging_title: "Alojamiento",
   lodging_desc: "Habitaciones húmedas, cama de paja y una vela. La dueña cobra poco y no hace preguntas.",
   lodging_rest: "Descansar (recupera todo)",
-  two_hands: "dos manos",
   tip_level: " · nivel {n}",
   tip_wrong_voc: " · no sirve para tu vocación",
   tip_worn: " · equipado (clic para quitar)",
   regen_line: "{hp} vida/s · {res} {kind}/s",
   word_fury: "furia",
   word_mana: "maná",
-  no_gear: "Ninguno. Los monstruos a veces sueltan alguno.",
   more_in_bag: "+{n} en la mochila",
   err_title: "Error en el juego (haz una captura y envíala):",
-  potion_wrong_voc: "{name} no sirve para {voc}.",
   cave_collapse: "La cloaca se hunde en una cueva natural. Quédate cerca de la luz.",
   gold_float: "+{n} oro",
   spell_locked: "{name} se desbloquea en el nivel {n}.",
@@ -2794,7 +2442,6 @@ I18N.es = {
   contract_progress_done: "Contrato cumplido: {n}/{n} {name}. Vuelve al tablón de Karhyn.",
   attrs_spent: "Nivel {n} · {k} punto(s) ya asignado(s)",
   attr_weapon_plus: "+1 de {name}",
-  pause_keys: "5 y 6: pociones · I: mochila · U: atributos · TAB: mapa · rueda del ratón: zoom\nLos cofres piden llave de bronce.",
   death_pen: "\n\nMuerte — bendiciones del Oráculo: {bless}/3\nExperiencia perdida: {xp}% del nivel actual\nEquipo perdido: {eq}\nOro perdido: {gold}% ({lost})",
   word_all: "todos",
   run_summary: "Dificultad: {d}%\nPiso alcanzado: {f}/{total}\nNivel: {lvl}\nBajas: {k}\nOro obtenido: {g}   (bolsa del {voc}: {bag})",
@@ -2812,7 +2459,6 @@ I18N.es = {
   pray: "Rezar",
   stand_up: "Levantarse",
   kneel_thank: "Arrodillarse y agradecer",
-  train_attrs: "Entrenar atributos",
   oil_low: "Al farol casi no le queda aceite.",
   touch_frontal: "Golpe Frontal",
   touch_magic2: "Magia 2",
@@ -2891,7 +2537,6 @@ I18N.es = {
   arrow_explosive: "Flecha Explosiva",
   arrow_holy: "Flecha Sagrada",
   no_arrows: "El carcaj está vacío. Compra flechas al herrero de Karhyn.",
-  no_arrows_short: "Sin flechas",
   arrows_out_type: "Se acabaron las {name}s.",
   arrow_selected: "Usando: {name} ({n})",
   arrow_hud: "Flechas: {n}",
@@ -2929,8 +2574,6 @@ I18N.es = {
   card_hint_equip: "Clic para equipar",
   card_hint_unequip: "Equipado · clic para quitar",
   loot_gold: "+{n} de oro",
-  loot_xp: "{name} · +{n} exp",
-  zone_library: "Biblioteca de Karhyn",
   library_name: "Biblioteca",
   best_title: "Bestiario de Karhyn",
   best_progress: "{s} de {n} especies avistadas · {d} completas",
@@ -3027,7 +2670,6 @@ I18N.es = {
   wp_on: "Waypoint activado: {region}, piso {n}.",
   wp_none: "Aún no hay waypoints activados. Pisa el suelo del arpa al llegar a cada piso para activarlo.",
   slope_pass_open: "Con el Rey Rata muerto, se abre un pasaje en la sala: sube a la Ladera de los Goblins.",
-  slow_float: "lento",
   guard_float: "¡Égida!",
   tut_no_recall: "El Retorno no funciona en Rook Forest: sigue el sendero hasta la puerta de Karhyn.",
   potion_filled: "+1 poción de vida",
@@ -3042,7 +2684,7 @@ I18N.es = {
   pm_interact: "Hablar / usar / cuerda",
   pm_recall: "Retorno a la ciudad",
   pm_bag: "Mochila",
-  pm_attrs: "Atributos",
+  pm_attrs: "Talentos",
   pm_map: "Mapa",
   pm_potions: "Pociones",
   pm_arrows: "Cambiar flecha",
@@ -3052,25 +2694,13 @@ I18N.es = {
 // ── Alemão ──────────────────────────────────────────────────────
 I18N.de = {
   back: "Zurück",
-  confirm: "Bestätigen",
-  cancel: "Abbrechen",
   yes: "Ja",
   no: "Nein",
-  ok: "OK",
-  enter: "Betreten",
   exit: "Verlassen",
-  descend: "Hinabsteigen",
-  stay: "Bleiben",
-  not_yet: "Noch nicht",
-  goodbye: "Auf Wiedersehen",
-  see_you: "Bis bald",
-  continue: "Weiter",
   options: "Einstellungen",
   language: "Sprache",
 
   play: "Spielen",
-  new_game: "Neues Spiel",
-  settings: "Einstellungen",
   music_vol: "Musik",
   sfx_vol: "Soundeffekte",
   keys_hint: "Tasten  (Klick zum Ändern · Esc bricht ab)",
@@ -3084,7 +2714,6 @@ I18N.de = {
   speed_original: "Original",
 
   select_vocation: "Wähle deine Berufung",
-  locked: "Gesperrt",
   coming_soon: "Demnächst",
   level_n: "Stufe {n}",
   passive_prefix: "Passiv — ",
@@ -3111,7 +2740,6 @@ I18N.de = {
   fury: "Zorn",
   mana: "Mana",
   gold: "Gold",
-  gold_coins: "Goldmünzen",
 
   region_karhyn_sewers: "Karhyn und seine Kanalisation",
   region_karhyn_sewers_desc: "Beginne in der Zitadelle von Karhyn; steige jederzeit durch den Gully in die Kanalisation hinab. Feuchte Tunnel unter der Stadt. Ratten und Fledermäuse überall.",
@@ -3135,19 +2763,12 @@ I18N.de = {
   floor_title: "{name}\nStockwerk {n} von {total}",
   potions: "Tränke",
   attributes: "Attribute",
-  skills_window: "Fähigkeiten",
-  battle_list_closed: "Kampfliste geschlossen — L zum Öffnen",
-  skills_closed: "Fähigkeiten geschlossen — K zum Öffnen",
   auto: "AUTO",
-  manual: "MANUELL",
   auto_attack_on: "Automatischer Angriff an",
   auto_attack_off: "Automatischer Angriff aus",
 
   floor_enter: "{name} — Stockwerk {n}.",
   floor_last: "Letztes Stockwerk. Etwas Großes wittert dich.",
-  cave_enter: "Die Kanalisation bricht in eine natürliche Höhle ein. Bleib nahe am Licht.",
-  go_up_rope: "Du kletterst am Seil hoch. Stockwerk {n}.",
-  trap_gas: "Klick! Giftgas strömt aus der Öffnung.",
 
   item_gold_coin: "Goldmünzen",
   item_silver_coin: "Silbermünzen",
@@ -3164,13 +2785,8 @@ I18N.de = {
   contract_medium: "Mittel",
   contract_hard: "Schwer",
 
-  pickup_key: "Du hast einen Bronzeschlüssel aufgehoben.",
-  scroll_renew: "Die Schriftrolle erneuert deine Zauber.",
   boss_essence: "Boss-Essenz! ({n}) Der Schmied nutzt sie, um legendäre Gegenstände zu verbessern.",
-  boss_essence_float: "Boss-Essenz",
   chest_locked: "Die Truhe ist verschlossen. Du brauchst einen Bronzeschlüssel.",
-  chest_opened: "Du hast die Truhe geöffnet.",
-  wrong_vocation: "Deine Berufung kann diesen Gegenstand nicht nutzen.",
   blessing_max: "Das Orakel hat dir bereits seinen vollen Segen gewährt.",
 
   skill_sword: "Schwert",
@@ -3228,8 +2844,6 @@ I18N.de = {
   spell_eagle_eye: "Adlerauge",
   spell_eagle_eye_desc: "Voller Fokus: +30% Fernkampfschaden und +10% kritische Chance für 8 s.",
 
-  no_fury: "Nicht genug {resource} für {name} ({cost}).",
-  eagle_eye_float: "Adlerauge",
 
   pot_health: "Lebenstrank",
   pot_health_desc: "Heilt 40% der max. LP.",
@@ -3259,8 +2873,6 @@ I18N.de = {
   shop_first_next: "Nächstes: {desc}",
   shop_max: "Maximum",
   gold_display: "◉ {n} Gold",
-  points_free: "+{n} Punkt(e) · U",
-  points_open: "öffnen · U",
 
   el_physical: "Physisch",
   el_fire: "Feuer",
@@ -3376,83 +2988,34 @@ I18N.de = {
   eq_goblin_totem: "Goblin-Kriegstotem",
   eq_goblin_totem_desc: "+3% Schaden gegen Goblins. Regeneriert +0,5 LP/s.",
 
-  equip_wrong_voc: "deine Berufung kann das nicht nutzen",
 
-  base_damage: "Grundschaden",
-  attack_speed: "Angriffsgeschwindigkeit",
-  total_armor: "Gesamtrüstung",
-  oil_minutes: "Öl: {n} Minuten",
 
   npc_smith: "Schmied",
   npc_potion_seller: "Tränkeverkäuferin",
   npc_depot_guard: "Depotwache",
-  npc_oracle: "Orakelstatue",
-  npc_inn: "Die Tanzende Harfe",
-  npc_lodging: "Unterkunft",
-  npc_board: "Auftragsbrett",
-  npc_gate: "Tor von Karhyn",
-  npc_sewer: "Kanalisationseingang",
-  npc_tower: "Wachturm",
 
   intro_dialog: "Dies ist Karhyn, eine Stadt, die bessere Tage gesehen hat.\n\nSprich mit den Bewohnern und erfahre mehr über ihre Geschichte und Gerüchte. Kaufe Tränke, verbessere Attribute, lagere Gegenstände im Depot oder verbessere sie beim Schmied. Nimm Jagdaufträge am Brett auf dem Platz an.\n\nErkunde die Kanalisation und rette die Stadt, bevor sie zusammenbricht.",
 
-  smith_dialog: "\"Bring deine Klinge, wenn sie stumpf ist. Gib mir zwei Teile gleicher Seltenheit, und ich schmelze sie ein und verstärke das Teil deiner Wahl.\"\n\nJedes +1 verbraucht 2 Gegenstände gleicher Seltenheit. Bei +5 steigt die Seltenheit (bis Ultra selten). Legendäre steigen mit Boss-Essenzen, bis +10.",
-  smith_upgrade: "Ausrüstung verbessern",
-  smith_buy_oil: "Laternenöl kaufen ({n} Gold)",
-  smith_no_gold: "\"Öl ist nicht umsonst. Komm mit Gold wieder.\"",
-  smith_oil_bought: "\"Walöl, das gute Zeug. Brennt sauber.\"\n\nLaternenöl: {n} Minuten.",
 
-  depot_dialog: "\"Willkommen im Depot von Karhyn. Jeder Abenteurer hat eine Truhe in den Kabinen hinten — was du dort aufbewahrst, geht bei Abstiegen nicht verloren.\"\n\nGelagertes Gold: ◉ {n}",
-  depot_open: "Meine Truhe öffnen",
 
-  potion_dialog: "\"Frische Fläschchen, {voc}. Leben, Zorn und andere Hausmischungen.\"\n\nIn deinem Rucksack: {n} Trank/Tränke.  Gold: ◉ {gold}",
-  potion_see: "Tränke ansehen",
 
-  gate_dialog: "Die Zitadelle verlassen und zur Karte zurückkehren?",
 
-  sewer_dialog: "Das Gitter klappert im Wind von unten. Ratten quietschen in der Dunkelheit und verbreiten Chaos.\n\nMan sagt, wenn du zu tief hinabsteigst, kannst du die Schreie einer unbekannten Bestie hören.",
 
-  tower_dialog: "Die Tür knarrt. Eine Wendeltreppe führt im Dunkeln zur Terrasse hinauf.",
-  tower_climb: "Zur Spitze klettern",
 
-  inn_dialog: "Gedämpfte Musik und der Geruch von saurem Bier. Der Wirt wischt ein Glas ab und sieht dich an, als hätte er dich schon einmal gesehen.\n\n\"Warst du gestern hier? Erinnerst du dich nicht? Niemand erinnert sich an irgendetwas in Karhyn.\"",
 
-  lodging_dialog: "Feuchte Zimmer, Strohbetten und eine Kerze. Die Wirtin verlangt wenig und stellt keine Fragen.",
 
-  oracle_first_blessing: "Der Stein ist kalt und abgenutzt, aber Licht steigt auf dich herab. Für einen Moment hört der Regen auf, und eine Stimme, die du fast erkennst, sagt deinen Namen.\n\nDu hast den ersten Segen des Orakels erhalten (1/3): Sterben kostet jetzt weniger.",
-  oracle_kneel: "Niederknien und danken",
-  oracle_dialog: "Die Waffenmeister von Karhyn trainieren jeden, der in Gold bezahlt: Leben, Angriffsgeschwindigkeit, Rüstung und Zorn.",
-  oracle_pray: "Beten",
-  oracle_pray_result: "Du schließt die Augen. Der Regen scheint langsamer zu fallen, und für einen Moment spielt die Harfe des Orakels nur für dich. Das Orakel wacht noch über Karhyn.",
-  oracle_rise: "Aufstehen",
-  oracle_train: "Attribute trainieren",
 
   bless_1: "Du hast den ersten Segen des Orakels erhalten.\n\nBeim nächsten Tod verlierst du 60% der Erfahrung der aktuellen Stufe, 75% der Ausrüstung und 20% des gesammelten Goldes (statt 80%, 100% und 25%).",
   bless_2: "Du hast den zweiten Segen des Orakels erhalten.\n\nBeim nächsten Tod verlierst du 35% der Erfahrung der aktuellen Stufe, 35% der Ausrüstung und 10% des gesammelten Goldes.",
   bless_3: "Du hast den dritten Segen des Orakels erhalten.\n\nBeim nächsten Tod verlierst du 20% der Erfahrung der aktuellen Stufe, keine Ausrüstung und kein Gold.",
 
-  board_intro: "Zettel übereinandergeheftet, nass vom Regen. Die Bewohner zahlen jeden, der die Kanalisation von den Kreaturen befreit, die nachts heraufkommen.\n\nJe schwieriger der Auftrag, desto größer die Belohnung. Ein Auftrag zur Zeit.",
-  board_accept: "Du hast das Papier vom Brett gerissen. Auftrag angenommen: {n} {monster} in der Kanalisation jagen.\n\nKomm hierher zurück, um die Belohnung abzuholen.",
-  board_done: "Auftrag erfüllt! Du hast {xp} Erfahrung, {gold} Gold und {item} ({rarity}) erhalten, das in deinen Rucksack ging.",
-  board_deliver: "Auftrag abgeben",
-  board_new: "Neue Aufträge ansehen",
 
-  forge_upgrade: "Verbessern",
-  forge_missing: "Material fehlt",
 
 
   map_names: JSON.stringify({ smith: "Schmied", inn: "Tanzende Harfe", potions: "Tränke", depot: "Depot", lodging: "Unterkunft", hall: "Orakel", board: "Aufträge", sewer: "Kanalisation", gate: "Tor" }),
 
-  town_menu: "Was möchtest du tun?",
-  town_back_to_map: "Zurück zur Karte",
 
-  night: "Nacht",
-  dawn: "Morgendämmerung",
-  dusk: "Abenddämmerung",
-  day: "Tag",
-  rain: "Regen",
 
-  lantern_out: "Die Laterne ist erloschen. Du bist im Dunkeln!",
 
   intro_1: "Auf dem Kontinent Godoyr liegt eine kleine Stadt namens Karhyn.",
   intro_2: "Eine tugendhafte Stadt mit freundlichen, warmherzigen und festfreudigen Menschen, bekannt für ihre Schmiede, aus der die besten Schwerter und Schilde des ganzen Kontinents stammen.",
@@ -3464,7 +3027,6 @@ I18N.de = {
   death_title: "Du bist gestorben",
 
   demo_end_title: "Ende der Demo",
-  demo_end_text: "Danke fürs Spielen von Vitula! Dies ist die erste Version der Demo. Mehr Inhalt kommt bald.",
 
   touch_up: "Oben",
   touch_down: "Unten",
@@ -3494,7 +3056,6 @@ I18N.de = {
   eq_light_free: "silbernes Licht ohne Öl",
   eq_speed: "Geschwindigkeit +{v}",
 
-  depot_enter: "Depot (betreten)",
   understood: "Verstanden",
   zone_smith_enter: "Schmied (betreten)",
   zone_potions_enter: "Trankhandlung (betreten)",
@@ -3517,8 +3078,6 @@ I18N.de = {
   depot_chest: "Depot-Truhe",
   close: "Schließen",
   oil_no_gold: "\"Öl ist nicht umsonst. Komm mit Gold zurück.\"",
-  oil_bought: "\"Walöl, das gute. Brennt sauber.\"\n\nLaternenöl: {min} Minuten.",
-  buy_more: "Mehr kaufen",
   forge_title: "Karhyn Schmiede",
   no_equip: "Du hast keine Ausrüstung.",
   worn_label: "T",
@@ -3567,12 +3126,10 @@ I18N.de = {
   lore_lodging_1: "Die Wirtin richtet ihr Tuch.\n\n\"Die Hälfte der Zimmer steht leer. Die Familien, die konnten, sind nach Süden gegangen. Geblieben sind die, die nirgendwo hin können.\"",
   lore_lodging_2: "\"Nachts kann man es hören, weißt du? Unter dem Boden. Ein Kratzen, und manchmal etwas Schwereres, das sich schleppt. Ich stelle das Bett weit weg vom Abfluss.\"",
   lore_lodging_3: "\"Du kamst durch das Tor, ohne dich an etwas zu erinnern, nicht wahr? Du bist nicht der Erste. Die Göttin schickt Menschen, wenn die Stadt sie braucht. Zumindest glaube ich das lieber.\"",
-  contract_board: "Vertragstafel",
 
   // ── bag / inventory ──
   bag_title: "Rucksack",
   equipment: "Ausrüstung",
-  inventory: "Inventar",
   bag_tip: "Fahre über einen Gegenstand für Details. Klicke zum An- oder Ablegen.",
   slot_amulet: "Amulett",
   slot_helmet: "Helm",
@@ -3596,7 +3153,6 @@ I18N.de = {
   defense_value: "Verteidigung",
   block_chance: "Blockchance",
   regen_label: "Regeneration",
-  regen_fmt: "{hp} HP/s · {mp} {resource}/s",
   resistances: "Widerstände",
   no_resist: "keine",
   level_label: "Stufe",
@@ -3627,22 +3183,17 @@ I18N.de = {
   attrs_points: "Punkte zu verteilen: {n}",
   attrs_none: "Keine Punkte. Jede Stufe gibt 1 Punkt.",
   pause_title: "Pause",
-  pause_controls: "Bewegen: WASD oder Pfeile (diagonal möglich)\nGrundangriff: Leertaste · R Auto-Angriff · E am Seil: klettern\nWut füllt sich beim Treffen und Einstecken und zahlt für Fähigkeiten.",
   resume: "Fortsetzen",
   abandon: "Aufgeben (zählt als Tod)",
   dungeon_won: "Verlies Geschafft",
   you_fell: "Du bist gefallen",
   descend_again: "Erneut hinabsteigen",
   back_to_city: "Zurück zur Stadt",
-  back_to_map: "Zurück zur Karte",
   credits_jowl: "Credits an JowlTV",
 
   // ── hero messages ──
   ml_up: "Du hast Magiestufe {n} erreicht.",
   ml_float: "Magiestufe {n}",
-  no_potion: "Kein {name} im Rucksack. Kauf im Laden.",
-  mana_full: "Mana voll",
-  fury_full: "Wut voll",
   skill_up: "Du hast {name} auf {n} verbessert.",
   floor_info: "{region} — Stockwerk {n}.",
   last_floor: "Letztes Stockwerk. Etwas Großes wittert dich.",
@@ -3660,14 +3211,11 @@ I18N.de = {
   bless_float: "Segen {n}/3",
   bless_title: "Segen des Orakels",
   level_up_float: "Stufe {n}!",
-  level_up_skill: "Stufe {n}: Du hast {name} gelernt! (Taste {key}) · +1 Attributpunkt (U)",
-  level_up_plain: "Du hast Stufe {n} erreicht. +1 Attributpunkt (U)",
   promoted: "Du wurdest zu {name} befördert! Regeneration ×{regen} und +{dmg}% Schaden.",
 
   // ── spells ──
   fury_low: "Nicht genug {resource} für {name} ({cost}).",
   no_target: "Kein Ziel in Reichweite.",
-  eagle_eye: "Adlerauge",
 
   // ── floor ──
   gas_trap: "Klick! Giftgas strömt aus der Öffnung.",
@@ -3677,20 +3225,12 @@ I18N.de = {
   boss_fell: "{name} ist gefallen! Ein Durchgang öffnet sich.",
 
   // ── lighting ──
-  oil_warning: "Deine Laterne ist schwach. Restöl: {n} Min.",
-  oil_out: "Das Öl ist aus. Völlige Dunkelheit.",
 
   // ── town ──
   town_welcome: "Dies ist Karhyn, eine Stadt die bessere Tage gesehen hat.\n\nSprich mit den Bewohnern und erfahre mehr über ihre Geschichte und Gerüchte. Kaufe Tränke, verbessere Attribute, lagere Gegenstände im Depot oder verbessere sie beim Schmied. Nimm Jagdaufträge am Brett auf dem Platz an.\n\nErkunde die Kanalisation und rette die Stadt bevor sie zusammenbricht.",
-  town_understood: "Verstanden",
-  zone_smith: "Schmied (betreten)",
-  zone_potions: "Trankhandel (betreten)",
-  zone_depot: "Depot (betreten)",
   zone_locker: "Deine Depot-Truhe",
   zone_board: "Auftragstafel",
-  zone_lodging: "Unterkunft",
   zone_oracle: "Orakelstatue",
-  zone_sewer: "In die Kanalisation",
   zone_gate: "Karhyn-Tor",
   ask_lore: "Nach Karhyn und den Gerüchten fragen",
   lore_more: "Was sagt man noch?",
@@ -3714,7 +3254,6 @@ I18N.de = {
   smith_title: "Schmied",
   smith_greet: "\"Bring deine Klinge wenn sie stumpf ist. Gib mir zwei Teile gleicher Seltenheit und ich schmelze und verstärke das gewählte.\"\n\nJedes +1 verbraucht 2 Gegenstände gleicher Seltenheit. Bei +5 steigt die Seltenheit (bis Ultra Selten). Legendäre steigen mit Boss-Essenzen, bis +10.",
   upgrade_gear: "Ausrüstung verbessern",
-  buy_oil: "Laternenöl kaufen ({price} Gold)",
   bye2: "Bis dann",
   tower_title: "Wachturm",
   tower_desc: "Die Tür knarrt. Eine Wendeltreppe steigt im Dunkeln zur Terrasse.",
@@ -3726,17 +3265,14 @@ I18N.de = {
   lodging_title: "Unterkunft",
   lodging_desc: "Feuchte Zimmer, Strohbett und eine Kerze. Die Wirtin verlangt wenig und stellt keine Fragen.",
   lodging_rest: "Rasten (stellt alles wieder her)",
-  two_hands: "zweihändig",
   tip_level: " · Stufe {n}",
   tip_wrong_voc: " · nicht für deine Berufung",
   tip_worn: " · angelegt (klicken zum Ablegen)",
   regen_line: "{hp} Leben/s · {res} {kind}/s",
   word_fury: "Wut",
   word_mana: "Mana",
-  no_gear: "Keine. Monster lassen manchmal etwas fallen.",
   more_in_bag: "+{n} im Rucksack",
   err_title: "Spielfehler (Screenshot machen und senden):",
-  potion_wrong_voc: "{name} ist nichts für {voc}.",
   cave_collapse: "Die Kanalisation bricht in eine natürliche Höhle ein. Bleib nahe am Licht.",
   gold_float: "+{n} Gold",
   spell_locked: "{name} wird auf Stufe {n} freigeschaltet.",
@@ -3744,7 +3280,6 @@ I18N.de = {
   contract_progress_done: "Vertrag erfüllt: {n}/{n} {name}. Kehre zur Tafel in Karhyn zurück.",
   attrs_spent: "Stufe {n} · {k} Punkt(e) bereits verteilt",
   attr_weapon_plus: "+1 {name}",
-  pause_keys: "5 und 6: Tränke · I: Rucksack · U: Attribute · TAB: Karte · Mausrad: Zoom\nTruhen brauchen einen Bronzeschlüssel.",
   death_pen: "\n\nTod — Segen des Orakels: {bless}/3\nVerlorene Erfahrung: {xp}% der aktuellen Stufe\nVerlorene Ausrüstung: {eq}\nVerlorenes Gold: {gold}% ({lost})",
   word_all: "alle",
   run_summary: "Schwierigkeit: {d}%\nErreichte Ebene: {f}/{total}\nStufe: {lvl}\nKills: {k}\nErbeutetes Gold: {g}   (Börse des {voc}: {bag})",
@@ -3762,7 +3297,6 @@ I18N.de = {
   pray: "Beten",
   stand_up: "Aufstehen",
   kneel_thank: "Niederknien und danken",
-  train_attrs: "Attribute trainieren",
   oil_low: "Die Laterne hat fast kein Öl mehr.",
   touch_frontal: "Frontalschlag",
   touch_magic2: "Zauber 2",
@@ -3841,7 +3375,6 @@ I18N.de = {
   arrow_explosive: "Explosivpfeil",
   arrow_holy: "Heiliger Pfeil",
   no_arrows: "Dein Köcher ist leer. Kaufe Pfeile beim Schmied in Karhyn.",
-  no_arrows_short: "Keine Pfeile",
   arrows_out_type: "Keine {name}e mehr.",
   arrow_selected: "Verwende: {name} ({n})",
   arrow_hud: "Flechas: {n}",
@@ -3879,8 +3412,6 @@ I18N.de = {
   card_hint_equip: "Klicken zum Anlegen",
   card_hint_unequip: "Angelegt · klicken zum Ablegen",
   loot_gold: "+{n} Gold",
-  loot_xp: "{name} · +{n} EP",
-  zone_library: "Bibliothek von Karhyn",
   library_name: "Bibliothek",
   best_title: "Bestiarium von Karhyn",
   best_progress: "{s} von {n} Arten gesichtet · {d} vollständig",
@@ -3977,7 +3508,6 @@ I18N.de = {
   wp_on: "Wegpunkt aktiviert: {region}, Ebene {n}.",
   wp_none: "Noch keine Wegpunkte aktiviert. Betritt den Harfenboden am Anfang jeder Ebene, um ihn zu aktivieren.",
   slope_pass_open: "Mit dem Tod des Rattenkönigs öffnet sich ein Durchgang im Saal: Er führt hinauf zum Goblinhang.",
-  slow_float: "verlangsamt",
   guard_float: "Ägide!",
   tut_no_recall: "Die Rückkehr funktioniert im Rook Forest nicht: folge dem Pfad bis zum Tor von Karhyn.",
   potion_filled: "+1 Heiltrank",
@@ -4002,25 +3532,13 @@ I18N.de = {
 // ── Polonês ─────────────────────────────────────────────────────
 I18N.pl = {
   back: "Wróć",
-  confirm: "Potwierdź",
-  cancel: "Anuluj",
   yes: "Tak",
   no: "Nie",
-  ok: "OK",
-  enter: "Wejdź",
   exit: "Wyjdź",
-  descend: "Zejdź",
-  stay: "Zostań",
-  not_yet: "Jeszcze nie",
-  goodbye: "Do widzenia",
-  see_you: "Na razie",
-  continue: "Kontynuuj",
   options: "Ustawienia",
   language: "Język",
 
   play: "Graj",
-  new_game: "Nowa Gra",
-  settings: "Ustawienia",
   music_vol: "Muzyka",
   sfx_vol: "Efekty dźwiękowe",
   keys_hint: "Klawisze  (kliknij, by zmienić · Esc anuluje)",
@@ -4034,7 +3552,6 @@ I18N.pl = {
   speed_original: "Oryginalna",
 
   select_vocation: "Wybierz powołanie",
-  locked: "Zablokowane",
   coming_soon: "Wkrótce",
   level_n: "Poziom {n}",
   passive_prefix: "Pasywna — ",
@@ -4061,7 +3578,6 @@ I18N.pl = {
   fury: "Furia",
   mana: "Mana",
   gold: "złoto",
-  gold_coins: "złote monety",
 
   region_karhyn_sewers: "Karhyn i jego Kanały",
   region_karhyn_sewers_desc: "Zacznij w Cytadeli Karhyn; zejdź do kanałów przez kratkę, kiedy chcesz. Wilgotne tunele pod miastem. Szczury i nietoperze wszędzie.",
@@ -4085,19 +3601,12 @@ I18N.pl = {
   floor_title: "{name}\nPiętro {n} z {total}",
   potions: "Mikstury",
   attributes: "Atrybuty",
-  skills_window: "Umiejętności",
-  battle_list_closed: "Lista Walki zamknięta — L by otworzyć",
-  skills_closed: "Umiejętności zamknięte — K by otworzyć",
   auto: "AUTO",
-  manual: "RĘCZNIE",
   auto_attack_on: "Automatyczny atak włączony",
   auto_attack_off: "Automatyczny atak wyłączony",
 
   floor_enter: "{name} — piętro {n}.",
   floor_last: "Ostatnie piętro. Coś wielkiego cię wyczuwa.",
-  cave_enter: "Kanał zapada się w naturalną jaskinię. Trzymaj się blisko światła.",
-  go_up_rope: "Wspinasz się po linie. Piętro {n}.",
-  trap_gas: "Klik! Trujący gaz wydobywa się z otworu.",
 
   item_gold_coin: "złote monety",
   item_silver_coin: "srebrne monety",
@@ -4114,13 +3623,8 @@ I18N.pl = {
   contract_medium: "Średni",
   contract_hard: "Trudny",
 
-  pickup_key: "Podniosłeś brązowy klucz.",
-  scroll_renew: "Zwój odnawia twoje zaklęcia.",
   boss_essence: "Esencja bossa! ({n}) Kowal używa jej do ulepszania Legendarnych przedmiotów.",
-  boss_essence_float: "Esencja bossa",
   chest_locked: "Skrzynia jest zamknięta. Potrzebujesz brązowego klucza.",
-  chest_opened: "Otworzyłeś skrzynię.",
-  wrong_vocation: "Twoje powołanie nie może używać tego przedmiotu.",
   blessing_max: "Wyrocznia już udzieliła ci pełnego błogosławieństwa.",
 
   skill_sword: "Miecz",
@@ -4178,8 +3682,6 @@ I18N.pl = {
   spell_eagle_eye: "Orle Oko",
   spell_eagle_eye_desc: "Pełne skupienie: +30% obrażeń dystansowych i +10% szansy na krytyka przez 8 s.",
 
-  no_fury: "Za mało {resource} na {name} ({cost}).",
-  eagle_eye_float: "Orle Oko",
 
   pot_health: "Mikstura życia",
   pot_health_desc: "Leczy 40% maks. PŻ.",
@@ -4209,8 +3711,6 @@ I18N.pl = {
   shop_first_next: "Następny: {desc}",
   shop_max: "Maksimum",
   gold_display: "◉ {n} złota",
-  points_free: "+{n} punkt(ów) · U",
-  points_open: "otwórz · U",
 
   el_physical: "Fizyczny",
   el_fire: "Ogień",
@@ -4325,83 +3825,34 @@ I18N.pl = {
   eq_goblin_totem: "Gobliński Totem Wojenny",
   eq_goblin_totem_desc: "+3% obrażeń przeciwko goblinom. Regeneruje +0,5 PŻ/s.",
 
-  equip_wrong_voc: "twoje powołanie nie może tego używać",
 
-  base_damage: "Bazowe obrażenia",
-  attack_speed: "Szybkość ataku",
-  total_armor: "Łączny pancerz",
-  oil_minutes: "Olej: {n} minut",
 
   npc_smith: "Kowal",
   npc_potion_seller: "Sprzedawczyni Mikstur",
   npc_depot_guard: "Strażnik Depozytu",
-  npc_oracle: "Posąg Wyroczni",
-  npc_inn: "Tańcząca Harfa",
-  npc_lodging: "Kwatera",
-  npc_board: "Tablica Zleceń",
-  npc_gate: "Brama Karhyn",
-  npc_sewer: "Wejście do Kanałów",
-  npc_tower: "Wieża Strażnicza",
 
   intro_dialog: "To jest Karhyn, miasto, które widziało lepsze dni.\n\nPorozmawiaj z mieszkańcami i poznaj jego historię i plotki. Kup mikstury, ulepsz atrybuty, przechowaj przedmioty w depozycie lub ulepsz je u kowala. Podejmij zlecenia łowieckie na tablicy na placu.\n\nZbadaj kanały i uratuj miasto, zanim się zawali.",
 
-  smith_dialog: "\"Przynieś ostrze, gdy się stępi. Daj mi dwa przedmioty tej samej rzadkości, a przetopię je i wzmocnię ten, który wybierzesz.\"\n\nKażde +1 zużywa 2 przedmioty tej samej rzadkości. Na +5 przedmiot awansuje rzadkością (do Ultra rzadkiego). Legendarne awansują z Esencjami bossa, do +10.",
-  smith_upgrade: "Ulepsz ekwipunek",
-  smith_buy_oil: "Kup olej do latarni ({n} złota)",
-  smith_no_gold: "\"Olej nie jest za darmo. Wróć ze złotem.\"",
-  smith_oil_bought: "\"Tran wielorybi, najlepszy sort. Pali się czysto.\"\n\nOlej latarni: {n} minut.",
 
-  depot_dialog: "\"Witaj w depozycie Karhyn. Każdy poszukiwacz przygód ma skrzynię w kabinach z tyłu — to, co tam schowasz, nie zginie przy zejściach.\"\n\nZłoto przechowywane: ◉ {n}",
-  depot_open: "Otwórz moją skrzynię",
 
-  potion_dialog: "\"Świeże fiolki, {voc}. Życie, furia i inne domowe mieszanki.\"\n\nW plecaku: {n} mikstura(-y).  Złoto: ◉ {gold}",
-  potion_see: "Zobacz mikstury",
 
-  gate_dialog: "Opuścić cytadelę i wrócić na mapę?",
 
-  sewer_dialog: "Kratka trzeszczy od wiatru z dołu. Szczury piszczą w ciemności i sieją chaos.\n\nMówią, że jeśli zejdziesz za głęboko, usłyszysz krzyki nieznanej bestii.",
 
-  tower_dialog: "Drzwi skrzypią. Kręte schody prowadzą w ciemności na taras.",
-  tower_climb: "Wejdź na szczyt",
 
-  inn_dialog: "Stłumiona muzyka i zapach kwaśnego piwa. Karczmarz wyciera szklankę i patrzy na ciebie, jakby cię już wcześniej widział.\n\n\"Byłeś tu wczoraj? Nie pamiętasz? Nikt niczego nie pamięta w Karhyn.\"",
 
-  lodging_dialog: "Wilgotne pokoje, słomiane łóżka i świeca. Gospodyni bierze niewiele i nie zadaje pytań.",
 
-  oracle_first_blessing: "Kamień jest zimny i wyświechtany, ale światło spływa na ciebie. Na chwilę deszcz ustaje, a głos, który prawie rozpoznajesz, wymawia twoje imię.\n\nOtrzymałeś pierwsze błogosławieństwo Wyroczni (1/3): śmierć teraz kosztuje mniej.",
-  oracle_kneel: "Uklęknij i podziękuj",
-  oracle_dialog: "Mistrzowie broni z Karhyn szkolą tych, którzy płacą złotem: życie, szybkość ataku, pancerz i furia.",
-  oracle_pray: "Módl się",
-  oracle_pray_result: "Zamykasz oczy. Deszcz zdaje się padać wolniej, a przez chwilę harfa Wyroczni gra tylko dla ciebie. Wyrocznia wciąż czuwa nad Karhyn.",
-  oracle_rise: "Wstań",
-  oracle_train: "Trenuj atrybuty",
 
   bless_1: "Otrzymałeś pierwsze błogosławieństwo Wyroczni.\n\nPrzy następnej śmierci stracisz 60% doświadczenia bieżącego poziomu, 75% ekwipunku i 20% zebranego złota (zamiast 80%, 100% i 25%).",
   bless_2: "Otrzymałeś drugie błogosławieństwo Wyroczni.\n\nPrzy następnej śmierci stracisz 35% doświadczenia bieżącego poziomu, 35% ekwipunku i 10% zebranego złota.",
   bless_3: "Otrzymałeś trzecie błogosławieństwo Wyroczni.\n\nPrzy następnej śmierci stracisz 20% doświadczenia bieżącego poziomu, żadnego ekwipunku ani złota.",
 
-  board_intro: "Kartki naklejone jedna na drugą, mokre od deszczu. Mieszkańcy płacą tym, którzy oczyszczą kanały z potworów wychodzących nocą.\n\nIm trudniejsze zlecenie, tym większa nagroda. Jedno zlecenie naraz.",
-  board_accept: "Zerwałeś kartkę z tablicy. Zlecenie przyjęte: upoluj {n} {monster} w kanałach.\n\nWróć tutaj po odbiór nagrody.",
-  board_done: "Zlecenie wykonane! Otrzymałeś {xp} doświadczenia, {gold} złota i {item} ({rarity}), który trafił do plecaka.",
-  board_deliver: "Oddaj zlecenie",
-  board_new: "Zobacz nowe zlecenia",
 
-  forge_upgrade: "Ulepsz",
-  forge_missing: "Brakuje materiałów",
 
 
   map_names: JSON.stringify({ smith: "Kowal", inn: "Tańcząca Harfa", potions: "Mikstury", depot: "Depozyt", lodging: "Kwatera", hall: "Wyrocznia", board: "Zlecenia", sewer: "Kanały", gate: "Brama" }),
 
-  town_menu: "Co chcesz zrobić?",
-  town_back_to_map: "Powrót na mapę",
 
-  night: "Noc",
-  dawn: "Świt",
-  dusk: "Zmierzch",
-  day: "Dzień",
-  rain: "deszcz",
 
-  lantern_out: "Latarnia zgasła. Jesteś w ciemności!",
 
   intro_1: "Na kontynencie Godoyr istnieje małe miasto o nazwie Karhyn.",
   intro_2: "Cnotliwe miasto pełne życzliwych, ciepłych i radosnych ludzi, znane ze swej kuźni, z której pochodzą najlepsze miecze i tarcze na całym kontynencie.",
@@ -4413,7 +3864,6 @@ I18N.pl = {
   death_title: "Zginąłeś",
 
   demo_end_title: "Koniec dema",
-  demo_end_text: "Dziękujemy za grę w Vitula! To pierwsza wersja demo. Więcej treści wkrótce.",
 
   touch_up: "Góra",
   touch_down: "Dół",
@@ -4443,7 +3893,6 @@ I18N.pl = {
   eq_light_free: "srebrne światło bez oleju",
   eq_speed: "szybkość +{v}",
 
-  depot_enter: "Depozyt (wejdź)",
   understood: "Rozumiem",
   zone_smith_enter: "Kowal (wejdź)",
   zone_potions_enter: "Sklep Mikstur (wejdź)",
@@ -4466,8 +3915,6 @@ I18N.pl = {
   depot_chest: "Skrzynia składu",
   close: "Zamknij",
   oil_no_gold: "\"Olej nie jest za darmo. Wróć ze złotem.\"",
-  oil_bought: "\"Olej wielorybi, ten dobry. Pali się czysto.\"\n\nOlej latarni: {min} minut.",
-  buy_more: "Kup więcej",
   forge_title: "Kuźnia Karhyn",
   no_equip: "Nie masz wyposażenia.",
   worn_label: "Z",
@@ -4516,12 +3963,10 @@ I18N.pl = {
   lore_lodging_1: "Gospodyni poprawia chustę.\n\n\"Połowa pokoi jest pusta. Rodziny, które mogły, wyjechały na południe. Zostali ci, którzy nie mają dokąd iść.\"",
   lore_lodging_2: "\"W nocy słychać to, wiesz? Pod podłogą. Drapanie, a czasem coś cięższego, wlokącego się. Stawiam łóżko daleko od odpływu.\"",
   lore_lodging_3: "\"Przyszedłeś przez bramę nie pamiętając niczego, prawda? Nie jesteś pierwszy. Bogini wysyła ludzi, gdy miasto ich potrzebuje. Przynajmniej wolę w to wierzyć.\"",
-  contract_board: "Tablica kontraktów",
 
   // ── bag / inventory ──
   bag_title: "Plecak",
   equipment: "Wyposażenie",
-  inventory: "Ekwipunek",
   bag_tip: "Najedź na przedmiot, aby zobaczyć szczegóły. Kliknij, aby założyć lub zdjąć.",
   slot_amulet: "Amulet",
   slot_helmet: "Hełm",
@@ -4545,7 +3990,6 @@ I18N.pl = {
   defense_value: "Obrona",
   block_chance: "Szansa na blok",
   regen_label: "Regeneracja",
-  regen_fmt: "{hp} HP/s · {mp} {resource}/s",
   resistances: "Odporności",
   no_resist: "brak",
   level_label: "Poziom",
@@ -4576,22 +4020,17 @@ I18N.pl = {
   attrs_points: "Punkty do rozdania: {n}",
   attrs_none: "Brak punktów. Każdy poziom daje 1 punkt.",
   pause_title: "Pauza",
-  pause_controls: "Ruch: WASD lub strzałki (po skosie też)\nAtak podstawowy: Spacja · R auto-atak · E na linie: wspinaj\nFuria rośnie przy trafieniu i otrzymaniu obrażeń i opłaca zdolności.",
   resume: "Kontynuuj",
   abandon: "Porzuć (liczy się jako śmierć)",
   dungeon_won: "Loch Ukończony",
   you_fell: "Upadłeś",
   descend_again: "Zejdź ponownie",
   back_to_city: "Wróć do miasta",
-  back_to_map: "Wróć do mapy",
   credits_jowl: "Autorzy: JowlTV",
 
   // ── hero messages ──
   ml_up: "Osiągnąłeś poziom magii {n}.",
   ml_float: "Poziom magii {n}",
-  no_potion: "Brak {name} w plecaku. Kup w Sklepie.",
-  mana_full: "Mana pełna",
-  fury_full: "Furia pełna",
   skill_up: "Poprawiłeś {name} do {n}.",
   floor_info: "{region} — piętro {n}.",
   last_floor: "Ostatnie piętro. Coś wielkiego cię wietrzy.",
@@ -4609,14 +4048,11 @@ I18N.pl = {
   bless_float: "Błogosławieństwo {n}/3",
   bless_title: "Błogosławieństwo Wyroczni",
   level_up_float: "Poziom {n}!",
-  level_up_skill: "Poziom {n}: nauczyłeś się {name}! (klawisz {key}) · +1 punkt atrybutu (U)",
-  level_up_plain: "Osiągnąłeś poziom {n}. +1 punkt atrybutu (U)",
   promoted: "Awansowałeś na {name}! Regeneracja ×{regen} i +{dmg}% obrażeń.",
 
   // ── spells ──
   fury_low: "Za mało {resource} na {name} ({cost}).",
   no_target: "Brak celu w zasięgu.",
-  eagle_eye: "Sokolie Oko",
 
   // ── floor ──
   gas_trap: "Klik! Trujący gaz wydobywa się z otworu.",
@@ -4626,20 +4062,12 @@ I18N.pl = {
   boss_fell: "{name} poległ! Otwiera się przejście.",
 
   // ── lighting ──
-  oil_warning: "Twoja latarnia słabnie. Olej: {n} min.",
-  oil_out: "Olej się skończył. Całkowita ciemność.",
 
   // ── town ──
   town_welcome: "To jest Karhyn, miasto które widziało lepsze dni.\n\nPorozmawiaj z mieszkańcami i dowiedz się więcej o historii i plotkach. Kup mikstury, ulepsz atrybuty, przechowaj przedmioty w depozycie lub ulepsz je u kowala. Podejmij kontrakty łowieckie na tablicy na placu.\n\nZbadaj kanalizację i uratuj miasto zanim się zawali.",
-  town_understood: "Rozumiem",
-  zone_smith: "Kowal (wejdź)",
-  zone_potions: "Sklep z Miksturami (wejdź)",
-  zone_depot: "Depozyt (wejdź)",
   zone_locker: "Twoja skrzynia depozytu",
   zone_board: "Tablica kontraktów",
-  zone_lodging: "Kwatera",
   zone_oracle: "Posąg Wyroczni",
-  zone_sewer: "Zejdź do kanałów",
   zone_gate: "Brama Karhyn",
   ask_lore: "Zapytaj o Karhyn i plotki",
   lore_more: "Co jeszcze mówią?",
@@ -4663,7 +4091,6 @@ I18N.pl = {
   smith_title: "Kowal",
   smith_greet: "\"Przynieś ostrze gdy jest tępe. Daj mi dwa przedmioty tego samego rzadkości a przetopię i wzmocnię wybrany.\"\n\nKażde +1 zużywa 2 przedmioty tego samego rzadkości. Przy +5 rośnie rzadkość (do Ultra Rzadkiego). Legendarne rosną z Esencjami bossa, do +10.",
   upgrade_gear: "Ulepsz ekwipunek",
-  buy_oil: "Kup olej do latarni ({price} złota)",
   bye2: "Na razie",
   tower_title: "Wieża Strażnicza",
   tower_desc: "Drzwi skrzypią. Kręte schody prowadzą w ciemności na taras.",
@@ -4675,17 +4102,14 @@ I18N.pl = {
   lodging_title: "Kwatera",
   lodging_desc: "Wilgotne pokoje, łóżko ze słomy i świeca. Gospodyni bierze niewiele i nie zadaje pytań.",
   lodging_rest: "Odpocznij (regeneruje wszystko)",
-  two_hands: "dwuręczna",
   tip_level: " · poziom {n}",
   tip_wrong_voc: " · nie dla twojej profesji",
   tip_worn: " · założone (kliknij, by zdjąć)",
   regen_line: "{hp} hp/s · {res} {kind}/s",
   word_fury: "furia",
   word_mana: "mana",
-  no_gear: "Brak. Potwory czasem coś upuszczają.",
   more_in_bag: "+{n} w plecaku",
   err_title: "Błąd gry (zrób zrzut ekranu i wyślij):",
-  potion_wrong_voc: "{name} nie nadaje się dla: {voc}.",
   cave_collapse: "Kanał zapada się w naturalną jaskinię. Trzymaj się blisko światła.",
   gold_float: "+{n} złota",
   spell_locked: "{name} odblokowuje się na poziomie {n}.",
@@ -4693,7 +4117,6 @@ I18N.pl = {
   contract_progress_done: "Kontrakt wykonany: {n}/{n} {name}. Wróć do tablicy w Karhyn.",
   attrs_spent: "Poziom {n} · rozdano już {k} pkt.",
   attr_weapon_plus: "+1 {name}",
-  pause_keys: "5 i 6: mikstury · I: plecak · U: atrybuty · TAB: mapa · kółko myszy: zoom\nSkrzynie wymagają brązowego klucza.",
   death_pen: "\n\nŚmierć — błogosławieństwa Wyroczni: {bless}/3\nUtracone doświadczenie: {xp}% bieżącego poziomu\nUtracony ekwipunek: {eq}\nUtracone złoto: {gold}% ({lost})",
   word_all: "wszystko",
   run_summary: "Trudność: {d}%\nOsiągnięte piętro: {f}/{total}\nPoziom: {lvl}\nZabójstwa: {k}\nZdobyte złoto: {g}   (sakiewka — {voc}: {bag})",
@@ -4711,7 +4134,6 @@ I18N.pl = {
   pray: "Módl się",
   stand_up: "Wstań",
   kneel_thank: "Uklęknij i podziękuj",
-  train_attrs: "Trenuj atrybuty",
   oil_low: "W latarni prawie skończył się olej.",
   touch_frontal: "Cios Frontalny",
   touch_magic2: "Czar 2",
@@ -4790,7 +4212,6 @@ I18N.pl = {
   arrow_explosive: "Wybuchowa Strzała",
   arrow_holy: "Święta Strzała",
   no_arrows: "Kołczan jest pusty. Kup strzały u kowala w Karhyn.",
-  no_arrows_short: "Brak strzał",
   arrows_out_type: "Skończyły się: {name}.",
   arrow_selected: "Używasz: {name} ({n})",
   arrow_hud: "Flechas: {n}",
@@ -4828,8 +4249,6 @@ I18N.pl = {
   card_hint_equip: "Kliknij, aby założyć",
   card_hint_unequip: "Założone · kliknij, aby zdjąć",
   loot_gold: "+{n} złota",
-  loot_xp: "{name} · +{n} dośw.",
-  zone_library: "Biblioteka Karhyn",
   library_name: "Biblioteka",
   best_title: "Bestiariusz Karhyn",
   best_progress: "{s} z {n} gatunków dostrzeżonych · {d} ukończonych",
@@ -4926,7 +4345,6 @@ I18N.pl = {
   wp_on: "Punkt podróży aktywowany: {region}, piętro {n}.",
   wp_none: "Brak aktywnych punktów podróży. Stań na płycie z harfą na początku każdego piętra, aby go aktywować.",
   slope_pass_open: "Po śmierci Króla Szczurów w komnacie otwiera się przejście: prowadzi na Zbocze Goblinów.",
-  slow_float: "spowolniony",
   guard_float: "Egida!",
   tut_no_recall: "Powrót nie działa w Rook Forest: idź ścieżką do bramy Karhyn.",
   potion_filled: "+1 mikstura życia",
