@@ -173,7 +173,7 @@ Object.assign(DungeonScene.prototype, {
     this.reveal();
     // música: chefe no último andar; ao subir de volta, a da região
     { const rm = { karhyn_sewers: "music_sewers", goblin_slope: "music_slope", forest: "music_title" }[this.regionId] || "music_sewers";
-      const want = last ? "music_boss" : rm; if (this._music !== want) { this._music = want; if (this.cache.audio.exists(want)) playMusic(this, want, 0.5); } }
+      const want = last ? "music_boss" : rm; if (this._music !== want) { this._music = want; if (musicExists(this, want)) playMusic(this, want, 0.5); } }
     if (this.hudFloor) this.hudFloor.setText(t("floor_display", { name: this.region.name, n: this.floorN, total: this.floors }));
   },
 

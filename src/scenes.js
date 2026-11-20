@@ -75,8 +75,8 @@ class BootScene extends Phaser.Scene {
     for (const u of ["logo_vitula", "bar_track", "bar_fill_boss", "bar_fill_xp", "heart", "slot", "panel", "button_normal", "button_hover", "title_banner", "portrait_knight", "portrait_archer", "portrait_sorcerer", "portrait_druid", "map_karhyn_2x", "card_normal", "card_selected", "name_plate", "marker_open", "marker_locked", "marker_cleared"])
       this.load.image(u, `assets/ui/${u}.png`);
     for (const s of SFX) this.load.audio(s, `assets/audio/${s}.wav`);
-    this.load.audio("music_goddess", "assets/audio/before_the_shadow_falls.mp3");
-    for (const m of ["title", "town", "sewers", "slope", "boss", "end"]) this.load.audio("music_" + m, `audio/music_${m}.mp3`);
+    if (!MOBILE_MUSIC) this.load.audio("music_goddess", "assets/audio/before_the_shadow_falls.mp3");
+    if (!MOBILE_MUSIC) for (const m of ["title", "town", "sewers", "slope", "boss", "end"]) this.load.audio("music_" + m, `audio/music_${m}.mp3`);
   }
   create() {
     makeEquipTextures(this);   // ícones dos equipamentos, desenhados em código
@@ -154,7 +154,26 @@ function button(scene, x, y, w, label, fn, size = 16) {
 // Faixas: title (menus), town, sewers, slope, boss, end, music_goddess (fallback)
 let _curMusic = null;   // key da faixa tocando agora
 
+// No celular a música toca por um <audio> só, em streaming: pela Web Audio cada faixa de ~3 min vira ~60 MB
+// descomprimida na memória, e as 7 juntas derrubavam o Safari do iPhone (o jogo voltava para a tela inicial).
+const MOBILE_MUSIC = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+const MUSIC_URL = { music_title: "audio/music_title.mp3", music_town: "audio/music_town.mp3", music_sewers: "audio/music_sewers.mp3", music_slope: "audio/music_slope.mp3",
+  music_boss: "audio/music_boss.mp3", music_end: "audio/music_end.mp3", music_goddess: "assets/audio/before_the_shadow_falls.mp3" };
+const musicExists = (scene, key) => MOBILE_MUSIC ? !!MUSIC_URL[key] : scene.cache.audio.exists(key);
+let _mEl = null;
+function playMusicMobile(key, vol) {
+  if (!_mEl) {
+    _mEl = new Audio(); _mEl.loop = true; _mEl.preload = "auto";
+    const kick = () => { if (_mEl.src && _mEl.paused) _mEl.play().catch(() => {}); };   // iOS só toca depois de um toque
+    ["touchend", "pointerup", "keydown"].forEach(ev => window.addEventListener(ev, kick, { passive: true }));
+    document.addEventListener("visibilitychange", () => { if (document.hidden) _mEl.pause(); else kick(); });
+  }
+  _mEl.volume = Math.max(0, Math.min(1, vol * Settings.data.music));
+  if (_curMusic !== key) { _curMusic = key; _mEl.src = MUSIC_URL[key]; }
+  if (_mEl.paused) _mEl.play().catch(() => {});
+}
 function playMusic(scene, key, vol = 0.55) {
+  if (MOBILE_MUSIC) { if (MUSIC_URL[key]) playMusicMobile(key, vol); return; }
   if (scene.sound.locked) { scene.sound.once("unlocked", () => playMusic(scene, key, vol)); return; }
   if (!scene.cache.audio.exists(key)) { // fallback para a deusa se a faixa não existir
     if (key !== "music_goddess" && scene.cache.audio.exists("music_goddess")) return playMusic(scene, "music_goddess", vol);
