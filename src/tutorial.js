@@ -9,7 +9,9 @@ function startAdventure(scene) {
   // cada personagem novo começa na Rook Forest; depois de achar Karhyn, escolhe onde cair no mapa
   if (!Save.voc(scene.registry.get("vocation") || "knight").foundKarhyn) {
     scene.registry.set("region", "forest"); scene.registry.set("startFloor", 1);
-    stopAllButMusic(scene); scene.scene.start("dungeon");
+    stopAllButMusic(scene);
+    if (!Save.voc(scene.registry.get("vocation") || "knight").carriageSeen) scene.scene.start("carriage");   // abertura na carruagem
+    else scene.scene.start("dungeon");
   } else { scene.registry.set("townSpawn", "gate"); scene.scene.start("town"); }   // sem mapa: sempre cai em Karhyn
 }
 

@@ -847,7 +847,7 @@ I18N.pt = {
   card_hint_sell: "Clique direito: vender por {n} de ouro",
   tut_head: "Chegada a Karhyn · passo {n} de {total}",
   tut_skip: "Pular tutorial ›",
-  tut_welcome: "Você acorda na floresta. As torres de Karhyn aparecem entre as árvores…",
+  tut_welcome: "A carruagem tombou e não há ninguém. As torres de Karhyn aparecem entre as árvores…",
   tut_move: "Ande com {k} (ou as setas). Para andar na diagonal, aperte duas direções juntas (ex.: baixo + esquerda).",
   tut_attack: "Aperte {k} para dar um golpe. Perto de um inimigo, o golpe acerta quem está à sua frente. Se preferir, {a} liga o ataque automático.",
   tut_auto: "{k} liga ou desliga o ataque automático: com ele ligado, você golpeia sozinho quem estiver colado.",
@@ -953,6 +953,10 @@ I18N.pt = {
   pot_cd: "{name}: aguarde {s} s.",
   mon_giant_spider: "Aranha Gigante",
   pm_bestiary: "Bestiário",
+  carriage_1: "Rumores dizem que Karhyn tem liberado muitos contratos ultimamente.\nAs criaturas estão mais agressivas que o normal.",
+  carriage_2: "!!!",
+  carriage_3: "Não há ninguém, e o cavalo foge.\nPreciso seguir a pé.",
+  carriage_skip: "Pular ▸▸",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1851,6 +1855,10 @@ I18N.en = {
   pot_cd: "{name}: wait {s} s.",
   mon_giant_spider: "Giant Spider",
   pm_bestiary: "Bestiary",
+  carriage_1: "Rumor has it Karhyn has been posting many contracts lately.\nThe creatures are more aggressive than usual.",
+  carriage_2: "!!!",
+  carriage_3: "There is no one here, and the horse flees.\nI must go on foot.",
+  carriage_skip: "Skip ▸▸",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2689,6 +2697,9 @@ I18N.es = {
   pm_potions: "Pociones",
   pm_arrows: "Cambiar flecha",
   note_foot2: undefined,
+  carriage_1: undefined,
+  carriage_2: undefined,
+  carriage_3: undefined,
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3527,6 +3538,9 @@ I18N.de = {
   pm_potions: "Tränke",
   pm_arrows: "Pfeil wechseln",
   note_foot2: undefined,
+  carriage_1: undefined,
+  carriage_2: undefined,
+  carriage_3: undefined,
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4364,6 +4378,9 @@ I18N.pl = {
   pm_potions: "Mikstury",
   pm_arrows: "Zmień strzałę",
   note_foot2: undefined,
+  carriage_1: undefined,
+  carriage_2: undefined,
+  carriage_3: undefined,
 };
 
 // ── API pública ─────────────────────────────────────────────────
