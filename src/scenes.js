@@ -403,8 +403,8 @@ class IntroScene extends Phaser.Scene {
     this.anims.globalTimeScale = 1; this.done = false;
     zoom2(this.cameras.main); this.cameras.main.setBackgroundColor("#050406");
     const k0 = this.textures.exists(this.kKey) ? this.kKey : "tower_view", W0 = this.textures.get(k0).getSourceImage().width;
-    const img = this.add.image(VIEW_W / 2, VIEW_H / 2, k0).setScale(VIEW_W / W0 * 1.04);
-    this.tweens.add({ targets: img, y: VIEW_H / 2 - 8, scale: VIEW_W / W0 * 1.12, duration: 60000, ease: "Sine.inOut" });   // a câmera avança devagar pela rua
+    const P = animatedPanel(this, k0, k0 === "tower_view" ? "" : "karhyn", { rainA: 0.3 }), img = P.img;
+    this.tweens.add({ targets: P.c, y: VIEW_H / 2 - 8, scale: 1.08, duration: 60000, ease: "Sine.inOut" });   // a câmera avança devagar pela rua
     // a cor vai sumindo devagar até ficar em preto e branco
     if (img.preFX) { const cm = img.preFX.addColorMatrix(), st = { g: 0 };
       this.tweens.add({ targets: st, g: 1, delay: 2500, duration: 7000, ease: "Sine.inOut", onUpdate: () => { cm.reset(); cm.saturate(-st.g); } }); }

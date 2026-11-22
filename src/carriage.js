@@ -1,6 +1,29 @@
 // Abertura de cada personagem novo: três quadros na carruagem (arte própria por classe) antes da Rook Forest.
 // 1) lendo os contratos  2) o raio quebra a roda  3) ninguém lá fora, o cavalo foge.
 // Depois o jogo começa ao lado da carruagem caída (ver forestWreck, mais abaixo).
+// luzes de cada quadro (coordenadas na imagem de 960×536) para o brilho tremer como fogo de verdade
+const INTRO_LAMPS = {
+  knight_1: [[478, 122], [881, 94]], knight_2: [[222, 242], [529, 164]], knight_3: [[276, 451]],
+  archer_1: [[415, 186], [840, 123]], archer_2: [[278, 253], [555, 194]], archer_3: [[292, 484]],
+  karhyn: [[406, 319], [617, 304], [472, 334], [561, 328], [783, 225], [700, 135]],
+};
+// um quadro animado: imagem + lampiões tremeluzindo + chuva, tudo num container que a câmera "empurra" devagar
+function animatedPanel(scene, key, lampsKey, opts = {}) {
+  const c = scene.add.container(VIEW_W / 2, VIEW_H / 2);
+  const img = scene.add.image(0, 0, key), k = VIEW_W / img.width * 1.04; img.setScale(k); c.add(img);
+  for (const [x, y] of INTRO_LAMPS[lampsKey] || []) {
+    const g = scene.add.image((x - 480) * k, (y - 268) * k, "light").setTint(0xffb050).setBlendMode(Phaser.BlendModes.ADD).setScale(0.35 * k).setAlpha(0.35);
+    c.add(g); scene.tweens.add({ targets: g, alpha: { from: 0.22, to: 0.5 }, scale: g.scale * 1.15, duration: Phaser.Math.Between(90, 180), yoyo: true, repeat: -1, repeatDelay: Phaser.Math.Between(0, 220) });
+  }
+  if (opts.rain !== false) {
+    if (!scene.textures.exists("rain_drop")) { const gr = scene.make.graphics({ add: false }); gr.fillStyle(0xffffff).fillRect(0, 0, 1, 12); gr.generateTexture("rain_drop", 1, 12); gr.destroy(); }
+    const rf = scene.add.particles(0, 0, "rain_drop", { x: { min: -VIEW_W / 2 - 40, max: VIEW_W / 2 + 80 }, y: -VIEW_H / 2 - 20, lifespan: 900, speedY: { min: 560, max: 700 },
+      speedX: { min: -90, max: -60 }, rotate: 8, alpha: { start: opts.rainA || 0.35, end: 0.15 }, tint: 0xb4c4dc, quantity: 2, frequency: 16 });
+    c.add(rf);
+  }
+  return { c, img, k };
+}
+
 class CarriageScene extends Phaser.Scene {
   constructor() { super("carriage"); }
   preload() {
@@ -24,17 +47,21 @@ class CarriageScene extends Phaser.Scene {
     if (this.step > 2) return this.finish();
     this.busy = true; this.time.delayedCall(700, () => { this.busy = false; });
     const old = this.layer; this.layer = this.add.container(0, 0).setAlpha(0);
-    this.tweens.add({ targets: old, alpha: 0, duration: 500, onComplete: () => old.destroy() });
-    const img = this.add.image(VIEW_W / 2, VIEW_H / 2, `intro_${this.v}_${this.step + 1}`);
-    img.setScale(VIEW_W / img.width * 1.04); this.layer.add(img);
-    // movimento lento de câmera em cada quadro
-    this.tweens.add({ targets: img, scale: img.scale * 1.08, x: VIEW_W / 2 + (this.step === 1 ? 10 : -12), duration: 9000, ease: "Sine.out" });
+    // continuidade: 1→2 corta no clarão do raio; 2→3 escurece e reabre mais perto, com a câmera seguindo para a direita
+    this.tweens.add({ targets: old, alpha: 0, duration: this.step === 1 ? 120 : 900, onComplete: () => old.destroy() });
+    const P = animatedPanel(this, `intro_${this.v}_${this.step + 1}`, `${this.v}_${this.step + 1}`, { rainA: this.step === 0 ? 0.12 : 0.4 });
+    this.layer.add(P.c);
+    const push = [{ s: 1.0, s2: 1.07, x2: -14 }, { s: 1.06, s2: 1.0, x2: 8 }, { s: 1.08, s2: 1.02, x2: -10 }][this.step];
+    P.c.setScale(push.s); this.tweens.add({ targets: P.c, scale: push.s2, x: VIEW_W / 2 + push.x2, duration: 9000, ease: "Sine.out" });
+    if (this.step === 0) this.tweens.add({ targets: P.c, y: VIEW_H / 2 + 2, duration: 700, yoyo: true, repeat: -1, ease: "Sine.inOut" });   // a carruagem balança na estrada
+    // o quadro segue sozinho depois de um tempo (ainda dá para tocar para adiantar)
+    if (this.auto) this.auto.remove(); this.auto = this.time.delayedCall([7000, 4200, 7500][this.step], () => this.next());
     const box = this.add.rectangle(VIEW_W / 2, VIEW_H - 46, VIEW_W - 80, 62, 0x07060a, 0.78).setStrokeStyle(1, 0x5a4a30); this.layer.add(box);
     const line = txt(this, VIEW_W / 2, VIEW_H - 46, t("carriage_" + (this.step + 1)), this.step === 1 ? 34 : 15, this.step === 1 ? "#f0e0b0" : COLORS.text,
       { align: "center", wordWrap: { width: VIEW_W - 130 }, title: this.step === 1 }).setOrigin(0.5); this.layer.add(line);
     const hint = txt(this, VIEW_W - 50, VIEW_H - 24, "▸", 14, COLORS.gold).setOrigin(0.5); this.layer.add(hint);
     this.tweens.add({ targets: hint, alpha: 0.2, duration: 600, yoyo: true, repeat: -1 });
-    this.tweens.add({ targets: this.layer, alpha: 1, duration: 600 });
+    this.tweens.add({ targets: this.layer, alpha: 1, duration: this.step === 1 ? 60 : 900 });
     if (this.step === 1) {   // o raio: clarão, tremor e o estalo
       const f = this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0xe8f0ff, 0).setOrigin(0).setDepth(5);
       this.tweens.add({ targets: f, alpha: { from: 0.95, to: 0 }, duration: 160, repeat: 2, repeatDelay: 70, onComplete: () => f.destroy() });
