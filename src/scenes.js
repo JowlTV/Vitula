@@ -395,12 +395,22 @@ const introTitle = () => t("intro_title");
 const introText = () => [1, 2, 3, 4, 5, 6, 7].map(i => t("intro_" + i)).join("\n\n");
 class IntroScene extends Phaser.Scene {
   constructor() { super("intro"); }
+  preload() {   // entrada de Karhyn vista das costas do personagem (uma arte por classe)
+    const v = this.registry.get("vocation") === "archer" ? "archer" : "knight";
+    this.kKey = `intro_${v}_karhyn`; if (!this.textures.exists(this.kKey)) this.load.image(this.kKey, `assets/intro/${v}_karhyn.jpg`);
+  }
   create() {
     this.anims.globalTimeScale = 1; this.done = false;
     zoom2(this.cameras.main); this.cameras.main.setBackgroundColor("#050406");
-    const img = this.add.image(VIEW_W / 2, VIEW_H / 2, "tower_view").setScale(VIEW_W / 512 * 1.06);
-    img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-    this.tweens.add({ targets: img, x: VIEW_W / 2 - 26, y: VIEW_H / 2 - 10, scale: VIEW_W / 512 * 1.16, duration: 60000, ease: "Sine.inOut" });
+    const k0 = this.textures.exists(this.kKey) ? this.kKey : "tower_view", W0 = this.textures.get(k0).getSourceImage().width;
+    const img = this.add.image(VIEW_W / 2, VIEW_H / 2, k0).setScale(VIEW_W / W0 * 1.04);
+    this.tweens.add({ targets: img, y: VIEW_H / 2 - 8, scale: VIEW_W / W0 * 1.12, duration: 60000, ease: "Sine.inOut" });   // a câmera avança devagar pela rua
+    // a cor vai sumindo devagar até ficar em preto e branco
+    if (img.preFX) { const cm = img.preFX.addColorMatrix(), st = { g: 0 };
+      this.tweens.add({ targets: st, g: 1, delay: 2500, duration: 7000, ease: "Sine.inOut", onUpdate: () => { cm.reset(); cm.saturate(-st.g); } }); }
+    // depois de 1,5 s, um raio clareia o céu
+    const bolt = this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0xe4ecff, 0).setOrigin(0).setBlendMode(Phaser.BlendModes.ADD);
+    this.time.delayedCall(1500, () => { this.tweens.add({ targets: bolt, alpha: { from: 0.7, to: 0 }, duration: 140, repeat: 2, repeatDelay: 60 }); this.cameras.main.shake(200, 0.003); sfx(this, "explode", 0.35); });
     // névoa passando sobre os campos
     for (let i = 0; i < 6; i++) {
       const f = this.add.image(Phaser.Math.Between(-200, VIEW_W), Phaser.Math.Between(120, VIEW_H - 120), "light").setScale(3.2, 0.9).setTint(0xc8d0d8).setAlpha(0.06);
