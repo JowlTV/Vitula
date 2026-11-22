@@ -172,6 +172,12 @@ function playMusicMobile(key, vol) {
   if (_curMusic !== key) { _curMusic = key; _mEl.src = MUSIC_URL[key]; }
   if (_mEl.paused) _mEl.play().catch(() => {});
 }
+// Esc → "Voltar ao menu": salva e volta para a tela inicial
+function goToTitle(scene) {
+  Save.save(); scene.tweens.resumeAll && scene.tweens.resumeAll(); scene.paused = false;
+  scene.cameras.main.fadeOut(400, 0, 0, 0);
+  scene.cameras.main.once("camerafadeoutcomplete", () => { stopAllButMusic(scene); scene.scene.start("title"); });
+}
 function playMusic(scene, key, vol = 0.55) {
   if (MOBILE_MUSIC) { if (MUSIC_URL[key]) playMusicMobile(key, vol); return; }
   if (scene.sound.locked) { scene.sound.once("unlocked", () => playMusic(scene, key, vol)); return; }

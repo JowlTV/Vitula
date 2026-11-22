@@ -811,7 +811,7 @@ class TownScene extends Phaser.Scene {
     this.uiLayer.bringToTop(this.townTitle);
   }
   openMenu() {
-    this.say("Karhyn", t("what_to_do"), [[t("continue_label"), () => this.closeDialog()]]);
+    this.say("Karhyn", t("what_to_do"), [[t("continue_label"), () => this.closeDialog()], [t("back_to_menu"), () => { this.closeDialog(); goToTitle(this); }]]);
   }
 
   // ------------------------------------------------------------ atmosfera

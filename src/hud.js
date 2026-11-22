@@ -476,11 +476,12 @@ Object.assign(DungeonScene.prototype, {
         if (extra) { const e = txt(this, cx + CW - 22, y + 11, extra, 11, (this.hero.level >= +extra.replace(/\D/g, "")) ? "#9fe08a" : COLORS.dim).setOrigin(1, 0.5); c.add(e); }
       });
     });
-    [[t("resume"), () => this.togglePause()], [t("abandon"), () => { this.togglePause(); this.finish(false); }]].forEach(([label, fn], i) => {
-      const bx = VIEW_W / 2 + (i ? 180 : -180), by = y0 + H - 42;
-      const b = this.add.nineslice(bx, by, "button_normal", null, 340, 40, 18, 18, 6, 6).setInteractive({ useHandCursor: true });
+    [[t("resume"), () => this.togglePause()], [t("abandon"), () => { this.togglePause(); this.finish(false); }], [t("back_to_menu"), () => goToTitle(this)]].forEach(([label, fn], i) => {
+      const bx = VIEW_W / 2 + (i - 1) * 262, by = y0 + H - 42;
+      const b = this.add.nineslice(bx, by, "button_normal", null, 250, 40, 18, 18, 6, 6).setInteractive({ useHandCursor: true });
       b.on("pointerover", () => b.setTexture("button_hover")); b.on("pointerout", () => b.setTexture("button_normal")); b.on("pointerup", fn);
-      c.add([b, txt(this, bx, by, label, 16, COLORS.text).setOrigin(0.5)]);
+      const lt = txt(this, bx, by, label, 16, COLORS.text).setOrigin(0.5); if (lt.width > 226) lt.setScale(226 / lt.width);
+      c.add([b, lt]);
     });
     return c;
   },

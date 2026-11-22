@@ -957,6 +957,7 @@ I18N.pt = {
   carriage_2: "!!!",
   carriage_3: "Não há ninguém, e o cavalo foge.\nPreciso seguir a pé.",
   carriage_skip: "Pular ▸▸",
+  back_to_menu: "Voltar ao menu",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1859,6 +1860,7 @@ I18N.en = {
   carriage_2: "!!!",
   carriage_3: "There is no one here, and the horse flees.\nI must go on foot.",
   carriage_skip: "Skip ▸▸",
+  back_to_menu: "Back to menu",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────

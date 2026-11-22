@@ -42,9 +42,13 @@ Object.assign(DungeonScene.prototype, {
     if (alive < 8) { const g = this.gen, far = [...Array(g.w * g.h).keys()].map(i => ({ x: i % g.w, y: (i / g.w) | 0 }))
         .filter(c => g.isWalk(c.x, c.y) && !this.occ.has(key(c.x, c.y)) && Math.abs(c.x - h.x) + Math.abs(c.y - h.y) > 8);
       Phaser.Utils.Array.Shuffle(far).slice(0, 8 - alive).forEach(c => this.spawnMonster(Math.random() < 0.6 ? "rat" : "bat", c.x, c.y)); }
-    if (spots[1]) this.drop(spots[1].x, spots[1].y, "bread");
-    if (spots[3]) this.drop(spots[3].x, spots[3].y, "gold");
-    if (spots[5] && !this.props.has(key(spots[5].x, spots[5].y))) this.addProp(spots[5].x, spots[5].y, "forest_sign");
+    // a placa fica sempre colada ao lado do herói (esquerda ou direita, na mesma linha)
+    { const free = (x, y) => this.gen.isWalk(x, y) && !this.props.has(key(x, y)) && !this.occ.has(key(x, y)) && !this.pickups.has(key(x, y));
+      const c = [[h.x - 1, h.y], [h.x + 1, h.y], [h.x - 1, h.y + 1], [h.x + 1, h.y + 1]].find(([x, y]) => free(x, y)) || (spots[5] && [spots[5].x, spots[5].y]);
+      if (c) this.addProp(c[0], c[1], "forest_sign");
+      const rest = spots.filter(p => !(c && p.x === c[0] && p.y === c[1]));
+      if (rest[1]) this.drop(rest[1].x, rest[1].y, "bread");
+      if (rest[3]) this.drop(rest[3].x, rest[3].y, "gold"); }
     // painel do tutorial
     const c = this.add.container(VIEW_W / 2, 62).setDepth(16); this.uiLayer.add(c); this.tutBox = c;
     this.tutBg = this.add.nineslice(0, 0, "panel", null, 560, 70, 16, 16, 16, 16).setOrigin(0.5, 0);
