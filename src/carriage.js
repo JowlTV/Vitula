@@ -85,22 +85,23 @@ class CarriageScene extends Phaser.Scene {
 // chuva o tempo todo e um raio de vez em quando ──
 Object.assign(DungeonScene.prototype, {
   forestWreck(start) {
+    (this.wreckObjs || []).forEach(o => o && o.scene && o.destroy()); this.wreckObjs = [];   // o andar pode ser montado mais de uma vez: nunca duas carruagens
     const p = this.cellPos(start.x, start.y), g = this.gen;
     // trilha de terra por onde a carruagem veio: do herói até a borda esquerda do mapa, enquanto houver chão
-    const road = this.add.graphics().setDepth(-5); this.world.add(road);
+    const road = this.add.graphics().setDepth(-5); this.world.add(road); this.wreckObjs.push(road);
     for (let x = start.x; x >= 0 && g.isWalk(x, start.y); x--) {
       const c = this.cellPos(x, start.y), a = x === start.x ? 0.12 : 0.28;
       road.fillStyle(0x3a2a1a, a).fillRect(c.x - T / 2, c.y - T * 0.42, T, T * 0.84);
       road.fillStyle(0x24180e, a + 0.1).fillRect(c.x - T / 2, c.y - T * 0.3, T, 4).fillRect(c.x - T / 2, c.y + T * 0.26, T, 4);   // sulcos das rodas
     }
     // a carruagem: na casa de cima (ou de baixo) do herói, sem bloquear o caminho
-    const dy = g.isWalk(start.x, start.y - 1) || !g.isWalk(start.x, start.y + 1) ? -1 : 1;
+    const dy = -1;   // regra: a carruagem fica sempre ACIMA do herói (atrás dele na tela), nunca na frente tampando o personagem
     if (this.textures.exists("carriage_wreck")) {
       const w = this.add.image(p.x + T * 0.4, p.y + dy * T * 0.9, "carriage_wreck").setOrigin(0.5, 0.7);
-      w.setScale(4.4 * T / w.width).setDepth(w.y + T * 0.2); this.ents.add(w); this.wreckImg = w;
+      w.setScale(4.4 * T / w.width).setDepth(p.y - T * 0.5);   // sempre desenhada antes (atrás) do herói this.ents.add(w); this.wreckImg = w; this.wreckObjs.push(w);
     }
     // sangue e pegadas indo para dentro da mata
-    const b = this.add.graphics().setDepth(-4); this.world.add(b);
+    const b = this.add.graphics().setDepth(-4); this.world.add(b); this.wreckObjs.push(b);
     const rnd = (a, z) => a + Math.random() * (z - a);
     for (let i = 0; i < 9; i++) b.fillStyle(0x5a0a0a, rnd(0.45, 0.75)).fillEllipse(p.x + rnd(-T, T * 2.2), p.y + dy * T * 0.3 + rnd(-T * 0.5, T * 0.6), rnd(6, 22), rnd(4, 12));
     for (let i = 0; i < 7; i++) { const fx = p.x + T * 2 + i * T * 0.45, fy = p.y - dy * T * (0.2 + i * 0.22);
@@ -139,5 +140,5 @@ Object.assign(DungeonScene.prototype, {
     return r;
   };
   const cr = DungeonScene.prototype.create;
-  DungeonScene.prototype.create = function (...a) { this.forestRainFx = null; return cr.apply(this, a); };
+  DungeonScene.prototype.create = function (...a) { this.forestRainFx = null; this.wreckObjs = []; return cr.apply(this, a); };
 }
