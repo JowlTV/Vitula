@@ -56,11 +56,13 @@ class CarriageScene extends Phaser.Scene {
     if (this.step === 0) this.tweens.add({ targets: P.c, y: VIEW_H / 2 + 2, duration: 700, yoyo: true, repeat: -1, ease: "Sine.inOut" });   // a carruagem balança na estrada
     // o quadro segue sozinho depois de um tempo (ainda dá para tocar para adiantar)
     if (this.auto) this.auto.remove(); this.auto = this.time.delayedCall([7000, 4200, 7500][this.step], () => this.next());
-    const box = this.add.rectangle(VIEW_W / 2, VIEW_H - 46, VIEW_W - 80, 62, 0x07060a, 0.78).setStrokeStyle(1, 0x5a4a30); this.layer.add(box);
-    const line = txt(this, VIEW_W / 2, VIEW_H - 46, t("carriage_" + (this.step + 1)), this.step === 1 ? 34 : 15, this.step === 1 ? "#f0e0b0" : COLORS.text,
-      { align: "center", wordWrap: { width: VIEW_W - 130 }, title: this.step === 1 }).setOrigin(0.5); this.layer.add(line);
-    const hint = txt(this, VIEW_W - 50, VIEW_H - 24, "▸", 14, COLORS.gold).setOrigin(0.5); this.layer.add(hint);
-    this.tweens.add({ targets: hint, alpha: 0.2, duration: 600, yoyo: true, repeat: -1 });
+    if (this.step !== 1) {   // o quadro do raio fica sem texto
+      const box = this.add.rectangle(VIEW_W / 2, VIEW_H - 46, VIEW_W - 80, 62, 0x07060a, 0.78).setStrokeStyle(1, 0x5a4a30); this.layer.add(box);
+      const line = txt(this, VIEW_W / 2, VIEW_H - 46, t("carriage_" + (this.step + 1)), this.step === 1 ? 34 : 15, this.step === 1 ? "#f0e0b0" : COLORS.text,
+        { align: "center", wordWrap: { width: VIEW_W - 130 }, title: this.step === 1 }).setOrigin(0.5); this.layer.add(line);
+      const hint = txt(this, VIEW_W - 50, VIEW_H - 24, "▸", 14, COLORS.gold).setOrigin(0.5); this.layer.add(hint);
+      this.tweens.add({ targets: hint, alpha: 0.2, duration: 600, yoyo: true, repeat: -1 });
+    }
     this.tweens.add({ targets: this.layer, alpha: 1, duration: this.step === 1 ? 60 : 900 });
     if (this.step === 1) {   // o raio: clarão, tremor e o estalo
       const f = this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0xe8f0ff, 0).setOrigin(0).setDepth(5);

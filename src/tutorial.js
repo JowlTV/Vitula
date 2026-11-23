@@ -55,7 +55,7 @@ Object.assign(DungeonScene.prototype, {
     this.tutHead = txt(this, -262, 10, "", 12, COLORS.gold);
     this.tutText = this.add.container(-262, 28);
     this.tutSkip = txt(this, 262, 10, t("tut_skip"), 11, COLORS.dim).setOrigin(1, 0).setInteractive({ useHandCursor: true });
-    this.tutSkip.on("pointerup", () => this.tutEnd(true));
+    this.tutSkip.on("pointerup", () => { this.tutBox.setVisible(false); this.tutHidden = true; if (this.tut) this.tut.zoomed = true; this.msg(t("tut_skipped")); });   // pula só as explicações: a floresta continua até achar a saída
     c.add([this.tutBg, this.tutHead, this.tutText, this.tutSkip]);
     for (const o of c.list) if (o.type === "Text") o.setShadow(1, 1, "#000", 0, true, true);
     // atalhos que contam para o tutorial

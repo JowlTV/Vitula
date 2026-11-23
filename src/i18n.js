@@ -859,7 +859,7 @@ I18N.pt = {
   tut_map: "O mapa da floresta já está todo aberto: use {k} para achar a saída. A partir dos esgotos, você mesmo terá que encontrar a saída.",
   tut_exit: "Siga a trilha até a saída da floresta: lá está Karhyn. Dicas: {e} fala e usa coisas; {h} volta à cidade.",
   tut_found: "As muralhas de Karhyn surgem diante de você.",
-  tut_skipped: "Você segue direto para Karhyn.",
+  tut_skipped: "Tutorial pulado. Siga pela floresta até encontrar Karhyn.",
   region_forest: "Rook Forest",
   region_forest_desc: "A floresta antes de Karhyn.",
   tut_no_rope: "Não há volta: siga a trilha até Karhyn.",
@@ -953,9 +953,9 @@ I18N.pt = {
   pot_cd: "{name}: aguarde {s} s.",
   mon_giant_spider: "Aranha Gigante",
   pm_bestiary: "Bestiário",
-  carriage_1: "Rumores dizem que Karhyn tem liberado muitos contratos ultimamente.\nAs criaturas estão mais agressivas que o normal.",
-  carriage_2: "!!!",
-  carriage_3: "Não há ninguém, e o cavalo foge.\nPreciso seguir a pé.",
+  carriage_1: "Em busca de trabalho, você viaja para Karhyn.\nUma cidade que hoje em dia é assombrada pelo Caos.",
+  carriage_2: "",
+  carriage_3: "A carruagem quebra, o cocheiro some e o cavalo foge.\nAgora você precisa seguir a pé.",
   carriage_skip: "Pular ▸▸",
   back_to_menu: "Voltar ao menu",
 };
@@ -1762,7 +1762,7 @@ I18N.en = {
   tut_map: "The forest map is fully revealed: press {k} to find the exit. From the sewers on, you will have to find the way out yourself.",
   tut_exit: "Follow the trail to the forest's exit: Karhyn lies there. Tips: {e} talks and uses things; {h} returns to town.",
   tut_found: "Karhyn's walls rise before you.",
-  tut_skipped: "You head straight to Karhyn.",
+  tut_skipped: "Tutorial skipped. Follow the forest until you find Karhyn.",
   region_forest: "Rook Forest",
   region_forest_desc: "The forest before Karhyn.",
   tut_no_rope: "There's no way back: follow the trail to Karhyn.",
@@ -1856,9 +1856,9 @@ I18N.en = {
   pot_cd: "{name}: wait {s} s.",
   mon_giant_spider: "Giant Spider",
   pm_bestiary: "Bestiary",
-  carriage_1: "Rumor has it Karhyn has been posting many contracts lately.\nThe creatures are more aggressive than usual.",
-  carriage_2: "!!!",
-  carriage_3: "There is no one here, and the horse flees.\nI must go on foot.",
+  carriage_1: "Looking for work, you travel to Karhyn.\nA city now haunted by Chaos.",
+  carriage_2: "",
+  carriage_3: "The carriage breaks, the coachman vanishes and the horse flees.\nNow you must go on foot.",
   carriage_skip: "Skip ▸▸",
   back_to_menu: "Back to menu",
 };
@@ -2698,10 +2698,6 @@ I18N.es = {
   pm_map: "Mapa",
   pm_potions: "Pociones",
   pm_arrows: "Cambiar flecha",
-  note_foot2: undefined,
-  carriage_1: undefined,
-  carriage_2: undefined,
-  carriage_3: undefined,
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3539,10 +3535,6 @@ I18N.de = {
   pm_map: "Karte",
   pm_potions: "Tränke",
   pm_arrows: "Pfeil wechseln",
-  note_foot2: undefined,
-  carriage_1: undefined,
-  carriage_2: undefined,
-  carriage_3: undefined,
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4379,10 +4371,6 @@ I18N.pl = {
   pm_map: "Mapa",
   pm_potions: "Mikstury",
   pm_arrows: "Zmień strzałę",
-  note_foot2: undefined,
-  carriage_1: undefined,
-  carriage_2: undefined,
-  carriage_3: undefined,
 };
 
 // ── API pública ─────────────────────────────────────────────────
