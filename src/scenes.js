@@ -398,7 +398,7 @@ class SelectScene extends Phaser.Scene {
 // Introdução: a vista da torre sobre os arredores de Karhyn, o título e o texto subindo devagar.
 // Qualquer tecla, clique ou toque pula. Ao fim, o jogo começa no portão de Karhyn, de dia.
 const introTitle = () => t("intro_title");
-const introText = () => [1, 2, 3, 4, 5, 6, 7].map(i => t("intro_" + i)).filter(x => x && !x.startsWith("intro_")).join("\n\n");
+const introText = () => [1, 2, 3, 4, 5, 6, 7].map(i => t("intro_" + i)).filter(x => x && !x.startsWith("intro_")).join(" ").replace(/\.\.\. \.\.\./g, "... ");
 const INTRO_VIDEO = { knight: "assets/intro/knight_karhyn.mp4", archer: "assets/intro/archer_karhyn.mp4" };
 class IntroScene extends Phaser.Scene {
   constructor() { super("intro"); }
@@ -441,11 +441,11 @@ class IntroScene extends Phaser.Scene {
     // texto normal na tela (sem o efeito Star Wars): título amarelo, texto branco; aparece e some esmaecendo,
     // e dura o tempo do vídeo (10 s) — ou 16 s quando só há a imagem
     const dur = this.vid ? 10000 : 16000;
-    const title = this.add.text(VIEW_W / 2, 74, introTitle(), { fontFamily: FONT_TITLE, fontSize: "46px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
+    const title = this.add.text(VIEW_W / 2, VIEW_H / 2 - 110, introTitle(), { fontFamily: FONT_TITLE, fontSize: "46px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
       .setOrigin(0.5).setAlpha(0).setShadow(0, 3, "#000000", 6, true, true);
-    const body = this.add.text(VIEW_W / 2, 118, introText(), { fontFamily: FONT_TEXT, fontSize: "15px", color: "#ffffff", stroke: "#000000", strokeThickness: 4, resolution: 2,
-      align: "center", wordWrap: { width: 760 }, lineSpacing: 4 }).setOrigin(0.5, 0).setAlpha(0).setShadow(0, 2, "#000000", 6, true, true);
-    if (body.y + body.height > VIEW_H - 30) body.setScale((VIEW_H - 30 - body.y) / body.height);
+    const body = this.add.text(VIEW_W / 2, VIEW_H / 2 + 20, introText(), { fontFamily: FONT_TEXT, fontSize: "17px", color: "#ffffff", stroke: "#000000", strokeThickness: 4, resolution: 2,
+      align: "center", wordWrap: { width: 680 }, lineSpacing: 8 }).setOrigin(0.5).setAlpha(0).setShadow(0, 2, "#000000", 6, true, true);
+    title.setY(body.y - body.height / 2 - 40);   // título logo acima do bloco de texto
     this.tweens.add({ targets: title, alpha: 1, duration: 900, delay: 300 });
     this.tweens.add({ targets: body, alpha: 1, duration: 1200, delay: 800 });
     this.tweens.add({ targets: [title, body], alpha: 0, duration: 1000, delay: dur - 1300 });
