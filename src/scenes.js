@@ -399,7 +399,7 @@ class SelectScene extends Phaser.Scene {
 // Qualquer tecla, clique ou toque pula. Ao fim, o jogo começa no portão de Karhyn, de dia.
 const introTitle = () => t("intro_title");
 const introText = () => [1, 2, 3, 4, 5, 6, 7].map(i => t("intro_" + i)).join("\n\n");
-const INTRO_VIDEO = { knight: "assets/intro/knight_karhyn.mp4" };   // o arqueiro ainda usa a imagem
+const INTRO_VIDEO = { knight: "assets/intro/knight_karhyn.mp4", archer: "assets/intro/archer_karhyn.mp4" };
 class IntroScene extends Phaser.Scene {
   constructor() { super("intro"); }
   preload() {   // entrada de Karhyn vista das costas do personagem (uma arte por classe)
@@ -437,27 +437,19 @@ class IntroScene extends Phaser.Scene {
     // véu escuro para o texto ler bem (mais fechado embaixo, onde ele nasce)
     const veil = this.add.graphics();
     veil.fillStyle(0x050406, 0.42).fillRect(0, 0, VIEW_W, VIEW_H);
-    veil.fillGradientStyle(0x050406, 0x050406, 0x050406, 0x050406, 0, 0, 0.9, 0.9).fillRect(0, VIEW_H - 150, VIEW_W, 150);
-    // título dramático
-    const title = this.add.text(VIEW_W / 2, VIEW_H / 2 - 20, introTitle(), { fontFamily: FONT_TITLE, fontSize: "64px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 8, resolution: 2 })
-      .setOrigin(0.5).setAlpha(0).setShadow(0, 4, "#000000", 8, true, true);
-    const rule = this.add.rectangle(VIEW_W / 2, VIEW_H / 2 + 26, 360, 2, 0x8e2a2c).setAlpha(0).setScale(0, 1);
-    this.tweens.add({ targets: title, alpha: 1, y: VIEW_H / 2 - 30, duration: 2200, ease: "Sine.out" });
-    this.tweens.add({ targets: rule, alpha: 1, scaleX: 1, duration: 2200, delay: 600, ease: "Sine.out" });
-    this.tweens.add({ targets: [title, rule], alpha: 0, delay: this.vid ? 1800 : 5200, duration: this.vid ? 900 : 1600 });
-    // texto em perspectiva, como a abertura de Star Wars: nasce grande embaixo, sobe devagar e some pequeno no horizonte.
-    // O texto é desenhado uma vez (invisível) e redesenhado a cada quadro em faixas, cada uma mais estreita que a de baixo.
-    const src = this.add.text(0, 0, introText(), { fontFamily: FONT_TITLE, fontSize: "30px", color: "#f0d878", stroke: "#0c0608", strokeThickness: 5, resolution: 2,
-      align: "center", wordWrap: { width: 600 }, lineSpacing: 12, padding: { x: 8, y: 8 } }).setVisible(false);
-    if (this.textures.exists("intro_crawl")) this.textures.remove("intro_crawl");
-    const CW = VIEW_W * 2, CH = VIEW_H * 2, tex = this.textures.createCanvas("intro_crawl", CW, CH);
-    this.add.image(0, 0, "intro_crawl").setOrigin(0).setScale(0.5);
-    this.crawl = { src: src.canvas, tex, ctx: tex.getContext(), scroll: -9999, CW, CH, started: false,
-      horizon: CH * 0.16, top: CH * 0.30, depth: 520, speed: 46 };   // medidas em pixels do canvas (2× a tela)
-    if (this.vid) {   // com vídeo: o texto inteiro passa dentro dos 10 s
-      const c = this.crawl, span = c.CH - c.horizon, endAt = src.height * 2 + c.depth * (span / (c.top - c.horizon) - 1);
-      c.speed = endAt / 8.2; this.time.delayedCall(1500, () => { c.scroll = 0; c.started = true; });
-    } else this.time.delayedCall(5600, () => { this.crawl.scroll = 0; this.crawl.started = true; });
+    veil.fillGradientStyle(0x050406, 0x050406, 0x050406, 0x050406, 0.75, 0.75, 0, 0).fillRect(0, 0, VIEW_W, VIEW_H * 0.75);   // mais fechado em cima, atrás do texto
+    // texto normal na tela (sem o efeito Star Wars): título amarelo, texto branco; aparece e some esmaecendo,
+    // e dura o tempo do vídeo (10 s) — ou 16 s quando só há a imagem
+    const dur = this.vid ? 10000 : 16000;
+    const title = this.add.text(VIEW_W / 2, 74, introTitle(), { fontFamily: FONT_TITLE, fontSize: "46px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
+      .setOrigin(0.5).setAlpha(0).setShadow(0, 3, "#000000", 6, true, true);
+    const body = this.add.text(VIEW_W / 2, 118, introText(), { fontFamily: FONT_TEXT, fontSize: "15px", color: "#ffffff", stroke: "#000000", strokeThickness: 4, resolution: 2,
+      align: "center", wordWrap: { width: 760 }, lineSpacing: 4 }).setOrigin(0.5, 0).setAlpha(0).setShadow(0, 2, "#000000", 6, true, true);
+    if (body.y + body.height > VIEW_H - 30) body.setScale((VIEW_H - 30 - body.y) / body.height);
+    this.tweens.add({ targets: title, alpha: 1, duration: 900, delay: 300 });
+    this.tweens.add({ targets: body, alpha: 1, duration: 1200, delay: 800 });
+    this.tweens.add({ targets: [title, body], alpha: 0, duration: 1000, delay: dur - 1300 });
+    if (!this.vid) this.time.delayedCall(dur, () => this.finish());
     const skip = txt(this, VIEW_W - 16, VIEW_H - 14, t("intro_skip"), 11, COLORS.dim).setOrigin(1, 1).setAlpha(0);
     this.tweens.add({ targets: skip, alpha: 0.9, delay: 1500, duration: 800 });
     this.cameras.main.fadeIn(1200, 0, 0, 0);
