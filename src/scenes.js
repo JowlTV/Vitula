@@ -41,7 +41,7 @@ class BootScene extends Phaser.Scene {
     this.load.spritesheet("fx_recall", "assets/fx/recall.png", { frameWidth: 64, frameHeight: 72 });
     this.load.spritesheet("fx_basic_slash", "assets/art/fx_basic_slash.png", { frameWidth: 72, frameHeight: 72 });
     this.load.image("waypoint", "assets/waypoint.png");
-    this.load.image("fx_holy_arrow", "assets/art/fx_holy_arrow.png"); this.load.image("fx_volley", "assets/art/fx_volley.png"); this.load.image("fx_xcut", "assets/art/fx_xcut.png"); this.load.image("carriage_wreck", "assets/art/carriage_wreck.png"); this.load.image("sewer_knight", "assets/intro/knight_sewers.jpg"); this.load.image("sewer_archer", "assets/intro/archer_sewers.jpg"); this.load.image("fx_slasher", "assets/art/fx_slasher.png"); this.load.image("fx_missile", "assets/art/fx_missile.png");
+    this.load.image("fx_holy_arrow", "assets/art/fx_holy_arrow.png"); this.load.image("fx_volley", "assets/art/fx_volley.png"); this.load.image("fx_xcut", "assets/art/fx_xcut.png"); this.load.image("carriage_wreck", "assets/art/carriage_wreck.png"); this.load.image("sewer_knight", "assets/intro/knight_sewers.jpg"); for (const k of ["smith", "inn", "potions", "depot"]) this.load.image("npc_scene_" + k, `assets/interior/npc_${k}.jpg`); this.load.image("sewer_archer", "assets/intro/archer_sewers.jpg"); this.load.image("fx_slasher", "assets/art/fx_slasher.png"); this.load.image("fx_missile", "assets/art/fx_missile.png");
     for (const id of EQUIP_ART) this.load.image("eq_" + id, `assets/equip/${id}.png`);
     this.load.spritesheet("fx_ring_wave", "assets/art/fx_ring_wave.png", { frameWidth: 214, frameHeight: 214 });
     this.load.spritesheet("fx_front_cut", "assets/art/fx_front_cut.png", { frameWidth: 230, frameHeight: 230 });
