@@ -98,7 +98,8 @@ Object.assign(DungeonScene.prototype, {
     const dy = -1;   // regra: a carruagem fica sempre ACIMA do herói (atrás dele na tela), nunca na frente tampando o personagem
     if (this.textures.exists("carriage_wreck")) {
       const w = this.add.image(p.x + T * 0.4, p.y + dy * T * 0.9, "carriage_wreck").setOrigin(0.5, 0.7);
-      w.setScale(4.4 * T / w.width).setDepth(p.y - T * 0.5);   // sempre desenhada antes (atrás) do herói this.ents.add(w); this.wreckImg = w; this.wreckObjs.push(w);
+      w.setScale(4.4 * T / w.width).setDepth(p.y - T * 0.5);   // sempre desenhada antes (atrás) do herói
+      this.ents.add(w); this.wreckImg = w; this.wreckObjs.push(w);
     }
     // sangue e pegadas indo para dentro da mata
     const b = this.add.graphics().setDepth(-4); this.world.add(b); this.wreckObjs.push(b);
