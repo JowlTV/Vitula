@@ -399,11 +399,15 @@ class SelectScene extends Phaser.Scene {
 // Qualquer tecla, clique ou toque pula. Ao fim, o jogo começa no portão de Karhyn, de dia.
 const introTitle = () => t("intro_title");
 const introText = () => [1, 2, 3, 4, 5, 6, 7].map(i => t("intro_" + i)).join("\n\n");
+const INTRO_VIDEO = { knight: "assets/intro/knight_karhyn.mp4" };   // o arqueiro ainda usa a imagem
 class IntroScene extends Phaser.Scene {
   constructor() { super("intro"); }
   preload() {   // entrada de Karhyn vista das costas do personagem (uma arte por classe)
     const v = this.registry.get("vocation") === "archer" ? "archer" : "knight";
     this.kKey = `intro_${v}_karhyn`; if (!this.textures.exists(this.kKey)) this.load.image(this.kKey, `assets/intro/${v}_karhyn.jpg`);
+    // cena em vídeo (10 s) quando existir para a classe: o texto passa enquanto o vídeo corre
+    this.vKey = INTRO_VIDEO[v] ? `vid_${v}_karhyn` : null;
+    if (this.vKey && !this.cache.video.exists(this.vKey)) this.load.video(this.vKey, INTRO_VIDEO[v], true);
   }
   create() {
     this.anims.globalTimeScale = 1; this.done = false;
@@ -414,9 +418,17 @@ class IntroScene extends Phaser.Scene {
     // a cor vai sumindo devagar até ficar em preto e branco
     if (img.preFX) { const cm = img.preFX.addColorMatrix(), st = { g: 0 };
       this.tweens.add({ targets: st, g: 1, delay: 2500, duration: 7000, ease: "Sine.inOut", onUpdate: () => { cm.reset(); cm.saturate(-st.g); } }); }
+    // vídeo por cima da imagem (a imagem fica de reserva se o vídeo não tocar)
+    this.vid = null;
+    if (this.vKey && this.cache.video.exists(this.vKey)) {
+      const vd = this.add.video(VIEW_W / 2, VIEW_H / 2, this.vKey); vd.setMute(true);
+      vd.play(false); vd.once("created", () => vd.setDisplaySize(VIEW_W, VIEW_H)); vd.setDisplaySize(VIEW_W, VIEW_H);
+      vd.on("complete", () => this.time.delayedCall(400, () => this.finish()));
+      this.vid = vd; P.c.setVisible(false);
+    }
     // depois de 1,5 s, um raio clareia o céu
     const bolt = this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0xe4ecff, 0).setOrigin(0).setBlendMode(Phaser.BlendModes.ADD);
-    this.time.delayedCall(1500, () => { this.tweens.add({ targets: bolt, alpha: { from: 0.7, to: 0 }, duration: 140, repeat: 2, repeatDelay: 60 }); this.cameras.main.shake(200, 0.003); sfx(this, "explode", 0.35); });
+    if (!this.vid) this.time.delayedCall(1500, () => { this.tweens.add({ targets: bolt, alpha: { from: 0.7, to: 0 }, duration: 140, repeat: 2, repeatDelay: 60 }); this.cameras.main.shake(200, 0.003); sfx(this, "explode", 0.35); });
     // névoa passando sobre os campos
     for (let i = 0; i < 6; i++) {
       const f = this.add.image(Phaser.Math.Between(-200, VIEW_W), Phaser.Math.Between(120, VIEW_H - 120), "light").setScale(3.2, 0.9).setTint(0xc8d0d8).setAlpha(0.06);
@@ -432,7 +444,7 @@ class IntroScene extends Phaser.Scene {
     const rule = this.add.rectangle(VIEW_W / 2, VIEW_H / 2 + 26, 360, 2, 0x8e2a2c).setAlpha(0).setScale(0, 1);
     this.tweens.add({ targets: title, alpha: 1, y: VIEW_H / 2 - 30, duration: 2200, ease: "Sine.out" });
     this.tweens.add({ targets: rule, alpha: 1, scaleX: 1, duration: 2200, delay: 600, ease: "Sine.out" });
-    this.tweens.add({ targets: [title, rule], alpha: 0, delay: 5200, duration: 1600 });
+    this.tweens.add({ targets: [title, rule], alpha: 0, delay: this.vid ? 1800 : 5200, duration: this.vid ? 900 : 1600 });
     // texto em perspectiva, como a abertura de Star Wars: nasce grande embaixo, sobe devagar e some pequeno no horizonte.
     // O texto é desenhado uma vez (invisível) e redesenhado a cada quadro em faixas, cada uma mais estreita que a de baixo.
     const src = this.add.text(0, 0, introText(), { fontFamily: FONT_TITLE, fontSize: "30px", color: "#f0d878", stroke: "#0c0608", strokeThickness: 5, resolution: 2,
@@ -442,7 +454,10 @@ class IntroScene extends Phaser.Scene {
     this.add.image(0, 0, "intro_crawl").setOrigin(0).setScale(0.5);
     this.crawl = { src: src.canvas, tex, ctx: tex.getContext(), scroll: -9999, CW, CH, started: false,
       horizon: CH * 0.16, top: CH * 0.30, depth: 520, speed: 46 };   // medidas em pixels do canvas (2× a tela)
-    this.time.delayedCall(5600, () => { this.crawl.scroll = 0; this.crawl.started = true; });
+    if (this.vid) {   // com vídeo: o texto inteiro passa dentro dos 10 s
+      const c = this.crawl, span = c.CH - c.horizon, endAt = src.height * 2 + c.depth * (span / (c.top - c.horizon) - 1);
+      c.speed = endAt / 8.2; this.time.delayedCall(1500, () => { c.scroll = 0; c.started = true; });
+    } else this.time.delayedCall(5600, () => { this.crawl.scroll = 0; this.crawl.started = true; });
     const skip = txt(this, VIEW_W - 16, VIEW_H - 14, t("intro_skip"), 11, COLORS.dim).setOrigin(1, 1).setAlpha(0);
     this.tweens.add({ targets: skip, alpha: 0.9, delay: 1500, duration: 800 });
     this.cameras.main.fadeIn(1200, 0, 0, 0);
