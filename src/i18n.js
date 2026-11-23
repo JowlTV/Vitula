@@ -377,12 +377,12 @@ I18N.pt = {
   // ── luz ──
 
   // ── intro (lore) ──
-  intro_1: "No continente de Godoyr existe uma pequena cidade chamada Karhyn.",
-  intro_2: "Uma cidade virtuosa, de gente carinhosa, calorosa e festeira, conhecida por sua forja, de onde saem as melhores espadas e os melhores escudos de todo o continente.",
-  intro_3: "Dizem que o metal usado na forja nasce do ferro minerado nas montanhas próximas à Torre das Amazonas — ferro que, à noite, é banhado pela luz da deusa.",
-  intro_4: "Mas Karhyn está em caos.",
-  intro_5: "O mal assola os seus moradores. Cresce o ódio dos monstros da escuridão, e animais que antes eram inofensivos agora atacam com uma fúria pungente.",
-  intro_6: "Na taverna A Harpa Dançante, os boatos correm de mesa em mesa: nos esgotos de Karhyn habita um mal tão perigoso que, se conseguir subir todos os andares e chegar à superfície...",
+  intro_1: "Em Godoyr ergue-se Karhyn, cidade de gente calorosa e de forjas lendárias, onde nascem as melhores lâminas do continente.",
+  intro_2: "Seu ferro vem das montanhas da Torre das Amazonas, banhado à noite pela luz da Deusa.",
+  intro_3: "Mas o Caos chegou. As feras da escuridão estão mais famintas, e até os animais mansos atacam com fúria.",
+  intro_4: "Na Harpa Dançante, sussurra-se que algo desperta nos esgotos. Se alcançar a superfície...",
+  intro_5: "...será o fim de Karhyn.",
+  intro_6: "",
 
   // ── morte ──
   death_title: "Você morreu",
@@ -670,7 +670,7 @@ I18N.pt = {
   touch_pot2: "Poção 2",
   shop_title: "Loja de Poções",
   intro_title: "A Queda de Karhyn",
-  intro_7: "...poderá ser o nosso fim.",
+  intro_7: "",
   intro_skip: "Enter, clique ou toque: pular",
   bind_up: "Andar para cima",
   bind_down: "Andar para baixo",
@@ -1285,12 +1285,12 @@ I18N.en = {
 
 
 
-  intro_1: "In the continent of Godoyr there is a small city called Karhyn.",
-  intro_2: "A virtuous city of kind, warm and festive people, known for its forge, from which the finest swords and shields in the entire continent are crafted.",
-  intro_3: "They say the metal used in the forge comes from iron mined in the mountains near the Amazon Tower — iron that, at night, is bathed in the goddess's light.",
-  intro_4: "But Karhyn is in chaos.",
-  intro_5: "Evil plagues its people. The hatred of the dark monsters grows, and animals that were once harmless now attack with fierce fury.",
-  intro_6: "At the Dancing Harp tavern, rumors pass from table to table: in the sewers of Karhyn dwells an evil so dangerous that if it manages to climb all the floors and reach the surface...",
+  intro_1: "In Godoyr stands Karhyn, a city of warm folk and legendary forges, home of the finest blades on the continent.",
+  intro_2: "Its iron comes from the mountains of the Amazon Tower, bathed at night in the Goddess's light.",
+  intro_3: "But Chaos has come. The beasts of the dark grow hungrier, and even tame animals strike with fury.",
+  intro_4: "At the Dancing Harp, they whisper that something stirs in the sewers. If it reaches the surface...",
+  intro_5: "...it will be the end of Karhyn.",
+  intro_6: "",
 
   death_title: "You died",
 
@@ -1574,7 +1574,7 @@ I18N.en = {
   touch_pot2: "Potion 2",
   shop_title: "Potion Shop",
   intro_title: "The Fall of Karhyn",
-  intro_7: "...it may be our end.",
+  intro_7: "",
   intro_skip: "Enter, click or tap: skip",
   bind_up: "Move up",
   bind_down: "Move down",
@@ -2189,12 +2189,12 @@ I18N.es = {
 
 
 
-  intro_1: "En el continente de Godoyr existe una pequeña ciudad llamada Karhyn.",
-  intro_2: "Una ciudad virtuosa, de gente amable, cálida y festiva, conocida por su forja, de donde salen las mejores espadas y escudos de todo el continente.",
-  intro_3: "Dicen que el metal usado en la forja nace del hierro extraído en las montañas cercanas a la Torre de las Amazonas — hierro que, por la noche, es bañado por la luz de la diosa.",
-  intro_4: "Pero Karhyn está en caos.",
-  intro_5: "El mal asola a sus habitantes. Crece el odio de los monstruos de la oscuridad, y animales que antes eran inofensivos ahora atacan con una furia punzante.",
-  intro_6: "En la taberna El Arpa Danzante, los rumores corren de mesa en mesa: en las alcantarillas de Karhyn habita un mal tan peligroso que, si logra subir todos los pisos y llegar a la superficie...",
+  intro_1: "In Godoyr, among mountains and mist, stands Karhyn.",
+  intro_2: "A land of warm folk and crowded taverns, famed for its forge: swords and shields tempered with iron from the mountains by the Amazons' Tower, blessed by the goddess's light.",
+  intro_3: "But Chaos has come. Monsters crawl out of the dark, and even the gentlest beasts attack in fury.",
+  intro_4: "At the Dancing Harp, they whisper that something stirs in the sewers... and that if it reaches the surface, it will be our end.",
+  intro_5: "",
+  intro_6: "",
 
   death_title: "Has muerto",
 

@@ -398,7 +398,7 @@ class SelectScene extends Phaser.Scene {
 // Introdução: a vista da torre sobre os arredores de Karhyn, o título e o texto subindo devagar.
 // Qualquer tecla, clique ou toque pula. Ao fim, o jogo começa no portão de Karhyn, de dia.
 const introTitle = () => t("intro_title");
-const introText = () => [1, 2, 3, 4, 5, 6, 7].map(i => t("intro_" + i)).join("\n\n");
+const introText = () => [1, 2, 3, 4, 5, 6, 7].map(i => t("intro_" + i)).filter(x => x && !x.startsWith("intro_")).join("\n\n");
 const INTRO_VIDEO = { knight: "assets/intro/knight_karhyn.mp4", archer: "assets/intro/archer_karhyn.mp4" };
 class IntroScene extends Phaser.Scene {
   constructor() { super("intro"); }

@@ -441,7 +441,7 @@ class TownScene extends Phaser.Scene {
     }
     if (on && h) {
       const L = lg.light, m = Math.min(1.3, gearMult(dv.equip.light)), fl = L.fuel ? 0.9 + 0.1 * Math.sin(now * 11) * Math.sin(now * 3.7) : 0.97 + 0.03 * Math.sin(now * 2);
-      this.heroGlow.setPosition(h.px, h.py - 14).setTint(L.fuel ? 0xe8c890 : 0xc8d4f0).setScale(L.r * T * m * fl / 128).setAlpha((0.05 + 0.5 * d) * fl);
+      this.heroGlow.setPosition(h.px, h.py - 14).setTint(L.fuel || lg === EQUIP.lantern ? 0xe8c890 : 0xc8d4f0).setScale(L.r * T * m * fl / 128).setAlpha((0.3 + 0.35 * d) * fl);   // aceso também de dia na cidade (chuva escura)
     } else this.heroGlow.setAlpha(0);
     // ícone
     const ic = this.skyIcon, cx = VIEW_W - 26, cy = 40, night = d > 0.5;

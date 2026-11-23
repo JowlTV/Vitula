@@ -78,7 +78,7 @@ Object.assign(DungeonScene.prototype, {
 // ---------------------------------------------------------------- cidade: mochila e chegada
 for (const n of ["toggleBag", "buildBag", "refreshPotionIcons", "computeStats", "maxDamage", "baseDamage", "attr", "attrFree", "critChance", "critMult",
   "swordEff", "shieldLvl", "mlEff", "defenseValue", "blockChance", "attacksPerSec", "buffOn", "xpNext", "promo", "equipItem", "unequipSlot", "restat",
-  "arrowType", "arrowLabel"])
+  "arrowType", "arrowLabel", "dodgeLvl"])
   if (DungeonScene.prototype[n] && !Object.prototype.hasOwnProperty.call(TownScene.prototype, n)) TownScene.prototype[n] = DungeonScene.prototype[n];
 
 Object.assign(TownScene.prototype, {

@@ -52,7 +52,7 @@ Object.assign(DungeonScene.prototype, {
     if (pv) { h.pReg = (h.pReg || 0) + dt; if (h.pReg >= pv.every) { h.pReg -= pv.every; this.heal(h.maxHp * pv.regenPct * (this.promo() ? this.promo().regenMult : 1)); } }
     // a fúria esfria fora de combate
     // (Arqueiro: mana, que se regenera sempre e não esfria)
-    if (VOCATIONS[this.vocId].mana) h.fury = Math.min(this.furyMax, h.fury + (3 + 0.15 * (this.magicLevel ? this.magicLevel() : 0)) * dt);
+    if (VOCATIONS[this.vocId].mana) h.fury = Math.min(this.furyMax, h.fury + (3 + 0.15 * (this.mlEff ? this.mlEff() : 0)) * dt);
     else { h.furyIdle += dt; if (h.furyIdle > 4) h.fury = Math.max(0, h.fury - 4 * dt); }
     this.updateAura(dt);
     if (h.moveT > 0) {
@@ -446,6 +446,7 @@ Object.assign(DungeonScene.prototype, {
     if (this.tryHole()) return;
     if (!this.rope || h.dead || this.finished || this.paused || this.bagOpen) return;
     if (Math.abs(h.x - this.rope.x) > 1 || Math.abs(h.y - this.rope.y) > 1) return;
+    if (this.forest && this.floorN === 1) return;   // na floresta não há corda: a carruagem quebrada não leva de volta para a cidade
     if (this.floorN > 1) {
       if (this.roping) return; this.roping = true;
       this.cameras.main.fadeOut(250, 0, 0, 0);
