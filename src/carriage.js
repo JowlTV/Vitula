@@ -145,3 +145,37 @@ Object.assign(DungeonScene.prototype, {
   const cr = DungeonScene.prototype.create;
   DungeonScene.prototype.create = function (...a) { this.forestRainFx = null; this.wreckObjs = []; return cr.apply(this, a); };
 }
+
+// ── Entrada dos esgotos: uma cena rápida (arte da classe) com o título "Esgotos de Karhyn", toda vez que se entra ──
+Object.assign(DungeonScene.prototype, {
+  sewerCard() {
+    const v = this.vocId === "archer" ? "archer" : "knight", key = `sewer_${v}`;
+    const show = () => {
+      if (!this.textures.exists(key) || this.finished) return;
+      const c = this.add.container(0, 0).setDepth(40); this.uiLayer.add(c); this.paused = true;
+      c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 1).setOrigin(0));
+      const P = animatedPanel(this, key, "", { rainA: 0 }); c.add(P.c);
+      const torch = this.add.image((201 - 480) * P.k + VIEW_W / 2, (149 - 268) * P.k + VIEW_H / 2, "light").setTint(0xffa040).setBlendMode(Phaser.BlendModes.ADD).setScale(0.45).setAlpha(0.4);
+      c.add(torch); this.tweens.add({ targets: torch, alpha: 0.65, duration: 120, yoyo: true, repeat: -1, repeatDelay: 60 });
+      const tt = this.add.text(VIEW_W / 2, VIEW_H - 70, t("sewers_title"), { fontFamily: FONT_TITLE, fontSize: "44px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
+        .setOrigin(0.5).setShadow(0, 3, "#000", 6, true, true).setAlpha(0); c.add(tt);
+      c.setAlpha(0);
+      this.tweens.add({ targets: P.c, scale: 1.06, duration: 2600, ease: "Sine.out" });
+      this.tweens.add({ targets: c, alpha: 1, duration: 350 });
+      this.tweens.add({ targets: tt, alpha: 1, y: VIEW_H - 78, duration: 700, delay: 300 });
+      const close = () => { if (c.closing) return; c.closing = true; this.tweens.add({ targets: c, alpha: 0, duration: 500, onComplete: () => { c.destroy(); this.paused = false; } }); };
+      this.time.delayedCall(2300, close);
+      this.input.once("pointerdown", close); this.input.keyboard.once("keydown", close);
+    };
+    if (this.textures.exists(key)) show();
+    else { this.load.image(key, `assets/intro/${v}_sewers.jpg`); this.load.once("complete", show); this.load.start(); }
+  },
+});
+{
+  const cr = DungeonScene.prototype.create;
+  DungeonScene.prototype.create = function (...a) {
+    const r = cr.apply(this, a);
+    if (this.regionId === "karhyn_sewers" && (this.registry.get("startFloor") || 1) === 1) this.sewerCard();
+    return r;
+  };
+}

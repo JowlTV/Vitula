@@ -958,6 +958,7 @@ I18N.pt = {
   carriage_3: "A carruagem quebra, o cocheiro some e o cavalo foge.\nAgora você precisa seguir a pé.",
   carriage_skip: "Pular ▸▸",
   back_to_menu: "Voltar ao menu",
+  sewers_title: "Esgotos de Karhyn",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1861,6 +1862,7 @@ I18N.en = {
   carriage_3: "The carriage breaks, the coachman vanishes and the horse flees.\nNow you must go on foot.",
   carriage_skip: "Skip ▸▸",
   back_to_menu: "Back to menu",
+  sewers_title: "Sewers of Karhyn",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
