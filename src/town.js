@@ -479,6 +479,10 @@ class TownScene extends Phaser.Scene {
 
   // retrato do NPC: rosto recortado do 1º quadro da animação parada
   portrait(title) {
+    // retratos recortados das artes de atendimento (rosto de cada NPC)
+    const FACE = { [t("smith_title")]: "face_smith", [t("npct_title_smith")]: "face_smith", [t("potion_seller")]: "face_potions", [t("npct_title_potions")]: "face_potions",
+      [t("depot_guard")]: "face_depot", [t("npct_title_depot")]: "face_depot", [t("tavern_title")]: "face_inn", [t("npct_title_inn")]: "face_inn" };
+    if (FACE[title] && this.textures.exists(FACE[title])) return FACE[title];
     const SRC = { [t("depot_guard")]: ["npc_depot_guard_idle", 54], [t("potion_seller")]: ["npc_potion_seller_idle", 64], [t("smith_title")]: ["npc_smith_idle", 64] };
     const e = SRC[title]; if (!e || !this.textures.exists(e[0])) return null;
     const key = "portrait_" + e[0];
