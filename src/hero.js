@@ -176,13 +176,13 @@ Object.assign(DungeonScene.prototype, {
   },
 
   // poções dos atalhos 1 e 2 (teclas 5 e 6)
-  // TAB: próximo alvo (do mais perto ao mais longe, só os que estão à vista)
+  // TAB: seleciona o monstro mais perto (até 9 casas)
   cycleTarget() {
     const h = this.hero; if (!h || h.dead || this.paused) return;
     const list = this.monsters.filter(m => !m.dead && Math.max(Math.abs(m.x - h.x), Math.abs(m.y - h.y)) <= 9)
       .sort((a, b) => Math.hypot(a.x - h.x, a.y - h.y) - Math.hypot(b.x - h.x, b.y - h.y));
     if (!list.length) { this.msg(t("no_target")); return; }
-    const i = list.indexOf(h.target); h.target = list[(i + 1) % list.length];
+    h.target = list[0];   // TAB: sempre o monstro mais perto
     sfx(this, "pickup", 0.15);
   },
   // poções de efeito (compradas na loja): bebidas pela mochila
