@@ -131,7 +131,7 @@ class TownScene extends Phaser.Scene {
     this.block(0, 6, 2, 7);
     // casebres pobres (3 variações do SpriteCook, alternadas); em código se faltarem
     let hv = 0; const H = (x, y, w) => { const k = "vk_casebre_" + (1 + hv++ % 3); return this.textures.exists(k) ? this.art(k, x + (w - 3) / 2, y, 3, 0) : A("v_ruin", x, y, w, 0); };
-    // norte, da esquerda para a direita: Ferreiro, A Harpa Dançante, Loja de Poções (+ casas pobres)
+    // norte, da esquerda para a direita: Ferreiro, A Harpa Mágica, Loja de Poções (+ casas pobres)
     F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); H(10, 6, 3); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
     // Depot no lado norte (antes ficava embaixo, quase escondido na tela)
     F("vk_depot", "v_depot", 25, 6, 5.4, 5); if (this.textures.exists("vk_biblioteca")) this.art("vk_biblioteca", 30.6, 6, 4.1, 0); else H(31, 6, 3);

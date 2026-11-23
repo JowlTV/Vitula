@@ -368,7 +368,7 @@ I18N.pt = {
   // ── lore ──
 
   // ── minimap ──
-  map_names: JSON.stringify({ smith: "Ferreiro", inn: "Harpa Dançante", potions: "Poções", depot: "Depot", lodging: "Acomodação", hall: "Oráculo", board: "Contratos", sewer: "Esgoto", gate: "Portão" }),
+  map_names: JSON.stringify({ smith: "Ferreiro", inn: "Harpa Mágica", potions: "Poções", depot: "Depot", lodging: "Acomodação", hall: "Oráculo", board: "Contratos", sewer: "Esgoto", gate: "Portão" }),
 
   // ── menu da cidade ──
 
@@ -380,7 +380,7 @@ I18N.pt = {
   intro_1: "Em Godoyr ergue-se Karhyn, cidade de gente calorosa e de forjas lendárias, onde nascem as melhores lâminas do continente.",
   intro_2: "Seu ferro vem das montanhas da Torre das Amazonas, banhado à noite pela luz da Deusa.",
   intro_3: "Mas o Caos chegou. As feras da escuridão estão mais famintas, e até os animais mansos atacam com fúria.",
-  intro_4: "Na Harpa Dançante, sussurra-se que algo desperta nos esgotos. Se alcançar a superfície...",
+  intro_4: "Na Harpa Mágica, sussurra-se que algo desperta nos esgotos. Se alcançar a superfície...",
   intro_5: "...será o fim de Karhyn.",
   intro_6: "",
 
@@ -462,7 +462,7 @@ I18N.pt = {
   tower_view_title: "Do alto da torre de vigia",
   tower_view_desc: "O vento corta. Ao longe: a Encosta dos Goblins, o Acampamento Orc, a Torre das Amazonas e as Terras Espectrais.",
   tab_close: "Tab / M fecha",
-  inn_name: "Harpa Dançante",
+  inn_name: "Harpa Mágica",
   potions_name: "Poções",
   depot_name: "Depot",
   oracle_name: "Oráculo",
@@ -623,7 +623,7 @@ I18N.pt = {
   tower_desc: "A porta range. Uma escada em caracol sobe no escuro até o terraço.",
   tower_go: "Subir ao topo",
   tower_stay: "Ficar aqui",
-  tavern_title: "A Harpa Dançante",
+  tavern_title: "A Harpa Mágica",
   tavern_desc: "Música abafada e cheiro de cerveja azeda. O taverneiro limpa um copo e te olha como quem já te viu antes.\n\n\"Você estava aqui ontem? Não lembra? Ninguém lembra de nada em Karhyn.\"",
   leave: "Sair",
   lodging_title: "Acomodação",
@@ -893,11 +893,11 @@ I18N.pt = {
   pm_arrows: "Trocar flecha",
   npct_ok: "Entendi",
   npct_title_smith: "Ferreiro de Karhyn",
-  npct_smith: "Aqui você pode:\n• Aprimorar seus equipamentos na forja, usando ouro e materiais.\n• Comprar óleo para a lamparina, que ilumina os andares escuros.\n• Arqueiros: comprar flechas especiais (fogo, gelo, sagrada...).\n• Perguntar sobre a história da forja de Karhyn.",
-  npct_title_inn: "A Harpa Dançante",
+  npct_smith: "Aqui você pode:\n• Aprimorar seus equipamentos na forja, usando ouro e materiais.\n• Arqueiros: comprar flechas especiais (fogo, gelo, sagrada...).\n• Perguntar sobre a história da forja de Karhyn.",
+  npct_title_inn: "A Harpa Mágica",
   npct_inn: "A taverna da cidade. Converse com os frequentadores para ouvir os boatos sobre o mal que vive nos esgotos e a história de Karhyn.",
   npct_title_potions: "Loja de Poções",
-  npct_potions: "Aqui você compra poções de mana, fúria e de efeitos especiais (berserker, mago, caçador, sorte).\n\nPoções de vida não se compram: elas enchem sozinhas com a vida dos monstros que você derrota.",
+  npct_potions: "Aqui você compra poções de efeito (berserker, mago, caçador, sorte) e as bebe pela mochila.\n\nVida e mana/fúria (Z e C) não se compram: elas enchem aos poucos com os monstros que você derrota.",
   npct_title_depot: "Depot",
   npct_depot: "Um cofre seguro para os seus itens. O que fica guardado aqui não se perde quando você morre. Use-o para guardar equipamentos que não está usando e aliviar o peso da mochila.",
   npct_title_locker: "Armário do Depot",
@@ -1281,7 +1281,7 @@ I18N.en = {
 
 
 
-  map_names: JSON.stringify({ smith: "Smith", inn: "Dancing Harp", potions: "Potions", depot: "Depot", lodging: "Lodging", hall: "Oracle", board: "Contracts", sewer: "Sewer", gate: "Gate" }),
+  map_names: JSON.stringify({ smith: "Smith", inn: "Magic Harp", potions: "Potions", depot: "Depot", lodging: "Lodging", hall: "Oracle", board: "Contracts", sewer: "Sewer", gate: "Gate" }),
 
 
 
@@ -1289,7 +1289,7 @@ I18N.en = {
   intro_1: "In Godoyr stands Karhyn, a city of warm folk and legendary forges, home of the finest blades on the continent.",
   intro_2: "Its iron comes from the mountains of the Amazon Tower, bathed at night in the Goddess's light.",
   intro_3: "But Chaos has come. The beasts of the dark grow hungrier, and even tame animals strike with fury.",
-  intro_4: "At the Dancing Harp, they whisper that something stirs in the sewers. If it reaches the surface...",
+  intro_4: "At the Magic Harp, they whisper that something stirs in the sewers. If it reaches the surface...",
   intro_5: "...it will be the end of Karhyn.",
   intro_6: "",
 
@@ -1367,7 +1367,7 @@ I18N.en = {
   tower_view_title: "From the watchtower",
   tower_view_desc: "The wind cuts. In the distance: Goblin Slope, the Orc Camp, the Amazon Tower and the Spectral Lands.",
   tab_close: "Tab / M close",
-  inn_name: "Dancing Harp",
+  inn_name: "Magic Harp",
   potions_name: "Potions",
   depot_name: "Depot",
   oracle_name: "Oracle",
@@ -1528,7 +1528,7 @@ I18N.en = {
   tower_desc: "The door creaks. A spiral staircase climbs into the dark up to the terrace.",
   tower_go: "Climb to the top",
   tower_stay: "Stay here",
-  tavern_title: "The Dancing Harp",
+  tavern_title: "The Magic Harp",
   tavern_desc: "Muffled music and the smell of stale beer. The barkeep wipes a glass and looks at you as if he's seen you before.\n\n\"Were you here yesterday? Don't remember? Nobody remembers anything in Karhyn.\"",
   leave: "Leave",
   lodging_title: "Lodging",
@@ -1798,7 +1798,7 @@ I18N.en = {
   npct_ok: "Got it",
   npct_title_smith: "Karhyn's Blacksmith",
   npct_smith: "Here you can:\n• Upgrade your gear at the forge with gold and materials.\n• Buy oil for your lantern, which lights the dark floors.\n• Archers: buy special arrows (fire, ice, holy...).\n• Ask about the history of Karhyn's forge.",
-  npct_title_inn: "The Dancing Harp",
+  npct_title_inn: "The Magic Harp",
   npct_inn: "The town tavern. Talk to the regulars to hear rumors about the evil living in the sewers and the story of Karhyn.",
   npct_title_potions: "Potion Shop",
   npct_potions: "Here you buy mana, fury and special potions (berserker, mage, hunter, luck).\n\nHealth potions are not sold: they fill up with the life of the monsters you defeat.",
@@ -2186,7 +2186,7 @@ I18N.es = {
 
 
 
-  map_names: JSON.stringify({ smith: "Herrero", inn: "Arpa Danzante", potions: "Pociones", depot: "Depósito", lodging: "Alojamiento", hall: "Oráculo", board: "Contratos", sewer: "Alcantarilla", gate: "Puerta" }),
+  map_names: JSON.stringify({ smith: "Herrero", inn: "Arpa Mágica", potions: "Pociones", depot: "Depósito", lodging: "Alojamiento", hall: "Oráculo", board: "Contratos", sewer: "Alcantarilla", gate: "Puerta" }),
 
 
 
@@ -2194,7 +2194,7 @@ I18N.es = {
   intro_1: "In Godoyr, among mountains and mist, stands Karhyn.",
   intro_2: "A land of warm folk and crowded taverns, famed for its forge: swords and shields tempered with iron from the mountains by the Amazons' Tower, blessed by the goddess's light.",
   intro_3: "But Chaos has come. Monsters crawl out of the dark, and even the gentlest beasts attack in fury.",
-  intro_4: "At the Dancing Harp, they whisper that something stirs in the sewers... and that if it reaches the surface, it will be our end.",
+  intro_4: "At the Magic Harp, they whisper that something stirs in the sewers... and that if it reaches the surface, it will be our end.",
   intro_5: "",
   intro_6: "",
 
@@ -2272,7 +2272,7 @@ I18N.es = {
   tower_view_title: "Desde la torre de vigía",
   tower_view_desc: "El viento corta. A lo lejos: la Cuesta de los Goblins, el Campamento Orc, la Torre de las Amazonas y las Tierras Espectrales.",
   tab_close: "Tab / M cerrar",
-  inn_name: "Arpa Danzante",
+  inn_name: "Arpa Mágica",
   potions_name: "Pociones",
   depot_name: "Depósito",
   oracle_name: "Oráculo",
@@ -2433,7 +2433,7 @@ I18N.es = {
   tower_desc: "La puerta cruje. Una escalera de caracol sube en la oscuridad hasta la terraza.",
   tower_go: "Subir a la cima",
   tower_stay: "Quedarme aquí",
-  tavern_title: "El Arpa Danzante",
+  tavern_title: "El Arpa Mágica",
   tavern_desc: "Música apagada y olor a cerveza rancia. El tabernero limpia un vaso y te mira como si ya te hubiera visto.\n\n\"¿Estuviste aquí ayer? ¿No recuerdas? Nadie recuerda nada en Karhyn.\"",
   leave: "Salir",
   lodging_title: "Alojamiento",
@@ -3023,7 +3023,7 @@ I18N.de = {
 
 
 
-  map_names: JSON.stringify({ smith: "Schmied", inn: "Tanzende Harfe", potions: "Tränke", depot: "Depot", lodging: "Unterkunft", hall: "Orakel", board: "Aufträge", sewer: "Kanalisation", gate: "Tor" }),
+  map_names: JSON.stringify({ smith: "Schmied", inn: "Magische Harfe", potions: "Tränke", depot: "Depot", lodging: "Unterkunft", hall: "Orakel", board: "Aufträge", sewer: "Kanalisation", gate: "Tor" }),
 
 
 
@@ -3033,7 +3033,7 @@ I18N.de = {
   intro_3: "Man sagt, das Metall der Schmiede stammt aus Eisen, das in den Bergen nahe dem Amazonenturm abgebaut wird — Eisen, das nachts im Licht der Göttin gebadet wird.",
   intro_4: "Doch Karhyn ist im Chaos.",
   intro_5: "Das Böse plagt seine Bewohner. Der Hass der dunklen Monster wächst, und Tiere, die einst harmlos waren, greifen nun mit wilder Wut an.",
-  intro_6: "In der Taverne Die Tanzende Harfe gehen Gerüchte von Tisch zu Tisch: In der Kanalisation von Karhyn haust ein Übel so gefährlich, dass wenn es alle Stockwerke hinaufsteigt und die Oberfläche erreicht...",
+  intro_6: "In der Taverne Die Magische Harfe gehen Gerüchte von Tisch zu Tisch: In der Kanalisation von Karhyn haust ein Übel so gefährlich, dass wenn es alle Stockwerke hinaufsteigt und die Oberfläche erreicht...",
 
   death_title: "Du bist gestorben",
 
@@ -3109,7 +3109,7 @@ I18N.de = {
   tower_view_title: "Vom Wachturm aus",
   tower_view_desc: "Der Wind schneidet. In der Ferne: der Goblin-Hang, das Ork-Lager, der Amazonenturm und die Geisterlande.",
   tab_close: "Tab / M schließen",
-  inn_name: "Tanzende Harfe",
+  inn_name: "Magische Harfe",
   potions_name: "Tränke",
   depot_name: "Depot",
   oracle_name: "Orakel",
@@ -3270,7 +3270,7 @@ I18N.de = {
   tower_desc: "Die Tür knarrt. Eine Wendeltreppe steigt im Dunkeln zur Terrasse.",
   tower_go: "Hinaufsteigen",
   tower_stay: "Hier bleiben",
-  tavern_title: "Die Tanzende Harfe",
+  tavern_title: "Die Magische Harfe",
   tavern_desc: "Gedämpfte Musik und der Geruch von abgestandenem Bier. Der Wirt wischt ein Glas und schaut dich an, als hätte er dich schon gesehen.\n\n\"Warst du gestern hier? Erinnerst dich nicht? Niemand erinnert sich an etwas in Karhyn.\"",
   leave: "Gehen",
   lodging_title: "Unterkunft",
@@ -3859,7 +3859,7 @@ I18N.pl = {
 
 
 
-  map_names: JSON.stringify({ smith: "Kowal", inn: "Tańcząca Harfa", potions: "Mikstury", depot: "Depozyt", lodging: "Kwatera", hall: "Wyrocznia", board: "Zlecenia", sewer: "Kanały", gate: "Brama" }),
+  map_names: JSON.stringify({ smith: "Kowal", inn: "Magiczna Harfa", potions: "Mikstury", depot: "Depozyt", lodging: "Kwatera", hall: "Wyrocznia", board: "Zlecenia", sewer: "Kanały", gate: "Brama" }),
 
 
 
@@ -3869,7 +3869,7 @@ I18N.pl = {
   intro_3: "Mówią, że metal używany w kuźni pochodzi z żelaza wydobywanego w górach blisko Wieży Amazonek — żelaza, które nocą skąpane jest w świetle bogini.",
   intro_4: "Ale Karhyn pogrążone jest w chaosie.",
   intro_5: "Zło nęka jego mieszkańców. Rośnie nienawiść mrocznych potworów, a zwierzęta, które kiedyś były nieszkodliwe, teraz atakują z dziką furią.",
-  intro_6: "W tawernie Tańcząca Harfa plotki krążą od stołu do stołu: w kanałach Karhyn mieszka zło tak niebezpieczne, że jeśli zdoła wspiąć się przez wszystkie piętra i dotrzeć na powierzchnię...",
+  intro_6: "W tawernie Magiczna Harfa plotki krążą od stołu do stołu: w kanałach Karhyn mieszka zło tak niebezpieczne, że jeśli zdoła wspiąć się przez wszystkie piętra i dotrzeć na powierzchnię...",
 
   death_title: "Zginąłeś",
 
@@ -3945,7 +3945,7 @@ I18N.pl = {
   tower_view_title: "Z wieży strażniczej",
   tower_view_desc: "Wiatr tnie. W oddali: Zbocze Goblinów, Obóz Orków, Wieża Amazonek i Krainy Widmowe.",
   tab_close: "Tab / M zamknij",
-  inn_name: "Tańcząca Harfa",
+  inn_name: "Magiczna Harfa",
   potions_name: "Mikstury",
   depot_name: "Skład",
   oracle_name: "Wyrocznia",
@@ -4106,7 +4106,7 @@ I18N.pl = {
   tower_desc: "Drzwi skrzypią. Kręte schody prowadzą w ciemności na taras.",
   tower_go: "Wejdź na szczyt",
   tower_stay: "Zostań tutaj",
-  tavern_title: "Tańcząca Harfa",
+  tavern_title: "Magiczna Harfa",
   tavern_desc: "Przytłumiona muzyka i zapach zjełczałego piwa. Karczmarz wyciera szklankę i patrzy na ciebie jakby cię już widział.\n\n\"Byłeś tu wczoraj? Nie pamiętasz? Nikt nic nie pamięta w Karhyn.\"",
   leave: "Wyjdź",
   lodging_title: "Kwatera",
