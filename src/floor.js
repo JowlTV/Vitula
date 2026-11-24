@@ -61,8 +61,8 @@ Object.assign(DungeonScene.prototype, {
       let to = hole.to;
       if (!free(to.x, to.y)) { let best = null, bd = 99; for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const x = to.x + dx, y = to.y + dy, dd = Math.abs(dx) + Math.abs(dy); if (dd < bd && free(x, y) && (hole.inside ? this.pockets.some(p => p.cells.some(c => c.x === x && c.y === y)) : true)) { bd = dd; best = { x, y }; } } if (!best) return true; to = best; }
       this.holeBusy = true;
-      this.cameras.main.fade(180, 0, 0, 0, true);   // forçado: funciona mesmo durante outro fade
-      this.time.delayedCall(190, () => {
+      // mesma transição (cortina) das outras trocas; o fadeIn abre a cortina
+      this.cameras.main.fadeOut(180, 0, 0, 0, () => {
         this.holeBusy = false;
         const p = this.cellPos(to.x, to.y);
         h.x = to.x; h.y = to.y; h.px = h.fromX = p.x; h.py = h.fromY = p.y; h.moveT = 0;
