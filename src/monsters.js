@@ -261,6 +261,8 @@ Object.assign(DungeonScene.prototype, {
   // corpo no chão. Enquanto não há arte de corpo (corpse_<monstro>), usa o próprio sprite deitado e escurecido
   makeCorpse(m, loot) {
     const ttl = loot ? 40 : 5, k = key(m.x, m.y), cx = m.x, cy = m.y;
+    // sprite já destruído (ex.: dano tardio após trocar de andar): sem corpo
+    if (!m.spr || !m.spr.scene) { if (m.shadow && m.shadow.scene) m.shadow.destroy(); if (m.bar && m.bar.scene) m.bar.destroy(); return; }
     if (m.spr.anims) m.spr.anims.stop();
     m.shadow.destroy(); m.bar.destroy();
     if (m.dieKey && m.spr.anims) {
