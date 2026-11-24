@@ -7,7 +7,7 @@ window.game = new Phaser.Game({
   pixelArt: true,
   roundPixels: true,
   backgroundColor: "#08070a",
-  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.NO_CENTER },   // o #game (flex) já centraliza; centralizar de novo empurrava o jogo para a direita
   audio: { disableWebAudio: false },
   scene: [BootScene, TitleScene, OptionsScene, SelectScene, IntroScene, CarriageScene, MapScene, ShopScene, DungeonScene, TownScene, DemoEndScene],
 });
