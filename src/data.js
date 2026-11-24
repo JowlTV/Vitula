@@ -184,7 +184,7 @@ const SPELLS = {
   guard: { name: "Égide", key: "3", icon: "i_shield", level: 10, fury: 45, cd: 14, dur: 6, desc: "Por 6 s: uma aura protetora dá +54% de defesa e devolve 10% do dano recebido a quem atacou." },
   aura:  { name: "Aura Sagrada", key: "4", icon: "icon_aura_v2", level: 16, fury: 60, cd: 12, dur: 5, desc: "Por 5 s: fere quem chega perto, regenera vida e ilumina uma área maior." },
   slasher: { name: "Slasher", key: "5", icon: "icon_front_v2", level: 20, fury: 40, cd: 7, desc: "Um grande corte único à frente (3 casas): 120% a mais que o Golpe Frontal, sempre crítico, com +15% de dano crítico." },
-  kberserk: { name: "Modo Berserker", key: "6", icon: "berserk", level: 24, fury: 60, cd: 20, dur: 8, desc: "Por 8 s, uma aura vermelha: +40% de dano em tudo, cada golpe cura 25% do dano base e o ataque básico acerta os 3 primeiros inimigos à frente." },
+  kberserk: { name: "Modo Berserker", key: "6", icon: "icon_berserk", level: 24, fury: 60, cd: 20, dur: 8, desc: "Por 8 s, uma aura vermelha: +40% de dano em tudo, cada golpe cura 25% do dano base e o ataque básico acerta os 3 primeiros inimigos à frente." },
   xcut:  { name: "Corte em X", key: "7", icon: "icon_area", level: 28, fury: 50, cd: 10, desc: "Um corte em cruz à frente: 180% do dano do Golpe Frontal e sangramento de 30% da vida atual do monstro em 5 s (10% em chefes)." },
 };
 
@@ -214,8 +214,8 @@ const ARCHER_SPELLS = {
   holy:   { name: "Flecha Sagrada", key: "1", icon: "icon_front_v2", level: 1, fury: 25, cd: 2.5, desc: "Uma flecha de luz sagrada que acerta o alvo escolhido com 2× o dano." },
   missile: { name: "Míssil Sagrado", key: "2", icon: "icon_front_v2", level: 6, fury: 35, cd: 5, desc: "Uma grande flecha de luz em linha reta: atravessa até 3 monstros, empurra-os 1 casa e causa 80% a mais que a Flecha Sagrada." },
   volley: { name: "Saraivada", key: "3", icon: "icon_area", level: 10, fury: 40, cd: 8, dur: 3, desc: "Uma chuva de flechas na área do alvo (3×3): dano e marca os inimigos, que ficam lentos (−50%) por 3 s." },
-  frenzy: { name: "Berserker", key: "4", icon: "berserk", level: 16, fury: 50, cd: 16, dur: 5, desc: "Por 5 s: +60% de dano de ataque e +15% de crítico; a flecha do ataque básico ricocheteia em até 3 inimigos e explode em luz sagrada." },
-  flee:   { name: "Aura do Vento", key: "5", icon: "spear", level: 12, fury: 30, cd: 12, dur: 4, desc: "Por 4 s: uma aura de energia contorna o arqueiro: +40% de velocidade, +40% de velocidade de ataque e atravessa os monstros." },
+  frenzy: { name: "Berserker", key: "4", icon: "icon_berserk", level: 16, fury: 50, cd: 16, dur: 5, desc: "Por 5 s: +60% de dano de ataque e +15% de crítico; a flecha do ataque básico ricocheteia em até 3 inimigos e explode em luz sagrada." },
+  flee:   { name: "Aura do Vento", key: "5", icon: "icon_spear", level: 12, fury: 30, cd: 12, dur: 4, desc: "Por 4 s: uma aura de energia contorna o arqueiro: +40% de velocidade, +40% de velocidade de ataque e atravessa os monstros." },
   farsight: { name: "Visão Além do Alcance", key: "6", icon: "icon_aura_v2", level: 20, fury: 45, cd: 22, dur: 10, desc: "Por 10 s: alcance máximo e flechas básicas sagradas. A cada 3 acertos no mesmo monstro, a marca explode: ele perde 50% de todo o dano que recebeu nesse tempo como dano verdadeiro." },
   barrier: { name: "Barreira de Luz", key: "7", icon: "i_shield", level: 24, fury: 40, cd: 18, dur: 7, desc: "Ergue uma barreira de luz de 3 casas à frente por 7 s: suas flechas atravessam, os monstros não passam." },
 };
