@@ -25,22 +25,28 @@ Object.assign(DungeonScene.prototype, {
     // ---- equipamentos (layout do Tibia)
     const ex = X + 30, ey = Y + 64, S = 50, G = 10;
     T_(ex, ey - 22, t("equipment"), 15, COLORS.gold);
-    const slots = [[t("slot_amulet"), 0, 0], [t("slot_helmet"), 1, 0], [t("slot_backpack"), 2, 0], [t("slot_weapon"), 0, 1], [t("slot_armor"), 1, 1], [t("slot_shield"), 2, 1],
-      [t("slot_ring"), 0, 2], [t("slot_legs"), 1, 2], [t("slot_light"), 2, 2], [t("slot_boots"), 1, 3]];
+    // layout estilo Diablo 2: elmo no alto, arma | armadura | escudo em colunas altas, anéis/luz pequenos, mochila e botas embaixo
+    const slots = [[t("slot_helmet"), 72, 0, 56, 50], [t("slot_amulet"), 146, 8, 36, 36],
+      [t("slot_weapon"), 0, 60, 56, 108], [t("slot_armor"), 68, 60, 64, 84], [t("slot_shield"), 144, 60, 56, 108],
+      [t("slot_ring"), 12, 182, 34, 34], [t("slot_legs"), 72, 156, 56, 48], [t("slot_light"), 154, 182, 34, 34],
+      [t("slot_backpack"), 0, 230, 56, 46], [t("slot_boots"), 144, 230, 56, 46]];
+    { const sil = this.add.graphics(); sil.fillStyle(0x000000, 0.35);   // silhueta escura do herói atrás dos espaços
+      sil.fillCircle(ex + 100, ey + 26, 22).fillRoundedRect(ex + 62, ey + 52, 76, 110, 18).fillRect(ex + 74, ey + 160, 22, 110).fillRect(ex + 104, ey + 160, 22, 110); c.add(sil); }
     // detalhes do item sob o mouse (linha no rodapé da mochila)
     const tip = T_(X + 30, Y + H - 34, t("bag_tip"), 12, COLORS.dim, { wordWrap: { width: W - 60 } });
     const showTip = (g, extra = "") => { const E = EQUIP[g.id], R = RARITY[g.r], low = this.hero.level < E.lvl, bad = !equipOk(g.id, this.vocId);
       tip.setText(`${gearName(g)} · ${R.name}${t("tip_level", { n: E.lvl })}${bad ? t("tip_wrong_voc") : ""}${extra}\n${equipStats(g)}${E.desc ? " — " + E.desc : ""}`).setColor(low || bad ? "#e08070" : R.color); };
     const _sn = n => { const m = { helmet: t("slot_helmet"), weapon: t("slot_weapon"), armor: t("slot_armor"), shield: t("slot_shield"), legs: t("slot_legs"), boots: t("slot_boots"), light: t("slot_light") }; return Object.fromEntries(Object.entries(m).map(([k, v]) => [v, k])); }; const slotOf = _sn();
-    for (const [name, cx, cy] of slots) {
-      const sx = ex + cx * (S + G), sy = ey + cy * (S + 22), sl = slotOf[name], g = sl && d.equip[sl], id = g && g.id;
-      c.add(this.add.nineslice(sx, sy, "slot", null, S, S, 4, 4, 4, 4).setOrigin(0));
-      T_(sx + S / 2, sy + S + 2, name, 10, COLORS.dim).setOrigin(0.5, 0);
+    for (const [name, rx, ry, sw, sh] of slots) {
+      const sx = ex + rx, sy = ey + ry, sl = slotOf[name], g = sl && d.equip[sl], id = g && g.id;
+      c.add(this.add.nineslice(sx, sy, "slot", null, sw, sh, 4, 4, 4, 4).setOrigin(0));
+      T_(sx + sw / 2, sy + sh + 1, name, 9, COLORS.dim).setOrigin(0.5, 0);
+      const S = Math.min(sw, sh) + 4;
       if (id && EQUIP[id]) {
-        c.add(this.add.rectangle(sx + 3, sy + 3, S - 6, S - 6).setOrigin(0).setStrokeStyle(2, RARITY[g.r].hex, g.r ? 1 : 0));
-        c.add(this.add.image(sx + S / 2, sy + S / 2, "eq_" + id).setScale(1.25));
-        if (g.p) T_(sx + S - 4, sy + S - 14, `+${g.p}`, 10, RARITY[g.r].color).setOrigin(1, 0);
-        const hit = this.add.rectangle(sx, sy, S, S, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true }); c.add(hit);
+        c.add(this.add.rectangle(sx + 3, sy + 3, sw - 6, sh - 6).setOrigin(0).setStrokeStyle(2, RARITY[g.r].hex, g.r ? 1 : 0));
+        c.add(this.add.image(sx + sw / 2, sy + sh / 2, "eq_" + id).setScale(1.25 * S / 54));
+        if (g.p) T_(sx + sw - 4, sy + sh - 14, `+${g.p}`, 10, RARITY[g.r].color).setOrigin(1, 0);
+        const hit = this.add.rectangle(sx, sy, sw, sh, 0, 0.001).setOrigin(0).setInteractive({ useHandCursor: true }); c.add(hit);
         hit.on("pointerover", () => { showTip(g, t("tip_worn")); showItemCard(this, g, { worn: true, hint: t("card_hint_unequip") }); });
         hit.on("pointerout", () => hideItemCard(this));
         hit.on("pointerup", () => { this.unequipSlot(sl); this.buildBag(); });
