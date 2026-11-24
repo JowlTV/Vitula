@@ -157,7 +157,7 @@ Object.assign(DungeonScene.prototype, {
       const P = animatedPanel(this, key, "", { rainA: 0 }); c.add(P.c);
       const torch = this.add.image((201 - 480) * P.k + VIEW_W / 2, (149 - 268) * P.k + VIEW_H / 2, "light").setTint(0xffa040).setBlendMode(Phaser.BlendModes.ADD).setScale(0.45).setAlpha(0.4);
       c.add(torch); this.tweens.add({ targets: torch, alpha: 0.65, duration: 120, yoyo: true, repeat: -1, repeatDelay: 60 });
-      const tt = this.add.text(VIEW_W / 2, VIEW_H - 70, t("sewers_title"), { fontFamily: FONT_TITLE, fontSize: "44px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
+      const tt = this.add.text(VIEW_W / 2, VIEW_H - 70, t("sewers_title"), { fontFamily: FONT_TITLE, fontSize: "29px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
         .setOrigin(0.5).setShadow(0, 3, "#000", 6, true, true).setAlpha(0); c.add(tt);
       c.setAlpha(0);
       this.tweens.add({ targets: P.c, scale: 1.06, duration: 2600, ease: "Sine.out" });

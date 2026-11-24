@@ -11,7 +11,7 @@ const FONT_TITLE = "Cinzel, Alegreya, serif", FONT_TEXT = "Alegreya, serif";
 function txt(scene, x, y, s, size = 16, color = COLORS.text, opts = {}) {
   const title = opts.title !== undefined ? opts.title : size >= 20; opts = Object.assign({}, opts); delete opts.title;
   return scene.add.text(x, y, s, Object.assign({
-    fontFamily: title ? FONT_TITLE : FONT_TEXT, fontSize: Math.round(title ? size : size * 1.12) + "px", color, stroke: "#0c0608", strokeThickness: title ? Math.max(3, size / 4) : Math.max(2, size / 6),   // Alegreya é mais fina: um pouco maior e com contorno leve
+    fontFamily: title ? FONT_TITLE : FONT_TEXT, fontSize: Math.round(title ? size * 0.65 : size * 0.95) + "px", color, stroke: "#0c0608", strokeThickness: title ? Math.max(3, size / 4) : Math.max(2, size / 6),   // Alegreya é mais fina: um pouco maior e com contorno leve
     resolution: 2,
   }, opts));
 }
@@ -441,9 +441,9 @@ class IntroScene extends Phaser.Scene {
     // texto normal na tela (sem o efeito Star Wars): título amarelo, texto branco; aparece e some esmaecendo,
     // e dura o tempo do vídeo (10 s) — ou 16 s quando só há a imagem
     const dur = this.vid ? 10000 : 16000;
-    const title = this.add.text(VIEW_W / 2, VIEW_H / 2 - 110, introTitle(), { fontFamily: FONT_TITLE, fontSize: "46px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
+    const title = this.add.text(VIEW_W / 2, VIEW_H / 2 - 110, introTitle(), { fontFamily: FONT_TITLE, fontSize: "30px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
       .setOrigin(0.5).setAlpha(0).setShadow(0, 3, "#000000", 6, true, true);
-    const body = this.add.text(VIEW_W / 2, VIEW_H / 2 + 20, introText(), { fontFamily: FONT_TEXT, fontSize: "17px", color: "#ffffff", stroke: "#000000", strokeThickness: 4, resolution: 2,
+    const body = this.add.text(VIEW_W / 2, VIEW_H / 2 + 20, introText(), { fontFamily: FONT_TEXT, fontSize: "14px", color: "#ffffff", stroke: "#000000", strokeThickness: 4, resolution: 2,
       align: "center", wordWrap: { width: 680 }, lineSpacing: 8 }).setOrigin(0.5).setAlpha(0).setShadow(0, 2, "#000000", 6, true, true);
     title.setY(body.y - body.height / 2 - 40);   // título logo acima do bloco de texto
     this.tweens.add({ targets: title, alpha: 1, duration: 900, delay: 300 });

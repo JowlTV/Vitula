@@ -30,8 +30,6 @@ Object.assign(DungeonScene.prototype, {
       [t("slot_weapon"), 0, 60, 56, 108], [t("slot_armor"), 68, 60, 64, 84], [t("slot_shield"), 144, 60, 56, 108],
       [t("slot_ring"), 12, 182, 34, 34], [t("slot_legs"), 72, 156, 56, 48], [t("slot_light"), 154, 182, 34, 34],
       [t("slot_backpack"), 0, 230, 56, 46], [t("slot_boots"), 144, 230, 56, 46]];
-    { const sil = this.add.graphics(); sil.fillStyle(0x000000, 0.35);   // silhueta escura do herói atrás dos espaços
-      sil.fillCircle(ex + 100, ey + 26, 22).fillRoundedRect(ex + 62, ey + 52, 76, 110, 18).fillRect(ex + 74, ey + 160, 22, 110).fillRect(ex + 104, ey + 160, 22, 110); c.add(sil); }
     // detalhes do item sob o mouse (linha no rodapé da mochila)
     const tip = T_(X + 30, Y + H - 34, t("bag_tip"), 12, COLORS.dim, { wordWrap: { width: W - 60 } });
     const showTip = (g, extra = "") => { const E = EQUIP[g.id], R = RARITY[g.r], low = this.hero.level < E.lvl, bad = !equipOk(g.id, this.vocId);
@@ -42,6 +40,17 @@ Object.assign(DungeonScene.prototype, {
       c.add(this.add.nineslice(sx, sy, "slot", null, sw, sh, 4, 4, 4, 4).setOrigin(0));
       T_(sx + sw / 2, sy + sh + 1, name, 9, COLORS.dim).setOrigin(0.5, 0);
       const S = Math.min(sw, sh) + 4;
+      // ícone-sombra do tipo de item (como no Tibia), só quando o espaço está vazio
+      const ghostSlot = { [t("slot_amulet")]: "amulet", [t("slot_ring")]: "ring", [t("slot_backpack")]: "backpack" }[name] || sl;
+      const gid = ghostSlot && Object.keys(EQUIP).find(k => EQUIP[k].slot === ghostSlot && this.textures.exists("eq_" + k) && (ghostSlot !== "shield" || !EQUIP[k].quiver));
+      if (!id && !gid) {   // anel, amuleto e mochila: sombra desenhada
+        const gg = this.add.graphics(), mx = sx + sw / 2, my = sy + sh / 2; gg.lineStyle(3, 0x3a332c, 0.8); gg.fillStyle(0x3a332c, 0.8);
+        if (ghostSlot === "ring") gg.strokeCircle(mx, my + 2, 8).fillCircle(mx, my - 7, 3);
+        else if (ghostSlot === "amulet") { gg.beginPath(); gg.moveTo(mx - 10, my - 12); gg.lineTo(mx, my + 2); gg.lineTo(mx + 10, my - 12); gg.strokePath(); gg.fillCircle(mx, my + 6, 6); }
+        else if (ghostSlot === "backpack") gg.fillRoundedRect(mx - 14, my - 12, 28, 28, 6).fillStyle(0x1a1612, 0.8).fillRect(mx - 14, my - 6, 28, 3).fillRect(mx - 3, my - 2, 6, 6);
+        c.add(gg);
+      }
+      if (!id && gid) c.add(this.add.image(sx + sw / 2, sy + sh / 2, "eq_" + gid).setScale(1.25 * S / 54).setTintFill(0x3a332c).setAlpha(0.7));
       if (id && EQUIP[id]) {
         c.add(this.add.rectangle(sx + 3, sy + 3, sw - 6, sh - 6).setOrigin(0).setStrokeStyle(2, RARITY[g.r].hex, g.r ? 1 : 0));
         c.add(this.add.image(sx + sw / 2, sy + sh / 2, "eq_" + id).setScale(1.25 * S / 54));
