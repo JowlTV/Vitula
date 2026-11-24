@@ -103,7 +103,7 @@
     // Tudo fica longe do entalhe (safe-area) e fora do topo, onde ficam vida, minimapa e janelas.
     const css = `
       #vt { --s: clamp(38px, 10.5vmin, 62px); --g: 5px; --L: calc(env(safe-area-inset-left) + 10px); --R: calc(env(safe-area-inset-right) + 10px); --B: calc(env(safe-area-inset-bottom) + 8px);
-        position: fixed; inset: 0; pointer-events: none; z-index: 50; font-family: "Pixelify", monospace; user-select: none; -webkit-user-select: none; }
+        position: fixed; inset: 0; pointer-events: none; z-index: 50; font-family: Alegreya, serif; user-select: none; -webkit-user-select: none; }
       #vt .vt-layer { position: absolute; inset: 0; pointer-events: none; }
       #vt .vt-btn { pointer-events: auto; touch-action: none; -webkit-tap-highlight-color: transparent;
         background: rgba(20,16,26,.45); color: #e8e1d3; border: 1px solid rgba(201,162,74,.6); border-radius: 50%;

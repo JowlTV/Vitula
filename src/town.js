@@ -203,7 +203,7 @@ class TownScene extends Phaser.Scene {
       const g = this.add.graphics().setDepth(cy - 1);
       g.fillStyle(0x08060c, 0.85).fillEllipse(cx, cy + 4, 46, 22);
       g.lineStyle(3, p.color, 1).strokeEllipse(cx, cy + 4, 46, 22).lineStyle(1, 0xffffff, 0.6).strokeEllipse(cx, cy + 4, 34, 15);
-      const lbl = this.add.text(cx, cy - 30, p.label, { fontFamily: "Bulletin, monospace", fontSize: "11px", color: "#ffffff", stroke: "#000", strokeThickness: 3, resolution: 2 }).setOrigin(0.5).setDepth(cy + 400);
+      const lbl = this.add.text(cx, cy - 30, p.label, { fontFamily: FONT_TEXT, fontSize: "11px", color: "#ffffff", stroke: "#000", strokeThickness: 3, resolution: 2 }).setOrigin(0.5).setDepth(cy + 400);
       this.world.add([glow, g, lbl]);
       this.tweens.add({ targets: glow, alpha: 0.15, scale: 0.7, duration: 900, yoyo: true, repeat: -1, ease: "Sine.inOut" });
       this.tweens.add({ targets: g, scaleY: 1.06, duration: 700, yoyo: true, repeat: -1 });

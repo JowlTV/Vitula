@@ -13,15 +13,17 @@
   @font-face { font-family: "Pixelify"; src: url("assets/ui/font.ttf"); }
   @font-face { font-family: "Grenze Gotisch"; src: url("assets/ui/grenze_gotisch.ttf"); }
   @font-face { font-family: "Bulletin"; src: url("assets/ui/bulletin.ttf"); }
+  @font-face { font-family: "Cinzel"; src: url("assets/ui/cinzel.ttf"); }
+  @font-face { font-family: "Alegreya"; src: url("assets/ui/alegreya.ttf"); }
   html, body { margin: 0; height: 100%; background: #08070a; overflow: hidden; }
   body { height: 100dvh; }
   /* a área do jogo respeita o entalhe e a barra do iPhone; a altura real vem do visualViewport (main.js) */
   #game { position: fixed; left: env(safe-area-inset-left); right: env(safe-area-inset-right); top: env(safe-area-inset-top); height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     display: flex; align-items: center; justify-content: center; touch-action: none; }
   /* celular em pé: pede para girar (o jogo é em paisagem) */
-  #rotate { display: none; position: fixed; inset: 0; z-index: 100; background: #08070a; color: #e0bc60; font: 22px "Grenze Gotisch", serif;
+  #rotate { display: none; position: fixed; inset: 0; z-index: 100; background: #08070a; color: #e0bc60; font: 22px Cinzel, serif;
     flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 24px; }
-  #rotate small { font: 14px Bulletin, monospace; color: #b8ac94; }
+  #rotate small { font: 14px Alegreya, serif; color: #b8ac94; }
   #rotate .ph { width: 54px; height: 90px; border: 3px solid #e0bc60; border-radius: 10px; animation: rot 2.2s ease-in-out infinite; }
   @keyframes rot { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
   @media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }

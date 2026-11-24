@@ -6,12 +6,12 @@ const ART = ["barrel", "chest_closed", "chest_open", "crate_damaged", "crate_int
 const DECOR = ["bones", "manhole", "rat_nest", "sludge", "grate", "pool", "skeleton", "crate_pile"];
 const SFX = ["boss", "break", "chest", "explode", "gem", "hit", "hurt", "levelup", "pickup"];
 
-// Grenze Gotisch: títulos, cidades, nomes e destaques (size >= 20 ou opts.title); Bulletin: o resto.
-const FONT_TITLE = "\"Grenze Gotisch\", Bulletin, Pixelify", FONT_TEXT = "Bulletin, Pixelify";
+// Cinzel: títulos, cidades, nomes e destaques (size >= 20 ou opts.title); Alegreya: o resto.
+const FONT_TITLE = "Cinzel, Alegreya, serif", FONT_TEXT = "Alegreya, serif";
 function txt(scene, x, y, s, size = 16, color = COLORS.text, opts = {}) {
   const title = opts.title !== undefined ? opts.title : size >= 20; opts = Object.assign({}, opts); delete opts.title;
   return scene.add.text(x, y, s, Object.assign({
-    fontFamily: title ? FONT_TITLE : FONT_TEXT, fontSize: size + "px", color, stroke: "#0c0608", strokeThickness: Math.max(3, size / 4),
+    fontFamily: title ? FONT_TITLE : FONT_TEXT, fontSize: Math.round(title ? size : size * 1.12) + "px", color, stroke: "#0c0608", strokeThickness: title ? Math.max(3, size / 4) : Math.max(2, size / 6),   // Alegreya é mais fina: um pouco maior e com contorno leve
     resolution: 2,
   }, opts));
 }
@@ -126,7 +126,7 @@ class BootScene extends Phaser.Scene {
       const n = this.textures.get("fx_" + f).frameTotal - 1;
       this.anims.create({ key: "fx_" + f, frames: this.anims.generateFrameNumbers("fx_" + f, { start: 0, end: n - 1 }), frameRate: 18 });
     }
-    Promise.all(["20px \"Grenze Gotisch\"", "16px Bulletin", "16px Pixelify"].map(f => document.fonts.load(f).catch(() => 0))).then(() => document.fonts.ready).then(() => { const q = new URLSearchParams(location.search); if (q.get("voc") && VOCATIONS[q.get("voc")]) this.registry.set("vocation", q.get("voc")); this.scene.start(q.has("intro") ? "intro" : q.has("town") ? "town" : q.has("play") ? "dungeon" : "title"); });
+    Promise.all(["20px Cinzel", "16px Alegreya"].map(f => document.fonts.load(f).catch(() => 0))).then(() => document.fonts.ready).then(() => { const q = new URLSearchParams(location.search); if (q.get("voc") && VOCATIONS[q.get("voc")]) this.registry.set("vocation", q.get("voc")); this.scene.start(q.has("intro") ? "intro" : q.has("town") ? "town" : q.has("play") ? "dungeon" : "title"); });
   }
   makeRadial(key, size, stops, color = 0xffffff) {
     const c = this.textures.createCanvas(key, size, size);
@@ -277,7 +277,7 @@ class OptionsScene extends Phaser.Scene {
       for (let slot = 0; slot < 2; slot++) {
         const x = lx + 268 + slot * 76;
         const box = this.add.rectangle(x, y, 70, 19, 0x1a1820).setStrokeStyle(1, 0x6a5a40).setInteractive({ useHandCursor: true });
-        const t = txt(this, x, y, "", 10, COLORS.text, { fontFamily: "Pixelify" }).setOrigin(0.5);
+        const t = txt(this, x, y, "", 10, COLORS.text, { fontFamily: FONT_TEXT }).setOrigin(0.5);
         this.keyTexts[id + slot] = t;
         box.on("pointerup", () => this.listen(id, slot, t));
       }
