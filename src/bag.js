@@ -68,12 +68,36 @@ Object.assign(DungeonScene.prototype, {
       [t("progress_label"), [[t("level_label"), String(h.level) + (this.promo() ? ` · ${this.promo().name}` : "")], [t("total_xp"), String(Math.floor(d.xpTotal || 0))],
         [t("xp_next"), String(Math.ceil(this.xpNext() - h.xp))]]],
     ];
-    let yy = sy - 22;
-    for (const [title, rows] of groups) {
-      T_(sx, yy, title, 15, COLORS.gold); yy += 20;
-      for (const [k, v] of rows) { T_(sx + 8, yy, k, 12, COLORS.dim); T_(sx + 300, yy, v, 12, COLORS.text).setOrigin(1, 0); yy += 17; }
-      yy += 6;
-    }
+    // ficha de atributos no estilo Diablo 2: caixas com rótulo à esquerda e valor dentro
+    const box = (x, y, w, val, col = COLORS.text, h = 22) => { c.add(this.add.rectangle(x, y, w, h, 0x0c0a08, 0.9).setOrigin(0).setStrokeStyle(1, 0x8a7048));
+      const tv = T_(x + w / 2, y + h / 2, String(val), 11, col).setOrigin(0.5); if (tv.width > w - 6) tv.setScale((w - 6) / tv.width); };
+    const lab = (x, y, s2, w = 0) => T_(x, y + 4, s2, 11, COLORS.dim).setOrigin(w ? 1 : 0, 0);
+    const R = (x, y, label, val, col, lw = 96, bw = 66) => { lab(x + lw - 6, y, label, 1); box(x + lw, y, bw, val, col); };
+    const L = [];
+    for (const [, rows] of groups) for (const r of rows) L.push(r);
+    const get = k => (L.find(r => r[0] === k) || [0, "—"])[1];
+    const skRows = groups[2][1];
+    // cabeçalho: nome e classe
+    box(sx, sy - 22, 150, VOCATIONS[this.vocId].name.toUpperCase(), COLORS.gold, 24);
+    box(sx + 160, sy - 22, 150, this.promo() ? this.promo().name : t("level_label") + " " + h.level, COLORS.gold, 24);
+    // nível, experiência, próximo nível
+    R(sx, sy + 10, t("level_label"), h.level, COLORS.text, 48, 40);
+    R(sx + 100, sy + 10, t("short_xp"), get(t("total_xp")), COLORS.text, 110, 104);
+    R(sx + 100, sy + 36, t("short_next"), get(t("xp_next")), COLORS.text, 110, 104);
+    // coluna esquerda: skills e pontos de talento
+    T_(sx + 68, sy + 66, t("skills_label"), 12, COLORS.gold).setOrigin(0.5, 0);
+    let ly = sy + 84;
+    for (const [k, v] of skRows) { R(sx, ly, k, v, "#a8c8ff", 76, 60); ly += 27; }
+    const pts = this.talentPoints ? this.talentPoints() : 0;
+    R(sx, ly, t("pm_attrs"), pts, pts > 0 ? "#d8ffc8" : COLORS.dim, 76, 60); ly += 34;
+    R(sx, ly, t("total_hp"), get(t("total_hp")), "#ff8080", 76, 60); ly += 27;
+    R(sx, ly, VOCATIONS[this.vocId].mana ? t("word_mana") : t("word_fury"), `${Math.ceil(h.fury)} / ${Math.round(this.furyMax)}`, VOCATIONS[this.vocId].mana ? "#80a8ff" : "#ffa860", 76, 60);
+    // coluna direita: ataque e defesa
+    let ay = sy + 84; const ax = sx + 150;
+    const SH = [["base_dmg", "short_dmg"], ["critical", "short_crit"], ["atk_speed", "short_speed"], ["defense_value", "short_def"], [this.ranged ? "dodge_chance" : "block_chance", this.ranged ? "short_dodge" : "short_block"]].concat(this.ranged ? [["arrows_label", "short_arrows"]] : []);
+    for (const [k, sk2] of SH) { R(ax, ay, t(sk2), String(get(t(k))).replace(/ golpes\/s| hits\/s/, "/s").replace(/ \(×[\d,.]+\)/, ""), COLORS.text, 80, 82); ay += 27; }
+    T_(ax + 113, ay + 4, t("resistances"), 11, COLORS.gold).setOrigin(0.5, 0);
+    T_(ax + 113, ay + 20, get(t("resistances")), 11, COLORS.text, { align: "center", wordWrap: { width: 150 } }).setOrigin(0.5, 0);
 
     // ---- inventário: abas Mochila / Poções
     const ix = X + 580, iy = Y + 54, iw = W - 600;

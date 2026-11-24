@@ -959,6 +959,15 @@ I18N.pt = {
   carriage_skip: "Pular ▸▸",
   back_to_menu: "Voltar ao menu",
   sewers_title: "Esgotos de Karhyn",
+  short_xp: "Experiência",
+  short_next: "Próximo nível",
+  short_dmg: "Dano",
+  short_crit: "Crítico",
+  short_speed: "Vel. ataque",
+  short_def: "Defesa",
+  short_dodge: "Esquiva",
+  short_block: "Bloqueio",
+  short_arrows: "Flechas",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1863,6 +1872,15 @@ I18N.en = {
   carriage_skip: "Skip ▸▸",
   back_to_menu: "Back to menu",
   sewers_title: "Sewers of Karhyn",
+  short_xp: "Experience",
+  short_next: "Next level",
+  short_dmg: "Damage",
+  short_crit: "Critical",
+  short_speed: "Atk speed",
+  short_def: "Defense",
+  short_dodge: "Dodge",
+  short_block: "Block",
+  short_arrows: "Arrows",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
