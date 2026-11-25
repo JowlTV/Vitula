@@ -381,7 +381,7 @@ Object.assign(DungeonScene.prototype, {
             wc = c;
           }
         }
-        for (let oy = 0; oy < BS; oy++) for (let ox = 0; ox < BS; ox++) {
+        for (let oy = 0; oy < 2; oy++) for (let ox = 0; ox < 2; ox++) {
           const o = ((ly + oy) * ch.w + lx + ox) * 4;
           let r = (wc ? wc[0] : data[o]) * k, gg = (wc ? wc[1] : data[o + 1]) * k, b = (wc ? wc[2] : data[o + 2]) * k;
           if (mr >= 0) { r = r * (1 - mix) + mr * k * mix; gg = gg * (1 - mix) + mg * k * mix; b = b * (1 - mix) + mb * k * mix; }
