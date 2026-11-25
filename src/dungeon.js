@@ -93,7 +93,7 @@ class DungeonScene extends Phaser.Scene {
     this.cameras.main.ignore(this.uiLayer);
     this.buildFloor();
     this.buildHud();
-    this.msg(this.floorN < this.floors ? t("floor_enter", { name: this.region.name, n: this.floorN }) : t("floor_last"));
+    if (!this.region.testMap) this.msg(this.floorN < this.floors ? t("floor_enter", { name: this.region.name, n: this.floorN }) : t("floor_last"));
   }
 
 

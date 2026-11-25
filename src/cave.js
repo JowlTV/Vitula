@@ -104,7 +104,7 @@ Object.assign(DungeonScene.prototype, {
     const nA = this.caveNoise(44, 1), nB = this.caveNoise(13, 2), nWx = this.caveNoise(52, 3), nWy = this.caveNoise(52, 4);
     const nR = this.caveNoise(230, 5), nQ = this.caveNoise(30, 6), nRip = this.caveNoise(16, 7), nG = this.caveNoise(7, 8);
     const solidV = (x, y) => field(S, x, y, 1) + (nA(x, y) - 0.5) * 0.36 + (nB(x, y) - 0.5) * 0.14;
-    const F = 40; // altura da frente da rocha (px)
+    const F = 84; // altura da frente da rocha (px): pelo menos a altura do personagem
     const chunks = rt.chunks.map(c => ({ c, img: c.ctx.createImageData(c.w, c.h) }));
     const chunkOf = (px, py) => chunks.find(o => px >= o.c.cx && py >= o.c.cy && px < o.c.cx + o.c.w && py < o.c.cy + o.c.h);
     const lastOpen = new Int32Array(W * T / 2).fill(1e9); // y do bloco aberto mais próximo abaixo, por coluna

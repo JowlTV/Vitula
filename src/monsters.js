@@ -152,7 +152,8 @@ Object.assign(DungeonScene.prototype, {
     const dist = Math.max(Math.abs(h.x - m.x), Math.abs(h.y - m.y));
     if (!m.awake) {
       const f = this.flowAt(m.x, m.y);
-      if (dist <= 7 && f >= 0 && f <= 12) m.awake = true; else return;
+      // chefe: vem atrás do herói assim que há caminho (até 30 casas), não espera ser encontrado
+      if ((dist <= 7 && f >= 0 && f <= 12) || (m.elite && f >= 0 && !this.region.testMap)) m.awake = true; else return;
     }
     // lentidão (Tremor de Terra / Saraivada): anda e ataca na metade do ritmo; fica azulado
     const slow = (m.slowT || 0) > 0; if (slow) m.slowT -= dt;
@@ -369,7 +370,7 @@ Object.assign(DungeonScene.prototype, {
       this.msg(t("boss_fell", { name: m.data.name }));
       this.goldRun += m.data.gold;
       // no último andar do esgoto o Rei Rato não deixa saída: só a passagem para a Encosta (slopepass.js)
-      if (!(this.regionId === "karhyn_sewers" && this.floorN >= this.floors)) {
+      if (!(this.regionId === "karhyn_sewers" && this.floorN >= this.floors) && !this.region.testMap) {
       this.stairs = { x: m.x, y: m.y };
       if (this.pickups.has(key(m.x, m.y))) { const pk = this.pickups.get(key(m.x, m.y)); this.pickups.delete(key(m.x, m.y)); const alt = this.freeNeighbors(m.x, m.y)[0]; pk.spr.destroy(); if (alt) this.drop(alt.x, alt.y, pk.item); }
       this.drawStairs();

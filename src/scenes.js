@@ -68,6 +68,7 @@ class BootScene extends Phaser.Scene {
     this.load.spritesheet("brazier", "assets/decor/brazier.png", { frameWidth: 56, frameHeight: 56 });
     for (const f of ["slash", "heal", "explosion"]) this.load.spritesheet("fx_" + f, `assets/fx/${f}.png`, { frameWidth: 96, frameHeight: 96 });
     this.load.image("fx_crescent", "assets/fx/crescent.png");
+    this.load.image("fx_portal", "assets/fx/portal.png");   // portal dos chefes (girado e tingido em código)
     this.load.spritesheet("fx_aura", "assets/fx/aura.png", { frameWidth: 144, frameHeight: 144 });
     for (const i of ["slash", "slash_evo", "berserk", "spear", "heal", "aura"]) this.load.image("icon_" + i, `assets/icons/${i}.png`);
     for (const i of ["basic", "front_v2", "exura", "area", "aura_v2"]) this.load.image("icon_" + i, `assets/icons/icon_${i}.png`);
