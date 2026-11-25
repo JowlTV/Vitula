@@ -11,8 +11,9 @@ const INTRO_LAMPS = {
 function animatedPanel(scene, key, lampsKey, opts = {}) {
   const c = scene.add.container(VIEW_W / 2, VIEW_H / 2);
   const img = scene.add.image(0, 0, key), k = VIEW_W / img.width * 1.04; img.setScale(k); c.add(img);
+  const s = img.width / 960;   // lampiões marcados na arte de 960 px; vale para qualquer resolução
   for (const [x, y] of INTRO_LAMPS[lampsKey] || []) {
-    const g = scene.add.image((x - 480) * k, (y - 268) * k, "light").setTint(0xffb050).setBlendMode(Phaser.BlendModes.ADD).setScale(0.35 * k).setAlpha(0.35);
+    const g = scene.add.image((x * s - img.width / 2) * k, (y * s - img.height / 2) * k, "light").setTint(0xffb050).setBlendMode(Phaser.BlendModes.ADD).setScale(0.35 * k * s).setAlpha(0.35);
     c.add(g); scene.tweens.add({ targets: g, alpha: { from: 0.22, to: 0.5 }, scale: g.scale * 1.15, duration: Phaser.Math.Between(90, 180), yoyo: true, repeat: -1, repeatDelay: Phaser.Math.Between(0, 220) });
   }
   if (opts.rain !== false) {
