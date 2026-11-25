@@ -85,7 +85,7 @@ Object.assign(DungeonScene.prototype, {
     };
   },
 
-  // desenha a caverna inteira direto nos pixels dos blocos do chão (blocos de 2 px = pixel art)
+  // desenha a caverna inteira direto nos pixels do chão (blocos de 1 px; 2 px em aparelhos fracos)
   drawCave(rt) {
     const g = this.gen, W = g.w, H = g.h, TX = this.caveTex();
     const S = new Float32Array(W * H), WA = new Float32Array(W * H), D = new Float32Array(W * H);
@@ -107,7 +107,9 @@ Object.assign(DungeonScene.prototype, {
     const F = 84; // altura da frente da rocha (px): pelo menos a altura do personagem
     const chunks = rt.chunks.map(c => ({ c, img: c.ctx.createImageData(c.w, c.h) }));
     const chunkOf = (px, py) => chunks.find(o => px >= o.c.cx && py >= o.c.cy && px < o.c.cx + o.c.w && py < o.c.cy + o.c.h);
-    const lastOpen = new Int32Array(W * T / 2).fill(1e9); // y do bloco aberto mais próximo abaixo, por coluna
+    // tamanho do bloco: 1 px (detalhe total da textura); 2 px em aparelhos com pouca memória (monta 4× mais rápido)
+    const BS = (typeof LOW_MEM !== "undefined" && LOW_MEM) ? 2 : 1, HB = BS >> 1;
+    const lastOpen = new Int32Array(W * T / BS).fill(1e9); // y do bloco aberto mais próximo abaixo, por coluna
     const texAt = (d, u, v) => (((v & 63) * 64 + (u & 63)) * 4);
     for (let ty = H - 1; ty >= 0; ty--) for (let tx = 0; tx < W; tx++) {
       const ti = ty * W + tx;
@@ -119,12 +121,12 @@ Object.assign(DungeonScene.prototype, {
         if (s2 !== S[ti]) mixS = true;
         if (w2 !== WA[ti]) mixW = true;
       }
-      if (deep && !mixS) { for (let bx = 0; bx < T; bx += 2) lastOpen[(tx * T + bx) >> 1] = 1e9; continue; }
+      if (deep && !mixS) { for (let bx = 0; bx < T; bx += BS) lastOpen[((tx * T + bx) / BS) | 0] = 1e9; continue; }
       const ch = chunkOf(tx * T, ty * T), data = ch.img.data, cw = ch.c.w;
       let hs = Math.imul(tx * 73856093 ^ ty * 19349663, 2654435761) >>> 0;
       const offX = hs & 63, offY = (hs >>> 8) & 63;
-      for (let by = T - 2; by >= 0; by -= 2) for (let bx = 0; bx < T; bx += 2) {
-        const x = tx * T + bx + 1, y = ty * T + by + 1, col = (tx * T + bx) >> 1;
+      for (let by = T - BS; by >= 0; by -= BS) for (let bx = 0; bx < T; bx += BS) {
+        const x = tx * T + bx + HB, y = ty * T + by + HB, col = ((tx * T + bx) / BS) | 0;
         let r, gg, b;
         const sv = mixS ? solidV(x, y) : S[ti];
         if (sv > 0.5) {
@@ -171,7 +173,7 @@ Object.assign(DungeonScene.prototype, {
           }
         }
         const lx = tx * T + bx - ch.c.cx, ly = ty * T + by - ch.c.cy;
-        for (let oy = 0; oy < 2; oy++) for (let ox = 0; ox < 2; ox++) {
+        for (let oy = 0; oy < BS; oy++) for (let ox = 0; ox < BS; ox++) {
           const o = ((ly + oy) * cw + lx + ox) * 4;
           data[o] = r; data[o + 1] = gg; data[o + 2] = b; data[o + 3] = 255;
         }
@@ -379,7 +381,7 @@ Object.assign(DungeonScene.prototype, {
             wc = c;
           }
         }
-        for (let oy = 0; oy < 2; oy++) for (let ox = 0; ox < 2; ox++) {
+        for (let oy = 0; oy < BS; oy++) for (let ox = 0; ox < BS; ox++) {
           const o = ((ly + oy) * ch.w + lx + ox) * 4;
           let r = (wc ? wc[0] : data[o]) * k, gg = (wc ? wc[1] : data[o + 1]) * k, b = (wc ? wc[2] : data[o + 2]) * k;
           if (mr >= 0) { r = r * (1 - mix) + mr * k * mix; gg = gg * (1 - mix) + mg * k * mix; b = b * (1 - mix) + mb * k * mix; }
