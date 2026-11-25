@@ -382,3 +382,16 @@ Object.assign(DungeonScene.prototype, {
     return r;
   };
 }
+
+// nos mapas de teste: mana/fúria sempre cheias e habilidades sem recarga
+{
+  const uh = DungeonScene.prototype.updateHero;
+  DungeonScene.prototype.updateHero = function (dt, ...a) {
+    const h = this.hero;
+    if (this.region && this.region.testMap && h && !h.dead) {
+      h.fury = this.furyMax;
+      if (h.cds) for (const k in h.cds) h.cds[k] = 0;
+    }
+    return uh.call(this, dt, ...a);
+  };
+}
