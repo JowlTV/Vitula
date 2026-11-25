@@ -111,17 +111,26 @@ Object.assign(DungeonScene.prototype, {
       fr.fillStyle(0x2c2a30, 1).fillTriangle(x - 3, y - 3, x - 9, y + h / 2, x - 3, y + h + 3);
       fr.fillTriangle(x + w + 3, y - 3, x + w + 9, y + h / 2, x + w + 3, y + h + 3);
     };
-    // vida, experiência e fúria: centralizadas no topo
-    const cx = VIEW_W / 2, bx = cx - 98;
+    // vida, experiência e fúria/mana: no canto superior esquerdo, ao lado do retrato do personagem
+    // retrato numa moldura de ferro (mesmo desenho das barras), com o nível num selo embaixo
+    const PX = 10, PY = 6, PS = 46;
+    fr.fillStyle(0x050406, 1).fillRect(PX - 3, PY - 3, PS + 6, PS + 6);
+    fr.fillStyle(0x2c2a30, 1).fillRect(PX - 2, PY - 2, PS + 4, PS + 4);
+    fr.fillStyle(0x4a464e, 1).fillRect(PX - 2, PY - 2, PS + 4, 1);
+    fr.fillStyle(0x0b0a0c, 1).fillRect(PX, PY, PS, PS);
+    const pk = VOCATIONS[this.vocId].portrait;
+    if (pk && this.textures.exists(pk)) ui.add(this.add.image(PX + PS / 2, PY + PS / 2, pk).setDisplaySize(PS, PS));
+    for (const [rx, ry] of [[PX - 1, PY - 1], [PX + PS - 2, PY - 1], [PX - 1, PY + PS - 2], [PX + PS - 2, PY + PS - 2]]) { fr.fillStyle(0x6a6470, 1).fillRect(rx, ry, 3, 3); }
+    const bx = PX + PS + 16, cx = bx + 98;
     iron(bx, 9, 196, 12);
     this.hpFill = this.add.rectangle(bx, 9, 196, 12, 0x7a1010).setOrigin(0); ui.add(this.hpFill);
     this.hpShine = this.add.rectangle(bx, 9, 196, 2, 0xa83030).setOrigin(0); ui.add(this.hpShine);
     this.hpText = txt(this, cx, 15, "", 11, COLORS.white).setOrigin(0.5); ui.add(this.hpText);
     iron(bx, 28, 196, 4);
     this.xpFill = this.add.rectangle(bx, 28, 196, 4, 0x8a7430).setOrigin(0); ui.add(this.xpFill);
-    iron(cx - 68, 40, 136, 6);
-    this.furyFill = this.add.rectangle(cx - 68, 40, 136, 6, VOCATIONS[this.vocId].mana ? 0x2f5fb8 : 0xa8401a).setOrigin(0); ui.add(this.furyFill);
-    this.furyText = txt(this, cx + 78, 36, VOCATIONS[this.vocId].resource || t("fury_label"), 12, VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#d0703a"); ui.add(this.furyText);
+    iron(bx, 40, 136, 6);
+    this.furyFill = this.add.rectangle(bx, 40, 136, 6, VOCATIONS[this.vocId].mana ? 0x2f5fb8 : 0xa8401a).setOrigin(0); ui.add(this.furyFill);
+    this.furyText = txt(this, bx + 146, 36, VOCATIONS[this.vocId].resource || t("fury_label"), 12, VOCATIONS[this.vocId].mana ? "#7ab0ff" : "#d0703a"); ui.add(this.furyText);
     this.lvlText = txt(this, bx - 14, 6, "", 18, COLORS.gold).setOrigin(1, 0).setVisible(false);   // o nível fica na janela de Habilidades
     this.promoText = txt(this, bx - 14, 12, "", 12, "#e8c878").setOrigin(1, 0).setVisible(false);
     // embaixo do minimapa (canto superior direito): nome do andar pequeno, ouro e chaves
@@ -147,13 +156,22 @@ Object.assign(DungeonScene.prototype, {
     // jogador arrasta para onde quiser e pode travar (posição salva)
     const size = 38, gap = 6, fixed = ["basic", "heal", "p0", "p1"];
     const bar1 = list.filter(e => fixed.includes(e[0])), bar2 = list.filter(e => !fixed.includes(e[0]));
-    const w1 = bar1.length * (size + gap) - gap + 14, x0 = VIEW_W / 2 - w1 / 2, y1 = VIEW_H - 2 * size - 34;   // fixas em cima, habilidades embaixo
+    // uma linha só: [ataque básico + cura] à esquerda | habilidades no centro | [poções] à direita
+    const isPot = id => id === "p0" || id === "p1";
+    const barL = bar1.filter(e => !isPot(e[0])), barR = bar1.filter(e => isPot(e[0]));
+    const wOf = a => a.length * (size + gap) - gap, w2c = Math.max(wOf(bar2), 0), y1 = VIEW_H - size - 10;
+    const x0 = VIEW_W / 2 - w2c / 2 - 28 - wOf(barL), xR = VIEW_W / 2 + w2c / 2 + 28;
     const frame = (g, x, y, bw) => {
       g.fillStyle(0x050406, 0.92).fillRect(x - 8, y - 7, bw + 16, size + 20);
       g.fillStyle(0x2c2a30, 1).fillRect(x - 7, y - 6, bw + 14, 1).fillRect(x - 7, y + size + 12, bw + 14, 1);
       g.fillStyle(0x4a464e, 1).fillRect(x - 7, y - 6, 1, size + 19).fillRect(x + bw + 6, y - 6, 1, size + 19);
     };
-    frame(fr, x0, y1, w1);
+    frame(fr, x0, y1, wOf(barL));
+    frame(fr, xR, y1, wOf(barR));
+    // poções em destaque: contorno vermelho-sangue com brilho dourado por dentro (mesmo tamanho dos outros espaços)
+    { const wr = wOf(barR);
+      fr.lineStyle(2, 0x8a2a22, 1).strokeRect(xR - 8, y1 - 7, wr + 16, size + 20);
+      fr.lineStyle(1, 0xc89a50, 0.8).strokeRect(xR - 6, y1 - 5, wr + 12, size + 16); }
     const w2 = bar2.length * (size + gap) - gap;
     const bar2c = this.add.container(VIEW_W / 2 - w2 / 2, VIEW_H - size - 10); ui.add(bar2c); this.skillBar = bar2c;
     if (bar2.length) { const g2 = this.add.graphics(); frame(g2, 0, 0, w2); bar2c.add(g2); }
@@ -174,7 +192,9 @@ Object.assign(DungeonScene.prototype, {
       if ((id === "p0" || id === "p1")) { const n = txt(this, x + 4, y + 1, "", 11, COLORS.white); add(n); this.potCount[id] = n; }
       else if (id !== "basic") { const lk = txt(this, x + size / 2, y + size / 2, "★", 14, COLORS.dim).setOrigin(0.5); add(lk); this.slotLocks[id] = lk; }
     });
-    place(bar1, ui, x0, y1, id => (id === "p0" || id === "p1") ? 14 : 0);   // poções separadas
+    place(barL, ui, x0, y1, () => 0);
+    place(barR, ui, xR, y1, () => 0);
+    for (let i = 0; i < barR.length; i++) ui.add(this.add.rectangle(xR + i * (size + gap) - 1, y1 - 1, size + 2, size + 2).setOrigin(0).setStrokeStyle(1, 0xb04a3a, 0.9));
     place(bar2, bar2c, 0, 0, () => 0);
     { // ataque básico em destaque: moldura dourada; no automático ela pulsa e aparece o selo "AUTO". Clicar no ícone liga/desliga.
       const bx0 = x0, by0 = y1;
@@ -242,8 +262,10 @@ Object.assign(DungeonScene.prototype, {
   },
   // janela de habilidades: nível, experiência, magic level, sword/distance e shield (arrastar, minimizar, fechar; K reabre)
   buildSkillWin(ui) {
-    let st = {}; try { st = JSON.parse(localStorage.getItem("vitula_sk") || "{}"); } catch (e) {}
-    const S = this.skS = Object.assign({ x: 8, y: 60, min: false, open: true }, st), w = 160;
+    let st = {}; try { st = JSON.parse(localStorage.getItem("vitula_sk2") || "{}"); } catch (e) {}
+    // padrão: mesma largura da Battle List, logo abaixo dela
+    const b = this.bl, blH = b.min ? 14 : 16 + b.rows * 18 + 2;
+    const S = this.skS = Object.assign({ x: b.x, y: Math.min(VIEW_H - 140, b.y + blH + 6), min: false, open: true }, st), w = b.w;
     const win = this.add.container(S.x, S.y); ui.add(win);
     const bg = this.add.rectangle(0, 0, w, 10, 0x0c0a08, 0.8).setOrigin(0).setStrokeStyle(1, 0x5a4a30).setInteractive();
     const bar = this.add.rectangle(0, 0, w, 14, 0x2a2018, 1).setOrigin(0).setInteractive({ useHandCursor: true });
@@ -264,7 +286,7 @@ Object.assign(DungeonScene.prototype, {
     v[NR - 1].setInteractive({ useHandCursor: true }).on("pointerdown", () => this.toggleAttrs());
     l[NR - 1].setInteractive({ useHandCursor: true }).on("pointerdown", () => this.toggleAttrs());
     this.skW = { win, bg, l, v, bk, fl, vis: true };
-    const save = () => { try { localStorage.setItem("vitula_sk", JSON.stringify(S)); } catch (e) {} };
+    const save = () => { try { localStorage.setItem("vitula_sk2", JSON.stringify(S)); } catch (e) {} };
     const layout = () => {
       win.setPosition(S.x, S.y).setVisible(S.open); const h = S.min ? 14 : 17 + 7 * 17 + 2;
       bg.setSize(w, h); bg.input.hitArea.setSize(w, h); minB.setText(S.min ? "□" : "–");

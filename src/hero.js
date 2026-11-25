@@ -4,7 +4,6 @@ Object.assign(DungeonScene.prototype, {
 
   // orientação de ataque (como o quadrado vermelho do Tibia):
   //  • quadrado vermelho pulsante no monstro que o golpe automático vai acertar;
-  //  • seta clara no chão indicando para onde o herói está virado (direção do Golpe Frontal).
   drawAim() {
     const h = this.hero;
     if (!this.aimG || !this.aimG.scene) { this.aimG = this.add.graphics(); this.ents.add(this.aimG); }
@@ -21,15 +20,7 @@ Object.assign(DungeonScene.prototype, {
       for (const [cx, cy] of [[x, y], [x + w - 8, y], [x, y + w - 2], [x + w - 8, y + w - 2]]) g.fillRect(cx, cy, 8, 2);
       for (const [cx, cy] of [[x, y], [x + w - 2, y], [x, y + w - 8], [x + w - 2, y + w - 8]]) g.fillRect(cx, cy, 2, 8);
     }
-    // seta de direção
-    let [dx, dy] = h.facing; if (!dx && !dy) dx = 1;
-    const fx = (h.x + dx) * T + T / 2, fy = (h.y + dy) * T + T / 2;
-    if (this.gen.isFloor(h.x + dx, h.y + dy) && !(t && t.x === h.x + dx && t.y === h.y + dy)) {
-      const ang = Math.atan2(dy, dx), c = Math.cos(ang), sn = Math.sin(ang);
-      const P = (a, b) => [fx + a * c - b * sn, fy + a * sn + b * c];
-      const [ax, ay] = P(10, 0), [bx, by] = P(-6, -9), [cx2, cy2] = P(-6, 9), [mx, my] = P(-1, 0);
-      g.fillStyle(0xe8dcc0, 0.28).fillTriangle(ax, ay, bx, by, mx, my).fillTriangle(ax, ay, cx2, cy2, mx, my);
-    }
+    // (seta de direção removida a pedido)
   },
 
 

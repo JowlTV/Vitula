@@ -378,7 +378,7 @@ class TownScene extends Phaser.Scene {
   buildUi() {
     const ui = this.uiLayer;
     // título da cidade: aparece grande na chegada e some devagar; volta quando se abre o mapa (Tab/M)
-    this.townTitle = this.add.text(VIEW_W / 2, VIEW_H * 0.24, t("town_name"), { fontFamily: FONT_TITLE, fontSize: "54px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
+    this.townTitle = this.add.text(VIEW_W / 2, VIEW_H * 0.24, t("town_name"), { fontFamily: FONT_TITLE, fontSize: "35px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
       .setOrigin(0.5).setAlpha(0).setShadow(0, 3, "#000", 6, true, true);
     ui.add(this.townTitle); this.showTitle(4200);
     this.goldT = txt(this, VIEW_W - 14, 14, `${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`, 14, COLORS.gold).setOrigin(1, 0);
@@ -505,7 +505,7 @@ class TownScene extends Phaser.Scene {
     maxW = w - 2 * pad - 120;
     const port = this.portrait(title);
     const bubbles = this.chatLog.map(m => {
-      const t = txt(this, 0, 0, m.text, 13, m.me ? "#1a140c" : COLORS.text, { wordWrap: { width: maxW - 20 }, lineSpacing: 3 });
+      const t = txt(this, 0, 0, m.text, 13, m.me ? "#fff0cc" : COLORS.text, { wordWrap: { width: maxW - 20 }, lineSpacing: 3 });
       return { m, t, h: t.height + 16 };
     });
     let used = 0, first = bubbles.length;
@@ -521,7 +521,7 @@ class TownScene extends Phaser.Scene {
     let cy = y + header;
     for (const bb of bubbles.slice(first)) {
       const bw = Math.min(maxW, bb.t.width + 20), bx = bb.m.me ? x + w - pad - bw : x + pad;
-      c.add(this.add.rectangle(bx, cy, bw, bb.h, bb.m.me ? 0xc8a050 : 0x2a241c, bb.m.me ? 0.92 : 0.95).setOrigin(0).setStrokeStyle(1, bb.m.me ? 0xe8cc80 : 0x5a4c38));
+      c.add(this.add.rectangle(bx, cy, bw, bb.h, bb.m.me ? 0x5a3e18 : 0x2a241c, bb.m.me ? 0.92 : 0.95).setOrigin(0).setStrokeStyle(1, bb.m.me ? 0xe8cc80 : 0x5a4c38));
       bb.t.setPosition(bx + 10, cy + 8); c.add(bb.t);
       cy += bb.h + 8;
     }
@@ -536,7 +536,7 @@ class TownScene extends Phaser.Scene {
         this.sending = true;
         const keep = this.chatWith, n = this.chatLog.length;
         this.chatLog.push({ me: true, text: label });
-        r.setFillStyle(0xc8a050, 0.9); t.setColor("#1a140c");
+        r.setFillStyle(0x5a3e18, 0.95).setStrokeStyle(1, 0xe8cc80); t.setColor("#ffe8b0");   // texto claro: o contorno preto da fonte some no dourado
         // a sua fala aparece por um instante; depois a reação (nova fala, loja, fechar...)
         this.time.delayedCall(220, () => {
           this.sending = false; fn();
@@ -673,7 +673,7 @@ class TownScene extends Phaser.Scene {
     }
     if (this.textures.exists("vignette")) c.add(this.add.image(0, 0, "vignette").setOrigin(0));
     const vt = this.add.text(VIEW_W / 2, VIEW_H - 54, t("bless_vision_text"),
-      { fontFamily: FONT_TITLE, fontSize: "21px", color: "#f0d888", align: "center", stroke: "#0c0608", strokeThickness: 5, lineSpacing: 4, resolution: 2 }).setOrigin(0.5).setAlpha(0).setShadow(0, 2, "#000", 4, true, true); c.add(vt);
+      { fontFamily: FONT_TITLE, fontSize: "14px", color: "#f0d888", align: "center", stroke: "#0c0608", strokeThickness: 5, lineSpacing: 4, resolution: 2 }).setOrigin(0.5).setAlpha(0).setShadow(0, 2, "#000", 4, true, true); c.add(vt);
     if (key === "vk_goddess_art") {
       // leve animação da arte: a imagem "respira" (sobe e desce devagar), o halo pulsa, a harpa cintila e cai uma chuva fina
       this.tweens.add({ targets: img, y: VIEW_H / 2 - 6, duration: 2400, yoyo: true, repeat: -1, ease: "Sine.inOut" });

@@ -120,10 +120,10 @@
       /* ataque e usar: canto inferior direito; habilidades e poções num arco acima */
       #vt .main { position: absolute; right: var(--R); bottom: var(--B); display: flex; flex-direction: row-reverse; gap: 8px; align-items: flex-end; }
       #vt .skills { position: absolute; right: var(--R); bottom: calc(var(--B) + var(--s) * 1.55 + 10px); display: grid; grid-template-columns: repeat(3, calc(var(--s) * .86)); gap: var(--g); direction: rtl; }
-      /* atalhos (pausa, mochila, mapa, automático): coluna no alto da lateral esquerda, sob o botão ⌨ */
-      #vt .util { position: absolute; left: var(--L); top: calc(env(safe-area-inset-top) + 10px + var(--s) * .62 + 8px); display: flex; flex-direction: column; gap: var(--g); }
+      /* atalhos (pausa, mochila, mapa, automático): coluna no alto da lateral esquerda, sob o botão ⌨ (que fica abaixo do retrato) */
+      #vt .util { position: absolute; left: var(--L); top: calc(env(safe-area-inset-top) + 12vh + 10px + var(--s) * .62 + 8px); display: flex; flex-direction: column; gap: var(--g); }
       #vt .toggle-wrap { position: absolute; inset: 0; pointer-events: none; }
-      #vt .toggle { position: absolute; left: var(--L); top: calc(env(safe-area-inset-top) + 10px); pointer-events: auto; width: calc(var(--s) * 1.25); height: calc(var(--s) * .62); }
+      #vt .toggle { position: absolute; left: var(--L); top: calc(env(safe-area-inset-top) + 12vh + 10px);   /* abaixo do retrato e das barras de vida */ pointer-events: auto; width: calc(var(--s) * 1.25); height: calc(var(--s) * .62); }
       #vt.hidden .vt-layer { display: none; }
       #vt.hidden .toggle { opacity: .7; }
       /* telas bem baixas: atalhos em linha no rodapé, entre direcional e ataque */

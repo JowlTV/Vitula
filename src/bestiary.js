@@ -67,7 +67,7 @@ function bestHabitat(id) {
         if (this.lootLog) this.lootLog("i_spell_book", t("best_unlock_short", { name, tier: t("best_tier_" + after) }), after === 4 ? "#ffa030" : COLORS.gold, { hex: 0x8a6a30 });
         sfx(this, "levelup", 0.25);
       }
-      if (!Save.data.bestTip) { Save.data.bestTip = true; Save.save(); openBestiary(this, m.kind); this.msg(t("best_tip_n")); }
+      if (!Save.data.bestTip) { Save.data.bestTip = true; Save.save(); this.msg(t("best_tip_n")); }   // só avisa: o jogador abre quando quiser
     }
     return r;
   };
