@@ -94,7 +94,7 @@ Object.assign(DungeonScene.prototype, {
 }
 
 // Karhyn: o waypoint da praça, ao lado do ponto de chegada do Recall
-const WP_TOWN = [38, 10];
+const WP_TOWN = [41, 8];   // ao lado da estátua da Oráculo
 TownScene.prototype.townWaypoint = function () {
   const [x, y] = WP_TOWN, cx = x * T + T / 2, cy = y * T + T / 2;
   wpSprite(this, cx, cy).forEach(o => { o.setDepth(cy - T / 2); this.world.add(o); });

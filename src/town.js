@@ -84,7 +84,7 @@ class TownScene extends Phaser.Scene {
     rect(0, 8, TOWN_W - 2, 10, "d");                                         // rua de terra
     rect(36, 7, 41, 11, "c"); rect(42, 8, 44, 10, "c");   // calçamento em volta do bueiro                                                // largo de pedra da estátua
     for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) if (g[y][x] === "w") this.solid.add(this.key(x, y));
-    this.block(2, 2, TOWN_W - 3, 5); this.block(2, 12, 35, 4); this.block(37, 15, 7, 1); this.block(36, 12, 1, 3); this.block(44, 12, 1, 3); this.block(37, 12, 2, 1); this.block(40, 12, 3, 1); this.block(37, 14, 2, 1); this.block(40, 14, 3, 1);   // canteiros e cercas sólidos; quintal da horta (37–43 × 12–14) fica aberto   // casas do sul (base na 14) e o quintal atrás delas     // quarteirões (as casas cobrem tudo)
+    this.block(2, 2, TOWN_W - 3, 5); this.block(2, 12, TOWN_W - 3, 4);   // quintais fechados da horta (37–43 × 12–14) fica aberto   // casas do sul (base na 14) e o quintal atrás delas     // quarteirões (as casas cobrem tudo)
   }
 
   // chão: grama de base + autotiles de 15 peças do SpriteCook (grade dupla), cada um sobre o anterior
@@ -146,8 +146,8 @@ class TownScene extends Phaser.Scene {
       this.world.addAt(sh, Math.max(0, this.world.getIndex(st))); }
     this.block(38, 7, 2, 1); this.statue = st;
     // (mural de contratos removido do largo: agora fica dentro da Harpa Mágica)
-    this.manhole = { x: 43, y: 7 };
-    if (this.textures.exists("vk_esgoto")) {   // entrada do esgoto: arco de pedra com grade, no muro ao norte do largo
+    this.manhole = { x: 43, y: 9 };
+    if (false) {   // arco de parede removido (parecia flutuar): volta o bueiro no chão   // entrada do esgoto: arco de pedra com grade, no muro ao norte do largo
       const ar = this.art("vk_esgoto", 42, 7, 2.2, 0); ar.setDepth(7 * T + 4);
       this.block(42, 5, 3, 2);
       const gl = this.add.image(43.1 * T, 7 * T - 8, "light").setTint(0x6aa0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.6, 0.25).setAlpha(0.25).setDepth(800001); this.world.add(gl);
@@ -168,7 +168,6 @@ class TownScene extends Phaser.Scene {
       ["garbage", "crates", 9.4, 12, 0.75, 0.8, 0], ["crate", "crates", 26.6, 12, 0.65, 0.8, 0], ["garbage", "crates", 35.4, 12, 0.75, 0.8, 0]]) {
       if (this.textures.exists("vkp_" + n)) this.art("vkp_" + n, x + (1 - w) / 2, y, w, y >= 7 ? 1 : 0, true);   // na calçada: sólido
     }
-    if (this.textures.exists("k2_well")) this.art("k2_well", 41.4, 13, 1.3, 1);   // poço no meio da horta
     // lampiões: as únicas luzes quentes da rua
     this.lamps = [];
     for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
@@ -180,7 +179,7 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: t("zone_locker"), kind: "locker", x: 28, y: 7, w: 2, h: 1 });
     this.zones.push({ name: t("lodging_title"), kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
     if (Save.voc(this.vocId).firstBoss) this.zones.push({ name: t("zone_oracle"), kind: "hall", x: 37, y: 8, w: 4, h: 1 });   // a Oráculo só desperta depois do primeiro chefe
-    this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 42, y: 7, w: 3, h: 1 });
+    this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
     this.zones.push({ name: t("zone_gate"), kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
     this.testPortals(); this.townWaypoint();
   }

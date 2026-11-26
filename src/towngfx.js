@@ -443,9 +443,6 @@ const TG = (() => {
     const wood = (x, y) => { const X = x * D, Y = y * D; for (let r = 0; r < 3; r++) for (let c = 0; c < 4 - r; c++) { const cx = X + c * 6 + r * 3, cy = Y - r * 4;
       p.rect(cx, cy, 6, 4, "#4c3727"); p.rect(cx + 1, cy + 1, 3, 2, "#8a6a44"); p.px(cx + 2, cy + 1, "#a88456"); } };
     // faixa norte (atrás das casas, linha 2) e faixa sul (linha 15)
-    // horta comunitária no quintal aberto a sudeste (visível e alcançável pela calçada)
-    for (const [x, y, w] of [[37, 12, 2], [40, 12, 3], [37, 14, 2], [40, 14, 3]]) soil(x, y, w, 1);
-    fenceH(36.6, 11.2, 2.4); fenceH(40, 11.2, 3.4);   // portão aberto no meio fenceV(36.6, 11.6, 3.4); fenceV(43.4, 11.6, 3.4);
     // vãos entre as casas: trilha até o quintal, lenha e cerca lateral
     for (const [x, y0, y1] of [[13.2, 6.6, 2.6], [19.2, 6.6, 2.6], [11.5, 11.4, 15.4], [20.6, 11.4, 15.4], [24.4, 11.4, 15.4]]) path(x, y0, x, y1);
     for (const [x, y] of [[19.6, 5.5], [11.9, 13.2], [24.8, 13.4], [3.4, 15.6], [37.5, 2.8]]) wood(x, y);
