@@ -127,7 +127,7 @@ Object.assign(DungeonScene.prototype, {
       const disc = this.add.circle(0, 0, S / 2, 0x3a2810, 1).setStrokeStyle(2, 0xffd060);
       const tx = txt(this, 0, 0, "+1", 12, "#ffe8a0").setOrigin(0.5);
       b.add([glow, disc, tx]); ui.add(b); b.setVisible(false);
-      disc.setInteractive({ useHandCursor: true }).on("pointerdown", () => { if (this.buildAttrs && !this.attrBox) this.buildAttrs(); });
+      disc.setInteractive({ useHandCursor: true }).on("pointerdown", () => { if (!this.attrBox && this.toggleAttrs) this.toggleAttrs(); });
       this.tweens.add({ targets: glow, scale: 1.35, alpha: 0.08, duration: 750, yoyo: true, repeat: -1 });
       this.talentBadge = { b, tx, n: -1 }; }
     const bx = PX + PS + 16, cx = bx + 98;

@@ -358,6 +358,7 @@ class TownScene extends Phaser.Scene {
     } else if (z.kind === "hall") {
       this.say(t("zone_oracle"), t("bless_train_desc"),
         [[t("pray"), () => this.blessingVision(() => this.say(t("zone_oracle"), t("bless_second"), [[t("stand_up"), () => this.closeDialog()]]))],
+         [t("talent_respec_opt"), () => { this.closeDialog(); this.openTalentRespec(); }],
          [t("leave"), () => this.closeDialog()]]);
     }
   }

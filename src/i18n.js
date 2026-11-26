@@ -973,6 +973,7 @@ I18N.pt = {
   potion_empty: "vazia",
   talent_point_notice: "Novo ponto de talento — U",
   talent_remind: "Você tem {n} pontos de talento sobrando — aperte U ou toque no selo do retrato.",
+  talent_respec_opt: "Redistribuir talentos",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1891,6 +1892,7 @@ I18N.en = {
   potion_empty: "empty",
   talent_point_notice: "New talent point — U",
   talent_remind: "You have {n} unspent talent points — press U or tap the portrait badge.",
+  talent_respec_opt: "Redistribute talents",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2733,6 +2735,7 @@ I18N.es = {
   potion_empty: "vacía",
   talent_point_notice: "Nuevo punto de talento — U",
   talent_remind: "Tienes {n} puntos de talento sin usar — pulsa U o toca la insignia del retrato.",
+  talent_respec_opt: "Redistribuir talentos",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3575,6 +3578,7 @@ I18N.de = {
   potion_empty: "leer",
   talent_point_notice: "Neuer Talentpunkt — U",
   talent_remind: "Du hast {n} ungenutzte Talentpunkte — drücke U oder tippe auf das Abzeichen am Porträt.",
+  talent_respec_opt: "Talente neu verteilen",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4416,6 +4420,7 @@ I18N.pl = {
   potion_empty: "pusta",
   talent_point_notice: "Nowy punkt talentu — U",
   talent_remind: "Masz {n} niewydanych punktów talentu — naciśnij U albo dotknij odznaki przy portrecie.",
+  talent_respec_opt: "Rozdziel talenty od nowa",
 };
 
 // ── API pública ─────────────────────────────────────────────────
