@@ -35,7 +35,7 @@ function enterTestMode(scene, voc) {
   d.xpTotal = Math.ceil(tot) + 1;                        // nível 100
   for (const id in d.skills) d.skills[id].lvl = 80;      // sword, shield, distance, dodge
   d.ml = { lvl: 60, spent: 0 };
-  d.promoted = true; d.gold = 999999; d.essence = 999; d.bless = 3; d.slopeOpen = true;
+  d.promoted = true; d.gold = 999999; d.essence = 999; d.slopeOpen = true;
   d.potions = { health: 50, mana: 50, fury: 50 };
   for (const k in MONSTERS) Save.data.bestiary[k] = 999;   // bestiário completo
   Save.data.tutorialDone = true; Save.data.bestTip = true;

@@ -563,7 +563,7 @@ Object.assign(DungeonScene.prototype, {
 
   // morte: perde experiência, equipamentos e ouro coletado, conforme as bênçãos da Oráculo
   deathPenalty() {
-    const d = Save.voc(this.vocId), b = DEATH_LOSS[Math.min(3, d.bless || 0)];
+    const d = Save.voc(this.vocId), b = DEATH_LOSS[0];   // bênçãos removidas: penalidade única
     // perde só parte da experiência do nível atual: o nível nunca cai (antes perdia % do total,
     // o herói despencava vários níveis e "subia tudo de novo" em poucos abates)
     const xpBefore = d.xpTotal || 0, cur = Save.levelInfo(xpBefore).xp;

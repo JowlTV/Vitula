@@ -84,14 +84,14 @@ class TownScene extends Phaser.Scene {
     rect(0, 8, TOWN_W - 2, 10, "d");                                         // rua de terra
     rect(36, 7, 41, 11, "c"); rect(42, 8, 44, 10, "c");   // calçamento em volta do bueiro                                                // largo de pedra da estátua
     for (let y = 0; y < TOWN_H; y++) for (let x = 0; x < TOWN_W; x++) if (g[y][x] === "w") this.solid.add(this.key(x, y));
-    this.block(2, 2, TOWN_W - 3, 5); this.block(2, 12, TOWN_W - 3, 4);   // casas do sul (base na 14) e o quintal atrás delas     // quarteirões (as casas cobrem tudo)
+    this.block(2, 2, TOWN_W - 3, 5); this.block(2, 12, 35, 4); this.block(37, 15, 7, 1); this.block(36, 12, 1, 3); this.block(44, 12, 1, 3); this.block(37, 12, 2, 1); this.block(40, 12, 3, 1); this.block(37, 14, 2, 1); this.block(40, 14, 3, 1);   // canteiros e cercas sólidos; quintal da horta (37–43 × 12–14) fica aberto   // casas do sul (base na 14) e o quintal atrás delas     // quarteirões (as casas cobrem tudo)
   }
 
   // chão: grama de base + autotiles de 15 peças do SpriteCook (grade dupla), cada um sobre o anterior
   drawGround() {
     const W = TOWN_W * T, H = TOWN_H * T;
     const src = k => this.textures.exists(k) ? this.textures.get(k).getSourceImage() : null;
-    this.textures.addCanvas("town_ground", TG.ground(this.ground, TOWN_W, TOWN_H, T, { street: src("vk_ts_piso"), wall: src("vk_ts_muro"), pave: src("vk_ts_calcada"), grass: src("vk_ts_grama") }));
+    this.textures.addCanvas("town_ground", TG.ground(this.ground, TOWN_W, TOWN_H, T, { street: src("vk_ts_piso"), wall: src("vk_ts_muro"), pave: src("vk_ts_calcada"), grass: src("vk_ts_grama"), cobble: src("vk_cobble") }));
     this.textures.get("town_ground").setFilter(Phaser.Textures.FilterMode.NEAREST);   // pixels nítidos no zoom (sem borrão)   // sem cópia extra do canvas
     this.world.add(this.add.image(0, 0, "town_ground").setOrigin(0).setDepth(-10));
   }
@@ -145,12 +145,13 @@ class TownScene extends Phaser.Scene {
       const sh = this.add.image(st.x, st.y - 3, "shadow").setScale(st.displayWidth * 0.5 / 64, 13 / 64).setAlpha(0.75).setDepth(st.depth - 1);
       this.world.addAt(sh, Math.max(0, this.world.getIndex(st))); }
     this.block(38, 7, 2, 1); this.statue = st;
-    { // mural de contratos (SpriteCook "vk_mural" se existir; senão desenhado em código)
-      const key = this.textures.exists("vk_mural") ? "vk_mural" : this.makeBoardTex();
-      const b = this.add.image(36 * T + T, 8 * T - 2, key).setOrigin(0.5, 1);   // ao lado da estátua, à esquerda b.setScale(T * 1.25 / b.width).setDepth(8 * T - 3).setTint(TOWN_TINT);
-      b.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(b); this.block(36, 7, 2, 1); this.board = b; }
-    this.manhole = { x: 43, y: 9 };
-    { const bk = this.textures.exists("vk_bueiro"), mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, bk ? "vk_bueiro" : "decor_manhole").setDepth(-5); mh.setScale(T * (bk ? 1.25 : 0.8) / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
+    // (mural de contratos removido do largo: agora fica dentro da Harpa Mágica)
+    this.manhole = { x: 43, y: 7 };
+    if (this.textures.exists("vk_esgoto")) {   // entrada do esgoto: arco de pedra com grade, no muro ao norte do largo
+      const ar = this.art("vk_esgoto", 42, 7, 2.2, 0); ar.setDepth(7 * T + 4);
+      this.block(42, 5, 3, 2);
+      const gl = this.add.image(43.1 * T, 7 * T - 8, "light").setTint(0x6aa0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.6, 0.25).setAlpha(0.25).setDepth(800001); this.world.add(gl);
+    } else { const bk = this.textures.exists("vk_bueiro"), mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, bk ? "vk_bueiro" : "decor_manhole").setDepth(-5); mh.setScale(T * (bk ? 1.25 : 0.8) / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
     // decadência: barris, caixas, lixo, varal, carroça, bancos
     // props do SpriteCook (vkp_*), com a versão em código de reserva
     const P = (n, code, x, y, w, wCode, fd = 1) => this.textures.exists("vkp_" + n) ? this.art("vkp_" + n, x + (1 - w) / 2, y, w, fd) : A(code, x, y, wCode, fd);
@@ -165,8 +166,9 @@ class TownScene extends Phaser.Scene {
       ["crate", "crates", 20.1, 6.2, 0.65, 0.8, 0], ["bench", "bench", 15.2, 7, 0.9, 0.85, 0],
       ["garbage", "crates", 31.5, 6, 0.75, 0.8, 0], ["firewood", "crates", 30.6, 6.1, 0.75, 0.8, 0],
       ["garbage", "crates", 9.4, 12, 0.75, 0.8, 0], ["crate", "crates", 26.6, 12, 0.65, 0.8, 0], ["garbage", "crates", 35.4, 12, 0.75, 0.8, 0]]) {
-      if (this.textures.exists("vkp_" + n)) this.art("vkp_" + n, x + (1 - w) / 2, y, w, fd, false);
+      if (this.textures.exists("vkp_" + n)) this.art("vkp_" + n, x + (1 - w) / 2, y, w, y >= 7 ? 1 : 0, true);   // na calçada: sólido
     }
+    if (this.textures.exists("k2_well")) this.art("k2_well", 41.4, 13, 1.3, 1);   // poço no meio da horta
     // lampiões: as únicas luzes quentes da rua
     this.lamps = [];
     for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
@@ -176,10 +178,9 @@ class TownScene extends Phaser.Scene {
     this.zones.push({ name: t("zone_potions_enter"), kind: "potions", x: 21, y: 7, w: 3, h: 1 });
     this.zones.push({ name: t("zone_depot_enter"), kind: "depot", x: 26, y: 7, w: 2, h: 1 });
     this.zones.push({ name: t("zone_locker"), kind: "locker", x: 28, y: 7, w: 2, h: 1 });
-    this.zones.push({ name: t("zone_board"), kind: "board", x: 36, y: 8, w: 2, h: 1 });
     this.zones.push({ name: t("lodging_title"), kind: "lodging", x: 18, y: 11, w: 3, h: 1 });
-    this.zones.push({ name: t("zone_oracle"), kind: "hall", x: 37, y: 8, w: 4, h: 1, step: true });
-    this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 43, y: 9, w: 1, h: 1 });
+    if (Save.voc(this.vocId).firstBoss) this.zones.push({ name: t("zone_oracle"), kind: "hall", x: 37, y: 8, w: 4, h: 1 });   // a Oráculo só desperta depois do primeiro chefe
+    this.zones.push({ name: t("zone_sewer_enter"), kind: "sewer", x: 42, y: 7, w: 3, h: 1 });
     this.zones.push({ name: t("zone_gate"), kind: "gate", x: 2, y: 8, w: 1, h: 3, step: true });
     this.testPortals(); this.townWaypoint();
   }
@@ -358,7 +359,7 @@ class TownScene extends Phaser.Scene {
     } else if (z.kind === "tower") {
       this.say(t("tower_title"), t("tower_desc"), [[t("tower_go"), () => this.towerView()], [t("tower_stay"), () => this.closeDialog()]]);
     } else if (z.kind === "inn") {
-      this.say(t("tavern_title"), t("tavern_desc"), [lore(t("tavern_title"), "inn", () => this.use(z)), [t("leave"), () => this.closeDialog()]]);
+      this.say(t("tavern_title"), t("tavern_desc"), [[t("zone_board"), () => { this.closeDialog(); this.openBoard(); }], lore(t("tavern_title"), "inn", () => this.use(z)), [t("leave"), () => this.closeDialog()]]);
     } else if (z.kind === "lodging") {
       this.say(t("lodging_title"), t("lodging_desc"), [[t("lodging_rest"), () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], lore(t("lodging_title"), "lodging", () => this.use(z)), [t("leave"), () => this.closeDialog()]]);
     } else if (z.kind === "hall" && !(d.bless > 0)) {
@@ -872,7 +873,8 @@ class TownScene extends Phaser.Scene {
       this.world.add(fl);
       this.tweens.add({ targets: fl, scaleX: 0.05, scaleY: 0.1, alpha: 0.7, duration: Phaser.Math.Between(90, 160), yoyo: true, repeat: -1 });
     }
-    // feixe de luz sobre a estátua da deusa: coluna pálida que desce do céu, com poeira brilhando dentro
+    // feixe de luz sobre a estátua: só depois do primeiro chefe; mais forte enquanto a bênção não foi recebida
+    if (!Save.voc(this.vocId).firstBoss) return;
     const st = this.statue, bx = st.x, by = st.y - st.displayHeight * 0.5;
     const beam = this.add.image(bx, by - 120, "light").setTint(0xfff0c8).setBlendMode(Phaser.BlendModes.ADD).setScale(0.55, 3.2).setAlpha(0.32).setDepth(800003);
     const pool = this.add.image(bx, st.y - 6, "light").setTint(0xffe0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.9, 0.35).setAlpha(0.4).setDepth(800003);

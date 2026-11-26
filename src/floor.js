@@ -210,7 +210,7 @@ Object.assign(DungeonScene.prototype, {
     if (this.altarMemo[this.floorN] === undefined) {
       const g = this.gen, n = Save.voc(this.vocId).bless || 0;
       let spot = null;
-      if (this.floorN >= 2 && this.floorN < this.floors && n < 3 && Math.random() <= 0.4) {
+      if (false) {   // bênçãos removidas (nov/26): não há mais estátuas nos andares
         const cands = [];
         for (let y = 1; y < g.h - 1; y++) for (let x = 1; x < g.w - 1; x++) {
           if (!this.walkable(x, y) || this.occ.has(key(x, y)) || this.spikes.has(key(x, y)) || g.isBridge(x, y) || this.doorNear(x, y)) continue;

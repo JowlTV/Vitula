@@ -644,7 +644,7 @@ I18N.pt = {
   contract_progress_done: "Contrato cumprido: {n}/{n} {name}. Volte ao mural de Karhyn.",
   attrs_spent: "Nível {n} · {k} ponto(s) já distribuído(s)",
   attr_weapon_plus: "+1 de {name}",
-  death_pen: "\n\nMorte — bênçãos da Oráculo: {bless}/3\nExperiência perdida: {xp}% do nível atual\nEquipamentos perdidos: {eq}\nOuro perdido: {gold}% ({lost})",
+  death_pen: "\n\nExperiência perdida: {xp}% do nível atual\nEquipamentos perdidos: {eq}\nOuro perdido: {gold}% ({lost})",
   word_all: "todos",
   run_summary: "Dificuldade: {d}%\nAndar alcançado: {f}/{total}\nNível: {lvl}\nAbates: {k}\nOuro obtido: {g}   (bolsa do {voc}: {bag})",
   depot_footer: "Ouro: ◉ {gold}   ·   equipamentos também ficarão aqui quando chegarem",
@@ -974,6 +974,8 @@ I18N.pt = {
   talent_point_notice: "Novo ponto de talento — U",
   talent_remind: "Você tem {n} pontos de talento sobrando — aperte U ou toque no selo do retrato.",
   talent_respec_opt: "Redistribuir talentos",
+  oracle_awake: "Longe dali, em Karhyn, a estátua da Oráculo começa a brilhar…",
+  oracle_after: "A luz da Oráculo ainda pulsa na pedra. Diante dela, você pode refazer seu caminho.",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1564,7 +1566,7 @@ I18N.en = {
   contract_progress_done: "Contract fulfilled: {n}/{n} {name}. Return to the Karhyn board.",
   attrs_spent: "Level {n} · {k} point(s) already spent",
   attr_weapon_plus: "+1 {name}",
-  death_pen: "\n\nDeath — Oracle blessings: {bless}/3\nExperience lost: {xp}% of the current level\nEquipment lost: {eq}\nGold lost: {gold}% ({lost})",
+  death_pen: "\n\nExperience lost: {xp}% of current level\nEquipment lost: {eq}\nGold lost: {gold}% ({lost})",
   word_all: "all",
   run_summary: "Difficulty: {d}%\nFloor reached: {f}/{total}\nLevel: {lvl}\nKills: {k}\nGold earned: {g}   ({voc}'s purse: {bag})",
   depot_footer: "Gold: ◉ {gold}   ·   equipment will be stored here too once it arrives",
@@ -1893,6 +1895,8 @@ I18N.en = {
   talent_point_notice: "New talent point — U",
   talent_remind: "You have {n} unspent talent points — press U or tap the portrait badge.",
   talent_respec_opt: "Redistribute talents",
+  oracle_awake: "Far away, in Karhyn, the Oracle's statue begins to glow…",
+  oracle_after: "The Oracle's light still pulses in the stone. Before her, you may retrace your path.",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2484,7 +2488,7 @@ I18N.es = {
   contract_progress_done: "Contrato cumplido: {n}/{n} {name}. Vuelve al tablón de Karhyn.",
   attrs_spent: "Nivel {n} · {k} punto(s) ya asignado(s)",
   attr_weapon_plus: "+1 de {name}",
-  death_pen: "\n\nMuerte — bendiciones del Oráculo: {bless}/3\nExperiencia perdida: {xp}% del nivel actual\nEquipo perdido: {eq}\nOro perdido: {gold}% ({lost})",
+  death_pen: "\n\nExperiencia perdida: {xp}% del nivel actual\nEquipo perdido: {eq}\nOro perdido: {gold}% ({lost})",
   word_all: "todos",
   run_summary: "Dificultad: {d}%\nPiso alcanzado: {f}/{total}\nNivel: {lvl}\nBajas: {k}\nOro obtenido: {g}   (bolsa del {voc}: {bag})",
   depot_footer: "Oro: ◉ {gold}   ·   el equipo también se guardará aquí cuando llegue",
@@ -2736,6 +2740,8 @@ I18N.es = {
   talent_point_notice: "Nuevo punto de talento — U",
   talent_remind: "Tienes {n} puntos de talento sin usar — pulsa U o toca la insignia del retrato.",
   talent_respec_opt: "Redistribuir talentos",
+  oracle_awake: "Lejos, en Karhyn, la estatua de la Oráculo empieza a brillar…",
+  oracle_after: "La luz de la Oráculo aún late en la piedra. Ante ella puedes rehacer tu camino.",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3327,7 +3333,7 @@ I18N.de = {
   contract_progress_done: "Vertrag erfüllt: {n}/{n} {name}. Kehre zur Tafel in Karhyn zurück.",
   attrs_spent: "Stufe {n} · {k} Punkt(e) bereits verteilt",
   attr_weapon_plus: "+1 {name}",
-  death_pen: "\n\nTod — Segen des Orakels: {bless}/3\nVerlorene Erfahrung: {xp}% der aktuellen Stufe\nVerlorene Ausrüstung: {eq}\nVerlorenes Gold: {gold}% ({lost})",
+  death_pen: "\n\nVerlorene Erfahrung: {xp}% der Stufe\nVerlorene Ausrüstung: {eq}\nVerlorenes Gold: {gold}% ({lost})",
   word_all: "alle",
   run_summary: "Schwierigkeit: {d}%\nErreichte Ebene: {f}/{total}\nStufe: {lvl}\nKills: {k}\nErbeutetes Gold: {g}   (Börse des {voc}: {bag})",
   depot_footer: "Gold: ◉ {gold}   ·   Ausrüstung wird hier ebenfalls gelagert, sobald es so weit ist",
@@ -3579,6 +3585,8 @@ I18N.de = {
   talent_point_notice: "Neuer Talentpunkt — U",
   talent_remind: "Du hast {n} ungenutzte Talentpunkte — drücke U oder tippe auf das Abzeichen am Porträt.",
   talent_respec_opt: "Talente neu verteilen",
+  oracle_awake: "Fern in Karhyn beginnt die Statue der Orakelin zu leuchten…",
+  oracle_after: "Das Licht der Orakelin pulsiert noch im Stein. Vor ihr kannst du deinen Weg neu gehen.",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4169,7 +4177,7 @@ I18N.pl = {
   contract_progress_done: "Kontrakt wykonany: {n}/{n} {name}. Wróć do tablicy w Karhyn.",
   attrs_spent: "Poziom {n} · rozdano już {k} pkt.",
   attr_weapon_plus: "+1 {name}",
-  death_pen: "\n\nŚmierć — błogosławieństwa Wyroczni: {bless}/3\nUtracone doświadczenie: {xp}% bieżącego poziomu\nUtracony ekwipunek: {eq}\nUtracone złoto: {gold}% ({lost})",
+  death_pen: "\n\nUtracone doświadczenie: {xp}% poziomu\nUtracony ekwipunek: {eq}\nUtracone złoto: {gold}% ({lost})",
   word_all: "wszystko",
   run_summary: "Trudność: {d}%\nOsiągnięte piętro: {f}/{total}\nPoziom: {lvl}\nZabójstwa: {k}\nZdobyte złoto: {g}   (sakiewka — {voc}: {bag})",
   depot_footer: "Złoto: ◉ {gold}   ·   ekwipunek też będzie tu przechowywany, gdy dotrze",
@@ -4421,6 +4429,8 @@ I18N.pl = {
   talent_point_notice: "Nowy punkt talentu — U",
   talent_remind: "Masz {n} niewydanych punktów talentu — naciśnij U albo dotknij odznaki przy portrecie.",
   talent_respec_opt: "Rozdziel talenty od nowa",
+  oracle_awake: "Daleko, w Karhyn, posąg Wyroczni zaczyna lśnić…",
+  oracle_after: "Światło Wyroczni wciąż pulsuje w kamieniu. Przed nią możesz odmienić swoją ścieżkę.",
 };
 
 // ── API pública ─────────────────────────────────────────────────

@@ -51,6 +51,7 @@ Object.assign(DungeonScene.prototype, {
   const md = DungeonScene.prototype.monsterDied;
   DungeonScene.prototype.monsterDied = function (m, ...a) {
     const r = md.apply(this, [m, ...a]);
+    if (m.elite && !this.region.testMap) { const dv = Save.voc(this.vocId); if (!dv.firstBoss) { dv.firstBoss = true; Save.save(); this.time.delayedCall(1800, () => this.msg && this.msg(t("oracle_awake"))); } }
     // chefe morto: todos os monstros ao redor caem junto
     if (m.elite && !this._bossPurge && !this.region.testMap) {
       this._bossPurge = true;

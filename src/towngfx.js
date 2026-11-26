@@ -396,7 +396,14 @@ const TG = (() => {
     if (atlas.wall) { for (let ty = 0; ty < TH; ty++) for (let tx = 0; tx < TW; tx++) if (G[ty][tx] === "w") p.rect(tx * D, ty * D, D, D, "#16201f");
       dualGrid(p, atlas.wall, TW, TH, (x, y) => G[y][x] === "w"); }
     // calçada e largo: tileset de lajes molhadas do SpriteCook por cima do desenho em código
-    // (tileset de lajes desligado: calçadas em pedras irregulares desenhadas em código)
+    // calçadas e largo: paralelepípedos do SpriteCook (vk_cobble, sem emenda), 176 px → 2 casas
+    if (atlas.cobble) { const S = 2 * D, tmp = document.createElement("canvas"); tmp.width = tmp.height = S; const tc = tmp.getContext("2d"); tc.imageSmoothingEnabled = false; tc.drawImage(atlas.cobble, 0, 0, S, S);
+      const pat = p.c.createPattern(tmp, "repeat"); p.c.fillStyle = pat;
+      for (let ty = 0; ty < TH; ty++) for (let tx = 0; tx < TW; tx++) if (G[ty][tx] === "s" || G[ty][tx] === "c") p.c.fillRect(tx * D, ty * D, D, D);
+      // meio-fio: fileira de pedra escura onde a calçada encontra a rua de terra
+      for (let ty = 0; ty < TH; ty++) for (let tx = 0; tx < TW; tx++) { const t = G[ty][tx]; if (t !== "s") continue;
+        if (at(tx, ty + 1) === "d") { p.rect(tx * D, ty * D + D - 3, D, 3, "#2a2622"); p.rect(tx * D, ty * D + D - 3, D, 1, "#6a645a"); }
+        if (at(tx, ty - 1) === "d") { p.rect(tx * D, ty * D, D, 2, "#2a2622"); } } }
     yards(p, TW, TH);   // quintais: hortas, cercas e trilhas (antes da passada orgânica, que envelhece tudo junto)
     weather(p, G, TW, TH);   // passada orgânica: tira o aspecto de grade e liga o chão aos outros mapas
     // amplia 2× para a casa de 64 px
@@ -436,8 +443,9 @@ const TG = (() => {
     const wood = (x, y) => { const X = x * D, Y = y * D; for (let r = 0; r < 3; r++) for (let c = 0; c < 4 - r; c++) { const cx = X + c * 6 + r * 3, cy = Y - r * 4;
       p.rect(cx, cy, 6, 4, "#4c3727"); p.rect(cx + 1, cy + 1, 3, 2, "#8a6a44"); p.px(cx + 2, cy + 1, "#a88456"); } };
     // faixa norte (atrás das casas, linha 2) e faixa sul (linha 15)
-    for (const [x, w] of [[3, 4], [10, 3], [20, 3], [29, 4]]) { soil(x, 2, w, 1); fenceH(x, 2, w); }
-    for (const [x, w] of [[3, 3], [12, 4], [22, 3], [33, 4]]) { soil(x, 15, w, 1); fenceH(x, 15, w); }
+    // horta comunitária no quintal aberto a sudeste (visível e alcançável pela calçada)
+    for (const [x, y, w] of [[37, 12, 2], [40, 12, 3], [37, 14, 2], [40, 14, 3]]) soil(x, y, w, 1);
+    fenceH(36.6, 11.2, 2.4); fenceH(40, 11.2, 3.4);   // portão aberto no meio fenceV(36.6, 11.6, 3.4); fenceV(43.4, 11.6, 3.4);
     // vãos entre as casas: trilha até o quintal, lenha e cerca lateral
     for (const [x, y0, y1] of [[13.2, 6.6, 2.6], [19.2, 6.6, 2.6], [11.5, 11.4, 15.4], [20.6, 11.4, 15.4], [24.4, 11.4, 15.4]]) path(x, y0, x, y1);
     for (const [x, y] of [[19.6, 5.5], [11.9, 13.2], [24.8, 13.4], [3.4, 15.6], [37.5, 2.8]]) wood(x, y);
