@@ -31,7 +31,10 @@ Object.assign(SPELL_FX, {
     const cx = h.x + dx, cy = h.y + dy, dmg = this.baseDamage() * 2.0 * 1.8, p = this.cellPos(cx, cy);
     this.time.delayedCall(180, () => {
       if (this.finished) return;
-      if (this.anims.exists("fx_xcut")) { const fw = this.textures.get("fx_xcut").getSourceImage().width / 4, x = this.add.sprite(p.x, p.y - 26, "fx_xcut").setScale(3 * T / fw).setBlendMode(Phaser.BlendModes.ADD).setDepth(100000);
+      // corte duplo vermelho (pixelfx), saindo do herói na direção em que ele olha
+      const xs = playPfx(this, "xcut", h.px, h.spr.y, { flip: dx < 0, rot: dx < 0 ? -Math.atan2(dy, -dx) : Math.atan2(dy, dx || (dy ? 0 : 1)) });
+      if (xs) { /* efeito novo tocando; os de baixo são o reserva */ }
+      else if (this.anims.exists("fx_xcut")) { const fw = this.textures.get("fx_xcut").getSourceImage().width / 4, x = this.add.sprite(p.x, p.y - 26, "fx_xcut").setScale(3 * T / fw).setBlendMode(Phaser.BlendModes.ADD).setDepth(100000);
         this.ents.add(x); x.play("fx_xcut"); x.once("animationcomplete", () => x.destroy()); }
       else { this.fx("slash", p.x, p.y - 22, 1.5, false, 45); this.fx("slash", p.x, p.y - 22, 1.5, true, -45); }
       for (const [ox, oy] of [[0, 0], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {

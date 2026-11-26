@@ -58,9 +58,9 @@ Object.assign(DungeonScene.prototype, {
     h.shadow.setPosition(h.px, h.py - 3).setDepth(h.py - 1);
     // a aura acompanha o herói DEPOIS do passo, sempre logo atrás dele (antes, ao subir, ficava na frente)
     if (h.auraSpr && h.auraSpr.scene && h.auraT > 0) h.auraSpr.setPosition(h.px, h.py - 2).setDepth(h.py - 1);
-    h.flash = Math.max(0, (h.flash || 0) - dt * 5);
+    h.flash = Math.max(0, (h.flash || 0) - dt * 7);
     // pisca em vermelho escuro (#660000) ao apanhar
-    if (h.flash > 0.55) h.spr.setTintFill(0x660000); else if (h.flash > 0) h.spr.setTint(0xb04040); else h.spr.setTint(this.ambientTint || 0xffffff);
+    if (h.flash > 0.75) h.spr.setTint(0xffd8d8); else if (h.flash > 0) h.spr.setTint(0xf0a0a0); else h.spr.setTint(this.ambientTint || 0xffffff);
     let anim = h.moveT > 0 ? "hero_walk" : "hero_idle";
     if (this.anims.exists(this.ap + "idle_down")) {
       const [fx, fy] = h.facing;
@@ -106,6 +106,7 @@ Object.assign(DungeonScene.prototype, {
           this.damageMonster(t, this.baseDamage() * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? this.critMult() : 1));
           this.weaponElement(t);
           if ((h.kberT || 0) > 0) this.berserkCleave(t);   // Modo Berserker
+          this.hitFx(t, crit, h);
           if (crit) { this.splat(t.px, t.py - 4, 5); }
           this.addFury(9);
           this.trainSkill("sword");
@@ -527,7 +528,9 @@ Object.assign(DungeonScene.prototype, {
   },
   // flecha voando de (h) até o alvo; ao chegar chama onHit
   shootArrow(fromX, fromY, toX, toY, onHit, speed = 900) {
-    const a = this.add.image(fromX, fromY, "arrow").setRotation(Math.atan2(toY - fromY, toX - fromX)).setDepth(100000).setScale(1.2);
+    const ang = Math.atan2(toY - fromY, toX - fromX);
+    // flecha animada do pixelfx (ponta de aço, penas tremulando, rastro de ar); a desenhada em código fica de reserva
+    const a = playPfx(this, "arrow", fromX, fromY, { scale: 0.55, rot: ang }) || this.add.image(fromX, fromY, "arrow").setRotation(ang).setDepth(100000).setScale(1.2);
     this.ents.add(a);
     const dur = Math.max(80, Math.hypot(toX - fromX, toY - fromY) / speed * 1000);
     this.tweens.add({ targets: a, x: toX, y: toY, duration: dur, onComplete: () => { a.destroy(); onHit && onHit(); } });
@@ -558,12 +561,20 @@ Object.assign(DungeonScene.prototype, {
     const A = ARROWS[kind] || ARROWS.normal, crit = Math.random() < this.critChance();
     const dmg = this.baseDamage() * mult * A.mult * Phaser.Math.FloatBetween(0.85, 1.15) * (crit ? this.critMult() : 1);
     this.damageMonster(t, dmg, A.el); this.lifeSteal(dmg);
+    this.hitFx(t, crit, this.hero);
     if (crit) this.splat(t.px, t.py - 4, 5);
     if (A.area) {
       for (const [dx, dy] of DIRS8) { const m = this.occ.get(key(t.x + dx, t.y + dy)); if (m && !m.dead) { this.damageMonster(m, dmg * 0.7, A.el); this.lifeSteal(dmg * 0.7); } }
       this.fx(kind === "holy" ? "heal" : "explosion", t.px, t.py - 20, kind === "holy" ? 0.9 : 0.75);
       sfx(this, "explode", 0.25);
     }
+  },
+  // feedback de golpe (pixelfx): faísca no acerto normal, estrela maior (70%) no crítico
+  hitFx(t, crit, h) {
+    if (!t || !t.spr) return;
+    const flip = h && h.px > t.px, y = t.spr.y;
+    if (crit) playPfx(this, "crit", t.px, y, { scale: 0.7, flip });
+    else playPfx(this, "hit", t.px + (flip ? 8 : -8), y - t.spr.displayHeight * 0.25, { flip, scale: 0.8 });
   },
   critMult() { return 1.8; },
   lifeSteal(dmg) {

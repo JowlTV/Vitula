@@ -3,6 +3,15 @@
 Object.assign(DungeonScene.prototype, {
   // portal azul que gira no sentido horário, com aura pulsando (arte: assets/fx/portal.png, tingida aqui)
   makePortal(x, y, size, tint = 0x4a8cff) {
+    // portal novo (pixelfx): fenda azul em pé que gira e puxa partículas; o antigo fica de reserva
+    if (this.anims.exists("pfx_portal")) {
+      const aura = this.add.image(x, y - size * 0.2, "light").setScale(size * 1.6 / 256).setTint(tint).setAlpha(0.3).setBlendMode(Phaser.BlendModes.ADD).setDepth(y - 3);
+      const por = playPfx(this, "portal", x, y + size * 0.15, { scale: size / 150, depth: y - 1, ents: false });
+      const parts = [aura, por];
+      if (this.world) this.world.add(parts); else if (this.ents) this.ents.add(parts);
+      this.tweens.add({ targets: aura, alpha: 0.15, duration: 1100, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+      return parts;
+    }
     const aura = this.add.image(x, y, "light").setScale(size * 2.6 / 256).setTint(tint).setAlpha(0.55).setBlendMode(Phaser.BlendModes.ADD).setDepth(y - 3);
     const ring = this.add.image(x, y, "light").setScale(size * 1.5 / 256).setTint(0xbfe0ff).setAlpha(0.35).setBlendMode(Phaser.BlendModes.ADD).setDepth(y - 2);
     const por = this.add.image(x, y, "fx_portal").setDisplaySize(size, size * 0.62).setTint(tint).setDepth(y - 1);

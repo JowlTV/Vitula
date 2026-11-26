@@ -111,8 +111,8 @@ Object.assign(SPELL_FX, {
       if (h.dead || this.finished) return;
       const has = this.anims.exists("fx_holy_arrow"), ang = Math.atan2(tg.py - 24 - (h.py - 40), tg.px - h.px);
       const a = has ? this.add.sprite(h.px, h.py - 40, "fx_holy_arrow", "1").setScale(0.7) : this.add.image(h.px, h.py - 40, "arrow").setTint(0xfff0a0).setScale(1.6);
-      a.setRotation(ang).setBlendMode(Phaser.BlendModes.ADD).setDepth(100000);
-      const glow = this.add.image(h.px, h.py - 40, "light").setTint(0xfff0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.35).setDepth(99999);
+      a.setRotation(ang).setBlendMode(Phaser.BlendModes.ADD).setDepth(100000).setAlpha(0.75);   // brilho mais contido no disparo
+      const glow = this.add.image(h.px, h.py - 40, "light").setTint(0xfff0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.22).setAlpha(0.45).setDepth(99999);
       this.ents.add(a); this.ents.add(glow);
       const dur = Math.max(80, Math.hypot(tg.px - h.px, tg.py - h.py) / 1400 * 1000);
       this.tweens.add({ targets: [a, glow], x: tg.px, y: tg.py - 24, duration: dur, onComplete: () => {
@@ -165,7 +165,7 @@ Object.assign(SPELL_FX, {
   const up = DungeonScene.prototype.update;
   DungeonScene.prototype.update = function (time, delta) { const r = up.call(this, time, delta); if (!this.paused) this.skillTick(delta / 1000 * (Settings.data.speed || 1)); return r; };
   const cr = DungeonScene.prototype.create;
-  DungeonScene.prototype.create = function (...a) { makeSkillAnims(this); return cr.apply(this, a); };
+  DungeonScene.prototype.create = function (...a) { makeSkillAnims(this); makePfxAnims(this); return cr.apply(this, a); };
   // Égide: +54% de defesa e devolve 10% do golpe a quem atacou
   const dv = DungeonScene.prototype.defenseValue;
   DungeonScene.prototype.defenseValue = function () { const v = dv.call(this); return (this.hero && this.hero.guardT > 0) ? v * 1.54 : v; };
