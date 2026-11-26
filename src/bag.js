@@ -31,7 +31,7 @@ Object.assign(DungeonScene.prototype, {
       [t("slot_ring"), 12, 182, 34, 34], [t("slot_legs"), 72, 156, 56, 48], [t("slot_light"), 154, 182, 34, 34],
       [t("slot_backpack"), 0, 230, 56, 46], [t("slot_boots"), 144, 230, 56, 46]];
     // detalhes do item sob o mouse (linha no rodapé da mochila)
-    const tip = T_(X + 30, Y + H - 34, t("bag_tip"), 12, COLORS.dim, { wordWrap: { width: W - 60 } });
+    const tip = T_(X + 30, Y + H - 34, t(TOUCH_UI ? "bag_tip_touch" : "bag_tip"), 12, COLORS.dim, { wordWrap: { width: W - 60 } });
     const showTip = (g, extra = "") => { const E = EQUIP[g.id], R = RARITY[g.r], low = this.hero.level < E.lvl, bad = !equipOk(g.id, this.vocId);
       tip.setText(`${gearName(g)} · ${R.name}${t("tip_level", { n: E.lvl })}${bad ? t("tip_wrong_voc") : ""}${extra}\n${equipStats(g)}${E.desc ? " — " + E.desc : ""}`).setColor(low || bad ? "#e08070" : R.color); };
     const _sn = n => { const m = { helmet: t("slot_helmet"), weapon: t("slot_weapon"), armor: t("slot_armor"), shield: t("slot_shield"), legs: t("slot_legs"), boots: t("slot_boots"), light: t("slot_light") }; return Object.fromEntries(Object.entries(m).map(([k, v]) => [v, k])); }; const slotOf = _sn();

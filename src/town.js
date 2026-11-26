@@ -383,7 +383,7 @@ class TownScene extends Phaser.Scene {
     ui.add(this.townTitle); this.showTitle(4200);
     this.goldT = txt(this, VIEW_W - 14, 14, `${VOCATIONS[this.vocId].name} · ◉ ${Save.gold(this.vocId)}`, 14, COLORS.gold).setOrigin(1, 0);
     ui.add(this.goldT);
-    ui.add(txt(this, 14, VIEW_H - 22, t("town_controls"), 11, COLORS.dim));
+    ui.add(txt(this, 14, VIEW_H - 22, t(TOUCH_UI ? "town_controls_touch" : "town_controls"), 12, COLORS.text));
     this.hint = txt(this, VIEW_W / 2, VIEW_H - 70, "", 16, COLORS.text).setOrigin(0.5);
     ui.add(this.hint);
     if (this.textures.exists("vignette")) ui.addAt(this.add.image(0, 0, "vignette").setOrigin(0).setAlpha(0.55), 0);

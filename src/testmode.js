@@ -60,7 +60,7 @@ function leaveTestMode() {
     const r = cr.apply(this, a);
     // abre espaço: os créditos descem um pouco
     for (const o of this.children.list) if (o.type === "Text" && o.text === t("credits_jowl")) o.setY(530);
-    button(this, VIEW_W / 2, 492, 260, "Teste", () => {
+    button(this, VIEW_W / 2, 488, 260, "Teste", () => {
       const c = this.add.container(0, 0).setDepth(50);
       c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 0.75).setOrigin(0).setInteractive());
       c.add(this.add.nineslice(VIEW_W / 2, VIEW_H / 2, "panel", null, 560, 250, 16, 16, 16, 16));

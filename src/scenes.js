@@ -8,10 +8,13 @@ const SFX = ["boss", "break", "chest", "explode", "gem", "hit", "hurt", "levelup
 
 // Cinzel: títulos, cidades, nomes e destaques (size >= 20 ou opts.title); Alegreya: o resto.
 const FONT_TITLE = "Cinzel, Alegreya, serif", FONT_TEXT = "Alegreya, serif";
+// texto corrido: no mínimo 11 px; em telas de toque (o jogo encolhe ~70% no celular) 25% maior, mínimo 13 px
+const TOUCH_UI = typeof navigator !== "undefined" && (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || navigator.maxTouchPoints > 1);
+function txtBody(size) { const v = size * 0.95; return TOUCH_UI ? Math.max(13, v * 1.25) : Math.max(11, v); }
 function txt(scene, x, y, s, size = 16, color = COLORS.text, opts = {}) {
   const title = opts.title !== undefined ? opts.title : size >= 20; opts = Object.assign({}, opts); delete opts.title;
   return scene.add.text(x, y, s, Object.assign({
-    fontFamily: title ? FONT_TITLE : FONT_TEXT, fontSize: Math.round(title ? size * 0.65 : size * 0.95) + "px", color, stroke: "#0c0608", strokeThickness: title ? Math.max(3, size / 4) : Math.max(2, size / 6),   // Alegreya é mais fina: um pouco maior e com contorno leve
+    fontFamily: title ? FONT_TITLE : FONT_TEXT, fontSize: Math.round(title ? size * 0.65 : txtBody(size)) + "px", color, stroke: "#0c0608", strokeThickness: title ? Math.max(3, size / 4) : Math.max(2, size / 6),   // Alegreya é mais fina: um pouco maior e com contorno leve
     resolution: 2,
   }, opts));
 }
@@ -247,7 +250,7 @@ class TitleScene extends Phaser.Scene {
       const [b2, t2] = button(this, VIEW_W / 2 + 120, VIEW_H / 2 + 56, 200, t("reset_no"), () => c.destroy(), 14);
       c.add([b1, t1, b2, t2]);
     }, 14);
-    txt(this, VIEW_W / 2, 515, t("credits_jowl"), 12, COLORS.dim).setOrigin(0.5);
+    txt(this, VIEW_W / 2, 528, t("credits_jowl"), 12, COLORS.dim).setOrigin(0.5);
     this.input.once("pointerdown", () => menuMusic(this));
     this.input.keyboard.once("keydown", () => menuMusic(this));
     this.input.keyboard.on("keydown-ENTER", () => this.scene.start("select"));

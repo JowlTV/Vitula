@@ -159,6 +159,9 @@
     toggle.title = t("touch_toggle"); toggle.setAttribute("aria-label", t("touch_toggle_aria"));
     toggle.style.pointerEvents = "auto";
     const wrap = document.createElement("div"); wrap.className = "toggle-wrap"; wrap.appendChild(toggle);
+    // some enquanto mochila, pausa, conversa ou outro painel estiver aberto (não fica por cima deles)
+    setInterval(() => { const g = window.game; if (!g) return; const s = g.scene.getScenes(true).find(x => x.hero); const busy = !!(s && (s.bagOpen || s.pauseBox || s.dialog || s.bestBox || s.testBox || s.attrBox || s.sewerCardBox));
+      wrap.style.visibility = busy ? "hidden" : ""; }, 200);
 
     root.append(layer, wrap);
     document.body.appendChild(root);

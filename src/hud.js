@@ -265,7 +265,7 @@ Object.assign(DungeonScene.prototype, {
     let st = {}; try { st = JSON.parse(localStorage.getItem("vitula_sk2") || "{}"); } catch (e) {}
     // padrão: mesma largura da Battle List, logo abaixo dela
     const b = this.bl, blH = b.min ? 14 : 16 + b.rows * 18 + 2;
-    const S = this.skS = Object.assign({ x: b.x, y: Math.min(VIEW_H - 140, b.y + blH + 6), min: false, open: true }, st), w = b.w;
+    const S = this.skS = Object.assign({ x: b.x, y: Math.min(VIEW_H - 140, b.y + blH + 6), min: TOUCH_UI, open: true }, st), w = b.w;   // no celular começa minimizada (os botões de toque ficam por cima)
     const win = this.add.container(S.x, S.y); ui.add(win);
     const bg = this.add.rectangle(0, 0, w, 10, 0x0c0a08, 0.8).setOrigin(0).setStrokeStyle(1, 0x5a4a30).setInteractive();
     const bar = this.add.rectangle(0, 0, w, 14, 0x2a2018, 1).setOrigin(0).setInteractive({ useHandCursor: true });
@@ -382,7 +382,7 @@ Object.assign(DungeonScene.prototype, {
     for (const pid of ["p0", "p1"]) {
       const id = potSlotId(this.vocId, +pid[1]), cd = (h.potCd && h.potCd[id]) || 0, ch = potCharge(d, +pid[1]);
       cover(pid, cd > 0 ? cd / POT_CD : 1 - ch, cd);
-      this.potCount[pid].setText(ch >= 1 ? "1" : Math.floor(ch * 100) + "%");
+      this.potCount[pid].setText(ch >= 1 ? "1" : ch <= 0 ? t("potion_empty") : Math.floor(ch * 100) + "%");   // 0 = vazia; enche matando monstros
       this.slotIcons[pid].setAlpha(ch >= 1 ? 1 : 0.4);
     }
     this.furyFill.setSize(Math.max(1, 136 * Math.min(1, h.fury / this.furyMax)), 6);
@@ -509,7 +509,7 @@ Object.assign(DungeonScene.prototype, {
   },
 
   togglePause() {
-    if (this.finished) return;
+    if (this.finished || this.sewerCardBox) return;   // a tecla que fecha a cena de entrada não abre a pausa por baixo dela
     if (this.pauseBox) { this.pauseBox.destroy(); this.pauseBox = null; this.paused = false; this.tweens.resumeAll(); return; }
     this.paused = true; this.tweens.pauseAll();
     this.pauseBox = this.pausePanel();

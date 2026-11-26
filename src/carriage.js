@@ -153,7 +153,7 @@ Object.assign(DungeonScene.prototype, {
     const v = this.vocId === "archer" ? "archer" : "knight", key = `sewer_${v}`;
     const show = () => {
       if (!this.textures.exists(key) || this.finished) return;
-      const c = this.add.container(0, 0).setDepth(40); this.uiLayer.add(c); this.paused = true;
+      const c = this.add.container(0, 0).setDepth(40); this.uiLayer.add(c); this.paused = true; this.sewerCardBox = c;
       c.add(this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x000000, 1).setOrigin(0));
       const P = animatedPanel(this, key, "", { rainA: 0 }); c.add(P.c);
       const torch = this.add.image((201 - 480) * P.k + VIEW_W / 2, (149 - 268) * P.k + VIEW_H / 2, "light").setTint(0xffa040).setBlendMode(Phaser.BlendModes.ADD).setScale(0.45).setAlpha(0.4);
@@ -164,7 +164,7 @@ Object.assign(DungeonScene.prototype, {
       this.tweens.add({ targets: P.c, scale: 1.06, duration: 2600, ease: "Sine.out" });
       this.tweens.add({ targets: c, alpha: 1, duration: 350 });
       this.tweens.add({ targets: tt, alpha: 1, y: VIEW_H - 78, duration: 700, delay: 300 });
-      const close = () => { if (c.closing) return; c.closing = true; this.tweens.add({ targets: c, alpha: 0, duration: 500, onComplete: () => { c.destroy(); this.paused = false; } }); };
+      const close = () => { if (c.closing) return; c.closing = true; this.tweens.add({ targets: c, alpha: 0, duration: 500, onComplete: () => { c.destroy(); this.sewerCardBox = null; if (!this.pauseBox) this.paused = false; } }); };
       setTimeout(close, 2300);   // fora do relógio da cena (que fica parado enquanto o jogo está pausado)
       this.input.once("pointerdown", close); this.input.keyboard.once("keydown", close);
     };
