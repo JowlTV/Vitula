@@ -121,6 +121,63 @@ class TownScene extends Phaser.Scene {
     return img;
   }
 
+  // vida da cidade (arte em assets/town2, feita com pixel-art-studio): placas, chamas, fumaça, estandartes, corvos
+  townLife() {
+    const anim = (k, n, fps, rep = -1) => { if (this.textures.exists(k) && !this.anims.exists(k)) { this.textures.get(k).setFilter(Phaser.Textures.FilterMode.NEAREST); this.anims.create({ key: k, frames: this.anims.generateFrameNumbers(k, { start: 0, end: n - 1 }), frameRate: fps, repeat: rep }); } return this.anims.exists(k); };
+    const PX = T / 16;   // 1 pixel da arte = 1/16 de casa (mesma densidade dos props)
+    // placas penduradas: presas na fachada, ao lado da porta, projetando para a calçada
+    const signAt = { smith: [0.14, 0.5], inn: [-0.3, 0.46], potions: [0.28, 0.5], depot: [0.3, 0.46], lodging: [-0.3, 0.5] };
+    for (const [k, [fx, fy]] of Object.entries(signAt)) {
+      const b = this.shopImg && this.shopImg[k]; if (!b || !this.textures.exists("sign_" + k)) continue;
+      const sg = this.add.image(b.x + fx * b.displayWidth, b.y - fy * b.displayHeight, "sign_" + k).setOrigin(0.04, 0.07).setScale(PX * 0.7).setDepth(b.depth + 1).setTint(TOWN_TINT);
+      if (fx < 0) sg.setFlipX(true).setOrigin(0.96, 0.07);
+      sg.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(sg);
+      this.tweens.add({ targets: sg, angle: { from: -2, to: 2 }, duration: 1800 + Math.random() * 600, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });   // balança com o vento
+    }
+    // chama dos lampiões
+    if (anim("town_flame", 6, 10)) for (const l of this.lamps) {
+      const f = this.add.sprite(l.x, l.y - l.displayHeight * 0.86, "town_flame").setOrigin(0.5, 1).setScale(PX * 0.7).setDepth(l.depth + 1);
+      f.play({ key: "town_flame", startFrame: Phaser.Math.Between(0, 5) }); this.world.add(f);
+    }
+    // fumaça das chaminés (forja mais carregada)
+    if (anim("town_smoke", 8, 6)) for (const [k, fx, a] of [["smith", 0.24, 0.75], ["inn", -0.24, 0.5], ["inn", 0.27, 0.45], ["potions", 0.27, 0.5]]) {
+      const b = this.shopImg && this.shopImg[k]; if (!b) continue;
+      const sm = this.add.sprite(b.x + fx * b.displayWidth, b.y - b.displayHeight * 0.97, "town_smoke").setOrigin(0.45, 1).setScale(PX * 1.3).setAlpha(a).setDepth(800001);
+      sm.play({ key: "town_smoke", startFrame: Phaser.Math.Between(0, 7) }); this.world.add(sm);
+    }
+    // estandartes da Deusa no largo, dos dois lados da estátua
+    if (anim("town_banner", 6, 7) && this.statue) for (const dx of [-1.6, 1.6]) {
+      const x = this.statue.x + dx * T, y = 7 * T + 6;
+      const pole = this.add.rectangle(x, y + T * 0.95, 3, T * 2.1, 0x2a262c).setOrigin(0.5, 1).setDepth(8 * T - 3); this.world.add(pole);
+      const bn = this.add.sprite(x, y - T * 0.9, "town_banner").setOrigin(0.04, 0).setScale(PX * 1.2).setDepth(8 * T - 3).setTint(TOWN_TINT);
+      bn.play({ key: "town_banner", startFrame: dx < 0 ? 0 : 3 }); this.world.add(bn); this.block(Math.floor(x / T), 7, 1, 1);
+    }
+    // corvos pousados nos telhados e no muro: voam quando o herói chega perto
+    this.crows = [];
+    if (anim("town_crow", 6, 10)) {
+      this.anims.create({ key: "crow_idle", frames: this.anims.generateFrameNumbers("town_crow", { start: 0, end: 1 }), frameRate: 1.5, repeat: -1 });
+      this.anims.create({ key: "crow_fly", frames: this.anims.generateFrameNumbers("town_crow", { start: 2, end: 5 }), frameRate: 14, repeat: -1 });
+      const spots = [];
+      for (const k of ["smith", "depot", "lodging"]) { const b = this.shopImg && this.shopImg[k]; if (b) spots.push([b.x + b.displayWidth * 0.1, b.y - b.displayHeight * 0.86]); }
+      spots.push([12 * T, 5.4 * T], [33 * T, 5.3 * T], [35.6 * T, 7.05 * T]);
+      spots.forEach(([x, y], i) => {
+        const c = this.add.sprite(x, y, "town_crow").setOrigin(0.5, 1).setScale(PX * 0.8).setDepth(800001).setFlipX(i % 2 === 1);
+        c.play({ key: "crow_idle", startFrame: i % 2 }); this.world.add(c); this.crows.push({ spr: c, x, y, gone: false });
+      });
+    }
+  }
+  crowsUpdate() {
+    const h = this.hero; if (!this.crows || !h || !h.spr) return;
+    for (const c of this.crows) {
+      if (c.gone) continue;
+      if ((c.wait && this.time.now < c.wait) || Math.abs(h.spr.x - c.x) > T * 1.8 || Math.abs(h.spr.y - c.y) > T * 5) continue;
+      c.gone = true; const dir = h.spr.x < c.x ? 1 : -1; c.spr.setFlipX(dir < 0).play("crow_fly");
+      this.tweens.add({ targets: c.spr, x: c.x + dir * T * 9, y: c.y - T * 6, alpha: 0, duration: 2400, ease: "Quad.easeIn", onComplete: () => {
+        // volta pousando depois de um tempo, quando o herói já se afastou
+        this.time.delayedCall(Phaser.Math.Between(9000, 16000), () => { c.spr.setPosition(c.x, c.y).setAlpha(1).play("crow_idle"); c.gone = false; c.wait = this.time.now + 4000; }); } });
+    }
+  }
+
   placeThings() {
     const A = (t, x, y, w, fd, solid) => this.art("k2_" + t, x, y, w, fd, solid);
     // peças do SpriteCook (vk_*); se a imagem faltar, usa a versão desenhada em código
@@ -132,11 +189,12 @@ class TownScene extends Phaser.Scene {
     // casebres pobres (3 variações do SpriteCook, alternadas); em código se faltarem
     let hv = 0; const H = (x, y, w) => { const k = "vk_casebre_" + (1 + hv++ % 3); return this.textures.exists(k) ? this.art(k, x + (w - 3) / 2, y, 3, 0) : A("v_ruin", x, y, w, 0); };
     // norte, da esquerda para a direita: Ferreiro, A Harpa Mágica, Loja de Poções (+ casas pobres)
-    F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); H(10, 6, 3); F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
+    this.shopImg = {}; const S = this.shopImg;
+    S.smith = F("vk_ferreiro", "v_smith", 5, 6, 3.66, 4); H(10, 6, 3); S.inn = F("vk_harpa_dancante", "v_inn", 14, 6, 4.82, 6); S.potions = F("vk_pocoes", "v_potion", 21, 6, 3.52, 3);
     // Depot no lado norte (antes ficava embaixo, quase escondido na tela)
-    F("vk_depot", "v_depot", 25, 6, 5.4, 5); if (this.textures.exists("vk_biblioteca")) this.art("vk_biblioteca", 30.6, 6, 4.1, 0); else H(31, 6, 3);
+    S.depot = F("vk_depot", "v_depot", 25, 6, 5.4, 5); if (this.textures.exists("vk_biblioteca")) this.art("vk_biblioteca", 30.6, 6, 4.1, 0); else H(31, 6, 3);
     // sul: Acomodação (+ casas pobres)
-    H(3, 14, 3); H(7, 14, 3); H(10, 14, 3); H(13, 14, 3); F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
+    H(3, 14, 3); H(7, 14, 3); H(10, 14, 3); H(13, 14, 3); S.lodging = F("vk_acomodacao", "v_lodging", 17, 14, 4.13, 5);
     H(23, 14, 4); H(28, 14, 3); H(32, 14, 4);
     // estátua da deusa no largo, com o feixe de luz; entrada do esgoto no fim da rua
     const st = this.add.image(39 * T, 7 * T + T - 2, "altar_oraculo").setOrigin(0.5, 1);   // 2× maior e uma casa acima, no alto do largo
@@ -170,7 +228,7 @@ class TownScene extends Phaser.Scene {
     }
     // lampiões: as únicas luzes quentes da rua
     this.lamps = [];
-    for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
+    for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [42, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
     // NPCs e lugares (na calçada, em frente de cada casa)
     this.zones.push({ name: t("zone_smith_enter"), kind: "smith", x: 5, y: 7, w: 4, h: 1 });
     this.zones.push({ name: t("tavern_title"), kind: "inn", x: 16, y: 7, w: 3, h: 1 });
@@ -238,6 +296,7 @@ class TownScene extends Phaser.Scene {
   zoomBy(d) { Settings.data.zoom = Math.round(Phaser.Math.Clamp(this.zoom() + d, 2, 5) * 10) / 10; Settings.save(); this.cameras.main.setZoom(this.zoom()); }
 
   update(_, dtMs) {
+    this.crowsUpdate();
     const dt = Math.min(0.05, dtMs / 1000), h = this.hero;
     if (this.interior) { this.interiorT = this.dialog ? 0 : this.interiorT + dt; if (this.interiorT > 0.35) { this.interior.destroy(); this.interior = null; } }
     if (this.dayTint) { this.skyUpdate(dt); this.miniUpdate(); }
@@ -866,11 +925,12 @@ class TownScene extends Phaser.Scene {
       this.world.add(f);
       this.tweens.add({ targets: f, x: f.x + W, duration: Phaser.Math.Between(40000, 70000), repeat: -1, onRepeat: () => { f.x = -600; } });
     }
-    // chama dos postes tremendo
+    // chama dos postes tremendo (sprite animado; a luz suave continua por cima)
+    this.townLife();
     for (const l of this.lamps) {
-      const fl = this.add.image(l.x, l.y - l.displayHeight * 0.88, "light").setTint(0xffc060).setBlendMode(Phaser.BlendModes.ADD).setScale(0.07, 0.09).setDepth(l.depth + 1);
+      const fl = this.add.image(l.x, l.y - l.displayHeight * 0.88, "light").setTint(0xffc060).setBlendMode(Phaser.BlendModes.ADD).setScale(0.05, 0.07).setAlpha(0.6).setDepth(l.depth + 2);
       this.world.add(fl);
-      this.tweens.add({ targets: fl, scaleX: 0.05, scaleY: 0.1, alpha: 0.7, duration: Phaser.Math.Between(90, 160), yoyo: true, repeat: -1 });
+      this.tweens.add({ targets: fl, scaleX: 0.04, scaleY: 0.08, alpha: 0.4, duration: Phaser.Math.Between(90, 160), yoyo: true, repeat: -1 });
     }
     // feixe de luz sobre a estátua: só depois do primeiro chefe; mais forte enquanto a bênção não foi recebida
     if (!Save.voc(this.vocId).firstBoss) return;

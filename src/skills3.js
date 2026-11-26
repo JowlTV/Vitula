@@ -65,7 +65,7 @@ Object.assign(SPELL_FX, {
     a.setRotation(ang).setFlipY(dx < 0).setBlendMode(Phaser.BlendModes.ADD).setDepth(100000); this.ents.add(a);   // para a esquerda: espelha para não ficar de cabeça para baixo
     // brilho forte: halo dourado + luz que clareia a tela enquanto o míssil voa
     const halo = this.add.image(a.x, a.y, "light").setTint(0xfff0b0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.54).setAlpha(0.57).setDepth(99999); this.ents.add(halo);
-    const L = { x: a.x, y: a.y, r: 2.7 * T, warm: true, ph: 1 }; this.lights.push(L);
+    const L = { x: a.x, y: a.y, r: 2.7 * T, warm: true, noGlow: true, ph: 1 };   // sem brilho fixo: a luz anda com o míssil this.lights.push(L);
     const fly = Math.max(70, Math.hypot(end.x - h.px, end.y - 30 - (h.py - 40)) / 1600 * 1000);   // velocidade constante (perto = chega rápido)
     this.tweens.add({ targets: [a, halo, L], x: end.x, y: end.y - 30, duration: fly, onComplete: () => {
       if (nm) { const b = this.add.sprite(end.x, end.y - 30, "fx_missile", "4").setScale(a.scaleX * 1.1).setRotation(ang).setFlipY(dx < 0).setBlendMode(Phaser.BlendModes.ADD).setDepth(100001); this.ents.add(b); b.play({ key: "fx_missile", startFrame: 4, frameRate: 10 }); b.once("animationcomplete", () => b.destroy()); }

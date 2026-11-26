@@ -51,6 +51,9 @@ class BootScene extends Phaser.Scene {
     // Karhyn nova (guia de estilo aprovado): prédios, objetos e autotiles de chão
     // a arquitetura de Karhyn é desenhada em código (towngfx.js); da arte gerada só fica o lampião
     this.load.image("k2_lamp", "assets/town2/k2_lamp.png");
+    // vida da cidade (pixel-art-studio): placas das lojas, chama dos lampiões, fumaça, corvos, estandartes
+    for (const n of ["smith", "potions", "inn", "depot", "lodging"]) this.load.image("sign_" + n, `assets/town2/sign_${n}.png`);
+    for (const [n, w, h] of [["flame", 8, 12], ["smoke", 14, 32], ["crow", 16, 12], ["banner", 12, 34]]) this.load.spritesheet("town_" + n, `assets/town2/town_${n}.png`, { frameWidth: w, frameHeight: h });
     for (const n of ["vk_ts_piso", "vk_ts_muro", "vk_ts_calcada", "vk_ts_grama", "vk_mural", "vk_goddess_art", "vk_ferreiro", "vk_harpa_dancante", "vk_pocoes", "vk_depot", "vk_acomodacao", "vk_portao_lateral", "vk_biblioteca", "vk_casebre_1", "vk_casebre_2", "vk_casebre_3", "vk_bueiro", "vk_esgoto", "vk_cobble", "k2_well", "vk_int_ferreiro", "vk_int_harpa", "vk_int_pocoes", "vk_int_depot", "vk_int_acomodacao",
       ...["barrel", "crate", "garbage", "cart", "laundry", "bench", "firewood", "wheel"].map(n => "vkp_" + n)]) this.load.image(n, `assets/town2/${n}.png`);   // tilesets da vila (SpriteCook, 32 px)
     this.load.image("tower_view", "assets/town/tower_view.png"); this.load.image("depot_counter", "assets/town/depot_counter.png");
