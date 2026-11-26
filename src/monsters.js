@@ -308,7 +308,8 @@ Object.assign(DungeonScene.prototype, {
     const res = (MONSTER_RES[m.kind] || {})[el] || 0;
     amount = Math.max(1, amount * (1 - res) - (el === "physical" && !pierce ? (m.data.arm || 0) : 0));
     if (res >= 1) amount = 0;
-    this.floatText(m.px + Phaser.Math.Between(-6, 6), m.py - 50 - (el === "physical" ? 0 : 10), res >= 1 ? "imune" : String(Math.round(amount)), el === "physical" ? COLORS.white : ELEMENTS[el].color);
+    { const fx = m.px + Phaser.Math.Between(-6, 6), fy = m.py - 50 - (el === "physical" ? 0 : 10);
+      if (res >= 1) this.floatText(fx, fy, "imune", COLORS.white, 11); else this.dmgText(fx, fy, amount, el === "physical" ? null : ELEMENTS[el].color); }
     if (!amount) return;
     m.awake = true; m.hp -= amount; m.flash = 1;
     if (m.hp <= 0) this.monsterDied(m);

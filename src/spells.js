@@ -45,11 +45,22 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
-  floatText(x, y, s, color) {
-    const t = txt(this, x, y, s, 10, color).setOrigin(0.5).setDepth(200000);
+  // dano nos monstros: 10% maior e com cor pela força do golpe
+  //   até 50 = branco · 51 a 120 = vermelho · 121 ou mais = amarelo (com um "pulo" no tamanho)
+  dmgText(x, y, amount, elColor) {
+    const n = Math.round(amount);
+    const col = n > 120 ? "#ffd84a" : n > 50 ? "#ff4a3a" : (elColor || COLORS.white);
+    const t = this.floatText(x, y, String(n), col, 11);
+    if (n > 120) { t.setScale(1.35); this.tweens.add({ targets: t, scale: 1, duration: 260, ease: "Back.easeOut" }); }
+    else if (n > 50) { t.setScale(1.15); this.tweens.add({ targets: t, scale: 1, duration: 200 }); }
+    return t;
+  },
+  floatText(x, y, s, color, size = 10) {
+    const t = txt(this, x, y, s, size, color).setOrigin(0.5).setDepth(200000);
     this.ents.add(t);
     this.tweens.add({ targets: t, y: y - 22, duration: 700 });
     this.tweens.add({ targets: t, alpha: 0, delay: 300, duration: 400, onComplete: () => t.destroy() });
+    return t;
   },
 });
 
