@@ -397,6 +397,7 @@ const TG = (() => {
       dualGrid(p, atlas.wall, TW, TH, (x, y) => G[y][x] === "w"); }
     // calçada e largo: tileset de lajes molhadas do SpriteCook por cima do desenho em código
     // (tileset de lajes desligado: calçadas em pedras irregulares desenhadas em código)
+    yards(p, TW, TH);   // quintais: hortas, cercas e trilhas (antes da passada orgânica, que envelhece tudo junto)
     weather(p, G, TW, TH);   // passada orgânica: tira o aspecto de grade e liga o chão aos outros mapas
     // amplia 2× para a casa de 64 px
     const out = document.createElement("canvas"); out.width = TW * T; out.height = TH * T;
@@ -406,6 +407,42 @@ const TG = (() => {
   }
 
 
+
+  // ---- quintais atrás e entre as casas: canteiros de horta, cercas de estaca, trilhas de terra e montes de lenha
+  function yards(p, TW, TH) {
+    const D = p.w / TW;
+    const soil = (x, y, w, h) => {   // canteiro: leiras de terra com pés de verdura (couve, nabo) e alguns tomates
+      const X = x * D, Y = y * D, Wd = w * D, Hd = h * D;
+      p.rect(X, Y, Wd, Hd, "#2a2016");
+      for (let yy = Y + 2; yy < Y + Hd - 3; yy += 8) {
+        p.rect(X + 2, yy + 3, Wd - 4, 3, "#4a3826"); p.rect(X + 2, yy + 3, Wd - 4, 1, "#5e4a32");   // leira
+        for (let xx = X + 4; xx < X + Wd - 5; xx += p.int(5, 7)) {
+          const big = p.r() < 0.6, g = ["#2e4a22", "#3e6030", "#527a3c", "#6a9448"];
+          p.rect(xx - 1, yy + 1, 4, 3, g[0]); p.rect(xx, yy, 2, 3, g[1]); if (big) { p.px(xx - 1, yy, g[2]); p.px(xx + 2, yy + 1, g[2]); p.px(xx, yy - 1, g[3]); }
+          if (p.r() < 0.12) { p.px(xx + 1, yy + 2, "#b8402a"); p.px(xx + 2, yy + 2, "#d8583a"); }
+        }
+      }
+    };
+    const post = (x, y) => { p.rect(x, y - 9, 2, 11, "#5a4228"); p.px(x, y - 9, "#8a6a44"); p.px(x + 1, y + 1, "#2a1e12"); };
+    const fenceH = (x, y, w) => { const Y = y * D + D - 2; p.rect(x * D, Y - 6, w * D, 1, "#7a5c3a"); p.rect(x * D, Y - 2, w * D, 1, "#6a4e30"); p.rect(x * D, Y + 1, w * D, 1, "rgba(0,0,0,0.35)");
+      for (let xx = x * D; xx <= (x + w) * D - 2; xx += 8) post(xx, Y); };
+    const fenceV = (x, y, h) => { const X = x * D; p.rect(X, y * D, 1, h * D, "#7a5c3a"); for (let yy = y * D + 9; yy < (y + h) * D; yy += 7) post(X, yy); };
+    const path = (x0, y0, x1, y1) => { // trilha de terra batida, larga e com bordas irregulares
+      const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)) * D;
+      for (let k = 0; k <= n; k += 2) { const t = k / n, x = (x0 + (x1 - x0) * t) * D + Math.sin(k * 0.05) * 2, y = (y0 + (y1 - y0) * t) * D;
+        const hw = 7 + Math.round(Math.sin(k * 0.3) * 1.5);
+        p.rect(x - hw, y, hw * 2, 2, "#3e3022"); p.rect(x - hw + 2, y, hw * 2 - 4, 2, p.r() < 0.2 ? "#4e3e2a" : "#44362a"); }
+    };
+    const wood = (x, y) => { const X = x * D, Y = y * D; for (let r = 0; r < 3; r++) for (let c = 0; c < 4 - r; c++) { const cx = X + c * 6 + r * 3, cy = Y - r * 4;
+      p.rect(cx, cy, 6, 4, "#4c3727"); p.rect(cx + 1, cy + 1, 3, 2, "#8a6a44"); p.px(cx + 2, cy + 1, "#a88456"); } };
+    // faixa norte (atrás das casas, linha 2) e faixa sul (linha 15)
+    for (const [x, w] of [[3, 4], [10, 3], [20, 3], [29, 4]]) { soil(x, 2, w, 1); fenceH(x, 2, w); }
+    for (const [x, w] of [[3, 3], [12, 4], [22, 3], [33, 4]]) { soil(x, 15, w, 1); fenceH(x, 15, w); }
+    // vãos entre as casas: trilha até o quintal, lenha e cerca lateral
+    for (const [x, y0, y1] of [[13.2, 6.6, 2.6], [19.2, 6.6, 2.6], [11.5, 11.4, 15.4], [20.6, 11.4, 15.4], [24.4, 11.4, 15.4]]) path(x, y0, x, y1);
+    for (const [x, y] of [[19.6, 5.5], [11.9, 13.2], [24.8, 13.4], [3.4, 15.6], [37.5, 2.8]]) wood(x, y);
+    fenceV(8.9, 2.2, 3.4); fenceV(25.6, 2.2, 3.4); fenceV(17.0, 12.4, 3.2); fenceV(27.4, 12.4, 3.2);
+  }
   // ---- passada orgânica (mesmo método da caverna): ruído de valor, sujeira, sulcos de roda, poças, umidade nos
   // muros e sombra no pé de tudo que é alto. Trabalha direto nos pixels do rascunho de 32 px/casa.
   function weather(p, G, TW, TH) {
