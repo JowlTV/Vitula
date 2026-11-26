@@ -561,7 +561,7 @@ Object.assign(DungeonScene.prototype, {
   hitFx(t, crit, h) {
     if (!t || !t.spr) return;
     const flip = h && h.px > t.px, y = t.spr.y;
-    if (crit) playPfx(this, "crit", t.px, y, { scale: 0.7, flip });
+    if (crit) playPfx(this, "crit", t.px, y, { scale: 0.6, flip });
     else playPfx(this, "hit", t.px + (flip ? 8 : -8), y - t.spr.displayHeight * 0.25, { flip, scale: 0.8 });
   },
   critMult() { return 1.8; },

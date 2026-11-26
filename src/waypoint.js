@@ -42,14 +42,13 @@ Object.assign(DungeonScene.prototype, {
     const p = this.cellPos(c.x, c.y), parts = wpSprite(this, p.x, p.y - T / 2 + 4);
     parts.forEach(o => { o.setDepth(p.y - T + 2); this.world.add(o); });
     this.wp = { x: c.x, y: c.y, parts };
-    this.lights.push({ x: p.x, y: p.y - T / 2, r: 2.5 * T, warm: false, ph: 1 });
+    this.lights.push({ x: p.x, y: p.y - T / 2, r: 2.5 * T, warm: false, noGlow: true, ph: 1 });   // sem o brilho laranja fixo: só a harpa azul pulsa
   },
   wpStep() {
     const f = this.floorN;
     if (!wpHas(this.vocId, this.regionId, f)) {
       wpAdd(this.vocId, this.regionId, f);
       this.msg(t("wp_on", { region: this.region.name, n: f })); sfx(this, "levelup", 0.3);
-      this.cameras.main.flash(200, 140, 190, 255);
     }
     this.msg(t("wp_press", { k: keyOf("interact") }));   // o menu abre só com E
   },
@@ -64,7 +63,6 @@ Object.assign(DungeonScene.prototype, {
     // guarda ouro e abates como no Recall, e parte
     this.finished = true;
     Save.addGold(this.vocId, Math.round(this.goldRun * this.stats.greed)); Save.addKills(this.killsByType); Save.save();
-    this.cameras.main.flash(250, 160, 200, 255);
     this.cameras.main.fadeOut(400, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => {
       if (r === "town") { this.registry.set("townSpawn", "waypoint"); this.scene.start("town"); return; }

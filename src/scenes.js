@@ -439,21 +439,8 @@ class IntroScene extends Phaser.Scene {
       const f = this.add.image(Phaser.Math.Between(-200, VIEW_W), Phaser.Math.Between(120, VIEW_H - 120), "light").setScale(3.2, 0.9).setTint(0xc8d0d8).setAlpha(0.06);
       this.tweens.add({ targets: f, x: f.x + VIEW_W + 400, duration: Phaser.Math.Between(26000, 42000), repeat: -1, onRepeat: () => { f.x = -400; } });
     }
-    // véu escuro para o texto ler bem (mais fechado embaixo, onde ele nasce)
-    const veil = this.add.graphics();
-    veil.fillStyle(0x050406, 0.42).fillRect(0, 0, VIEW_W, VIEW_H);
-    veil.fillGradientStyle(0x050406, 0x050406, 0x050406, 0x050406, 0.75, 0.75, 0, 0).fillRect(0, 0, VIEW_W, VIEW_H * 0.75);   // mais fechado em cima, atrás do texto
-    // texto normal na tela (sem o efeito Star Wars): título amarelo, texto branco; aparece e some esmaecendo,
-    // e dura o tempo do vídeo (10 s) — ou 16 s quando só há a imagem
-    const dur = this.vid ? 10000 : 16000;
-    const title = this.add.text(VIEW_W / 2, VIEW_H / 2 - 110, introTitle(), { fontFamily: FONT_TITLE, fontSize: "30px", color: "#e0bc60", stroke: "#0c0608", strokeThickness: 7, resolution: 2 })
-      .setOrigin(0.5).setAlpha(0).setShadow(0, 3, "#000000", 6, true, true);
-    const body = this.add.text(VIEW_W / 2, VIEW_H / 2 + 20, introText(), { fontFamily: FONT_TEXT, fontSize: "14px", color: "#ffffff", stroke: "#000000", strokeThickness: 4, resolution: 2,
-      align: "center", wordWrap: { width: 680 }, lineSpacing: 8 }).setOrigin(0.5).setAlpha(0).setShadow(0, 2, "#000000", 6, true, true);
-    title.setY(body.y - body.height / 2 - 40);   // título logo acima do bloco de texto
-    this.tweens.add({ targets: title, alpha: 1, duration: 900, delay: 300 });
-    this.tweens.add({ targets: body, alpha: 1, duration: 1200, delay: 800 });
-    this.tweens.add({ targets: [title, body], alpha: 0, duration: 1000, delay: dur - 1300 });
+    // só a imagem animada (o texto da chegada saiu): dura o vídeo (10 s) ou 8 s quando só há a imagem
+    const dur = this.vid ? 10000 : 8000;
     if (!this.vid) this.time.delayedCall(dur, () => this.finish());
     const skip = txt(this, VIEW_W - 16, VIEW_H - 14, t("intro_skip"), 11, COLORS.dim).setOrigin(1, 1).setAlpha(0);
     this.tweens.add({ targets: skip, alpha: 0.9, delay: 1500, duration: 800 });
