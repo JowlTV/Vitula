@@ -122,6 +122,74 @@ function testTextures(scene) {
   }
 }
 
+
+// ---------------------------------------------------------------- acampamento das amazonas (pixel art em código)
+// paleta da bíblia de arte: pedra clara da torre, vermelho #a02828, ouro velho #e0c070, couro, lona creme
+const AMZ = { outline: "#1a1210", red: "#a02828", redD: "#6a1c1c", redL: "#c84a3a", gold: "#e0c070", goldD: "#a8823a",
+  canvas: "#cfc2a0", canvasD: "#9a8c6c", canvasS: "#6e6450", wood: "#6a4a24", woodD: "#3a2814", woodL: "#8a6434",
+  metal: "#b8b8c0", metalD: "#6e7078", straw: "#c8a858", strawD: "#8a6e34", rope: "#a89060" };
+function amazonTextures(scene) {
+  const make = (key, W, H, draw) => {
+    if (scene.textures.exists(key)) return;
+    const ct = scene.textures.createCanvas(key, W, H), c = ct.getContext();
+    const R = (x, y, w, h, col) => { c.fillStyle = col; c.fillRect(x, y, w, h); };
+    draw(R); ct.refresh();
+  };
+  // tenda de lona com faixa vermelha e mastro com flâmula (48×44)
+  make("amz_tent", 48, 44, R => {
+    R(4, 40, 40, 3, "rgba(0,0,0,0.35)");                                   // sombra no chão
+    for (let i = 0; i < 26; i++) {                                         // corpo triangular: claro à esquerda
+      const w = 4 + i * 1.5, x = 24 - w / 2, y = 14 + i;
+      R(x, y, w / 2, 1, AMZ.canvas); R(24, y, w / 2, 1, AMZ.canvasD);
+      R(x - 1, y, 1, 1, AMZ.outline); R(x + w, y, 1, 1, AMZ.outline);
+    }
+    for (let i = 8; i < 26; i++) { const w = 4 + i * 1.5; R(24 - w / 2, 14 + i, w, 1, i === 16 || i === 17 ? AMZ.red : null || "rgba(0,0,0,0)"); }
+    R(5, 39, 38, 1, AMZ.outline);
+    R(20, 26, 8, 13, AMZ.canvasS); R(21, 27, 6, 12, "#2a2018"); R(23, 27, 1, 12, AMZ.canvasS);   // entrada aberta
+    R(23, 2, 2, 13, AMZ.woodD); R(25, 2, 1, 12, AMZ.wood);                                       // mastro
+    R(26, 3, 8, 4, AMZ.red); R(26, 7, 6, 1, AMZ.red); R(26, 3, 8, 1, AMZ.redL); R(30, 4, 2, 2, AMZ.gold);  // flâmula com a lança dourada
+    R(10, 38, 1, 3, AMZ.rope); R(37, 38, 1, 3, AMZ.rope);                                       // estacas
+  });
+  // suporte de lanças (32×40)
+  make("amz_rack", 32, 40, R => {
+    R(3, 37, 26, 3, "rgba(0,0,0,0.35)");
+    R(4, 14, 2, 24, AMZ.woodD); R(26, 14, 2, 24, AMZ.woodD); R(4, 14, 24, 2, AMZ.wood); R(4, 30, 24, 2, AMZ.wood);
+    for (const x of [8, 13, 18, 23]) {
+      R(x, 4, 1, 34, AMZ.woodL); R(x + 1, 4, 1, 34, AMZ.wood);             // haste
+      R(x - 1, 1, 3, 1, AMZ.metal); R(x, 0, 1, 1, AMZ.metal); R(x - 1, 2, 3, 2, AMZ.metalD); R(x, 2, 1, 2, AMZ.metal);  // ponta
+      R(x - 1, 6, 3, 1, AMZ.red);                                         // fita vermelha
+    }
+  });
+  // boneco de treino de palha com escudo (24×40)
+  make("amz_dummy", 24, 40, R => {
+    R(4, 37, 16, 3, "rgba(0,0,0,0.35)");
+    R(11, 22, 2, 16, AMZ.woodD);                                          // poste
+    R(4, 12, 16, 3, AMZ.wood);                                            // travessa dos braços
+    R(7, 10, 10, 14, AMZ.straw); R(7, 10, 3, 14, "#d8bc70"); R(14, 10, 3, 14, AMZ.strawD);  // tronco de palha
+    for (let y = 12; y < 24; y += 3) R(7, y, 10, 1, AMZ.rope);            // amarras
+    R(9, 3, 6, 7, AMZ.straw); R(9, 3, 2, 7, "#d8bc70"); R(13, 3, 2, 7, AMZ.strawD); R(10, 6, 1, 1, AMZ.outline); R(13, 6, 1, 1, AMZ.outline);  // cabeça
+    R(12, 15, 3, 2, AMZ.red); R(13, 17, 2, 2, AMZ.redD);                   // alvo pintado
+    R(1, 13, 5, 8, AMZ.red); R(1, 13, 5, 1, AMZ.redL); R(3, 15, 1, 4, AMZ.gold);   // escudo no braço
+  });
+  // estandarte alto das amazonas (20×56)
+  make("amz_banner", 20, 56, R => {
+    R(4, 53, 12, 3, "rgba(0,0,0,0.35)");
+    R(9, 2, 2, 52, AMZ.woodD); R(10, 2, 1, 52, AMZ.wood); R(8, 0, 4, 2, AMZ.gold);
+    R(3, 6, 14, 2, AMZ.goldD);                                            // travessa
+    R(4, 8, 12, 24, AMZ.red); R(4, 8, 3, 24, AMZ.redL); R(13, 8, 3, 24, AMZ.redD);
+    R(4, 32, 4, 3, AMZ.red); R(12, 32, 4, 3, AMZ.red); R(8, 32, 4, 1, AMZ.red);   // pontas recortadas
+    R(9, 11, 2, 15, AMZ.gold); R(8, 11, 4, 1, AMZ.gold); R(9, 10, 2, 1, "#f0d890"); R(7, 20, 6, 1, AMZ.goldD);  // lança e travessa (brasão)
+  });
+  // tambor de guerra (24×24)
+  make("amz_drum", 24, 24, R => {
+    R(2, 21, 20, 3, "rgba(0,0,0,0.35)");
+    R(3, 8, 18, 13, AMZ.redD); R(3, 8, 5, 13, AMZ.red);
+    for (let x = 3; x < 21; x += 4) R(x, 8, 1, 13, AMZ.gold);             // cordas douradas
+    R(3, 4, 18, 5, AMZ.canvas); R(3, 4, 18, 1, "#e8dcc0"); R(3, 8, 18, 1, AMZ.canvasS);   // couro de cima
+    R(2, 4, 1, 17, AMZ.outline); R(21, 4, 1, 17, AMZ.outline); R(3, 21, 18, 1, AMZ.outline);
+  });
+}
+
 // ---------------------------------------------------------------- montagem dos mapas de teste
 Object.assign(DungeonScene.prototype, {
   // grade aberta: 1 = chão, 0 = rocha (só a borda)
@@ -283,9 +351,35 @@ Object.assign(DungeonScene.prototype, {
     this.ents.add(tw);
     for (let x = 16; x <= 24; x++) for (let y = 4; y <= 9; y++) this.testBlock(x, y);
     this.lights.push({ x: p.x, y: p.y - 200, r: 6 * T, warm: true, ph: 0 });
-    for (const [x, y] of [[13, 12], [27, 12], [11, 19], [29, 19], [14, 25], [26, 25]]) this.addProp(x, y, this.textures.exists("pillar") ? "torch_stand" : "torch_stand");
     this.testLabel(20, 11.2, "Torre das Amazonas (esboço)", COLORS.gold, 16);
+    this.buildAmazonCamp();
     this.testPortal(20, 28, { region: "test_grounds", floor: 1 }, "Voltar ao Campo de Testes");
+  },
+
+  // acampamento das amazonas no pátio diante da torre (tudo desenhado em código: amazonTextures)
+  buildAmazonCamp() {
+    amazonTextures(this);
+    const put = (x, y, key, scale = 2, block = true) => {
+      const p = this.cellPos(x, y), s = this.add.image(p.x, p.y + 8, key).setOrigin(0.5, 1).setScale(scale).setDepth(p.y);
+      this.ents.add(s); if (block) this.testBlock(x, y, s); return s;
+    };
+    // estandartes ladeando a porta da torre
+    put(17, 11, "amz_banner"); put(23, 11, "amz_banner");
+    // tendas em semicírculo
+    for (const [x, y] of [[8, 15], [32, 15], [6, 21], [34, 21], [10, 26], [30, 26]]) {
+      put(x, y, "amz_tent", 3);
+      const p = this.cellPos(x, y); this.lights.push({ x: p.x, y: p.y - 40, r: 2.6 * T, warm: true, ph: x + y });   // lampião na entrada de cada tenda
+    }
+    // fogueira central com tambores
+    this.testFire(20, 18);
+    put(17, 18, "amz_drum"); put(23, 18, "amz_drum");
+    // área de treino: lanças e bonecos
+    put(12, 20, "amz_rack"); put(28, 20, "amz_rack");
+    for (const [x, y] of [[13, 23], [15, 23], [25, 23], [27, 23]]) put(x, y, "amz_dummy");
+    // tochas na entrada do acampamento
+    this.addProp(16, 27, "torch_stand"); this.addProp(24, 27, "torch_stand");
+    for (const [x, y] of [[16, 27], [24, 27]]) { const p = this.cellPos(x, y); this.lights.push({ x: p.x, y: p.y - 30, r: 3.5 * T, warm: true, ph: x }); }
+    this.testLabel(20, 14.2, "Acampamento das Amazonas", "#ff9a7a", 13);
   },
 
   // ---------------------------------------------------------------- baú com todos os itens
