@@ -139,6 +139,11 @@ for (const slot in EQUIP_ORDER) EQUIP_ORDER[slot].forEach((id, i, arr) => {
   if (slot === "weapon") E.atk = Math.round(v * (E.twoH ? 1.2 : 1)); else if (slot === "bow") E.atk = Math.round(v); else E.def = Math.round(v * 10) / 10;
   if (id === "sandals") E.def = 0.1;              // as mais fracas: compensam na regeneração
 });
+// preços seguem a ordem de força: os mesmos valores do slot, redistribuídos do mais barato ao mais caro
+for (const slot in EQUIP_ORDER) {
+  const ids = EQUIP_ORDER[slot], prices = ids.map(id => EQUIP[id].price || 0).sort((a, b) => a - b);
+  ids.forEach((id, i) => { EQUIP[id].price = prices[i]; });
+}
 
 // ---------------------------------------------------------------- raridade e aprimoramento
 // O mesmo item cai em raridades diferentes. No ferreiro, 2 itens da mesma raridade dão +1 ao escolhido.

@@ -323,6 +323,8 @@ Object.assign(DungeonScene.prototype, {
     let amount = 0;
     if (item === "gold") amount = Phaser.Math.Between(5, 12);
     if (item === "silver") amount = Phaser.Math.Between(2, 5);
+    // ouro acompanha o perigo: +20% por andar, ×1,6 na Encosta (tier 2) — os preços vão até 3.200
+    if (amount && this.region) amount = Math.round(amount * (1 + 0.2 * ((this.floorN || 1) - 1)) * (1 + 0.6 * Math.max(0, (this.region.tier || 1) - 1)));
     const k = key(x, y);
     this.pickups.set(k, { item, amount, spr, x, baseY: p.y + 6, meta });
     if (x === this.hero.x && y === this.hero.y) this.collect(k);
@@ -414,7 +416,7 @@ Object.assign(DungeonScene.prototype, {
     this.trainSkill(this.ranged ? "dodge" : "shield");   // o Arqueiro não usa escudo: treina a esquiva
     // bloqueio com o escudo (chance cresce com o Shield): nenhum dano
     if (Math.random() < this.blockChance()) { this.floatText(h.px, h.py - 66, t(this.ranged ? "dodged" : "blocked"), "#9fd0ff"); sfx(this, "hit", 0.2); return; }
-    const real = Math.max(1, amount - this.defenseValue());
+    const real = Math.max(1, amount * 0.25, amount - this.defenseValue());   // a defesa nunca anula mais que 75% do golpe
     h.hp -= real; h.flash = 1;
     this.addFury(4);
     this.floatText(h.px + Phaser.Math.Between(-6, 6), h.py - 66, String(Math.round(real)), COLORS.hurt);

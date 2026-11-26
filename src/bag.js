@@ -38,7 +38,7 @@ Object.assign(DungeonScene.prototype, {
     for (const [name, rx, ry, sw, sh] of slots) {
       const sx = ex + rx, sy = ey + ry, sl = slotOf[name], g = sl && d.equip[sl], id = g && g.id;
       c.add(this.add.nineslice(sx, sy, "slot", null, sw, sh, 4, 4, 4, 4).setOrigin(0));
-      T_(sx + sw / 2, sy + sh + 1, name, 9, COLORS.dim).setOrigin(0.5, 0);
+      { const lb = T_(sx + sw / 2, sy + sh + 1, name, 9, COLORS.dim).setOrigin(0.5, 0); lb.setScale(Math.min(1, 10 / lb.height, (sw + 18) / lb.width)); }   // cabe no vão até o próximo espaço
       const S = Math.min(sw, sh) + 4;
       // ícone-sombra do tipo de item (como no Tibia), só quando o espaço está vazio
       const ghostSlot = { [t("slot_amulet")]: "amulet", [t("slot_ring")]: "ring", [t("slot_backpack")]: "backpack" }[name] || sl;
