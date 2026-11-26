@@ -195,13 +195,6 @@ function weighted(table) {
   return table[0][0];
 }
 
-// Morte: quanto se perde conforme o número de bênçãos da Oráculo (0 a 3)
-const DEATH_LOSS = [
-  { xp: 0.80, equip: 1.00, gold: 0.25 },
-  { xp: 0.60, equip: 0.75, gold: 0.20 },
-  { xp: 0.35, equip: 0.35, gold: 0.10 },
-  { xp: 0.20, equip: 0.00, gold: 0.00 },
-];
 // Habilidades do Arqueiro (mesmas teclas 1–4; pagas com Mana).
 const ARCHER_SPELLS = {
   heal:   { name: "Exura", key: "G", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura (10 + 6 por magic level) × 85%." },

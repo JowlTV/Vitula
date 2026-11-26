@@ -361,13 +361,9 @@ class TownScene extends Phaser.Scene {
       this.say(t("tavern_title"), t("tavern_desc"), [[t("zone_board"), () => { this.closeDialog(); this.openBoard(); }], lore(t("tavern_title"), "inn", () => this.use(z)), [t("leave"), () => this.closeDialog()]]);
     } else if (z.kind === "lodging") {
       this.say(t("lodging_title"), t("lodging_desc"), [[t("lodging_rest"), () => { this.closeDialog(); this.cameras.main.fadeOut(300, 0, 0, 0); this.cameras.main.once("camerafadeoutcomplete", () => this.cameras.main.fadeIn(600, 0, 0, 0)); }], lore(t("lodging_title"), "lodging", () => this.use(z)), [t("leave"), () => this.closeDialog()]]);
-    } else if (z.kind === "hall" && !(d.bless > 0)) {
-      d.bless = 1; Save.save();
-      this.blessingVision(() => this.say(t("zone_oracle"), t("bless_first"), [[t("kneel_thank"), () => this.closeDialog()]]));
-    } else if (z.kind === "hall") {
-      this.say(t("zone_oracle"), t("bless_train_desc"),
-        [[t("pray"), () => this.blessingVision(() => this.say(t("zone_oracle"), t("bless_second"), [[t("stand_up"), () => this.closeDialog()]]))],
-         [t("talent_respec_opt"), () => { this.closeDialog(); this.openTalentRespec(); }],
+    } else if (z.kind === "hall") {   // estátua da Oráculo: só a redistribuição de talentos (as bênçãos saíram)
+      this.say(t("zone_oracle"), t("oracle_after"),
+        [[t("talent_respec_opt"), () => { this.closeDialog(); this.openTalentRespec(); }],
          [t("leave"), () => this.closeDialog()]]);
     }
   }

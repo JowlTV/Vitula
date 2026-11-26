@@ -561,25 +561,11 @@ Object.assign(DungeonScene.prototype, {
   },
 
 
-  // morte: perde experiência, equipamentos e ouro coletado, conforme as bênçãos da Oráculo
-  deathPenalty() {
-    const d = Save.voc(this.vocId), b = DEATH_LOSS[0];   // bênçãos removidas: penalidade única
-    // perde só parte da experiência do nível atual: o nível nunca cai (antes perdia % do total,
-    // o herói despencava vários níveis e "subia tudo de novo" em poucos abates)
-    const xpBefore = d.xpTotal || 0, cur = Save.levelInfo(xpBefore).xp;
-    d.xpTotal = Math.max(0, xpBefore - cur * b.xp);
-    const eqLost = [];
-    for (const slot of Object.keys(d.equip || {})) if (b.equip >= 1 || Math.random() < b.equip) { eqLost.push(slot); delete d.equip[slot]; }
-    const goldRaw = Math.round(this.goldRun * this.stats.greed);
-    const goldLost = Math.round(goldRaw * b.gold);
-    return { b, xpLost: Math.floor(xpBefore - d.xpTotal), eqLost: eqLost.length, goldLost, earned: goldRaw - goldLost, bless: d.bless || 0 };
-  },
-
   finish(victory) {
     if (this.finished) return;
     this.finished = true;
-    const pen = victory ? null : this.deathPenalty();
-    const earned = pen ? pen.earned : Math.round(this.goldRun * this.stats.greed);
+    // sem penalidade de morte (as bênçãos saíram; o sistema volta no futuro com outro papel): guarda todo o ouro da descida
+    const earned = Math.round(this.goldRun * this.stats.greed);
     Save.addGold(this.vocId, earned); Save.addKills(this.killsByType); Save.data.runs++;
     if (victory) {
       Save.data.cleared[this.regionId + ":" + this.vocId] = true;   // cada região registra a própria vitória
@@ -596,9 +582,8 @@ Object.assign(DungeonScene.prototype, {
       return;
     }
     const v = VOCATIONS[this.vocId];
-    const penText = pen ? t("death_pen", { bless: pen.bless, xp: Math.round(pen.b.xp * 100), eq: pen.b.equip >= 1 ? t("word_all") : Math.round(pen.b.equip * 100) + "%", gold: Math.round(pen.b.gold * 100), lost: pen.goldLost }) : "";
     this.panel(victory ? t("dungeon_won") : t("you_fell"),
-      t("run_summary", { d: Math.round(this.diff * 100), f: this.floorN, total: this.floors, lvl: this.hero.level, k: this.kills, g: earned, voc: v.name, bag: Save.gold(this.vocId) }) + penText,
+      t("run_summary", { d: Math.round(this.diff * 100), f: this.floorN, total: this.floors, lvl: this.hero.level, k: this.kills, g: earned, voc: v.name, bag: Save.gold(this.vocId) }),
       [[t("descend_again"), () => this.scene.restart()]]
         .concat([[t("back_to_city"), () => { this.registry.set("townSpawn", "sewer"); this.scene.start("town"); }]]));
     window.__vitulaEnd = { victory, floor: this.floorN, level: this.hero.level, kills: this.kills, earned };
