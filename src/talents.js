@@ -12,15 +12,15 @@ const fxU = (k, n = 1) => ({ [k]: U[k] * n });
 const WEB_SPEC = {
   knight: {
     arms: [
-      { name: "Lâmina", spine: "dmg", skills: { 0: "front", 4: "quake", 7: "aura", 10: "slasher", 13: "xcut" },
+      { name: "Lâmina", spine: "dmg", skills: { 6: "slasher", 9: "xcut" },
         clusters: [["Fio Mortal", "crit", { crit: 0.04, critDmg: 0.3 }], ["Executor", "dmg", { exec: 0.25, dmg: 0.02 }],
                    ["Ira Sagrada", "dmg", { dmg: 0.08 }], ["Mestre de Armas", "aspd", { aspd: 0.04, dmg: 0.04 }]],
         ks: { name: "Golpe Pesado", fx: { dmg: 0.4, aspd: -0.2 }, desc: "+40% de dano, −20% de velocidade de ataque." } },
-      { name: "Bastião", spine: "hp", skills: { 6: "guard" },
+      { name: "Bastião", spine: "hp", skills: { 3: "guard", 8: "aura" },
         clusters: [["Colosso", "hp", { hpDmg: 0.02, hp: 0.06 }], ["Espinhos", "armor", { thorns: 0.2, armor: 1 }],
                    ["Pele de Pedra", "taken", { taken: 0.05, hp: 0.03 }], ["Muralha", "block", { block: 0.05, armor: 1 }]],
         ks: { name: "Juramento de Ferro", flag: "iron", fx: {}, desc: "Chance de bloqueio dobrada; você nunca acerta crítico." } },
-      { name: "Fúria", spine: "aspd", skills: { 9: "kberserk" },
+      { name: "Fúria", spine: "aspd", skills: { 2: "quake", 7: "kberserk" },
         clusters: [["Sede de Sangue", "leech", { leech: 0.01, hp: 0.03 }], ["Ímpeto", "aspd", { aspd: 0.06, speed: 0.03 }],
                    ["Ódio", "lowHp", { lowHp: 0.15, dmg: 0.03 }], ["Fúria Ardente", "fury", { furyGain: 0.3, fury: 15 }]],
         ks: { name: "Sede Eterna", flag: "thirst", fx: {}, desc: "Roubo de vida ×3; Exura e poções curam só metade." } },
@@ -28,15 +28,15 @@ const WEB_SPEC = {
   },
   archer: {
     arms: [
-      { name: "Caça", spine: "crit", skills: { 9: "farsight" },
+      { name: "Caça", spine: "crit", skills: { 4: "frenzy", 8: "farsight" },
         clusters: [["Olho Morto", "crit", { crit: 0.04, critDmg: 0.3 }], ["Caçador de Chefes", "elite", { elite: 0.2, dmg: 0.03 }],
                    ["Golpe Final", "dmg", { exec: 0.25 }], ["Mão Ligeira", "aspd", { aspd: 0.06, crit: 0.02 }]],
         ks: { name: "Olhos de Carcará", flag: "carcara", fx: {}, desc: "Crítico garantido em alvo com a vida cheia; −15% de dano no resto." } },
-      { name: "Sagrado", spine: "dmg", skills: { 0: "holy", 4: "missile", 7: "volley", 10: "frenzy", 13: "barrier" },
+      { name: "Sagrado", spine: "dmg", skills: { 2: "missile", 6: "volley" },
         clusters: [["Radiância", "dmg", { dmg: 0.08 }], ["Fluxo Arcano", "mreg", { fury: 20, mreg: 0.8 }],
                    ["Luz Purificadora", "regen", { regen: 1.2, hp: 0.03 }], ["Chuva Constante", "aspd", { aspd: 0.05, dmg: 0.03 }]],
         ks: { name: "Luz Ardente", flag: "burn", fx: {}, desc: "Habilidades gastam vida em vez de mana; +25% de dano logo após cada uma." } },
-      { name: "Sobrevivência", spine: "hp", skills: { 6: "flee" },
+      { name: "Sobrevivência", spine: "hp", skills: { 3: "flee", 9: "barrier" },
         clusters: [["Evasão", "dodge", { dodge: 10, taken: 0.02 }], ["Sangue Frio", "leech", { leech: 0.01 }],
                    ["Segundo Fôlego", "regen", { regen: 1, lowHp: 0.1 }], ["Pés de Vento", "speed", { speed: 0.06, dodge: 4 }]],
         ks: { name: "Vento Errante", fx: { speed: 0.2, dodge: 15, hp: -0.2 }, desc: "+20% de velocidade de movimento e Dodge; −20% de vida máxima." } },
@@ -120,10 +120,13 @@ const OLD_UNLOCKS = { k_slash: ["front", 3], k_quake: ["quake", 3], k_wrath: ["a
 function talentRanks(voc) {
   const d = Save.voc(voc);
   if (!d.talents) d.talents = {};
-  if (d.talentsV !== 2) {   // migração única: devolve todos os pontos, guarda as magias já liberadas
+  if (d.talentsV !== 2 && d.talentsV !== 3) {   // migração da árvore antiga: guarda as magias já liberadas
     const legacy = [];
     for (const k in d.talents) { const u = OLD_UNLOCKS[k]; if (u && d.talents[k] >= u[1]) legacy.push(u[0]); }
-    d.legacySpells = legacy; d.talents = {}; d.talentsV = 2; try { Save.save(); } catch (e) {}
+    d.legacySpells = legacy; d.talents = {}; d.talentsV = 2;
+  }
+  if (d.talentsV === 2) {   // v3 (nov/26): habilidades espalhadas pelos 3 ramos e a 1ª grátis; devolve todos os pontos
+    d.talents = {}; d.talentsV = 3; try { Save.save(); } catch (e) {}
   }
   return d.talents;
 }
@@ -133,7 +136,7 @@ function talentFx(voc) {
   for (const id in r) { const n = w.byId[id]; if (!n) continue; for (const e in n.fx) out[e] = (out[e] || 0) + n.fx[e]; if (n.type === "keystone") out.ks[n.flag || n.id] = true; }
   return out;
 }
-// habilidade liberada? (Exura sempre; as outras pelo nó da teia + nível mínimo)
+// habilidade liberada? (Exura e a 1ª habilidade da classe sempre — não têm nó; as outras pelo nó da teia + nível mínimo)
 function spellUnlocked(voc, id, level) {
   const sp = vocSpells(voc)[id]; if (!sp) return false;
   if (level < (sp.level || 1)) return false;
