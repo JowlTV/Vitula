@@ -329,23 +329,23 @@ const TG = (() => {
     for (let ty = 0; ty < TH; ty++) for (let tx = 0; tx < TW; tx++) {
       const t = G[ty][tx], x0 = tx * D, y0 = ty * D;
       if (t === "d") {   // terra batida
-        p.rect(x0, y0, D, D, "#3e3022");
+        p.rect(x0, y0, D, D, "#3a2e22");
         for (let i = 0; i < 90; i++) p.rect(x0 + p.int(0, D - 1), y0 + p.int(0, D - 1), p.int(1, 3), 1, p.pick(["#352a1e", "#4a3a28", "#55432e", "#3a2c20"]));
         for (let i = 0; i < 3; i++) p.rect(x0 + p.int(1, D - 3), y0 + p.int(1, D - 3), 2, 1, "#6a5a44");
-        if (p.r() < 0.24) {   // poça de chuva: escura, com o céu frio refletido e um brilho
+        if (p.r() < 0.06) {   // poça de chuva: escura, com o céu frio refletido e um brilho
           const cx = x0 + p.int(9, D - 9), cy = y0 + p.int(8, D - 8), rx = p.int(4, 8), ry = p.int(2, 4);
           p.ellipse(cx, cy, rx + 1, ry + 1, "#2a2218"); p.ellipse(cx, cy, rx, ry, "#1c2430"); p.rect(cx - rx + 2, cy - 1, Math.max(2, rx - 1), 1, "#3e4c60"); p.px(cx + 1, cy, "#8a9ab0");
         }
-      } else if (t === "c") {   // paralelepípedos irregulares: fileiras de pedras de tamanhos variados, juntas desencontradas
-        p.rect(x0, y0, D, D, "#29292d");
+      } else if (t === "c" || t === "s") {   // paralelepípedos irregulares (também nas calçadas): fileiras de pedras de tamanhos variados, juntas desencontradas
+        p.rect(x0, y0, D, D, "#242220");
         for (let by = y0, row = 0; by < y0 + D; row++) {
           const rh = p.int(5, 7); let bx = x0 - p.int(0, 5);
           while (bx < x0 + D) {
-            const bw = p.int(5, 9), col = p.pick(["#47474c", "#4f4f55", "#56565c", "#424247", "#4c4b47", "#52504b"]);
+            const bw = p.int(5, 9), col = p.pick(["#4a4744", "#524e49", "#5a554e", "#45423f", "#4f4a42", "#57524a", "#3f3d3c"]);
             const xa = Math.max(x0, bx + 1), xb = Math.min(x0 + D, bx + bw - 1), yb = Math.min(y0 + D, by + rh - 1);
             if (xb - xa >= 2 && yb - by >= 2) {
               p.rect(xa, by + 1, xb - xa, yb - by - 1, col); p.rect(xa + 1, by, xb - xa - 2, 1, col);
-              p.rect(xa + 1, by + 1, xb - xa - 2, 1, "#64646a"); p.rect(xa, yb - 1, xb - xa, 1, "#38383d");
+              p.rect(xa + 1, by + 1, xb - xa - 2, 1, "#6c665c"); p.rect(xa, yb - 1, xb - xa, 1, "#2e2c2a");
             }
             bx += bw;
           }
@@ -367,7 +367,7 @@ const TG = (() => {
       }
     }
     // tilesets do SpriteCook por cima do desenho em código: rua (terra + paralelepípedo) e muro
-    if (atlas.street) dualGrid(p, atlas.street, TW, TH, (x, y) => G[y][x] === "d" || G[y][x] === "c", true);   // a peça cheia não é uniforme: miolo fica com a terra em código
+    // (tileset da rua desligado: a terra e as pedras em código, com a passada orgânica, combinam com os outros mapas)   // a peça cheia não é uniforme: miolo fica com a terra em código
     // bordas: meio-fio claro onde pedra encontra grama/terra, tufos de grama avançando, sombra fina
     const paved = t => t === "c" || t === "p" || t === "s";
     for (let ty = 0; ty < TH; ty++) for (let tx = 0; tx < TW; tx++) {
@@ -396,7 +396,8 @@ const TG = (() => {
     if (atlas.wall) { for (let ty = 0; ty < TH; ty++) for (let tx = 0; tx < TW; tx++) if (G[ty][tx] === "w") p.rect(tx * D, ty * D, D, D, "#16201f");
       dualGrid(p, atlas.wall, TW, TH, (x, y) => G[y][x] === "w"); }
     // calçada e largo: tileset de lajes molhadas do SpriteCook por cima do desenho em código
-    if (atlas.pave) dualGrid(p, atlas.pave, TW, TH, (x, y) => G[y][x] === "s" || G[y][x] === "c");
+    // (tileset de lajes desligado: calçadas em pedras irregulares desenhadas em código)
+    weather(p, G, TW, TH);   // passada orgânica: tira o aspecto de grade e liga o chão aos outros mapas
     // amplia 2× para a casa de 64 px
     const out = document.createElement("canvas"); out.width = TW * T; out.height = TH * T;
     const oc = out.getContext("2d"); oc.imageSmoothingEnabled = false; oc.drawImage(p.cv, 0, 0, out.width, out.height);
@@ -404,6 +405,57 @@ const TG = (() => {
     return out;
   }
 
+
+  // ---- passada orgânica (mesmo método da caverna): ruído de valor, sujeira, sulcos de roda, poças, umidade nos
+  // muros e sombra no pé de tudo que é alto. Trabalha direto nos pixels do rascunho de 32 px/casa.
+  function weather(p, G, TW, TH) {
+    const W = p.w, H = p.h, img = p.c.getImageData(0, 0, W, H), d = img.data;
+    const at = (x, y) => (x < 0 || y < 0 || x >= TW || y >= TH) ? "w" : G[y][x];
+    let s = 9137; const rnd = () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
+    const mk = S => { const gw = Math.ceil(W / S) + 2, gh = Math.ceil(H / S) + 2, v = []; for (let k = 0; k < gw * gh; k++) v.push(rnd());
+      const sm = t => t * t * (3 - 2 * t);
+      return (x, y) => { const gx = x / S, gy = y / S, ix = Math.floor(gx), iy = Math.floor(gy), fx = sm(gx - ix), fy = sm(gy - iy), q = (a, b) => v[(iy + b) * gw + ix + a];
+        return (q(0, 0) * (1 - fx) + q(1, 0) * fx) * (1 - fy) + (q(0, 1) * (1 - fx) + q(1, 1) * fx) * fy; }; };
+    const nBig = mk(40), nMid = mk(11), nFine = mk(3);
+    // distância (em casas) até o muro / parte alta mais próxima → sombra de oclusão
+    const wallD = new Float32Array(TW * TH).fill(9);
+    for (let y = 0; y < TH; y++) for (let x = 0; x < TW; x++) for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++)
+      if (at(x + dx, y + dy) === "w") wallD[y * TW + x] = Math.min(wallD[y * TW + x], Math.hypot(dx, dy));
+    const D = W / TW;
+    const mix = (i, r, g, b, a) => { d[i] += (r - d[i]) * a; d[i + 1] += (g - d[i + 1]) * a; d[i + 2] += (b - d[i + 2]) * a; };
+    const mul = (i, k) => { d[i] *= k; d[i + 1] *= k; d[i + 2] *= k; };
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, tx = Math.floor(x / D), ty = Math.floor(y / D), t = at(tx, ty);
+      const nb = nBig(x, y), nm = nMid(x, y), nf = nFine(x, y);
+      // variação de tom em grandes manchas (quebra a repetição dos tilesets)
+      mul(i, 0.86 + nb * 0.22 + (nf - 0.5) * 0.08);
+      if (t === "d") {
+        // rua: lama mais escura nas bordas, sulcos das rodas, cascalho e poças rasas refletindo o céu frio
+        const ly = (y - 8 * D) / (3 * D);                                     // 0..1 dentro da rua (linhas 8 a 10)
+        const rw = 0.05 + (nm - 0.5) * 0.03, r1 = Math.abs(ly - 0.36 - (nb - 0.5) * 0.06), r2 = Math.abs(ly - 0.64 - (nb - 0.5) * 0.06);
+        if ((r1 < rw || r2 < rw) && nm > 0.32) { mix(i, 30, 23, 16, 0.32 + (nf - 0.5) * 0.2); if (Math.min(r1, r2) < rw * 0.35 && nf > 0.55) mix(i, 40, 52, 66, 0.45); }   // sulcos das rodas, com água no fundo
+        else if (Math.min(r1, r2) < rw * 1.7 && nm > 0.32) mix(i, 72, 60, 46, 0.16);   // borda levantada do sulco
+        if (ly < 0.12 || ly > 0.88) mix(i, 40, 34, 24, 0.35 * (1 - Math.min(ly, 1 - ly) / 0.12));
+        if (nb > 0.66 && nm > 0.5) { const deep = Math.min(1, (nb - 0.66) * 6 * (nm - 0.4)); mix(i, 24, 32, 44, 0.3 + deep * 0.55);   // poça larga
+          if (deep > 0.5 && nf > 0.7) mix(i, 110, 128, 150, 0.35); }
+        else if (nf > 0.82) mix(i, 92, 80, 62, 0.5);                           // cascalho
+      } else if (t === "w") {
+        // muros: manchas de umidade escorrendo e musgo na metade de baixo de cada casa
+        const fy = (y % D) / D;
+        if (nm > 0.6 && fy > 0.3) mix(i, 20, 30, 28, (nm - 0.6) * 1.4 * fy);
+        if (nf > 0.78 && fy > 0.65 && nb > 0.4) mix(i, 52, 70, 40, 0.55);
+      } else if (t === "g") {
+        // grama dos quintais: trilhas de terra batida e lama, mais escuras perto dos muros
+        if (nb < 0.3 && nm < 0.5) mix(i, 44, 36, 26, (0.3 - nb) * 2.2);
+      } else if (t === "s" || t === "c") {
+        if (nm > 0.68) mix(i, 46, 60, 38, (nm - 0.68) * 1.6 * (nf > 0.5 ? 1 : 0.4));   // musgo entre as lajes
+        if (nm < 0.2 && nb > 0.5) mix(i, 26, 32, 44, 0.45);                            // laje molhada
+      }
+      // sombra de oclusão no pé dos muros
+      if (t !== "w") { const wd = wallD[ty * TW + tx] - 1 + ((y % D) / D) * 0; if (wd < 1.2) mul(i, 0.72 + 0.23 * Math.min(1, wd / 1.2)); }
+    }
+    p.c.putImageData(img, 0, 0);
+  }
   // registra (ou substitui) a textura de uma peça com a largura em casas usada no mapa
   function make(scene, key, kind, wTiles) {
     const k = key || "k2_" + kind;

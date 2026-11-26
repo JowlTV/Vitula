@@ -158,6 +158,15 @@ class TownScene extends Phaser.Scene {
     P("laundry", "laundry", 27, 11, 1.1, 1.4, 0); P("cart", "cart", 25, 11, 0.95, 1.5); P("barrel", "barrels", 16, 11, 0.6, 0.8); P("crate", "crates", 31, 11, 0.75, 0.8);
     P("bench", "bench", 34, 7, 0.95, 0.85); P("barrel", "barrels", 42, 7, 0.6, 0.8);
     P("firewood", "crates", 13, 7, 0.8, 0.8); P("firewood", "crates", 22, 11, 0.8, 0.8); P("barrel", "barrels", 35, 11, 0.6, 0.8);
+    // grupos de objetos junto às portas e becos (em grupos, não em fila) — dá vida à rua sem bloquear o caminho
+    for (const [n, code, x, y, w, wc, fd] of [
+      ["crate", "crates", 8.5, 6, 0.7, 0.8, 0], ["barrel", "barrels", 9.2, 6.2, 0.55, 0.8, 0],          // ferreiro: carvão e ferro
+      ["garbage", "crates", 12.6, 6, 0.75, 0.8, 0], ["barrel", "barrels", 19.4, 6, 0.55, 0.8, 0],       // beco e fundo da Harpa
+      ["crate", "crates", 20.1, 6.2, 0.65, 0.8, 0], ["bench", "bench", 15.2, 7, 0.9, 0.85, 0],
+      ["garbage", "crates", 31.5, 6, 0.75, 0.8, 0], ["firewood", "crates", 30.6, 6.1, 0.75, 0.8, 0],
+      ["garbage", "crates", 9.4, 12, 0.75, 0.8, 0], ["crate", "crates", 26.6, 12, 0.65, 0.8, 0], ["garbage", "crates", 35.4, 12, 0.75, 0.8, 0]]) {
+      if (this.textures.exists("vkp_" + n)) this.art("vkp_" + n, x + (1 - w) / 2, y, w, fd, false);
+    }
     // lampiões: as únicas luzes quentes da rua
     this.lamps = [];
     for (const [x, y] of [[4, 7], [10, 11], [13, 7], [20, 11], [24, 7], [29, 11], [33, 11], [37, 11], [41, 7]]) this.lamps.push(A("lamp", x, y, 0.55, 1));
@@ -426,7 +435,9 @@ class TownScene extends Phaser.Scene {
     this.dayTint.setFillStyle(Phaser.Display.Color.GetColor(r * rain | 0, g * rain | 0, b * rain | 0), 1);
     // postes acendem ao anoitecer, com a chama tremendo
     const now = this.time.now / 1000;
-    for (const gl of this.lampGlows) gl.setAlpha((0.12 + 0.55 * d) * (0.85 + 0.15 * Math.sin(now * 9 + gl.ph))).setScale(0.45 + 0.25 * d);
+    for (const gl of this.lampGlows) { const fl = 0.85 + 0.15 * Math.sin(now * 9 + gl.ph);
+      if (gl.bsx) gl.setAlpha(gl.ba * (0.55 + 0.7 * d) * fl).setScale(gl.bsx * (0.85 + 0.25 * d), gl.bsy * (0.85 + 0.25 * d));
+      else gl.setAlpha((0.12 + 0.55 * d) * fl).setScale(0.45 + 0.25 * d); }
     // luminária do herói: lampião (gasta óleo quando escurece) ou Pingente da Deusa
     const dv = Save.voc(this.vocId), lg = dv.equip && dv.equip.light && EQUIP[dv.equip.light.id], h = this.hero;
     if (!this.textures.exists("lamp_soft")) {   // halo suave: some de verdade na borda e não estoura no centro
@@ -831,6 +842,14 @@ class TownScene extends Phaser.Scene {
     for (const l of this.lamps) {
       const g = this.add.image(l.x, l.y - l.displayHeight * 0.86, "light").setTint(0xffa040).setBlendMode(Phaser.BlendModes.ADD).setScale(0.5).setAlpha(0.35).setDepth(800001);
       this.world.add(g); this.lampGlows.push(g); g.ph = Math.random() * 10;
+      // poça de luz quente no chão, embaixo do lampião
+      const pool = this.add.image(l.x, l.y - 6, "light").setTint(0xff9a40).setBlendMode(Phaser.BlendModes.ADD).setScale(1.6, 0.7).setAlpha(0.28).setDepth(800001);
+      this.world.add(pool); this.lampGlows.push(pool); pool.ph = g.ph; pool.ba = 0.42; pool.bsx = 1.6; pool.bsy = 0.7;
+    }
+    // luz que vaza das portas e janelas acesas para a calçada (forja, taverna, poções, estalagem)
+    for (const [x, y, col, a, sx] of [[6.5, 7.2, 0xff6a20, 0.4, 1.6], [16.5, 7.2, 0xffb050, 0.34, 1.8], [22.5, 7.2, 0xffc060, 0.26, 1.3]] ) {
+      const sp = this.add.image(x * T, y * T, "light").setTint(col).setBlendMode(Phaser.BlendModes.ADD).setScale(sx, 0.75).setAlpha(a).setDepth(800001);
+      this.world.add(sp); sp.ph = x; sp.ba = a; sp.bsx = sx; sp.bsy = 0.75; this.lampGlows.push(sp);
     }
     // chuva: gotas na tela inteira (camada da interface) e respingos no chão
     if (!this.textures.exists("rain_drop")) { const gr = this.make.graphics({ add: false }); gr.fillStyle(0xffffff).fillRect(0, 0, 1, 12); gr.generateTexture("rain_drop", 1, 12); gr.destroy(); }
