@@ -121,6 +121,15 @@ Object.assign(DungeonScene.prototype, {
     const pk = VOCATIONS[this.vocId].portrait;
     if (pk && this.textures.exists(pk)) ui.add(this.add.image(PX + PS / 2, PY + PS / 2, pk).setDisplaySize(PS, PS));
     for (const [rx, ry] of [[PX - 1, PY - 1], [PX + PS - 2, PY - 1], [PX - 1, PY + PS - 2], [PX + PS - 2, PY + PS - 2]]) { fr.fillStyle(0x6a6470, 1).fillRect(rx, ry, 3, 3); }
+    // selo de pontos de talento no canto do retrato: dourado, pulsando, clicável (abre a árvore)
+    { const S = TOUCH_UI ? 30 : 24, bxx = PX + PS - 2, byy = PY + PS - 2, b = this.add.container(bxx, byy);
+      const glow = this.add.circle(0, 0, S * 0.85, 0xffc850, 0.35).setBlendMode(Phaser.BlendModes.ADD);
+      const disc = this.add.circle(0, 0, S / 2, 0x3a2810, 1).setStrokeStyle(2, 0xffd060);
+      const tx = txt(this, 0, 0, "+1", 12, "#ffe8a0").setOrigin(0.5);
+      b.add([glow, disc, tx]); ui.add(b); b.setVisible(false);
+      disc.setInteractive({ useHandCursor: true }).on("pointerdown", () => { if (this.buildAttrs && !this.attrBox) this.buildAttrs(); });
+      this.tweens.add({ targets: glow, scale: 1.35, alpha: 0.08, duration: 750, yoyo: true, repeat: -1 });
+      this.talentBadge = { b, tx, n: -1 }; }
     const bx = PX + PS + 16, cx = bx + 98;
     iron(bx, 9, 196, 12);
     this.hpFill = this.add.rectangle(bx, 9, 196, 12, 0x7a1010).setOrigin(0); ui.add(this.hpFill);
@@ -380,6 +389,10 @@ Object.assign(DungeonScene.prototype, {
       this.slotLocks[s].setVisible(locked);
       this.slotIcons[s].setAlpha(locked ? 0.25 : (h.fury >= sp.fury ? 1 : 0.45));
     }
+    if (this.talentBadge && this.talentPoints) { const n = this.talentPoints(), B = this.talentBadge;
+      if (n !== B.n) { B.n = n; B.b.setVisible(n > 0); B.tx.setText("+" + n); }
+      // lembrete a cada 2 min com 3+ pontos sobrando
+      const now = this.time.now; if (n >= 3 && now - (B.remind || now - 60000) >= 120000) { B.remind = now; this.msg(t("talent_remind", { n })); } else if (n < 3) B.remind = 0; }
     const d = Save.voc(this.vocId);
     for (const pid of ["p0", "p1"]) {
       const id = potSlotId(this.vocId, +pid[1]), cd = (h.potCd && h.potCd[id]) || 0, ch = potCharge(d, +pid[1]);
@@ -510,6 +523,14 @@ Object.assign(DungeonScene.prototype, {
     return c;
   },
 
+  // aviso grande no alto da tela (novo ponto de talento etc.)
+  bigNotice(text) {
+    if (this.noticeT) this.noticeT.destroy();
+    const o = txt(this, VIEW_W / 2, 96, text, 22, "#ffe08a", { title: true }).setOrigin(0.5).setAlpha(0).setScale(0.8);
+    this.uiLayer.add(o); this.noticeT = o; sfx(this, "levelup", 0.25);
+    this.tweens.add({ targets: o, alpha: 1, scale: 1, duration: 250, ease: "Back.easeOut" });
+    this.tweens.add({ targets: o, alpha: 0, delay: 2800, duration: 500, onComplete: () => { o.destroy(); if (this.noticeT === o) this.noticeT = null; } });
+  },
   togglePause() {
     if (this.finished || this.sewerCardBox) return;   // a tecla que fecha a cena de entrada não abre a pausa por baixo dela
     if (this.pauseBox) { this.pauseBox.destroy(); this.pauseBox = null; this.paused = false; this.tweens.resumeAll(); return; }

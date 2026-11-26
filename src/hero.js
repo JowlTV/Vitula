@@ -611,6 +611,7 @@ Object.assign(DungeonScene.prototype, {
       h.xp -= this.xpNext(); h.level++; h.maxHp += 10; h.hp = h.maxHp; // subir de nível enche a vida
       this.floatText(h.px, h.py - 84, t("level_up_float", { n: h.level }), COLORS.gold);
       this.msg(t("level_up_talent", { n: h.level }));
+      if (this.bigNotice) this.bigNotice(t("talent_point_notice"));
       { const dv = Save.voc(this.vocId); potCharge(dv, 1); dv.charges[1] = 1; if (VOCATIONS[this.vocId].mana) h.fury = this.furyMax; Save.save(); }   // subir de nível também enche a mana
       sfx(this, "levelup", 0.4);
       this.checkPromotion();

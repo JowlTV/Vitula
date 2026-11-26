@@ -971,6 +971,8 @@ I18N.pt = {
   bag_tip_touch: "Toque num item para ver os detalhes e vestir ou tirar.",
   town_controls_touch: "Use o direcional e os botões da tela · pinça: zoom",
   potion_empty: "vazia",
+  talent_point_notice: "Novo ponto de talento — U",
+  talent_remind: "Você tem {n} pontos de talento sobrando — aperte U ou toque no selo do retrato.",
 };
 
 // ── Inglês ──────────────────────────────────────────────────────
@@ -1887,6 +1889,8 @@ I18N.en = {
   bag_tip_touch: "Tap an item to see details and equip or remove it.",
   town_controls_touch: "Use the on-screen pad and buttons · pinch: zoom",
   potion_empty: "empty",
+  talent_point_notice: "New talent point — U",
+  talent_remind: "You have {n} unspent talent points — press U or tap the portrait badge.",
 };
 
 // ── Espanhol ────────────────────────────────────────────────────
@@ -2727,6 +2731,8 @@ I18N.es = {
   bag_tip_touch: "Toca un objeto para ver los detalles y equiparlo o quitarlo.",
   town_controls_touch: "Usa el pad y los botones de la pantalla · pellizca: zoom",
   potion_empty: "vacía",
+  talent_point_notice: "Nuevo punto de talento — U",
+  talent_remind: "Tienes {n} puntos de talento sin usar — pulsa U o toca la insignia del retrato.",
 };
 
 // ── Alemão ──────────────────────────────────────────────────────
@@ -3567,6 +3573,8 @@ I18N.de = {
   bag_tip_touch: "Tippe auf einen Gegenstand für Details und zum An- oder Ablegen.",
   town_controls_touch: "Nutze Steuerkreuz und Bildschirmtasten · zwei Finger: Zoom",
   potion_empty: "leer",
+  talent_point_notice: "Neuer Talentpunkt — U",
+  talent_remind: "Du hast {n} ungenutzte Talentpunkte — drücke U oder tippe auf das Abzeichen am Porträt.",
 };
 
 // ── Polonês ─────────────────────────────────────────────────────
@@ -4406,6 +4414,8 @@ I18N.pl = {
   bag_tip_touch: "Dotknij przedmiotu, aby zobaczyć szczegóły i go założyć lub zdjąć.",
   town_controls_touch: "Użyj pada i przycisków na ekranie · uszczypnij: zoom",
   potion_empty: "pusta",
+  talent_point_notice: "Nowy punkt talentu — U",
+  talent_remind: "Masz {n} niewydanych punktów talentu — naciśnij U albo dotknij odznaki przy portrecie.",
 };
 
 // ── API pública ─────────────────────────────────────────────────
