@@ -51,7 +51,8 @@ class BootScene extends Phaser.Scene {
     // Karhyn nova (guia de estilo aprovado): prédios, objetos e autotiles de chão
     // a arquitetura de Karhyn é desenhada em código (towngfx.js); da arte gerada só fica o lampião
     this.load.image("k2_lamp", "assets/town2/k2_lamp.png");
-    for (const n of ["vk_ts_piso", "vk_ts_muro", "vk_ts_calcada", "vk_ts_grama", "vk_mural", "vk_goddess_art", "vk_ferreiro", "vk_harpa_dancante", "vk_pocoes", "vk_depot", "vk_acomodacao", "vk_portao_lateral", "vk_biblioteca", "vk_casebre_1", "vk_casebre_2", "vk_casebre_3", "vk_bueiro", "vk_esgoto", "vk_cobble", "k2_well", "vk_int_ferreiro", "vk_int_harpa", "vk_int_pocoes", "vk_int_depot", "vk_int_acomodacao",
+    this.load.image("map_karhyn_2x", "assets/ui/map_karhyn_2x.jpg");   // opaca: jpg tem 1/4 do tamanho do png
+    for (const n of ["vk_ts_piso", "vk_ts_muro", "vk_ts_calcada", "vk_ts_grama", "vk_mural", "vk_goddess_art", "vk_ferreiro", "vk_harpa_dancante", "vk_pocoes", "vk_depot", "vk_acomodacao", "vk_portao_lateral", "vk_biblioteca", "vk_casebre_1", "vk_casebre_2", "vk_casebre_3", "vk_bueiro", "vk_cobble", "k2_well", "vk_int_ferreiro", "vk_int_harpa", "vk_int_pocoes", "vk_int_depot", "vk_int_acomodacao",
       ...["barrel", "crate", "garbage", "cart", "laundry", "bench", "firewood", "wheel"].map(n => "vkp_" + n)]) this.load.image(n, `assets/town2/${n}.png`);   // tilesets da vila (SpriteCook, 32 px)
     this.load.image("tower_view", "assets/town/tower_view.png"); this.load.image("depot_counter", "assets/town/depot_counter.png");
     this.load.image("glow_mushrooms", "assets/art/glow_mushrooms.png");
@@ -76,7 +77,7 @@ class BootScene extends Phaser.Scene {
     for (const i of ["slash", "slash_evo", "berserk", "spear", "heal", "aura"]) this.load.image("icon_" + i, `assets/icons/${i}.png`);
     for (const i of ["basic", "front_v2", "exura", "area", "aura_v2"]) this.load.image("icon_" + i, `assets/icons/icon_${i}.png`);
     for (const c of ["rat", "cave_rat", "bat", "slime", "skeleton", "giant_rat"]) this.load.image("corpse_" + c, `assets/art/corpse_${c}.png`);
-    for (const u of ["logo_vitula", "bar_track", "bar_fill_boss", "bar_fill_xp", "heart", "slot", "panel", "button_normal", "button_hover", "title_banner", "portrait_knight", "portrait_archer", "portrait_sorcerer", "portrait_druid", "map_karhyn_2x", "card_normal", "card_selected", "name_plate", "marker_open", "marker_locked", "marker_cleared"])
+    for (const u of ["logo_vitula", "bar_track", "bar_fill_boss", "bar_fill_xp", "heart", "slot", "panel", "button_normal", "button_hover", "title_banner", "portrait_knight", "portrait_archer", "portrait_sorcerer", "portrait_druid", "card_normal", "card_selected", "name_plate", "marker_open", "marker_locked", "marker_cleared"])
       this.load.image(u, `assets/ui/${u}.png`);
     for (const s of SFX) this.load.audio(s, `assets/audio/${s}.wav`);
     if (!MOBILE_MUSIC) this.load.audio("music_goddess", "assets/audio/before_the_shadow_falls.mp3");

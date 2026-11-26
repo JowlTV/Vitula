@@ -202,12 +202,6 @@ const DEATH_LOSS = [
   { xp: 0.35, equip: 0.35, gold: 0.10 },
   { xp: 0.20, equip: 0.00, gold: 0.00 },
 ];
-const BLESS_TEXT = [
-  "Você recebeu a primeira bênção da Oráculo.\n\nNa próxima morte, perderá 60% da experiência, 75% dos equipamentos e 20% do ouro coletado (em vez de 80%, 100% e 25%).",
-  "Você recebeu a segunda bênção da Oráculo.\n\nNa próxima morte, perderá 35% da experiência, 35% dos equipamentos e 10% do ouro coletado.",
-  "Você recebeu a terceira bênção da Oráculo.\n\nNa próxima morte, perderá 20% da experiência, nenhum equipamento e nenhum ouro.",
-];
-
 // Habilidades do Arqueiro (mesmas teclas 1–4; pagas com Mana).
 const ARCHER_SPELLS = {
   heal:   { name: "Exura", key: "G", icon: "icon_exura", level: 1, fury: 0, cd: 6, desc: "Magia global, sem custo: cura (10 + 6 por magic level) × 85%." },

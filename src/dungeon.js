@@ -8,6 +8,8 @@ class DungeonScene extends Phaser.Scene {
 
 
   create() {
+    // memória: libera o que só a cidade usa (chão gerado e as cenas de atendimento, ~44 MB); a cidade recarrega ao voltar
+    for (const k of ["town_ground", "npc_scene_smith", "npc_scene_inn", "npc_scene_potions", "npc_scene_depot"]) if (this.textures.exists(k)) this.textures.remove(k);
     // a cena é reaproveitada (descer de novo, voltar da cidade): esquece objetos e estados da visita anterior
     for (const k of Object.keys(this)) {
       const v = this[k];

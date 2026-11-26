@@ -36,6 +36,9 @@ class TownScene extends Phaser.Scene {
     // a cena é reaproveitada ao voltar da loja/esgoto: zera o estado da visita anterior
     this.leaving = false; this.dialog = null; this.interior = null; this.grassPat = null; this.woodPat = null; this.rampPat = null;
     if (this.textures.exists("town_ground")) this.textures.remove("town_ground");
+    // cenas de atendimento liberadas no calabouço: recarrega em segundo plano (showInterior ignora enquanto não chegam)
+    const miss = ["smith", "inn", "potions", "depot"].filter(k => !this.textures.exists("npc_scene_" + k));
+    if (miss.length) { for (const k of miss) this.load.image("npc_scene_" + k, `assets/interior/npc_${k}.jpg`); this.load.start(); }
     this.makePlaceholders();
     this.layout();
     this.drawGround();
@@ -147,11 +150,8 @@ class TownScene extends Phaser.Scene {
     this.block(38, 7, 2, 1); this.statue = st;
     // (mural de contratos removido do largo: agora fica dentro da Harpa Mágica)
     this.manhole = { x: 43, y: 9 };
-    if (false) {   // arco de parede removido (parecia flutuar): volta o bueiro no chão   // entrada do esgoto: arco de pedra com grade, no muro ao norte do largo
-      const ar = this.art("vk_esgoto", 42, 7, 2.2, 0); ar.setDepth(7 * T + 4);
-      this.block(42, 5, 3, 2);
-      const gl = this.add.image(43.1 * T, 7 * T - 8, "light").setTint(0x6aa0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.6, 0.25).setAlpha(0.25).setDepth(800001); this.world.add(gl);
-    } else { const bk = this.textures.exists("vk_bueiro"), mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, bk ? "vk_bueiro" : "decor_manhole").setDepth(-5); mh.setScale(T * (bk ? 1.25 : 0.8) / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
+    // entrada do esgoto: bueiro no chão do largo
+    { const bk = this.textures.exists("vk_bueiro"), mh = this.add.image(43 * T + T / 2, 9 * T + T / 2, bk ? "vk_bueiro" : "decor_manhole").setDepth(-5); mh.setScale(T * (bk ? 1.25 : 0.8) / mh.width); mh.texture.setFilter(Phaser.Textures.FilterMode.NEAREST); this.world.add(mh); }   // descida do bueiro vista de cima (arte própria na fila de geração)
     // decadência: barris, caixas, lixo, varal, carroça, bancos
     // props do SpriteCook (vkp_*), com a versão em código de reserva
     const P = (n, code, x, y, w, wCode, fd = 1) => this.textures.exists("vkp_" + n) ? this.art("vkp_" + n, x + (1 - w) / 2, y, w, fd) : A(code, x, y, wCode, fd);
@@ -722,16 +722,7 @@ class TownScene extends Phaser.Scene {
     if (sec < 900) this.msg && this.msg(t("clouds_open"));
   }
   // textura do mural em código (reserva até a arte do SpriteCook): tábua com telhadinho, papéis pregados e dois postes
-  makeBoardTex() {
-    const k = "board_code"; if (this.textures.exists(k)) return k;
-    const g = this.make.graphics({ add: false });
-    g.fillStyle(0x2a1c10).fillRect(4, 10, 3, 30).fillRect(25, 10, 3, 30);            // postes
-    g.fillStyle(0x3a2616).fillRect(0, 8, 32, 3); g.fillStyle(0x1e140a).fillRect(1, 6, 30, 2);   // telhadinho
-    g.fillStyle(0x5a3c22).fillRect(2, 11, 28, 18); g.fillStyle(0x4a301a).fillRect(2, 15, 28, 1).fillRect(2, 21, 28, 1);
-    const P = [[4, 12, 7, 8, 0xd8c8a0], [12, 13, 8, 7, 0xc8b890], [21, 12, 7, 9, 0xe0d0a8], [6, 21, 8, 6, 0xc0b088], [17, 22, 9, 6, 0xd8c8a0]];
-    for (const [x, y, w, h, c] of P) { g.fillStyle(c).fillRect(x, y, w, h); g.fillStyle(0x6a5a40).fillRect(x + 1, y + 2, w - 2, 1).fillRect(x + 1, y + 4, w - 3, 1); g.fillStyle(0x8a1a1a).fillRect(x + w / 2 - 0.5 | 0, y, 1, 1); }
-    g.generateTexture(k, 32, 40); g.destroy(); return k;
-  }
+
 
   // ------------------------------------------------------------ contratos de caça (mural do largo)
   // 3 ofertas (fácil, médio, difícil); um contrato ativo por vez; o progresso conta no esgoto e a recompensa sai no mural.

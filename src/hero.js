@@ -455,21 +455,9 @@ Object.assign(DungeonScene.prototype, {
     this.cameras.main.once("camerafadeoutcomplete", () => this.scene.start("town"));
   },
 
-  // estátua da Oráculo: a bênção é concedida uma vez por estátua
-  tryAltar() {
-    const a = this.altar, h = this.hero;
-    if (!a || a.used || this.paused || this.bagOpen || this.finished || h.dead) return false;
-    if (Math.abs(h.x - a.x) > 1 || Math.abs(h.y - a.y) > 1) return false;
-    const d = Save.voc(this.vocId), n = d.bless || 0;
-    if (n >= 3) { this.msg(t("blessing_max")); return true; }
-    d.bless = n + 1; a.used = true; Save.save();
-    if (this.altarImg) this.altarImg.setAlpha(0.55);
-    sfx(this, "levelup", 0.3);
-    this.floatText(h.px, h.py - 90, t("bless_float", { n: d.bless }), "#f2e2a0");
-    this.paused = true;
-    const box = this.panel(t("bless_title"), BLESS_TEXT[n], [[t("continue_label"), () => { box.destroy(); this.paused = false; }]]);
-    return true;
-  },
+
+  // interação com E sem alvo (os altares saíram); o modo de teste usa este gancho para o baú
+  tryAltar() { return false; },
 
   // golpe de espada virado para (dx, dy): escolhe a animação de ataque da direção certa
   heroSwing(dx, dy) {

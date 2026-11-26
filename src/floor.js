@@ -147,7 +147,6 @@ Object.assign(DungeonScene.prototype, {
       const ri = this.add.image(rp.x, rp.y + T / 2 - 4, "rope_v2").setOrigin(0.5, 1).setDepth(rp.y - 40);
       ri.setScale(T * 1.5 / ri.height); this.ents.add(ri); this.rope = { x: start.x, y: start.y };
       if (this.region.tutorial) ri.setVisible(false); }   // na floresta não há corda
-    this.placeAltar(start);
     // herói
     const arr = arrive === "stairs" && this.stairs ? (this.nearStairs() || start) : start;
     this.hero.x = arr.x; this.hero.y = arr.y; this.hero.moveT = 0;
@@ -202,52 +201,6 @@ Object.assign(DungeonScene.prototype, {
     return null;
   },
 
-  // estátua da Oráculo: aparece em alguns andares, dá uma bênção por estátua (até 3)
-  placeAltar(start) {
-    this.altar = null; this.altarImg = null;
-    if (!this.altarMemo) this.altarMemo = {};
-    // o local do altar é sorteado uma vez por corrida e andar (ao voltar ao andar, a estátua continua lá)
-    if (this.altarMemo[this.floorN] === undefined) {
-      const g = this.gen, n = Save.voc(this.vocId).bless || 0;
-      let spot = null;
-      if (false) {   // bênçãos removidas (nov/26): não há mais estátuas nos andares
-        const cands = [];
-        for (let y = 1; y < g.h - 1; y++) for (let x = 1; x < g.w - 1; x++) {
-          if (!this.walkable(x, y) || this.occ.has(key(x, y)) || this.spikes.has(key(x, y)) || g.isBridge(x, y) || this.doorNear(x, y)) continue;
-          // só dentro de salas e com espaço ao redor: a estátua nunca fecha um corredor
-          if (g.roomOf(x, y) < 0 || g.roomOf(x, y) === g.roomOf(start.x, start.y)) continue;
-          let open = 0; for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]]) if (this.walkable(x + dx, y + dy)) open++;
-          if (open < 8) continue;
-          if (Math.hypot(x - start.x, y - start.y) < 12) continue;
-          if (this.stairs && Math.hypot(x - this.stairs.x, y - this.stairs.y) < 4) continue;
-          cands.push({ x, y });
-        }
-        if (cands.length) { const c = Phaser.Utils.Array.GetRandom(cands); spot = { x: c.x, y: c.y, used: false }; }
-      }
-      this.altarMemo[this.floorN] = spot;
-    }
-    const a = this.altarMemo[this.floorN];
-    if (!a || a.used) return;
-    const tex = this.textures.exists("altar_oraculo") ? "altar_oraculo" : "pillar";
-    const p = this.cellPos(a.x, a.y);
-    const img = this.add.image(p.x, p.y + T / 2 - 4, tex).setOrigin(0.5, 1).setDepth(p.y - 40);
-    img.setScale(T * 2 / img.height);
-    this.ents.add(img);
-    groundShadow(this, img, this.ents, 0.5);
-    this.altar = a; this.altarImg = img;
-    // luz da deusa: clareia a escuridão em volta, com um halo dourado-pálido pulsando e poeira brilhando sobre a estátua
-    this.lights.push({ x: p.x, y: p.y - T * 0.8, r: 3.2 * T, warm: true, ph: Math.random() * 10 });
-    const halo = this.add.image(p.x, p.y - T * 0.9, "light").setTint(0xfff0c0).setBlendMode(Phaser.BlendModes.ADD).setScale(1.5, 1.9).setAlpha(0.3).setDepth(img.depth + 1);
-    const base = this.add.image(p.x, p.y + T / 2 - 8, "light").setTint(0xffe0a0).setBlendMode(Phaser.BlendModes.ADD).setScale(1.1, 0.4).setAlpha(0.35).setDepth(img.depth - 1);
-    this.ents.add([halo, base]);
-    this.tweens.add({ targets: [halo, base], alpha: "*=0.6", duration: 2200, yoyo: true, repeat: -1, ease: "Sine.inOut" });
-    const motes = this.add.particles(p.x, p.y - T, "light", { x: { min: -22, max: 22 }, y: { min: -50, max: 40 }, lifespan: 2200, speedY: { min: -14, max: -6 },
-      scale: { start: 0.014, end: 0.004 }, alpha: { start: 0.9, end: 0 }, tint: 0xfff0c0, frequency: 220, blendMode: "ADD" });
-    motes.setDepth(img.depth + 2); this.ents.add(motes);
-    img.once("destroy", () => { halo.destroy(); base.destroy(); motes.destroy(); });
-    if (a.used) img.setAlpha(0.55);
-    this.props.set(key(a.x, a.y), { kind: "altar", spr: img });
-  },
 
   walkable(x, y) { return this.gen.isWalk(x, y) && !this.props.has(key(x, y)); },
 
