@@ -169,7 +169,7 @@ class Play extends Phaser.Scene {
   wv(id, k) { const w = this.weapons[id], L = CFG.weaponLevel, B = CFG.weapons[id]; const n = w.lv - 1;
     if (k === "dmg") return B.dmg * (B.flatDmg ? 1 : 1 + L.dmg * n) * this.stats.dmg * CFG.dmgMult;
     if (k === "cd") return B.cd * Math.max(L.cdFloor, Math.pow(1 - L.cd, n)) * this.stats.cd;
-    if (k === "area") return (1 + L.area * n) * this.stats.area; }
+    if (k === "area") return (1 + (B.areaLv || L.area) * n) * this.stats.area; }
   offers() {
     const out = [], have = Object.keys(this.weapons);
     for (const id in CFG.weapons) { const B = CFG.weapons[id]; if (B.voc !== this.voc) continue;
@@ -323,7 +323,7 @@ class Play extends Phaser.Scene {
     for (const b of grid.values()) b.length = 0;
     for (const m of this.mons) { if (m.dead) continue; const k = K((m.x / cell) | 0, (m.y / cell) | 0); let b = grid.get(k); if (!b) grid.set(k, b = []); b.push(m); }
     if (grid.size > 3000) grid.clear();
-    const wv = this.cameras.main.worldView, vx0 = wv.x - 80, vy0 = wv.y - 80, vx1 = wv.x + W + 80, vy1 = wv.y + H + 80;
+    const wv = this.cameras.main.worldView, vx0 = wv.x - 80, vy0 = wv.y - 80, vx1 = wv.right + 80, vy1 = wv.bottom + 80;
     for (const m of this.mons) {
       if (m.dead) continue;
       let dx = hx - m.x, dy = hy - m.y; const d = Math.hypot(dx, dy) || 1;
@@ -439,7 +439,7 @@ class Play extends Phaser.Scene {
     const cam = this.cameras.main, rt = this.dark;
     rt.clear().fill(0x141a12, 0.5);
     const b = this.make.image({ key: "glow", add: false });
-    const hole = (x, y, r) => { b.setScale(r / 128); rt.erase(b, x - cam.worldView.x, y - cam.worldView.y); };
+    const k = cam.zoom / 2, hole = (x, y, r) => { b.setScale(r * k / 128); rt.erase(b, (x - cam.worldView.x) * k, (y - cam.worldView.y) * k); };   // vista do mundo → tela de 960
     hole(this.hero.x, this.hero.y - 30, 300 * (this.weapons.aura ? 1.25 : 1));
     for (const p of this.shots) if (p.id === "holy") hole(p.x, p.y, 150);
     for (const t of this.torches) if (Math.abs(t.x - this.hero.x) < 700 && Math.abs(t.y - this.hero.y) < 450) hole(t.x, t.y, 170);

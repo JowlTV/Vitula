@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>Vitula · Rook Forest (protótipo survivors)</title>
-<style>html,body{margin:0;height:100%;background:#050406;overflow:hidden;touch-action:none}#game{width:100%;height:100%}</style>
+<style>html,body{margin:0;height:100%;background:#050406;overflow:hidden;touch-action:none}#game{position:fixed;left:0;top:0;width:100vw;height:100vh}#rot{display:none;position:fixed;inset:0;background:#050406;color:#e0bc60;font:20px Alegreya,serif;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:9}@media (orientation:portrait) and (pointer:coarse){#rot{display:flex}}</style>
 <link rel="preload" href="../../assets/ui/alegreya.ttf" as="font" crossorigin>
 <style>@font-face{font-family:Alegreya;src:url(../../assets/ui/alegreya.ttf)}</style>
-</head><body><div id="game"></div>
+</head><body><div id="game"></div><div id="rot">Gire o celular para jogar na horizontal ↻</div>
 <script src="../../lib/phaser.min.js"></script><script src="config.js"></script><script src="map.js"></script><script src="game.js"></script>
+<script>
+// celular: o jogo ocupa a área que aparece de verdade (sem as barras do navegador) e refaz o encaixe ao girar
+const fit = () => { const el = document.getElementById("game"), v = window.visualViewport;
+  if (v) { el.style.width = v.width + "px"; el.style.height = v.height + "px"; el.style.top = v.offsetTop + "px"; el.style.left = v.offsetLeft + "px"; }
+  try { if (window.game && game.canvas) game.scale.refresh(); } catch (e) {} };
+addEventListener("resize", fit); addEventListener("orientationchange", () => setTimeout(fit, 300)); if (window.visualViewport) visualViewport.addEventListener("resize", fit); fit();
+// Android: tela cheia no primeiro toque (o iPhone não deixa; lá use "Adicionar à Tela de Início")
+addEventListener("pointerup", () => { const d = document.documentElement; if (matchMedia("(pointer:coarse)").matches && !document.fullscreenElement && d.requestFullscreen) d.requestFullscreen().then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock("landscape").catch(() => {})).catch(() => {}); }, { once: true });
+</script>
 </body></html>

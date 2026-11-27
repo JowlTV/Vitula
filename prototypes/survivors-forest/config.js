@@ -14,7 +14,7 @@ const CFG = {
     cave_rat:  { hp: 216, dmg: 10,  speed: 68,  xp: 2, scale: 0.6 },
     giant_rat: { hp: 2500, dmg: 22, speed: 70,  xp: 50, scale: 1.4 },
   },
-  hpMult: 0.12,          // vida dos monstros × este valor (no Vitula um rato aguenta ~9 golpes; aqui 1–2)
+  hpMult: 0.22,          // vida dos monstros × este valor (no Vitula um rato aguenta ~9 golpes; aqui 1–2)
   hpGrowth: 0.006,       // +0,6% de vida dos monstros por segundo de partida (aos 5 min: ×2,8)
   dmgMult: 1.0,
   dmgGrowth: 0.0015,     // +0,15% de dano dos monstros por segundo (aos 9 min: ×1,8; antes era ×3,2)
@@ -31,10 +31,10 @@ const CFG = {
   // armas: as habilidades do Vitula disparando sozinhas. dmg = dano por golpe no nível 1 da arma.
   weapons: {
     // Cavaleiro
-    slash:   { name: "Corte", icon: "icon_slash", voc: "knight", cd: 1.0, dmg: 30, range: 110, arc: 1.4, fx: "fx_basic_slash" },
+    slash:   { name: "Corte", icon: "icon_slash", voc: "knight", cd: 1.5, dmg: 30, range: 110, arc: 1.4, fx: "fx_basic_slash" },
     front:   { name: "Golpe Frontal", icon: "icon_front_v2", voc: "knight", cd: 2.2, dmg: 40, range: 230, width: 70, fx: "fx_front_cut" },
     quake:   { name: "Terremoto", icon: "icon_area", voc: "knight", cd: 5.0, dmg: 34, radius: 170, fx: "fx_ring_wave" },
-    aura:    { name: "Aura Sagrada", icon: "icon_aura_v2", voc: "knight", cd: 0.5, dmg: 9, radius: 95, fx: "aura" },
+    aura:    { name: "Aura Sagrada", icon: "icon_aura_v2", voc: "knight", cd: 0.5, dmg: 6, radius: 52, areaLv: 0.22, fx: "aura" },
     // Arqueiro
     arrow:   { name: "Flecha", icon: "icon_basic", voc: "archer", cd: 1.0, dmg: 18, speed: 640, pierce: 1, fx: "pfx_arrow" },
     holy:    { name: "Flecha Sagrada", icon: "icon_exura", voc: "archer", cd: 2.0, dmg: 55, speed: 400, pierce: 1,   /* atravessa: nível 1 acerta 2 inimigos, +1 por nível */ fx: "fx_holy_arrow" },
