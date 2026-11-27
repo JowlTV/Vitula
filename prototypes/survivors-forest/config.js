@@ -36,21 +36,23 @@ const CFG = {
     quake:   { name: "Terremoto", icon: "icon_area", voc: "knight", cd: 5.0, dmg: 34, radius: 170, fx: "fx_ring_wave" },
     aura:    { name: "Aura Sagrada", icon: "icon_aura_v2", voc: "knight", cd: 0.5, dmg: 9, radius: 95, fx: "aura" },
     // Arqueiro
-    arrow:   { name: "Flecha", icon: "icon_basic", voc: "archer", cd: 0.75, dmg: 20, speed: 640, pierce: 1, fx: "pfx_arrow" },
-    holy:    { name: "Flecha Sagrada", icon: "icon_exura", voc: "archer", cd: 2.0, dmg: 55, speed: 520, pierce: 6, fx: "fx_holy_arrow" },
+    arrow:   { name: "Flecha", icon: "icon_basic", voc: "archer", cd: 1.0, dmg: 18, speed: 640, pierce: 1, fx: "pfx_arrow" },
+    holy:    { name: "Flecha Sagrada", icon: "icon_exura", voc: "archer", cd: 2.0, dmg: 55, speed: 400, pierce: 1,   /* atravessa: nível 1 acerta 2 inimigos, +1 por nível */ fx: "fx_holy_arrow" },
     volley:  { name: "Saraivada", icon: "icon_area", voc: "archer", cd: 5.0, dmg: 17, radius: 120, hits: 3, fx: "fx_volley" },
-    missile: { name: "Míssil Sagrado", icon: "icon_berserk", voc: "archer", cd: 2.6, dmg: 40, count: 3, speed: 380, fx: "fx_holy_arrow" },
+    missile: { name: "Míssil Sagrado", icon: "icon_berserk", voc: "archer", cd: 3.0, dmg: 30, flatDmg: true, speed: 380, fx: "fx_holy_arrow" },
   },
-  weaponLevel: { dmg: 0.22, cd: 0.08, area: 0.10, max: 6 },   // cada nível da arma: +22% dano, −8% recarga, +10% área
+  // projéteis por disparo no nível lv da arma (o jogo e o modelo de balanceamento usam a mesma regra)
+  shots: (id, lv) => id === "arrow" ? 1 + Math.floor((lv - 1) / 3) : id === "missile" ? lv : 1,   // Míssil: 1 projétil por nível (e o dano por projétil não sobe com o nível)
+  weaponLevel: { dmg: 0.22, cd: 0.08, area: 0.10, cdFloor: 0.25 },   // cada nível: +22% dano, −8% recarga (até 25% da base), +10% área; sem nível máximo
   // melhorias passivas oferecidas ao subir de nível
   passives: {
-    might:  { name: "Força", desc: "+12% de dano", max: 5, dmg: 0.12 },
-    haste:  { name: "Ímpeto", desc: "−8% de recarga", max: 5, cd: 0.08 },
-    vigor:  { name: "Vitalidade", desc: "+20% de vida máxima e cura", max: 5, hp: 0.2 },
-    swift:  { name: "Pés de Vento", desc: "+10% de velocidade", max: 4, speed: 0.1 },
-    magnet: { name: "Ímã", desc: "+40% de alcance para pegar gemas", max: 4, pickup: 0.4 },
-    regen:  { name: "Alma de guerreiro", desc: "+0,6 vida/s", max: 5, regen: 0.6 },
-    crit:   { name: "Olho Morto", desc: "+6% de chance crítica (×1,8)", max: 5, crit: 0.06 },
+    might:  { name: "Força", desc: "+12% de dano", dmg: 0.12 },
+    haste:  { name: "Ímpeto", desc: "−8% de recarga", cd: 0.08 },
+    vigor:  { name: "Vitalidade", desc: "+20% de vida máxima e cura", hp: 0.2 },
+    swift:  { name: "Pés de Vento", desc: "+10% de velocidade", speed: 0.1 },
+    magnet: { name: "Ímã", desc: "+40% de alcance para pegar gemas", pickup: 0.4 },
+    regen:  { name: "Alma de guerreiro", desc: "+0,6 vida/s", regen: 0.6 },
+    crit:   { name: "Olho Morto", desc: "+6% de chance crítica (×1,8)", crit: 0.06 },
   },
   critMult: 1.8, baseCrit: 0.1,
   choices: 3,            // opções por subida de nível
