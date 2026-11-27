@@ -39,7 +39,7 @@ func close() -> void:
 var opened_frame := -1
 func _unhandled_input(e: InputEvent) -> void:
 	if Engine.get_process_frames() - opened_frame < 2: return
-	if box and e is InputEventKey and e.pressed and not e.echo and e.keycode in [KEY_ESCAPE, KEY_N]: close(); get_viewport().set_input_as_handled()
+	if box and e is InputEventKey and e.pressed and not e.echo and (e.keycode == KEY_ESCAPE or e.is_action("bestiario")): close(); get_viewport().set_input_as_handled()
 
 func _live() -> Dictionary:
 	if host and host.get("world") and host.world: return host.world.kills_by_type

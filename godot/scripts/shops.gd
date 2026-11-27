@@ -133,8 +133,9 @@ func forge(town, sel = null) -> void:
 		c.add_child(UI.box(Rect2(p, Vector2(GS - 4, GS - 4)), Color("3a2e1c") if on else Color("1a1612"), UI.GOLD if on else Equip.rarity_color(int(g.r)), 3 if on else 2))
 		var b := Button.new(); b.flat = true; b.position = p; b.size = Vector2(GS - 4, GS - 4); b.focus_mode = Control.FOCUS_NONE
 		b.icon = Equip.icon(g.id); b.expand_icon = true; b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.tooltip_text = "%s\n%s" % [Equip.gear_name(g), Equip.stats_text(g)]
-		b.pressed.connect(func(): forge(town, g)); c.add_child(b)
+		b.mouse_entered.connect(func(): Card.show_card(g, voc, {"worn": o.worn}))
+		b.mouse_exited.connect(Card.hide_card)
+		b.pressed.connect(func(): Card.hide_card(); forge(town, g)); c.add_child(b)
 		if int(g.p) > 0: _at(c, UI.lbl("+%d" % int(g.p), 10, Equip.rarity_color(int(g.r))), p + Vector2(GS - 20, GS - 20))
 		if o.worn: _at(c, UI.lbl(D.t("worn_label"), 9, Color("9fe08a")), p + Vector2(3, 0))
 	_at(c, UI.lbl(D.t("worn_hint"), 11, UI.DIM), Vector2(gx0, y + 400))

@@ -52,7 +52,7 @@ func build(arrive := "start") -> void:
 	if g.cave: cave_monsters(start); fix_blocking(start)
 	link_pockets(start)
 	if g.cave: fix_blocking(start)
-	if not g.cave: sconces(); wall_drains()
+	if not g.cave: sconces(); wall_drains(); critters()
 	water_lights()
 	tunnel_monsters()
 	ground_fog()
@@ -110,6 +110,7 @@ func draw_static() -> void:
 				for x in range(cx, mini(cx + CH, g.w)): _tile_ops(ops, x, y, floor_t, front, top, water_t)
 			if ops.is_empty(): continue
 			var node := FloorChunk.new(); node.ops = ops; node.z_index = -10; w.ground.add_child(node)
+	_grime()
 	decor_sewer()
 
 func _tile_ops(ops: Array, x: int, y: int, floor_t, front, top, water_t) -> void:
@@ -218,6 +219,43 @@ func _breaker(ops: Array, x: int, y: int, seed: int) -> void:
 			var my: float = py + 6 + r.call() * 10 if wn else py + r.call() * (T - 4)
 			var c: Color = cols[int(r.call() * 3)]; c.a = 0.75
 			ops.append([1, Rect2(mx, my, 2 + int(r.call() * 3), 2), c])
+
+## envelhecimento pixel a pixel do esgoto, por shader (sewerGrime do Phaser)
+func _grime() -> void:
+	var lin := Image.create(g.w, g.h, false, Image.FORMAT_RGBA8); var cm := Image.create(g.w, g.h, false, Image.FORMAT_RGBA8)
+	var Dd := PackedInt32Array(); Dd.resize(g.w * g.h); Dd.fill(-1); var q := []
+	for i in g.w * g.h:
+		if g.cells[i] >= 1: Dd[i] = 0; q.append(i)
+	var hd := 0
+	while hd < q.size():
+		var v: int = q[hd]; hd += 1
+		var x := v % g.w; var y := v / g.w
+		for d in D.DIRS8:
+			var nx: int = x + d.x; var ny: int = y + d.y
+			if nx < 0 or ny < 0 or nx >= g.w or ny >= g.h: continue
+			if Dd[ny * g.w + nx] < 0: Dd[ny * g.w + nx] = Dd[v] + 1; q.append(ny * g.w + nx)
+	for y in g.h:
+		for x in g.w:
+			var solid := 0.0 if g.is_floor(x, y) else 1.0
+			var hs := ((x * 73856093) ^ (y * 19349663)) * 2654435761 & 0xFFFFFFFF
+			var pool := 0.0; var wet := 0.0
+			if g.is_walk(x, y) and not g.is_bridge(x, y):
+				var near_w := false
+				for d in D.DIRS4:
+					if g.is_water(x + d.x, y + d.y): near_w = true
+				if hs % 100 < 4 and not near_w: pool = 1.0
+				for d in D.DIRS8:
+					if g.is_water(x + d.x, y + d.y): wet = 1.0
+			var dist: float = min(1.0, Dd[y * g.w + x] / 8.0)
+			lin.set_pixel(x, y, Color(solid, pool, wet, dist))
+			cm.set_pixel(x, y, Color(solid, pool, wet, 1.0 if g.is_water(x, y) or g.is_bridge(x, y) else 0.0))
+	var sp := Sprite2D.new(); sp.centered = false; sp.z_index = -9
+	var blank := Image.create(1, 1, false, Image.FORMAT_RGBA8); blank.fill(Color.WHITE)
+	sp.texture = ImageTexture.create_from_image(blank); sp.scale = Vector2(g.w * T, g.h * T)
+	var mat := ShaderMaterial.new(); mat.shader = load("res://assets/shaders/grime.gdshader")
+	mat.set_shader_parameter("data", ImageTexture.create_from_image(lin)); mat.set_shader_parameter("cellmap", ImageTexture.create_from_image(cm))
+	mat.set_shader_parameter("cells", Vector2(g.w, g.h)); mat.set_shader_parameter("moss", _clean("cave_floor_moss", true))
+	sp.material = mat; w.ground.add_child(sp)
 
 func _draw_cave() -> void:
 	var img := Image.create(g.w, g.h, false, Image.FORMAT_RGBA8)
@@ -451,6 +489,29 @@ func sconces() -> void:
 		s.scale = Vector2(k, k); s.position = Vector2(sc.x * T + T / 2.0 - s.texture.get_width() * k / 2, sc.y * T + T - 4 - s.texture.get_height() * k); s.z_index = 2
 		w.ground.add_child(s)
 		w.add_light(Vector2(sc.x * T + T / 2.0, sc.y * T + T - 44), 3.6 * T, Color("ffa255"), false, true)
+		w.add_dust(Vector2(sc.x * T + T / 2.0, sc.y * T + T + 10))
+
+## ratos de ambiente: correm rente à parede de baixo das salas (não atacam)
+func critters() -> void:
+	var sf: SpriteFrames = A.monster("rat")
+	for i in range(1, g.rooms.size()):
+		var r: Dictionary = g.rooms[i]
+		if r.kind != "room" or g.rng() > 0.55: continue
+		var y: float = (r.y + r.h - 1) * T + T - 10
+		var x0: float = r.x * T + 10; var x1: float = (r.x + r.w) * T - 10
+		for k in g.rand(1, 3):
+			var c := AnimatedSprite2D.new(); c.sprite_frames = sf; c.play("walk"); c.scale = Vector2.ONE * 0.55 * D.db.WORLD_SCALE
+			c.offset = Vector2(0, -sf.get_frame_texture("walk", 0).get_height() / 2.0); c.modulate.a = 0.9
+			c.position = Vector2(randf_range(x0, x1), y); w.ents.add_child(c)
+			_run_critter(c, x0, x1)
+
+func _run_critter(c: AnimatedSprite2D, x0: float, x1: float) -> void:
+	if not is_instance_valid(c): return
+	var tx := randf_range(x0, x1)
+	c.flip_h = tx < c.position.x
+	var tw := c.create_tween(); tw.tween_interval(randf_range(0.0, 3.0))
+	tw.tween_property(c, "position:x", tx, (abs(tx - c.position.x) * 9 + 200) / 1000.0)
+	tw.tween_interval(randf_range(0.8, 4.0)); tw.tween_callback(func(): _run_critter(c, x0, x1))
 
 func wall_drains() -> void:
 	for d in g.drains:

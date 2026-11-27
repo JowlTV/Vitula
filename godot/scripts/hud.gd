@@ -232,6 +232,7 @@ func on_floor() -> void:
 	if floor_lbl == null: return
 	floor_lbl.text = D.t("floor_display", {"name": world.region.name, "n": world.floor_n, "total": world.floors})
 	var g = world.gen
+	for k in mini_marks: mini_marks[k].visible = false
 	mini_img = Image.create(g.w, g.h, false, Image.FORMAT_RGBA8)
 	mini_tex = ImageTexture.create_from_image(mini_img); mini.texture = mini_tex
 	var sc: float = min(160.0 / g.w, 90.0 / g.h)
@@ -248,9 +249,22 @@ func _mini_color(x: int, y: int) -> Color:
 	if g.is_walk(x, y): return Color("6a6458")
 	return Color(0, 0, 0, 0)
 
+var mini_marks := {}
+func _mark(key: String, cell, col: Color) -> void:
+	if not mini_marks.has(key):
+		var m := Panel.new(); m.size = Vector2(7, 7); m.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var st := StyleBoxFlat.new(); st.bg_color = col; st.border_color = Color(0, 0, 0, 0.9); st.set_border_width_all(1); m.add_theme_stylebox_override("panel", st)
+		add_child(m); mini_marks[key] = m
+	var mk: Panel = mini_marks[key]
+	var g = world.gen
+	mk.visible = cell != null and world.explored[cell.y * g.w + cell.x] == 1
+	if mk.visible: mk.position = mini.position + (Vector2(cell) + Vector2(0.5, 0.5)) * (mini.size.x / g.w) - Vector2(3.5, 3.5)
+
 func _mini_update() -> void:
 	if mini_img == null or world.explored.size() != world.gen.w * world.gen.h: return
 	var g = world.gen
+	_mark("stairs", world.stairs, Color("e0bc60")); _mark("rope", world.rope, Color("c8a070")); _mark("wp", world.wp, Color("8ac8ff"))
+	_mark("portal", world.slope_pass, Color("4a8cff"))
 	for y in g.h:
 		for x in g.w:
 			if world.explored[y * g.w + x]: mini_img.set_pixel(x, y, _mini_color(x, y))
@@ -269,6 +283,14 @@ func toggle_map() -> void:
 	var tr := TextureRect.new(); tr.texture = mini_tex; tr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST; tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tr.size = Vector2(g.w, g.h) * sc; tr.position = Vector2(480, 290) - tr.size / 2; big_map.add_child(tr)
 	var dot := ColorRect.new(); dot.size = Vector2(8, 8); dot.color = Color("7fe08a"); dot.position = tr.position + Vector2(world.hero.x + 0.5, world.hero.y + 0.5) * sc - Vector2(4, 4); big_map.add_child(dot)
+	var leg := []
+	for e in [[world.stairs, Color("e0bc60"), "Escada"], [world.rope, Color("c8a070"), "Corda"], [world.wp, Color("8ac8ff"), D.t("wp_title")], [world.slope_pass, Color("4a8cff"), "Portal"]]:
+		if e[0] == null or world.explored[e[0].y * g.w + e[0].x] == 0: continue
+		var m := ColorRect.new(); m.size = Vector2(12, 12); m.color = e[1]; m.position = tr.position + (Vector2(e[0]) + Vector2(0.5, 0.5)) * sc - Vector2(6, 6); big_map.add_child(m)
+		leg.append(e)
+	for i in leg.size():
+		var m := ColorRect.new(); m.size = Vector2(10, 10); m.color = leg[i][1]; m.position = Vector2(300 + i * 110, 492); big_map.add_child(m)
+		var l := _lbl(leg[i][2], 10); l.position = Vector2(314 + i * 110, 488); big_map.add_child(l)
 	var t := _lbl(D.t("floor_display", {"name": world.region.name, "n": world.floor_n, "total": world.floors}), 16, Color("e0bc60"), FONT_T); t.position = Vector2(0, 30); t.size = Vector2(960, 24); t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; big_map.add_child(t)
 	var c := _lbl("M / clique fecha", 10, Color("9a8f80")); c.position = Vector2(0, 515); c.size = Vector2(960, 14); c.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; big_map.add_child(c)
 

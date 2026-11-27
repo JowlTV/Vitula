@@ -25,6 +25,7 @@ func open(h, v: String, _in_town := false) -> void:
 	_build()
 
 func close() -> void:
+	Card.hide_card()
 	if box: box.queue_free(); box = null
 	if calc and calc != (host.world if host and host.get("world") else null):
 		calc.hero.free(); calc.free()
@@ -34,7 +35,7 @@ func close() -> void:
 var opened_frame := -1
 func _unhandled_input(e: InputEvent) -> void:
 	if Engine.get_process_frames() - opened_frame < 2: return
-	if box and e is InputEventKey and e.pressed and not e.echo and e.keycode in [KEY_ESCAPE, KEY_I, KEY_B]:
+	if box and e is InputEventKey and e.pressed and not e.echo and (e.keycode == KEY_ESCAPE or e.is_action("mochila")):
 		close(); get_viewport().set_input_as_handled()
 
 func _l(c: Control, s: String, p: Vector2, size := 13, col := UI.TEXT) -> Label:
@@ -45,6 +46,7 @@ func _restat() -> void:
 	elif calc: calc.stats = calc.compute_stats()
 
 func _build() -> void:
+	Card.hide_card()
 	if box: box.queue_free()
 	box = Control.new(); box.size = Vector2(960, 540); add_child(box)
 	var c := box; var d := Save.voc(voc); var h = calc.hero
@@ -70,7 +72,8 @@ func _build() -> void:
 			if int(g.r) > 0: c.add_child(UI.box(Rect2(r.position + Vector2(3, 3), r.size - Vector2(6, 6)), Color(0, 0, 0, 0), Equip.rarity_color(int(g.r)), 2))
 			var b := Button.new(); b.flat = true; b.position = r.position; b.size = r.size; b.focus_mode = Control.FOCUS_NONE
 			b.icon = Equip.icon(g.id); b.expand_icon = true; b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			b.mouse_entered.connect(func(): _tip(g, D.t("tip_worn")))
+			b.mouse_entered.connect(func(): _tip(g, D.t("tip_worn")); Card.show_card(g, voc, {"worn": true, "hint": D.t("card_hint_unequip"), "level": calc.hero.level}))
+			b.mouse_exited.connect(Card.hide_card)
 			b.pressed.connect(func(): Equip.unequip(voc, sl); _restat(); _build())
 			c.add_child(b)
 			if int(g.p) > 0: _l(c, "+%d" % int(g.p), r.end - Vector2(22, 16), 10, Equip.rarity_color(int(g.r)))
@@ -146,7 +149,8 @@ func _build() -> void:
 			b.icon = Equip.icon(g.id); b.expand_icon = true; b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			if not ok: b.modulate.a = 0.45
 			b.button_mask = MOUSE_BUTTON_MASK_LEFT | MOUSE_BUTTON_MASK_RIGHT
-			b.mouse_entered.connect(func(): _tip(g, ""))
+			b.mouse_entered.connect(func(): _tip(g, ""); Card.show_card(g, voc, {"hint": D.t("card_hint_equip"), "sell": true, "level": calc.hero.level}))
+			b.mouse_exited.connect(Card.hide_card)
 			b.gui_input.connect(func(ev):
 				if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_RIGHT:
 					_say(Equip.sell(voc, i)); _build())

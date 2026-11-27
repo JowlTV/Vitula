@@ -182,7 +182,7 @@ func add_prop(c: Vector2i, kind: String) -> void:
 	s.add_child(sh)
 	ents.add_child(s)
 	props[c] = {"kind": kind, "hits": 0, "spr": s, "x": c.x, "y": c.y}
-	if kind == "torch_stand": add_light(p - Vector2(0, 38), 3.6 * T, Color("ffa255"), false, true)
+	if kind == "torch_stand": add_light(p - Vector2(0, 38), 3.6 * T, Color("ffa255"), false, true); add_dust(p - Vector2(0, 20))
 
 func remove_prop(c: Vector2i) -> void:
 	if props.has(c): props[c].spr.queue_free(); props.erase(c)
@@ -324,6 +324,7 @@ func _physics_process(raw_dt: float) -> void:
 	if time_ > next_wave: spawn_wave(); next_wave = time_ + randf_range(90, 180)
 	update_traps(dt)
 	update_lights(dt)
+	drip(dt)
 	update_recall(dt)
 	for k in hero.buffs.keys():
 		hero.buffs[k] -= dt
@@ -1362,9 +1363,9 @@ func bot_dir() -> Vector2i:
 # ============================================================== andar: transições, corda, tocas, waypoint (floor.js, hero.js, waypoint.js)
 signal fade(out: bool, dur: float)
 func _transition(fn: Callable) -> void:
-	paused = true; fade.emit(true, 0.25)
-	await get_tree().create_timer(0.27).timeout
-	fn.call(); paused = false; fade.emit(false, 0.3)
+	paused = true; fade.emit(true, 0.34)
+	await get_tree().create_timer(0.38).timeout
+	fn.call(); paused = false; fade.emit(false, 0.34)
 
 ## E: tocas, waypoint ou corda
 func interact() -> void:
@@ -1384,9 +1385,7 @@ func leave_to_town(spawn: String) -> void:
 	finished = true
 	var d := Save.voc(voc); d.gold += roundi(gold_run * stats.greed); Save.add_kills(kills_by_type); Save.data.runs = Save.data.get("runs", 0) + 1; Save.save()
 	Save.reg.townSpawn = spawn
-	fade.emit(true, 0.4)
-	await get_tree().create_timer(0.42).timeout
-	get_tree().change_scene_to_file("res://town.tscn")
+	Wipe.change_scene("res://town.tscn")
 
 func hole_hint() -> void:
 	var h = hero
@@ -1578,18 +1577,18 @@ func _end_of_sewers() -> void:
 	Save.data.cleared[region_id + ":" + voc] = true; Save.save()
 	if dlg:
 		dlg.say(D.t("dungeon_won"), "O Rei Rato caiu e o portal leva à Encosta dos Goblins.\n\nA versão Godot vai até aqui: a Encosta continua só na versão em Phaser por enquanto.\n\nOuro guardado: %d · Nível %d · %d criaturas derrotadas." % [Save.gold(voc), hero.level, kills],
-			[[D.t("back_to_city"), func(): dlg.close(); Save.reg.townSpawn = "sewer"; get_tree().change_scene_to_file("res://town.tscn")]])
+			[[D.t("back_to_city"), func(): dlg.close(); Save.reg.townSpawn = "sewer"; Wipe.change_scene("res://town.tscn")]])
 
 func finish(victory: bool) -> void:
 	if finished: return
 	finished = true
 	var earned := roundi(gold_run * stats.greed)
 	var d := Save.voc(voc); d.gold += earned; Save.add_kills(kills_by_type); Save.data.runs = Save.data.get("runs", 0) + 1; Save.save()
-	if dlg == null: get_tree().change_scene_to_file("res://town.tscn"); return
+	if dlg == null: Wipe.change_scene("res://town.tscn"); return
 	var v: Dictionary = D.VOCATIONS[voc]
 	dlg.say(D.t("dungeon_won") if victory else D.t("you_fell"), D.t("run_summary", {"d": 100, "f": floor_n, "total": floors, "lvl": hero.level, "k": kills, "g": earned, "voc": v.name, "bag": Save.gold(voc)}),
 		[[D.t("descend_again"), func(): dlg.close(); Save.reg.startFloor = 0; get_tree().reload_current_scene()],
-		 [D.t("back_to_city"), func(): dlg.close(); Save.reg.townSpawn = "sewer"; get_tree().change_scene_to_file("res://town.tscn")]])
+		 [D.t("back_to_city"), func(): dlg.close(); Save.reg.townSpawn = "sewer"; Wipe.change_scene("res://town.tscn")]])
 
 # ---------------------------------------------------------------- volta à cidade (H): 5 s parado
 func try_recall() -> void:
@@ -1613,3 +1612,38 @@ func drink_buff(id: String) -> void:
 	d.potions[id] -= 1; hero.pot_cd[id] = float(P.cd); hero.buffs[id] = float(P.dur); Save.save()
 	emit_signal("msg", "%s: %s" % [P.name, P.desc]); Sfx.play("gem", 0.4)
 	pot_glow(Color("ffa030"))
+
+# ---------------------------------------------------------------- poeira nas tochas e pingos nos canais (lighting.js)
+var dot_tex: Texture2D
+func add_dust(at: Vector2) -> void:
+	if dot_tex == null:
+		var img := Image.create(2, 2, false, Image.FORMAT_RGBA8); img.fill(Color.WHITE); dot_tex = ImageTexture.create_from_image(img)
+	var e := CPUParticles2D.new(); e.texture = dot_tex; e.position = at; e.amount = 9; e.lifetime = 3.5
+	e.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE; e.emission_rect_extents = Vector2(60, 45)
+	e.direction = Vector2(0, -1); e.spread = 30; e.initial_velocity_min = 2; e.initial_velocity_max = 10; e.gravity = Vector2.ZERO
+	e.scale_amount_min = 0.5; e.scale_amount_max = 1.0
+	var gr := Gradient.new(); gr.set_color(0, Color(1, 0.85, 0.63, 0.7)); gr.set_color(1, Color(0.66, 0.75, 0.53, 0)); e.color_ramp = gr
+	var cm := CanvasItemMaterial.new(); cm.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD; e.material = cm
+	e.z_index = 70; ground.add_child(e)
+
+var drip_t := 0.0
+func drip(dt: float) -> void:
+	drip_t -= dt
+	if drip_t > 0: return
+	drip_t = randf_range(0.25, 0.6)
+	var h = hero
+	for i in 8:
+		var x: int = h.x + randi_range(-7, 7); var y: int = h.y + randi_range(-4, 4)
+		if not gen.is_water(x, y) or not explored[y * gen.w + x]: continue
+		var tp := Vector2(x * T + randf_range(14, T - 14), y * T + randf_range(18, T - 18))
+		var d := ColorRect.new(); d.color = Color(0.72, 0.82, 0.78, 0.8); d.size = Vector2(2, 5); d.position = tp - Vector2(0, 90); d.z_index = 80; ground.add_child(d)
+		var tw := d.create_tween(); tw.tween_property(d, "position:y", tp.y, 0.38).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		tw.tween_callback(func():
+			d.queue_free()
+			var ring := Line2D.new(); ring.width = 1; ring.default_color = Color(0.78, 0.88, 0.69, 0.8); ring.position = tp; ring.z_index = -3
+			var pts := PackedVector2Array()
+			for k in 17: pts.append(Vector2(cos(k * TAU / 16) * 3, sin(k * TAU / 16) * 1.5))
+			ring.points = pts; ground.add_child(ring)
+			var rt := ring.create_tween().set_parallel(); rt.tween_property(ring, "scale", Vector2(4, 4), 0.7); rt.tween_property(ring, "modulate:a", 0.0, 0.7)
+			rt.chain().tween_callback(ring.queue_free))
+		return

@@ -129,6 +129,7 @@ func _clear() -> void:
 	if window: window.queue_free(); window = null
 
 func close() -> void:
+	Card.hide_card()
 	var was := is_open()
 	_clear()
 	if room.visible:

@@ -20,6 +20,8 @@ Talents="*res://scripts/talents.gd"
 Shops="*res://scripts/shops.gd"
 Bag="*res://scripts/bag.gd"
 Best="*res://scripts/bestiary.gd"
+Card="*res://scripts/itemcard.gd"
+Wipe="*res://scripts/wipe.gd"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
 

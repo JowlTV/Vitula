@@ -43,6 +43,7 @@ func _ready() -> void:
 	dlg = load("res://scripts/dialog.gd").new(); add_child(dlg)
 	dlg.closed.connect(_refresh_gold)
 	_build_ui()
+	Wipe.open_if_carried()
 	Sfx.music("music_town", 0.5)
 	if not d.get("tutTown", false):
 		get_tree().create_timer(3.2).timeout.connect(func():
@@ -186,18 +187,22 @@ func zone_name(z) -> String:
 func _unhandled_input(e: InputEvent) -> void:
 	if not (e is InputEventKey and e.pressed and not e.echo): return
 	if Bag.is_open() or Best.is_open() or Talents.is_open(): return
+	if e.is_action("interagir"):
+		if not dlg.is_open() and map_box == null:
+			var z = zone_here()
+			if z: use(z)
+		return
+	if e.is_action("mapa"): _toggle_map(); return
+	if e.is_action("bestiario"):
+		if not dlg.is_open(): Best.open(self)
+		return
+	if e.is_action("teia"):
+		if not dlg.is_open(): Talents.open(self, voc, false)
+		return
+	if e.is_action("mochila"):
+		if not dlg.is_open(): Bag.open(self, voc, true)
+		return
 	match e.keycode:
-		KEY_E, KEY_ENTER:
-			if not dlg.is_open() and map_box == null:
-				var z = zone_here()
-				if z: use(z)
-		KEY_M: _toggle_map()
-		KEY_N:
-			if not dlg.is_open(): Best.open(self)
-		KEY_U:
-			if not dlg.is_open(): Talents.open(self, voc, false)
-		KEY_I, KEY_B:
-			if not dlg.is_open(): Bag.open(self, voc, true)
 		KEY_ESCAPE, KEY_P:
 			if map_box: _toggle_map()
 			elif not dlg.is_open(): dlg.say("Karhyn", D.t("what_to_do"), [[D.t("continue_label"), func(): dlg.close()], [D.t("back_to_menu"), func(): leave("menu")]])
@@ -290,11 +295,7 @@ func leave(scene: String) -> void:
 	Save.reg.townSpawn = "sewer" if scene == "dungeon" else "gate"
 	Save.reg.townPos = Vector2i(hero.x, hero.y)
 	Save.save()
-	_fade(0.4, 5.0)
-	await get_tree().create_timer(0.42).timeout
-	match scene:
-		"dungeon": get_tree().change_scene_to_file("res://game.tscn")
-		_: get_tree().change_scene_to_file("res://menu.tscn")
+	Wipe.change_scene("res://game.tscn" if scene == "dungeon" else "res://menu.tscn")
 
 # ------------------------------------------------------------ interface
 func _build_ui() -> void:

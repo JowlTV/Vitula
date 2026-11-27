@@ -162,8 +162,9 @@ func _unhandled_input(e: InputEvent) -> void:
 	if Engine.get_process_frames() - opened_frame < 2: return
 	if box == null: return
 	if e is InputEventKey and e.pressed and not e.echo:
+		if e.is_action("teia"): close(); get_viewport().set_input_as_handled(); return
 		match e.keycode:
-			KEY_ESCAPE, KEY_U: close()
+			KEY_ESCAPE: close()
 			KEY_LEFT: view.position.x += 40
 			KEY_RIGHT: view.position.x -= 40
 			KEY_UP: view.position.y += 40

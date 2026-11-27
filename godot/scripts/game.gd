@@ -32,8 +32,10 @@ func _ready() -> void:
 	hud = load("res://scripts/hud.gd").new(); add_child(hud); hud.setup(world)
 	var fl := CanvasLayer.new(); fl.layer = 30; add_child(fl)
 	fade_rect = ColorRect.new(); fade_rect.color = Color(0, 0, 0, 1); fade_rect.size = Vector2(960, 540); fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE; fl.add_child(fade_rect)
-	create_tween().tween_property(fade_rect, "color:a", 0.0, 0.5)
-	world.fade.connect(func(out: bool, dur: float): create_tween().tween_property(fade_rect, "color:a", 1.0 if out else 0.0, dur))
+	fade_rect.color.a = 0.0
+	if Wipe.carry: Wipe.open_if_carried()
+	else: fade_rect.color.a = 1.0; create_tween().tween_property(fade_rect, "color:a", 0.0, 0.5)
+	world.fade.connect(func(out: bool, _dur: float): (Wipe.cover() if out else Wipe.reveal()))
 	world.emit_signal("msg", D.t("floor_enter", {"name": world.region.name, "n": world.floor_n}))
 	if "teste" in OS.get_cmdline_user_args(): _teste()
 
@@ -61,7 +63,7 @@ func _unhandled_input(e: InputEvent) -> void:
 	if e.is_action_pressed("voltar"): world.try_recall()
 	if e.is_action_pressed("flecha"): world.cycle_arrow() if world.has_method("cycle_arrow") else null
 	if e.is_action_pressed("mapa") and hud: hud.toggle_map()
-	if e is InputEventKey and e.pressed and not e.echo and e.keycode == KEY_N: Best.open(self)
+	if e.is_action_pressed("bestiario"): Best.open(self)
 	if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
 		var p: Vector2 = get_global_mouse_position()
 		for m in world.monsters:
@@ -73,7 +75,7 @@ func pause_menu() -> void:
 	dlg.say(D.t("pause_title") if D.t("pause_title") != "pause_title" else "Pausa", D.t("what_to_do"), [
 		[D.t("continue_label"), func(): dlg.close()],
 		[D.t("back_to_city"), func(): dlg.close(); world.leave_to_town("sewer")],
-		[D.t("back_to_menu"), func(): dlg.close(); get_tree().change_scene_to_file("res://menu.tscn")]])
+		[D.t("back_to_menu"), func(): dlg.close(); Wipe.change_scene("res://menu.tscn")]])
 
 ## o HUD pede para abrir telas (botões de toque)
 func touch_action(a: String) -> void:
@@ -141,6 +143,9 @@ func _teste() -> void:
 			if c is Button and c.icon == Equip.icon("chain_armor"): b = c
 		if b: b.pressed.emit()
 		await get_tree().create_timer(0.3).timeout
+		Save.voc(world.voc).gear.append(Equip.gear_new("plate_armor", 2)); Bag._build()
+		get_viewport().warp_mouse(Vector2(700, 230)); Card.show_card(Save.voc(world.voc).gear[-1], world.voc, {"hint": D.t("card_hint_equip"), "sell": true})
+		await get_tree().create_timer(0.3).timeout; await _shot(dir + "/k_cartao.png")
 		print("TESTE VESTIU armor=", Save.voc(world.voc).equip.get("armor")); await _shot(dir + "/i_vestiu.png")
 	print("TESTE voc=%s nivel=%d andar=%d vida=%d/%d kills=%d monstros=%d ouro=%d gear=%d" % [world.voc, world.hero.level, world.floor_n, world.hero.hp, world.hero.max_hp, world.kills, world.monsters.size(), world.gold_run, Save.voc(world.voc).gear.size()])
 	get_tree().quit()

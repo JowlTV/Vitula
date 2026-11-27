@@ -66,8 +66,7 @@ func options() -> void:
 	row.call(220.0, D.t("music_vol"), "%d%%" % roundi(mu * 100), func(): st.music = max(0.0, snappedf(mu - 0.1, 0.1)); Save.save(); Sfx.music_volume(st.music); options(), func(): st.music = min(1.0, snappedf(mu + 0.1, 0.1)); Save.save(); Sfx.music_volume(st.music); options())
 	var fx: float = st.get("sfx", 0.8)
 	row.call(270.0, D.t("sfx_vol"), "%d%%" % roundi(fx * 100), func(): st.sfx = max(0.0, snappedf(fx - 0.1, 0.1)); Save.save(); _apply_audio(); Sfx.play("hit", 0.5); options(), func(): st.sfx = min(1.0, snappedf(fx + 0.1, 0.1)); Save.save(); _apply_audio(); Sfx.play("hit", 0.5); options())
-	var keys := UI.wrap(UI.lbl("Setas/WASD: andar · Espaço: atacar · Q/R: ataque automático · G: cura · 1–7: habilidades · Z/C: poções · TAB: alvo · E: falar/usar · I: mochila · U: teia · N: bestiário · M: mapa · H: voltar à cidade · Esc: pausa", 11, UI.DIM), 480)
-	keys.position = Vector2(240, 330); c.add_child(keys)
+	c.add_child(UI.button(Rect2(380, 340, 200, 36), D.t("keys_title") if D.t("keys_title") != "keys_title" else "Teclas", keys_page, 15))
 	c.add_child(UI.button(Rect2(380, 430, 200, 36), D.t("back"), title, 15))
 
 # ------------------------------------------------------------ escolha da vocação
@@ -133,6 +132,7 @@ func _teste() -> void:
 	var dir: String = OS.get_cmdline_user_args()[0]
 	title(); await get_tree().create_timer(1.0).timeout; await _shot(dir + "/m1_titulo.png")
 	options(); await get_tree().create_timer(0.4).timeout; await _shot(dir + "/m2_opcoes.png")
+	keys_page(); await get_tree().create_timer(0.4).timeout; await _shot(dir + "/m2b_teclas.png")
 	select(); await get_tree().create_timer(0.6).timeout; await _shot(dir + "/m3_classes.png")
 	Save.reg.vocation = "archer"; intro("archer"); await get_tree().create_timer(3.0).timeout; await _shot(dir + "/m4_intro.png")
 	print("TESTE MENU ok"); get_tree().quit()
@@ -140,3 +140,33 @@ func _teste() -> void:
 func _shot(p: String) -> void:
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png(p)
+
+# ------------------------------------------------------------ teclas: 2 por ação, clique e aperte a nova
+var waiting = null
+func keys_page() -> void:
+	var c := _page(); waiting = null
+	c.add_child(UI.panel(Rect2(60, 14, 840, 512)))
+	_l(c, D.t("keys_hint"), 24, 13, UI.GOLD)
+	var acts: Array = Keys.MAP.keys()
+	for i in acts.size():
+		var a: String = acts[i]; var col := i / 12; var row := i % 12
+		var x := 84.0 + col * 410; var y := 52.0 + row * 36
+		var l := UI.lbl(Keys.label(a), 13); l.position = Vector2(x, y + 6); l.size.x = 200; l.clip_text = true; c.add_child(l)
+		var ks: Array = Keys.keys_of(a)
+		for k in 2:
+			var code: int = int(ks[k]) if k < ks.size() else 0
+			var b := UI.button(Rect2(x + 206 + k * 90, y, 84, 30), Keys.key_name(code), func(): _wait_key(a, k), 12)
+			if waiting and waiting[0] == a and waiting[1] == k: b.text = D.t("press_key")
+			c.add_child(b)
+	c.add_child(UI.button(Rect2(250, 482, 200, 32), D.t("reset_default"), func(): Keys.reset(); keys_page(), 13))
+	c.add_child(UI.button(Rect2(510, 482, 200, 32), D.t("back"), options, 13))
+
+func _wait_key(a: String, k: int) -> void:
+	waiting = [a, k]; keys_page(); waiting = [a, k]
+
+func _input(e: InputEvent) -> void:
+	if waiting == null or not (e is InputEventKey and e.pressed and not e.echo): return
+	get_viewport().set_input_as_handled()
+	var w = waiting; waiting = null
+	if e.physical_keycode != KEY_ESCAPE: Keys.set_key(w[0], w[1], e.physical_keycode)
+	keys_page()
