@@ -37,7 +37,7 @@ func is_mana(voc: String) -> bool: return db.VOCATIONS[voc].get("mana", false)
 func t(key: String, p: Dictionary = {}) -> String:
 	var s: String = i18n.get(lang, {}).get(key, i18n.pt.get(key, key))
 	for k in p: s = s.replace("{" + k + "}", str(p[k]))
-	return s
+	return s.replace("◉ ", "").replace("◉", "")   # a fonte não tem o símbolo da moeda
 
 ## sorteio por peso: [["rat", 70], ["bat", 30]]
 func weighted(table: Array) -> String:

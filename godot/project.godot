@@ -13,6 +13,13 @@ Save="*res://scripts/save.gd"
 A="*res://scripts/anim.gd"
 Sfx="*res://scripts/sfx.gd"
 Keys="*res://scripts/keys.gd"
+UI="*res://scripts/ui.gd"
+Touch="*res://scripts/touch.gd"
+Equip="*res://scripts/equip.gd"
+Talents="*res://scripts/talents.gd"
+Shops="*res://scripts/shops.gd"
+Bag="*res://scripts/bag.gd"
+Best="*res://scripts/bestiary.gd"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
 
@@ -31,6 +38,8 @@ enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg", "res://add
 pointing/emulate_touch_from_mouse=false
 
 [rendering]
+
+environment/defaults/default_clear_color=Color(0.03, 0.027, 0.04, 1)
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/canvas_textures/default_texture_filter=0

@@ -4,7 +4,8 @@ const MAP := {
 	"andar_cima": [KEY_W, KEY_UP], "andar_baixo": [KEY_S, KEY_DOWN], "andar_esq": [KEY_A, KEY_LEFT], "andar_dir": [KEY_D, KEY_RIGHT],
 	"heal": [KEY_G, KEY_KP_PERIOD], "skill1": [KEY_1, KEY_KP_1], "skill2": [KEY_2, KEY_KP_2], "skill3": [KEY_3, KEY_KP_3],
 	"skill4": [KEY_4, KEY_KP_4], "skill5": [KEY_5, KEY_KP_5], "skill6": [KEY_6, KEY_KP_6], "skill7": [KEY_7, KEY_KP_7],
-	"alvo": [KEY_TAB], "pocao1": [KEY_Z], "pocao2": [KEY_C], "atacar": [KEY_SPACE, KEY_F], "auto": [KEY_Q],
+	"alvo": [KEY_TAB], "pocao1": [KEY_Z], "pocao2": [KEY_C], "atacar": [KEY_SPACE, KEY_F], "auto": [KEY_Q, KEY_R],
+	"interagir": [KEY_E, KEY_ENTER], "mochila": [KEY_I, KEY_B], "teia": [KEY_U], "voltar": [KEY_H], "flecha": [KEY_X], "mapa": [KEY_M],
 }
 func _ready() -> void:
 	for a in MAP:

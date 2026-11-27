@@ -21,6 +21,14 @@ var stick_center := Vector2.ZERO
 var stick_touch := -1
 var stick_dir := Vector2i.ZERO
 var stick_knob: Panel
+var floor_lbl: Label
+var mini: TextureRect
+var mini_dot: ColorRect
+var mini_img: Image
+var mini_tex: ImageTexture
+var mini_t := 0.0
+var big_map: Control
+const MS := 2.0
 
 func _lbl(text: String, size := 11, col := Color("e8dcc0"), font: Font = FONT) -> Label:
 	var l := Label.new(); l.text = text
@@ -86,7 +94,14 @@ func setup(w) -> void:
 	w.screen_flash.connect(flash)
 	flash_rect = ColorRect.new(); flash_rect.size = Vector2(960, 540); flash_rect.color = Color(1, 1, 1, 0); flash_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(flash_rect)
+	floor_lbl = _lbl("", 10, Color("c8b890"), FONT_T); floor_lbl.position = Vector2(8, 64); add_child(floor_lbl)
+	mini = TextureRect.new(); mini.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST; mini.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	mini.modulate.a = 0.85; mini.mouse_filter = Control.MOUSE_FILTER_IGNORE; add_child(mini)
+	mini_dot = ColorRect.new(); mini_dot.size = Vector2(4, 4); mini_dot.color = Color("7fe08a"); mini_dot.mouse_filter = Control.MOUSE_FILTER_IGNORE; add_child(mini_dot)
 	if touch: _touch_controls()
+	on_floor()
+	w.tut.connect(tut_event)
+	if not Save.voc(w.voc).get("tutSewer", false) and not "teste" in OS.get_cmdline_user_args(): tut_start()
 
 func _slot(id: String, icon: String, key: String) -> Control:
 	var b := TextureButton.new(); b.custom_minimum_size = Vector2(38, 38); b.focus_mode = Control.FOCUS_NONE
@@ -147,6 +162,8 @@ func _process(dt: float) -> void:
 			r.row.visible = true; r.name.text = m.data.name; r.hp.max_value = m.max_hp; r.hp.value = m.hp
 			r.name.add_theme_color_override("font_color", Color("ff6a5a") if m == h.target else Color("e8dcc0"))
 		else: r.row.visible = false
+	mini_t -= dt
+	if mini_t <= 0: mini_t = 0.25; _mini_update()
 	if msg_t > 0:
 		msg_t -= dt
 		if msg_t < 1: msg_lbl.modulate.a = max(0.0, msg_t)
@@ -174,6 +191,10 @@ func _touch_controls() -> void:
 	add_child(atk)
 	var tgt := Button.new(); tgt.text = "◎"; tgt.size = Vector2(48, 48); tgt.position = Vector2(960 - 160, 540 - 120); tgt.focus_mode = Control.FOCUS_NONE
 	tgt.pressed.connect(func(): world.cycle_target()); add_child(tgt)
+	var y := 8.0
+	for a in [["interact", "E"], ["bag", "Mochila"], ["talents", "Teia"], ["pause", "II"]]:
+		var b := Button.new(); b.text = a[1]; b.size = Vector2(70, 34); b.position = Vector2(960 - 250, y); b.focus_mode = Control.FOCUS_NONE
+		b.pressed.connect(func(): get_parent().touch_action(a[0])); add_child(b); y += 40
 
 func _input(e: InputEvent) -> void:
 	if not touch: return
@@ -197,3 +218,83 @@ func _apply_stick() -> void:
 	for pair in [["andar_dir", stick_dir.x > 0], ["andar_esq", stick_dir.x < 0], ["andar_baixo", stick_dir.y > 0], ["andar_cima", stick_dir.y < 0]]:
 		if pair[1]: Input.action_press(pair[0])
 		else: Input.action_release(pair[0])
+
+# ---------------------------------------------------------------- andar, minimapa e mapa grande
+func on_floor() -> void:
+	if floor_lbl == null: return
+	floor_lbl.text = D.t("floor_display", {"name": world.region.name, "n": world.floor_n, "total": world.floors})
+	var g = world.gen
+	mini_img = Image.create(g.w, g.h, false, Image.FORMAT_RGBA8)
+	mini_tex = ImageTexture.create_from_image(mini_img); mini.texture = mini_tex
+	var sc: float = min(160.0 / g.w, 90.0 / g.h)
+	mini.size = Vector2(g.w, g.h) * sc; mini.position = Vector2(960 - 8 - mini.size.x, 540 - 54 - mini.size.y)
+	_mini_update()
+
+func _mini_color(x: int, y: int) -> Color:
+	var g = world.gen; var c := Vector2i(x, y)
+	if not world.explored[y * g.w + x]: return Color(0, 0, 0, 0)
+	if world.stairs != null and c == world.stairs: return Color("e0bc60")
+	if world.rope != null and c == world.rope: return Color("c8a070")
+	if world.wp != null and c == world.wp: return Color("8ac8ff")
+	if g.is_water(x, y): return Color("2a4a3a")
+	if g.is_walk(x, y): return Color("6a6458")
+	return Color(0, 0, 0, 0)
+
+func _mini_update() -> void:
+	if mini_img == null or world.explored.size() != world.gen.w * world.gen.h: return
+	var g = world.gen
+	for y in g.h:
+		for x in g.w:
+			if world.explored[y * g.w + x]: mini_img.set_pixel(x, y, _mini_color(x, y))
+	mini_tex.update(mini_img)
+	var sc: float = mini.size.x / g.w
+	mini_dot.position = mini.position + Vector2(world.hero.x, world.hero.y) * sc - Vector2(1, 1)
+
+func toggle_map() -> void:
+	tut_event("map")
+	if big_map: big_map.queue_free(); big_map = null; world.paused = false; return
+	world.paused = true
+	big_map = Control.new(); big_map.size = Vector2(960, 540); add_child(big_map)
+	var bg := ColorRect.new(); bg.color = Color(0, 0, 0, 0.8); bg.size = Vector2(960, 540); big_map.add_child(bg)
+	bg.gui_input.connect(func(e): if e is InputEventMouseButton and e.pressed: toggle_map())
+	var g = world.gen; var sc: float = min(900.0 / g.w, 440.0 / g.h)
+	var tr := TextureRect.new(); tr.texture = mini_tex; tr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST; tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tr.size = Vector2(g.w, g.h) * sc; tr.position = Vector2(480, 290) - tr.size / 2; big_map.add_child(tr)
+	var dot := ColorRect.new(); dot.size = Vector2(8, 8); dot.color = Color("7fe08a"); dot.position = tr.position + Vector2(world.hero.x + 0.5, world.hero.y + 0.5) * sc - Vector2(4, 4); big_map.add_child(dot)
+	var t := _lbl(D.t("floor_display", {"name": world.region.name, "n": world.floor_n, "total": world.floors}), 16, Color("e0bc60"), FONT_T); t.position = Vector2(0, 30); t.size = Vector2(960, 24); t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; big_map.add_child(t)
+	var c := _lbl("M / clique fecha", 10, Color("9a8f80")); c.position = Vector2(0, 515); c.size = Vector2(960, 14); c.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; big_map.add_child(c)
+
+func _unhandled_key_input(e: InputEvent) -> void:
+	if big_map and e.pressed and not e.echo and e.keycode in [KEY_M, KEY_ESCAPE]: toggle_map(); get_viewport().set_input_as_handled()
+
+# ---------------------------------------------------------------- tutorial (primeira descida ao esgoto)
+const TUT := [["move", "tut_move"], ["attack", "tut_attack"], ["loot", "tut_loot"], ["heal", "tut_heal"], ["bag", "tut_bag"], ["map", "tut_map"], ["exit", "tut_exit"]]
+var tut_step := -1
+var tut_moves := 0
+var tut_box: Control
+var tut_lbl: Label
+func tut_start() -> void:
+	tut_step = 0
+	tut_box = Control.new(); tut_box.position = Vector2(200, 82); add_child(tut_box)
+	tut_box.add_child(UI.panel(Rect2(0, 0, 560, 70)))
+	var hd := UI.lbl("Tutorial", 12, UI.GOLD); hd.position = Vector2(18, 8); tut_box.add_child(hd)
+	var sk := UI.button(Rect2(470, 8, 74, 20), D.t("tut_skip").substr(0, 14), func(): tut_end(), 10); tut_box.add_child(sk)
+	tut_lbl = UI.wrap(UI.lbl("", 12), 520); tut_lbl.position = Vector2(18, 28); tut_box.add_child(tut_lbl)
+	_tut_show()
+func _tut_show() -> void:
+	if tut_step >= TUT.size(): tut_end(); return
+	var k: String = TUT[tut_step][1]
+	var p := {"k": "Espaço" if TUT[tut_step][0] == "attack" else "I" if TUT[tut_step][0] == "bag" else "M" if TUT[tut_step][0] == "map" else "G", "a": "Q", "p": "Z", "e": "E", "h": "H"}
+	if TUT[tut_step][0] == "move": p.k = "W A S D"
+	var txt := D.t(k, p)
+	tut_lbl.text = txt.replace("«", "").replace("»", "")
+func tut_event(ev: String) -> void:
+	if tut_step < 0 or tut_step >= TUT.size(): return
+	if ev == "move": tut_moves += 1
+	var want: String = TUT[tut_step][0]
+	if (want == "move" and tut_moves >= 6) or (want != "move" and want == ev):
+		tut_step += 1; Sfx.play("pickup", 0.3); _tut_show()
+func tut_end() -> void:
+	tut_step = TUT.size()
+	if tut_box: tut_box.queue_free(); tut_box = null
+	var d := Save.voc(world.voc); d.tutSewer = true; Save.save()

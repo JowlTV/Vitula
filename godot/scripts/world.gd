@@ -17,7 +17,41 @@ var monsters: Array = []
 var occ := {}            # Vector2i -> monstro
 var props := {}          # Vector2i -> {kind, hits, spr}
 var pickups := {}        # Vector2i -> {item, amount, spr}
-var walls := {}          # Vector2i -> true
+var gen: Gen = Gen.new()
+var fb
+var region_id := "karhyn_sewers"
+var region: Dictionary
+var floors := 5
+var seeds := {}
+var pockets: Array = []
+var holes := {}
+var explored := PackedByteArray()
+var far_room := 0
+var camp_room := -2
+var decor_used := {}
+var spikes := {}         # Vector2i -> {spr, warn, up}
+var plates := {}         # Vector2i -> Vector2i (respiradouro)
+var clouds: Array = []
+var lights: Array = []   # {node: PointLight2D, base, water, f, ft, target}
+var stairs = null
+var stairs_spr: Sprite2D
+var rope = null
+var wp = null
+var slope_pass = null
+var spike_t := 0.0
+var kills_by_type := {}
+var roping := false
+var hole_busy := false
+var fog: Sprite2D
+var fog_img: Image
+var fog_tex: ImageTexture
+var dark: CanvasModulate
+var dlg                  # conversa/painéis (game.gd cria)
+var recall_t := 0.0
+var recall_cd := 0.0
+var drink_buffs := {}
+signal floor_built
+signal tut(ev: String)
 var flow := PackedInt32Array()
 var floor_n := 1
 var time_ := 0.0
@@ -44,58 +78,116 @@ func start(v: String, level := 1) -> void:
 	auto_attack = Save.data.settings.get("auto_attack", false)
 	Engine.time_scale = Save.data.settings.get("speed", 0.75)
 	var d := Save.voc(v)
-	if level > d.level: d.level = level
+	if level > Save.level(v): d.xpTotal = Save.xp_for_level(level)
+	Equip.starter_gear(v)
+	region_id = Save.reg.get("region", "karhyn_sewers"); region = D.db.REGIONS[region_id]
+	floor_n = 1
+	var sf := int(Save.reg.get("startFloor", 0))
+	if sf > 0: floor_n = mini(sf, floors); Save.reg.startFloor = 0
 	stats = compute_stats()
+	fb = load("res://scripts/floorbuild.gd").new(self)
 	ground = Node2D.new(); add_child(ground)
 	ents = Node2D.new(); ents.y_sort_enabled = true; add_child(ents)
 	fxl = Node2D.new(); fxl.z_index = 100; add_child(fxl)
-	var cm := CanvasModulate.new(); cm.color = Color(0.62, 0.62, 0.7); add_child(cm)
-	build_arena()
+	dark = CanvasModulate.new(); dark.color = Color(0.2, 0.2, 0.25); add_child(dark)
 	hero = load("res://scripts/hero.gd").new()
 	ents.add_child(hero)
 	hero.setup(v, D.voc_scale(v))
-	hero.level = d.level
+	var li := Save.level_info(d.xpTotal); hero.level = li.level; hero.xp = li.xp
 	hero.max_hp = stats.maxHp + 10 * (hero.level - 1)
 	hero.hp = hero.max_hp
 	hero.fury = fury_max if D.is_mana(v) else 0.0
 	for s in spells: hero.cds[s] = 0.0
-	hero.x = 4; hero.y = MH / 2
-	var p := cell_pos(hero.x, hero.y); hero.px = p.x; hero.py = p.y
-	update_flow()
-	for i in 14: spawn_random()
+	_hero_lights()
+	next_wave = 120.0 + randf_range(30, 120)
+	build_floor("start")
+
+## luz do herói + luminária equipada (lampião ou Pingente da Deusa)
+var lamp_light: PointLight2D
+func _hero_lights() -> void:
+	hero.light.texture_scale = 3.3 * T * 2 / 128.0; hero.light.color = Color("d8ccb8"); hero.light.energy = 1.0
+	lamp_light = PointLight2D.new(); lamp_light.texture = A.light_tex; lamp_light.position = Vector2(0, -18); hero.add_child(lamp_light)
+	var lg = Save.voc(voc).equip.get("light")
+	if lg and Equip.E(lg.id).has("light"):
+		var L: Dictionary = Equip.E(lg.id).light
+		lamp_light.texture_scale = L.r * T * 2 / 128.0 * min(1.3, Equip.gear_mult(lg)); lamp_light.color = UI.color_int(int(L.tint)); lamp_light.energy = 0.8
+	else: lamp_light.enabled = false
+
+## monta (ou remonta) o andar atual
+func build_floor(arrive := "start") -> void:
+	for n in ground.get_children(): n.queue_free()
+	for n in ents.get_children():
+		if n != hero: n.queue_free()
+	for n in fxl.get_children(): n.queue_free()
+	monsters = []; occ = {}; props = {}; pickups = {}; spikes = {}; plates = {}; clouds = []; lights = []; holes = {}
+	stairs = null; rope = null; wp = null; slope_pass = null; barrier_cells = []; barrier_t = 0
+	hero.target = null; hero.move_t = 0
+	fb.build(arrive)
+	MW = gen.w; MH = gen.h
+	_build_fog()
+	update_flow(); reveal()
+	Sfx.music("music_boss" if floor_n == floors else "music_sewers", 0.5)
+	floor_built.emit()
+
+func place_hero_at(c: Vector2i) -> void:
+	hero.x = c.x; hero.y = c.y; hero.move_t = 0
+	var p := cell_pos(c.x, c.y); hero.px = p.x; hero.py = p.y; hero.from_x = p.x; hero.from_y = p.y
 	_place_hero()
 
-func build_arena() -> void:
-	# sala grande do esgoto com pilares e barris (arte do Phaser: floor, wall_top_v3, wall_front_v3)
-	var floor_tex: Texture2D = A.tex("res://assets/art/floor.png")
-	var top: Texture2D = A.tex("res://assets/art/wall_top_v3.png")
-	var front: Texture2D = A.tex("res://assets/art/wall_front_v3.png")
-	var fl := Sprite2D.new(); fl.texture = floor_tex; fl.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-	fl.region_enabled = true; fl.region_rect = Rect2(0, 0, MW * T, MH * T); fl.centered = false
-	ground.add_child(fl)
-	for yy in MH:
-		for xx in MW:
-			var border := xx == 0 or yy == 0 or xx == MW - 1 or yy == MH - 1
-			var pillar := (xx % 6 == 3 and yy % 5 == 2) and not border
-			if border or pillar: walls[Vector2i(xx, yy)] = true
-	for c in walls:
-		var below: Vector2i = c + Vector2i(0, 1)
-		var s := Sprite2D.new(); s.centered = false; s.position = Vector2(c.x * T, c.y * T)
-		var tx: Texture2D = front if (not walls.has(below) and below.y < MH) else top
-		s.texture = tx; s.scale = Vector2(T / float(tx.get_width()), T / float(tx.get_height()))
-		ground.add_child(s)
-	for c in [Vector2i(8, 3), Vector2i(9, 3), Vector2i(15, 14), Vector2i(20, 4), Vector2i(21, 12)]:
-		add_prop(c, "barrel")
-
 func add_prop(c: Vector2i, kind: String) -> void:
-	var s := Sprite2D.new(); s.texture = A.tex("res://assets/art/%s.png" % kind)
-	var p := cell_pos(c.x, c.y); s.position = p + Vector2(0, 4); s.offset = Vector2(0, -s.texture.get_height() / 2.0)
-	var k: float = D.db.PROP_H.get(kind, 40) / float(s.texture.get_height()); s.scale = Vector2(k, k)
+	if kind == "chest_closed" or props.has(c): return
+	var tx: Texture2D = fb.art(kind)
+	if tx == null: return
+	var s := Sprite2D.new(); s.texture = tx
+	var p := cell_pos(c.x, c.y); s.position = p + Vector2(0, 4); s.offset = Vector2(0, -tx.get_height() / 2.0)
+	var k: float = D.db.PROP_H[kind] / float(tx.get_height()) if D.db.PROP_H.has(kind) else 1.0
+	if kind == "cave_rocks": k = 0.9
+	s.scale = Vector2(k, k)
+	var sh := Sprite2D.new(); sh.texture = A.shadow_tex; sh.position = Vector2(0, -3) / k; sh.scale = Vector2(tx.get_width() * 0.9 / 64.0, tx.get_width() * 0.3 / 64.0); sh.show_behind_parent = true
+	s.add_child(sh)
 	ents.add_child(s)
-	props[c] = {"kind": kind, "hits": 0, "spr": s}
+	props[c] = {"kind": kind, "hits": 0, "spr": s, "x": c.x, "y": c.y}
+	if kind == "torch_stand": add_light(p - Vector2(0, 38), 3.6 * T, Color("ffa255"), false, true)
+
+func remove_prop(c: Vector2i) -> void:
+	if props.has(c): props[c].spr.queue_free(); props.erase(c)
+
+func clear_cell(c: Vector2i) -> void:
+	remove_prop(c)
+	if occ.has(c):
+		var m = occ[c]; m.queue_free(); monsters.erase(m); occ.erase(c)
+
+## luz pontual (tochas quentes, lodo esverdeado, cogumelos azuis); r = raio em px
+func add_light(at: Vector2, r: float, c: Color, water := false, glow := false) -> void:
+	var l := PointLight2D.new(); l.texture = A.light_tex; l.position = at; l.color = c
+	l.texture_scale = r * 2 / 128.0; l.energy = 0.55 if water else 1.0
+	ground.add_child(l)
+	var e := {"node": l, "base": l.energy, "water": water, "f": 1.0, "ft": 0.0, "target": 1.0}
+	if glow:
+		var g := Sprite2D.new(); g.texture = A.light_tex; g.position = at; g.scale = Vector2.ONE * (r * 1.4 / 128.0)
+		g.modulate = Color(1, 0.6, 0.25, 0.18); var cm := CanvasItemMaterial.new(); cm.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD; cm.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED; g.material = cm
+		g.z_index = 60; ground.add_child(g); e.glow = g
+	lights.append(e)
+
+func add_spike(c: Vector2i) -> void:
+	var base := Node2D.new(); base.position = Vector2(c.x * T, c.y * T); base.z_index = -4; ground.add_child(base)
+	for r in [[Rect2(3, 3, T - 6, T - 6), Color("1c1b20")], [Rect2(4, 4, T - 8, 2), Color("8a6a3a")], [Rect2(4, T - 6, T - 8, 2), Color("8a6a3a")], [Rect2(4, 4, 2, T - 8), Color("8a6a3a")], [Rect2(T - 6, 4, 2, T - 8), Color("8a6a3a")]]:
+		var cr := ColorRect.new(); cr.position = r[0].position; cr.size = r[0].size; cr.color = r[1]; base.add_child(cr)
+	for k in 3:
+		for j in 3:
+			var hole := ColorRect.new(); hole.color = Color("050406"); hole.position = Vector2(16 + k * 14, 16 + j * 14); hole.size = Vector2(4, 4); base.add_child(hole)
+	var warn := ColorRect.new(); warn.color = Color(0.75, 0.19, 0.13, 0); warn.position = Vector2(4, 4); warn.size = Vector2(T - 8, T - 8); base.add_child(warn)
+	var spr := Sprite2D.new(); spr.texture = fb.art("spikes_extended"); spr.position = Vector2(T / 2.0, T / 2.0); spr.visible = false; base.add_child(spr)
+	spikes[c] = {"spr": spr, "warn": warn, "up": false}
+
+func add_plate(c: Vector2i, vent: Vector2i) -> void:
+	plates[c] = vent
+	var b := Node2D.new(); b.position = Vector2(c.x * T, c.y * T); b.z_index = -5; ground.add_child(b)
+	for r in [[Rect2(10, 12, T - 20, T - 20), Color(0, 0, 0, 0.45)], [Rect2(12, 12, T - 24, T - 26), Color("6a6670")], [Rect2(12, 12, T - 24, 3), Color("86828c")], [Rect2(12, T - 17, T - 24, 3), Color("4a4750")]]:
+		var cr := ColorRect.new(); cr.position = r[0].position; cr.size = r[0].size; cr.color = r[1]; b.add_child(cr)
 
 func cell_pos(cx: int, cy: int) -> Vector2: return Vector2(cx * T + T / 2.0, cy * T + T * 0.82)
-func is_floor(cx: int, cy: int) -> bool: return cx >= 0 and cy >= 0 and cx < MW and cy < MH and not walls.has(Vector2i(cx, cy))
+func is_floor(cx: int, cy: int) -> bool: return gen.is_walk(cx, cy)
 func walkable(cx: int, cy: int) -> bool: return is_floor(cx, cy) and not props.has(Vector2i(cx, cy))
 
 # ============================================================== campo de distância (BFS a partir do herói, até 30 casas)
@@ -128,8 +220,36 @@ func compute_stats() -> Dictionary:
 	var at: Dictionary = d.attr
 	s.maxHp += 25 * at.get("vit", 0); s.armor += 0.5 * at.get("armor", 0); s.atkSpeed += 0.0025 * at.get("aspd", 0)
 	s.might *= 1 + 0.02 * at.get("str", 0); s.recovery += 0.5 * at.get("hpreg", 0); s.manaReg = 0.5 * at.get("mpreg", 0)
-	s.weaponAtk = D.db.FIST_ATTACK; s.gearDef = 0; s.gearBlock = 0; s.gearDodge = 0; s.gearCrit = 0; s.gearMl = 0
+	# equipamentos vestidos (raridade e +N multiplicam)
+	s.weaponAtk = D.db.FIST_ATTACK; s.gearDef = 0.0; s.gearBlock = 0.0; s.gearDodge = 0.0; s.gearCrit = 0.0; s.gearMl = 0.0; s.res = {}; s.weapon = null
+	for slot in d.equip:
+		var g: Dictionary = d.equip[slot]; var E := Equip.E(g.id)
+		if E.is_empty(): continue
+		var m := Equip.gear_mult(g)
+		if E.slot == "weapon":
+			var w := E.duplicate(); w.elDmg = E.get("elDmg", 0) * m; s.weapon = w
+			if not ranged or E.get("bow", false): s.weaponAtk = E.get("atk", D.db.FIST_ATTACK) * m
+		s.gearDef += E.get("def", 0) * m; s.gearBlock += E.get("block", 0); s.gearDodge += E.get("dodge", 0); s.gearCrit += E.get("crit", 0); s.gearMl += E.get("ml", 0)
+		s.recovery += E.get("hpReg", 0); s.manaReg += E.get("manaReg", 0); s.moveSpeed *= 1 + E.get("speed", 0)
+		for k in E.get("res", {}): s.res[k] = s.res.get(k, 0.0) + E.res[k]
+	# teia de talentos
+	var f := Talents.fx(voc)
+	s.might *= 1 + f.get("dmg", 0.0); s.maxHp = roundi(s.maxHp * max(0.3, 1 + f.get("hp", 0.0)))
+	s.armor += f.get("armor", 0.0); s.talBlock = f.get("block", 0.0); s.recovery += f.get("regen", 0.0); s.atkSpeed = max(0.3, s.atkSpeed + f.get("aspd", 0.0))
+	s.talCrit = f.get("crit", 0.0); s.talCritDmg = f.get("critDmg", 0.0); s.leech = f.get("leech", 0.0) * (3 if f.ks.has("thirst") else 1); s.hpDmg = f.get("hpDmg", 0.0)
+	s.exec = f.get("exec", 0.0); s.elite = f.get("elite", 0.0); s.lowHp = f.get("lowHp", 0.0); s.taken = min(0.3, f.get("taken", 0.0)); s.thorns = f.get("thorns", 0.0); s.furyGain = f.get("furyGain", 0.0)
+	s.moveSpeed *= 1 + f.get("speed", 0.0); s.gearDodge += f.get("dodge", 0.0); s.manaReg += f.get("mreg", 0.0)
+	s.ks = f.ks
+	fury_max += f.get("fury", 0.0)
 	return s
+
+## recalcula status depois de trocar equipamento ou talento (mantém os bônus de nível na vida)
+func restat() -> void:
+	if hero == null: stats = compute_stats(); return
+	var old: float = hero.max_hp - stats.maxHp
+	stats = compute_stats()
+	hero.max_hp = stats.maxHp + old; hero.hp = min(hero.hp, hero.max_hp)
+func attacks_per_sec() -> float: return stats.get("atkSpeed", 1.0) / stats.cooldown
 func attr(id: String) -> int: return Save.voc(voc).attr.get(id, 0)
 func sword_eff() -> float: return attr("weapon") + Save.skill(voc, "distance" if ranged else "sword").lvl
 func shield_lvl() -> float: return Save.skill(voc, "shield").lvl + attr("shield")
@@ -138,23 +258,25 @@ func defense_value() -> float:
 	var v: float = stats.armor + stats.gearDef + 0.25 * (shield_lvl() - D.SKILLS.shield.start)
 	return v * 1.54 if hero.guard_t > 0 else v        # Égide: +54% de defesa
 func block_chance() -> float:
-	if ranged: return min(0.35, 0.05 + 0.006 * (Save.skill(voc, "dodge").lvl - D.SKILLS.dodge.start))
-	return min(0.6, min(0.35, 0.05 + 0.006 * (shield_lvl() - D.SKILLS.shield.start)) + 0.005 * attr("block") + stats.gearBlock)
+	if ranged: return min(0.35, 0.05 + 0.006 * (Save.skill(voc, "dodge").lvl + stats.gearDodge - D.SKILLS.dodge.start))
+	var b: float = min(0.35, 0.05 + 0.006 * (shield_lvl() - D.SKILLS.shield.start)) + 0.005 * attr("block") + stats.gearBlock + stats.talBlock
+	return min(0.6, b * 2 if stats.ks.has("iron") else b)
 func promo():
 	var p = D.db.PROMOTION.get(voc)
 	return p if p and Save.voc(voc).get("promoted", false) else null
 func max_damage() -> float:
 	var pm = promo()
-	return (0.085 * stats.weaponAtk * sword_eff() + hero.level / 5.0) * stats.might * (pm.dmgMult if pm else 1.0)
+	return (0.085 * stats.weaponAtk * sword_eff() + hero.level / 5.0) * stats.might * (pm.dmgMult if pm else 1.0) + stats.get("hpDmg", 0.0) * (hero.max_hp if hero else stats.maxHp)
 func base_damage() -> float:
 	return max_damage() * 0.8 * (1.6 if hero.frenzy_t > 0 else 1.0) * (1.4 if hero.kber_t > 0 else 1.0)
-func crit_chance() -> float: return 0.1 + 0.005 * attr("crit") + stats.gearCrit + (0.15 if hero.frenzy_t > 0 else 0.0)
-func crit_mult() -> float: return 1.8
+func crit_chance() -> float:
+	if stats.ks.has("iron"): return 0.0
+	return 0.1 + 0.005 * attr("crit") + stats.gearCrit + stats.talCrit + (0.15 if hero.frenzy_t > 0 else 0.0)
+func crit_mult() -> float: return 1.8 + stats.get("talCritDmg", 0.0)
 func xp_next() -> float: return 8 * pow(hero.level, 1.35)
 func range_now() -> int: return ranged + (2 if hero.eagle_t > 0 else 0) + (6 if hero.far_t > 0 else 0)
 func spell_unlocked(id: String) -> bool:
-	# etapa 1: libera pelo nível (a teia de talentos entra na etapa 4)
-	return hero.level >= int(spells[id].level)
+	return Talents.spell_unlocked(voc, id, hero.level)
 
 # ============================================================== laço principal
 func _physics_process(raw_dt: float) -> void:
@@ -165,7 +287,12 @@ func _physics_process(raw_dt: float) -> void:
 	for m in monsters.duplicate(): update_monster(m, dt)
 	skill_tick(dt)
 	if time_ > next_wave: spawn_wave(); next_wave = time_ + randf_range(90, 180)
-	if monsters.size() < 6: spawn_random(true)
+	update_traps(dt)
+	update_lights(dt)
+	update_recall(dt)
+	for k in drink_buffs.keys():
+		drink_buffs[k] -= dt
+		if drink_buffs[k] <= 0: drink_buffs.erase(k)
 
 func input_dir() -> Vector2i:
 	if bot: return bot_dir()
@@ -298,11 +425,24 @@ func try_move(dx: int, dy: int) -> void:
 	h.x = n.x; h.y = n.y
 	h.move_len = 0.22 / stats.moveSpeed * (1.35 if diag else 1.0) / (1.4 if h.flee_t > 0 else 1.0)
 	h.move_t = h.move_len
+	if recall_t > 0: recall_t = 0.0; emit_signal("msg", D.t("recall_cancel"))
+	tut.emit("move")
+	reveal()
 	update_flow()
 
 func hero_arrived() -> void:
 	var k := Vector2i(hero.x, hero.y)
 	if pickups.has(k): collect(k)
+	if plates.has(k): trigger_vent(plates[k])
+	if wp != null and k == wp: wp_step()
+	if slope_pass != null and k == slope_pass and not finished: _end_of_sewers(); return
+	if stairs != null and k == stairs and not finished:
+		if floor_n < floors:
+			floor_n += 1; Sfx.play("levelup", 0.3)
+			_transition(func():
+				build_floor()
+				emit_signal("msg", D.t("cave_collapse") if floor_n == 3 else D.t("floor_info", {"region": region.name, "n": floor_n}) if floor_n < floors else D.t("last_floor")))
+	hole_hint()
 
 func bump_prop(c: Vector2i) -> void:
 	var pr: Dictionary = props[c]
@@ -355,9 +495,12 @@ func shoot_arrow(from: Vector2, to: Vector2, on_hit: Callable, speed := 900.0) -
 	var a := play_fx("pfx_arrow", from, 0.55 * 2, false, ang, true)
 	var dur: float = max(0.08, from.distance_to(to) / speed)
 	var tw := create_tween(); tw.tween_property(a, "position", to, dur)
-	tw.finished.connect(func(): a.queue_free(); on_hit.call())
+	tw.finished.connect(func():
+		if is_instance_valid(a): a.queue_free()
+		if not finished: on_hit.call())
 
 func arrow_hit(t, mult: float, el := "physical") -> void:
+	if not is_instance_valid(t) or t.dead: return
 	var crit := randf() < crit_chance()
 	var far: bool = hero.far_t > 0
 	var hp0: float = t.hp
@@ -404,6 +547,8 @@ func hurt_hero(amount: float, pure := 0.0, el := "physical", attacker = null) ->
 	train_skill("dodge" if ranged else "shield")
 	if randf() < block_chance():
 		float_text(Vector2(h.px, h.py - 66), D.t("dodged" if ranged else "blocked"), Color("9fd0ff")); Sfx.play("hit", 0.2); return
+	if attacker and Best.complete(attacker.kind, kills_by_type): amount *= 1 - Best.BONUS
+	amount *= 1 - stats.get("taken", 0.0)
 	var real: float = max(1.0, max(amount * 0.25, amount - defense_value()))   # a defesa nunca anula mais que 75%
 	h.hp -= real; h.flash = 1
 	add_fury(4)
@@ -413,11 +558,11 @@ func hurt_hero(amount: float, pure := 0.0, el := "physical", attacker = null) ->
 		if not h.attack_t > 0: h.pose = "hurt"; h.pose_t = 0.42
 		shake(0.13, 4); splat(Vector2(h.px, h.py - 2), 6)
 	if attacker and not attacker.dead and h.guard_t > 0 and amount > 0: damage_monster(attacker, max(1.0, amount * 0.1))   # Égide devolve 10%
+	if attacker and not attacker.dead and stats.get("thorns", 0) and amount > 0: damage_monster(attacker, amount * stats.thorns)
 	if h.hp <= 0:
 		h.hp = 0; h.dead = true
 		h.spr.play("death")
-		emit_signal("msg", D.t("you_died") if D.i18n.pt.has("you_died") else "Você morreu.")
-		get_tree().create_timer(2.5, false).timeout.connect(func(): get_tree().reload_current_scene())
+		get_tree().create_timer(1.6, false).timeout.connect(func(): finish(false))
 
 func poison_hero(p: Dictionary) -> void:
 	var h = hero
@@ -432,27 +577,30 @@ func tick_poison(dt: float) -> void:
 
 func heal(amount: float, show := true) -> void:
 	var h = hero
+	if stats.ks.has("thirst"): amount *= 0.5
 	if h.dead or amount <= 0: return
 	var before: float = h.hp; h.hp = min(h.max_hp, h.hp + amount)
 	if show and h.hp - before >= 1: float_text(Vector2(h.px, h.py - 66), "+%d" % roundi(h.hp - before), Color(D.COLORS.heal))
 
 func add_fury(v: float) -> void:
+	v *= 1 + stats.get("furyGain", 0.0)
 	if D.is_mana(voc): return
 	hero.fury = min(fury_max, hero.fury + v); hero.fury_idle = 0
 
 func add_xp(v: float) -> void:
 	v *= 0.95
 	var h = hero; var d := Save.voc(voc)
-	h.xp += v * stats.growth
+	h.xp += v * stats.growth; d.xpTotal += v * stats.growth
 	while h.xp >= xp_next():
 		h.xp -= xp_next(); h.level += 1; h.max_hp += 10; h.hp = h.max_hp
 		float_text(Vector2(h.px, h.py - 84), D.t("level_up_float", {"n": h.level}), Color(D.COLORS.gold))
 		emit_signal("msg", D.t("level_up_talent", {"n": h.level}))
+		if not d.has("charges"): d.charges = [0.0, 0.0]
 		d.charges[1] = 1.0
 		if D.is_mana(voc): h.fury = fury_max
 		Sfx.play("levelup", 0.4)
 		check_promotion()
-	d.level = h.level; d.xp = h.xp; Save.save()
+	Save.save()
 
 func check_promotion() -> void:
 	var p = D.db.PROMOTION.get(voc); var d := Save.voc(voc)
@@ -932,6 +1080,14 @@ func monster_attacks_monster(m, o) -> void:
 
 func damage_monster(m, amount: float, el := "physical", pierce := false) -> void:
 	if m.dead: return
+	if Best.complete(m.kind, kills_by_type): amount *= 1 + Best.BONUS
+	# teia: execução, elites, vida baixa, Olhos de Carcará
+	if amount > 0:
+		if stats.get("exec", 0) and m.hp < m.max_hp * 0.3: amount *= 1 + stats.exec
+		if stats.get("elite", 0) and (m.elite or m.champion): amount *= 1 + stats.elite
+		if stats.get("lowHp", 0) and hero.hp < hero.max_hp * 0.5: amount *= 1 + stats.lowHp
+		if stats.ks.has("carcara"): amount *= crit_mult() if m.hp >= m.max_hp * 0.999 else 0.85
+		if stats.get("leech", 0) and not hero.dead: hero.hp = min(hero.max_hp, hero.hp + amount * stats.leech)
 	var res: float = D.db.MONSTER_RES.get(m.kind, {}).get(el, 0.0)
 	amount = max(1.0, amount * (1 - res) - (m.data.get("arm", 0.0) if el == "physical" and not pierce else 0.0))
 	if res >= 1: amount = 0
@@ -949,9 +1105,23 @@ func monster_died(m, by_monster := false) -> void:
 	monsters.erase(m)
 	if hero.target == m: hero.target = null
 	if not by_monster:
-		kills += 1
+		var bt0 := Best.tier(m.kind, kills_by_type)
+		kills += 1; kills_by_type[m.kind] = kills_by_type.get(m.kind, 0) + 1
+		var bt1 := Best.tier(m.kind, kills_by_type)
+		if bt1 > bt0:
+			emit_signal("msg", D.t("best_unlock", {"name": m.data.name, "tier": D.t("best_tier_%d" % bt1)}) + (" " + D.t("best_bonus_on") if bt1 == 4 else "")); Sfx.play("levelup", 0.25)
 		add_xp(m.data.xp * (5 if m.champion else 1))
+		var ct = Save.voc(voc).get("contract")
+		if ct and ct.kind == m.kind and int(ct.got) < int(ct.n):
+			ct.got = int(ct.got) + 1; Save.save()
+			emit_signal("msg", D.t("contract_progress_done", {"n": int(ct.n), "name": m.data.name}) if ct.got >= ct.n else D.t("contract_progress", {"got": int(ct.got), "n": int(ct.n), "name": m.data.name}))
 		var c := Vector2i(m.x, m.y)
+		var eq_chance := 1.0 if m.elite else 0.35 if m.champion else 0.025
+		if randf() < eq_chance:
+			var gg = roll_equip(m)
+			if gg: drop(c, "eq_" + gg.id, gg)
+		if m.elite or (m.champion and randf() < 0.25): drop(c, "boss_essence")
+		if m.elite and floor_n <= 5 and randf() < 0.015: drop(c, "eq_goddess_pendant", Equip.gear_new("goddess_pendant", 4))
 		if randf() < 0.6 or m.elite or m.champion: drop(c, "gold")
 		if randf() < 0.12: drop(c, ["apple", "bread", "meat"][randi() % 3])
 		var d := Save.voc(voc); var add: float = m.max_hp / D.db.POTION_FILL
@@ -964,24 +1134,33 @@ func monster_died(m, by_monster := false) -> void:
 	m.ia.active = false
 	m.spr.modulate = Color.WHITE; m.spr.position = Vector2.ZERO
 	m.spr.play("death"); m.shadow.visible = false; m.z_index = -1
-	var tw := create_tween(); tw.tween_interval(3.8); tw.tween_property(m, "modulate:a", 0.0, 1.2); tw.tween_callback(m.queue_free)
+	var ttl := 40.0 if pickups.has(Vector2i(m.x, m.y)) else 5.0
+	var tw := create_tween(); tw.tween_interval(ttl - 1.2); tw.tween_property(m, "modulate:a", 0.0, 1.2); tw.tween_callback(m.queue_free)
+	if m.elite and not by_monster: boss_fell(m)
 
 # ============================================================== itens no chão
-func drop(c: Vector2i, item: String) -> void:
-	if item == "none" or not D.ITEMS.has(item): return
+func drop(c: Vector2i, item: String, gear = null) -> void:
+	if item.begins_with("eq_"):
+		if gear == null: gear = Equip.gear_new(item.substr(3))
+	elif item == "none" or not D.ITEMS.has(item): return
 	if pickups.has(c):
 		var alt := free_neighbors(c)
 		if alt.is_empty(): return
 		c = alt[0]
 	var p := cell_pos(c.x, c.y)
-	var s := Sprite2D.new(); s.texture = A.tex("res://assets/art/%s.png" % D.ITEMS[item].icon)
+	var s := Sprite2D.new()
+	if gear: s.texture = Equip.icon(gear.id); s.scale = Vector2(0.8, 0.8)
+	elif item == "boss_essence": s.texture = Equip.item_icon("i_red_gem"); s.modulate = Color("ff9a30")
+	else: s.texture = A.tex("res://assets/art/%s.png" % D.ITEMS[item].icon)
 	s.position = p + Vector2(0, 6); s.offset = Vector2(0, -s.texture.get_height() / 2.0); s.z_index = -1
+	if gear and int(gear.r) > 0:
+		var gl := Sprite2D.new(); gl.texture = A.light_tex; gl.scale = Vector2(0.5, 0.3); gl.modulate = Equip.rarity_color(int(gear.r)); gl.modulate.a = 0.6; gl.show_behind_parent = true; s.add_child(gl)
 	ents.add_child(s)
 	var amount := 0
 	if item == "gold": amount = randi_range(5, 12)
 	if item == "silver": amount = randi_range(2, 5)
 	if amount: amount = roundi(amount * (1 + 0.2 * (floor_n - 1)))
-	pickups[c] = {"item": item, "amount": amount, "spr": s}
+	pickups[c] = {"item": item, "amount": amount, "spr": s, "gear": gear}
 	if c == Vector2i(hero.x, hero.y): collect(c)
 
 func free_neighbors(c: Vector2i) -> Array:
@@ -992,8 +1171,23 @@ func free_neighbors(c: Vector2i) -> Array:
 	return out
 
 func collect(c: Vector2i) -> void:
-	var pk: Dictionary = pickups[c]; pickups.erase(c); pk.spr.queue_free()
-	var info: Dictionary = D.ITEMS[pk.item]; var h = hero; var at := Vector2(h.px, h.py - 60)
+	var pk: Dictionary = pickups[c]
+	var h = hero; var at := Vector2(h.px, h.py - 60)
+	if pk.get("gear"):
+		var d := Save.voc(voc); var add := Equip.oz(pk.gear.id)
+		if Equip.load_of(voc) + add > Equip.cap_of(voc, h.level):
+			if Time.get_ticks_msec() - pk.get("warned", -9999) > 3000: pk.warned = Time.get_ticks_msec(); emit_signal("msg", D.t("cap_no_room", {"oz": Equip.fmt_oz(add)}))
+			return
+		pickups.erase(c); pk.spr.queue_free()
+		d.gear.append(pk.gear); Save.save(); Sfx.play("gem", 0.4)
+		float_text(at, Equip.gear_name(pk.gear), Equip.rarity_color(int(pk.gear.r)), 11)
+		emit_signal("msg", D.t("got_item", {"name": Equip.gear_name(pk.gear), "rarity": Equip.rarity_name(int(pk.gear.r))}))
+		return
+	if pk.item == "boss_essence":
+		pickups.erase(c); pk.spr.queue_free(); Save.voc(voc).essence += 1; Save.save(); Sfx.play("gem", 0.5)
+		float_text(at, "+1 " + D.ITEMS.boss_essence.name if D.ITEMS.has("boss_essence") else "+1 Essência", Color("ffa030")); return
+	pickups.erase(c); pk.spr.queue_free(); tut.emit("loot")
+	var info: Dictionary = D.ITEMS[pk.item]
 	match pk.item:
 		"gold", "silver":
 			gold_run += pk.amount; float_text(at, D.t("gold_float", {"n": pk.amount}), Color(D.COLORS.gold)); Sfx.play("pickup", 0.35)
@@ -1079,3 +1273,257 @@ func bot_dir() -> Vector2i:
 		if d < bd: bd = d; best = m
 	if best == null or bd < 1.5: return Vector2i.ZERO
 	return Vector2i(signi(best.x - h.x), signi(best.y - h.y))
+
+# ============================================================== andar: transições, corda, tocas, waypoint (floor.js, hero.js, waypoint.js)
+signal fade(out: bool, dur: float)
+func _transition(fn: Callable) -> void:
+	paused = true; fade.emit(true, 0.25)
+	await get_tree().create_timer(0.27).timeout
+	fn.call(); paused = false; fade.emit(false, 0.3)
+
+## E: tocas, waypoint ou corda
+func interact() -> void:
+	var h = hero
+	if h.dead or finished or paused: return
+	if try_hole(): return
+	if wp != null and max(abs(h.x - wp.x), abs(h.y - wp.y)) <= 1: wp_step(); wp_menu(); return
+	if rope == null or abs(h.x - rope.x) > 1 or abs(h.y - rope.y) > 1 or roping: return
+	if floor_n > 1:
+		roping = true
+		_transition(func(): floor_n -= 1; build_floor("stairs"); roping = false; emit_signal("msg", D.t("rope_up", {"n": floor_n})))
+		return
+	leave_to_town("sewer")
+
+func leave_to_town(spawn: String) -> void:
+	if finished: return
+	finished = true
+	var d := Save.voc(voc); d.gold += roundi(gold_run * stats.greed); Save.add_kills(kills_by_type); Save.data.runs = Save.data.get("runs", 0) + 1; Save.save()
+	Save.reg.townSpawn = spawn
+	fade.emit(true, 0.4)
+	await get_tree().create_timer(0.42).timeout
+	get_tree().change_scene_to_file("res://town.tscn")
+
+func hole_hint() -> void:
+	var h = hero
+	for d in D.DIRS8:
+		var c := Vector2i(h.x + d.x, h.y + d.y)
+		if holes.has(c): emit_signal("msg", D.t("hole_hint_in" if holes[c].inside else "hole_hint_out")); return
+
+func try_hole() -> bool:
+	var h = hero
+	if holes.is_empty() or hole_busy: return hole_busy
+	for d in D.DIRS8:
+		var c := Vector2i(h.x + d.x, h.y + d.y)
+		if not holes.has(c): continue
+		var hole: Dictionary = holes[c]; var to: Vector2i = hole.to
+		if not walkable(to.x, to.y) or occ.has(to):
+			var best = null; var bd := 99
+			for dy in range(-3, 4):
+				for dx in range(-3, 4):
+					var t := to + Vector2i(dx, dy)
+					if walkable(t.x, t.y) and not occ.has(t) and abs(dx) + abs(dy) < bd: bd = abs(dx) + abs(dy); best = t
+			if best == null: return true
+			to = best
+		hole_busy = true
+		_transition(func():
+			hole_busy = false; place_hero_at(to); reveal(); update_flow()
+			emit_signal("msg", D.t("hole_enter" if hole.inside else "hole_exit")))
+		return true
+	return false
+
+func wp_list() -> Dictionary:
+	var d := Save.voc(voc)
+	if not d.has("wps"): d.wps = {}
+	return d.wps
+func wp_step() -> void:
+	var L := wp_list()
+	if not L.has(region_id): L[region_id] = []
+	if not floor_n in L[region_id]:
+		L[region_id].append(floor_n); L[region_id].sort(); Save.save()
+		emit_signal("msg", D.t("wp_on", {"region": region.name, "n": floor_n})); Sfx.play("levelup", 0.3)
+	emit_signal("msg", D.t("wp_press", {"k": "E"}))
+func wp_menu() -> void:
+	if dlg == null or dlg.is_open(): return
+	var opts := [[D.t("wp_town"), func(): dlg.close(); leave_to_town("waypoint")]]
+	for f in wp_list().get(region_id, []):
+		if int(f) == floor_n: continue
+		opts.append([D.t("wp_floor", {"region": region.name, "n": int(f)}), func():
+			dlg.close(); floor_n = int(f); _transition(func(): build_floor())])
+	opts.append([D.t("wp_stay"), func(): dlg.close()])
+	set_paused(true)
+	dlg.say(D.t("wp_title"), D.t("wp_body"), opts.slice(0, 9))
+
+func set_paused(v: bool) -> void: paused = v
+
+# ---------------------------------------------------------------- armadilhas
+func update_traps(dt: float) -> void:
+	spike_t += dt
+	var up := fmod(spike_t, 2.6) > 1.7; var ph := fmod(spike_t, 2.6)
+	var h = hero
+	for c in spikes:
+		var s: Dictionary = spikes[c]
+		if s.up != up: s.up = up; s.spr.visible = up
+		s.warn.color.a = 0.0 if up else (0.25 + 0.2 * sin(time_ * 30) if ph > 1.2 else 0.0)
+		if not up: continue
+		if h.x == c.x and h.y == c.y and h.move_t <= 0 and time_ - h.get_meta("spike", -9.0) > 1: h.set_meta("spike", time_); hurt_hero(12)
+		var m = occ.get(c)
+		if m and not m.fly and time_ - m.get_meta("spike", -9.0) > 1: m.set_meta("spike", time_); damage_monster(m, 10)
+	for cl in clouds.duplicate():
+		cl.t -= dt; cl.tick -= dt
+		cl.node.modulate.a = clamp(cl.t, 0.0, 1.0); cl.node.rotation += dt * 0.4
+		if cl.tick <= 0:
+			cl.tick = 0.5
+			for d in [Vector2i.ZERO] + D.DIRS8:
+				var c: Vector2i = cl.c + d
+				if h.x == c.x and h.y == c.y: hurt_hero(6)
+				var m = occ.get(c)
+				if m: damage_monster(m, 6)
+		if cl.t <= 0: cl.node.queue_free(); clouds.erase(cl)
+
+func trigger_vent(v: Vector2i) -> void:
+	emit_signal("msg", D.t("gas_trap")); Sfx.play("explode", 0.2)
+	var n := Node2D.new(); n.position = Vector2(v.x * T + T / 2.0, v.y * T + T / 2.0); n.z_index = 90; fxl.add_child(n)
+	for k in 10:
+		var s := Sprite2D.new(); s.texture = A.light_tex; s.position = Vector2(randf_range(-T, T), randf_range(-T, T)); s.scale = Vector2.ONE * randf_range(0.3, 0.5); s.modulate = Color(0.44, 0.75, 0.23, 0.35); n.add_child(s)
+	clouds.append({"c": v, "t": 4.0, "tick": 0.0, "node": n})
+
+# ---------------------------------------------------------------- luzes (oscilação) e névoa da guerra
+func update_lights(dt: float) -> void:
+	for l in lights:
+		l.ft -= dt
+		if l.ft <= 0: l.ft = 0.06 + randf() * 0.18; l.target = 1 + (randf() * 2 - 1) * (0.25 if l.water else 0.12)
+		l.f = lerpf(l.f, l.target, min(1.0, dt * 10))
+		l.node.energy = l.base * l.f
+		if l.has("glow"): l.glow.modulate.a = 0.16 * l.f + 0.04
+	var aura := 1.8 if hero.aura_t > 0 else 1.0
+	hero.light.texture_scale = 3.3 * T * 2 / 128.0 * aura * (0.97 + randf() * 0.06)
+
+func _build_fog() -> void:
+	fog_img = Image.create(gen.w, gen.h, false, Image.FORMAT_RGBA8)
+	fog_img.fill(Color(0, 0, 0, 1))
+	fog_tex = ImageTexture.create_from_image(fog_img)
+	fog = Sprite2D.new(); fog.texture = fog_tex; fog.centered = false; fog.scale = Vector2(T, T); fog.z_index = 120
+	fog.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	var cm := CanvasItemMaterial.new(); cm.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED; fog.material = cm
+	fog.position = Vector2(-T / 2.0, -T / 2.0 - 6)
+	fog_img.resize(gen.w, gen.h)
+	ground.add_child(fog)
+
+## o que o herói enxerga (raio 7) passa a ficar visível para sempre neste andar
+func reveal() -> void:
+	if fog_img == null or explored.size() != gen.w * gen.h: return
+	var h = hero; var changed := false
+	for dy in range(-7, 8):
+		for dx in range(-7, 8):
+			if dx * dx + dy * dy > 52: continue
+			var x: int = h.x + dx; var y: int = h.y + dy
+			if x < 0 or y < 0 or x >= gen.w or y >= gen.h: continue
+			var i: int = y * gen.w + x
+			if explored[i]: continue
+			explored[i] = 1; changed = true
+			fog_img.set_pixel(x, y, Color(0, 0, 0, 0))
+	if changed:
+		# o sprite fica deslocado meia casa: cada pixel cobre a casa e o filtro linear suaviza a borda
+		fog.position = Vector2(0, -6); fog.offset = Vector2(-0.5, -0.5) + Vector2(0.5, 0.5)
+		fog_tex.update(fog_img)
+
+# ---------------------------------------------------------------- chefe, equipamentos e fim
+func depth() -> float: return float(floor_n) / (6.0 * floors)
+func roll_equip(m) -> Variant:
+	var top: float = min(1.0, 0.12 + depth())
+	var pool := []; var tot := 0.0
+	for id in D.db.EQUIP:
+		var e := Equip.E(id)
+		if e.slot == "light" or not Equip.equip_ok(id, voc) or e.get("rank", 0) > top: continue
+		var wt := 4.0 if e.get("rank", 0) >= top - 0.25 else 1.0
+		pool.append([id, wt]); tot += wt
+	var x := randf() * tot; var id = null
+	for e in pool:
+		x -= e[1]
+		if x <= 0: id = e[0]; break
+	if id == null: return null
+	var W: Array = [0, 0, 40, 42, 18] if m.kind == "giant_spider" else [30, 34, 22, 10, 4] if m.elite else [46, 30, 14, 8, 2] if m.champion else [66, 23, 8, 3, 0]
+	var s := 0.0
+	for v in W: s += v
+	var y := randf() * s; var r := 0
+	while r < 4:
+		y -= W[r]
+		if y <= 0: break
+		r += 1
+	return Equip.gear_new(id, r)
+
+func boss_fell(m) -> void:
+	Sfx.play("boss", 0.6)
+	emit_signal("msg", D.t("boss_fell", {"name": m.data.name}))
+	gold_run += int(m.data.get("gold", 0))
+	var d := Save.voc(voc)
+	if not d.get("firstBoss", false):
+		d.firstBoss = true; Save.save()
+		get_tree().create_timer(1.8, false).timeout.connect(func(): emit_signal("msg", D.t("oracle_awake")))
+	for o in monsters.duplicate():
+		if o != m and not o.dead and not o.elite and max(abs(o.x - m.x), abs(o.y - m.y)) <= 10: o.hp = 0; monster_died(o)
+	if floor_n >= floors:
+		d.slopeOpen = true; Save.save(); _open_portal(m.x, m.y)
+	else:
+		stairs = Vector2i(m.x, m.y)
+		if pickups.has(stairs):
+			var pk: Dictionary = pickups[stairs]; pickups.erase(stairs); pk.spr.queue_free()
+			var alt := free_neighbors(stairs)
+			if alt.size(): drop(alt[0], pk.item, pk.get("gear"))
+		fb._draw_stairs()
+
+func _open_portal(bx: int, by: int) -> void:
+	var best = null; var bd := 99
+	for r in range(1, 8):
+		for dy in range(-r, r + 1):
+			for dx in range(-r, r + 1):
+				var c := Vector2i(bx + dx, by + dy)
+				if walkable(c.x, c.y) and not occ.has(c) and not pickups.has(c) and c != Vector2i(hero.x, hero.y) and abs(dx) + abs(dy) < bd: bd = abs(dx) + abs(dy); best = c
+	if best == null: return
+	var p := cell_pos(best.x, best.y)
+	var por := play_fx("pfx_portal", p + Vector2(0, -T * 0.35 + T * 1.25 * 0.15), T * 1.25 / 150.0 * 2, false, 0.0, true)
+	por.z_index = -2
+	add_light(p - Vector2(0, T / 2.0), 3.5 * T, Color("4a8cff"))
+	slope_pass = best
+	get_tree().create_timer(1.8, false).timeout.connect(func(): emit_signal("msg", D.t("slope_pass_open")))
+
+func _end_of_sewers() -> void:
+	finished = true
+	var d := Save.voc(voc); d.gold += roundi(gold_run * stats.greed); Save.add_kills(kills_by_type)
+	Save.data.cleared[region_id + ":" + voc] = true; Save.save()
+	if dlg:
+		dlg.say(D.t("dungeon_won"), "O Rei Rato caiu e o portal leva à Encosta dos Goblins.\n\nA versão Godot vai até aqui: a Encosta continua só na versão em Phaser por enquanto.\n\nOuro guardado: %d · Nível %d · %d criaturas derrotadas." % [Save.gold(voc), hero.level, kills],
+			[[D.t("back_to_city"), func(): dlg.close(); Save.reg.townSpawn = "sewer"; get_tree().change_scene_to_file("res://town.tscn")]])
+
+func finish(victory: bool) -> void:
+	if finished: return
+	finished = true
+	var earned := roundi(gold_run * stats.greed)
+	var d := Save.voc(voc); d.gold += earned; Save.add_kills(kills_by_type); Save.data.runs = Save.data.get("runs", 0) + 1; Save.save()
+	if dlg == null: get_tree().change_scene_to_file("res://town.tscn"); return
+	var v: Dictionary = D.VOCATIONS[voc]
+	dlg.say(D.t("dungeon_won") if victory else D.t("you_fell"), D.t("run_summary", {"d": 100, "f": floor_n, "total": floors, "lvl": hero.level, "k": kills, "g": earned, "voc": v.name, "bag": Save.gold(voc)}),
+		[[D.t("descend_again"), func(): dlg.close(); Save.reg.startFloor = 0; get_tree().reload_current_scene()],
+		 [D.t("back_to_city"), func(): dlg.close(); Save.reg.townSpawn = "sewer"; get_tree().change_scene_to_file("res://town.tscn")]])
+
+# ---------------------------------------------------------------- volta à cidade (H): 5 s parado
+func try_recall() -> void:
+	if finished or hero.dead: return
+	if recall_cd > 0: emit_signal("msg", D.t("recall_cd", {"n": ceili(recall_cd)})); return
+	if recall_t > 0: return
+	recall_t = 5.0; emit_signal("msg", D.t("recall_start"))
+	play_fx("recall", Vector2(hero.px, hero.py - 20), 1.0)
+func update_recall(dt: float) -> void:
+	recall_cd = max(0.0, recall_cd - dt)
+	if recall_t <= 0: return
+	recall_t -= dt
+	if recall_t <= 0: recall_cd = 60; leave_to_town("recall")
+
+## poções de efeito (berserker, mago, sorte): 10 min
+func drink_buff(id: String) -> void:
+	var d := Save.voc(voc)
+	if int(d.potions.get(id, 0)) <= 0: return
+	d.potions[id] -= 1; Save.save()
+	var P: Dictionary = D.db.POTIONS[id]
+	hero.buffs[P.get("buff", id)] = float(P.get("dur", 600))
+	pot_glow(Color("ffa030")); emit_signal("msg", P.name)
