@@ -1,0 +1,2773 @@
+{
+ "T": 64,
+ "FLOORS": 5,
+ "COLORS": {
+  "gold": "#e0bc60",
+  "text": "#e8dcc0",
+  "dim": "#9a8f80",
+  "crim": "#8e2a2c",
+  "soul": "#5aa0d8",
+  "heal": "#8fe08a",
+  "hurt": "#e05a4a",
+  "white": "#f2e6d8"
+ },
+ "VOCATIONS": {
+  "knight": {
+   "name": "Cavaleiro",
+   "desc": "Resistente e brutal no corpo a corpo.",
+   "trait": "Fúria: enche ao golpear e ao apanhar, e paga as habilidades.",
+   "stats": {
+    "maxHp": 130,
+    "armor": 1,
+    "recovery": 0,
+    "moveSpeed": 1,
+    "might": 1,
+    "cooldown": 1
+   },
+   "passive": {
+    "name": "Alma de guerreiro",
+    "desc": "Regenera 2% da vida máxima a cada 5 s.",
+    "regenPct": 0.02,
+    "every": 5
+   },
+   "unlockCost": 0,
+   "portrait": "portrait_knight"
+  },
+  "archer": {
+   "name": "Arqueiro",
+   "desc": "Patrulheiro das fronteiras: ataca de longe com o arco.",
+   "trait": "Mana: regenera com o tempo e paga as habilidades.",
+   "stats": {
+    "maxHp": 100,
+    "armor": 0,
+    "recovery": 0,
+    "moveSpeed": 1.05,
+    "might": 1,
+    "cooldown": 1
+   },
+   "unlockCost": 0,
+   "portrait": "portrait_archer",
+   "anim": "ar_",
+   "scale": 0.4,
+   "ranged": 4,
+   "resource": "Mana",
+   "mana": true,
+   "skill": "distance"
+  },
+  "sorcerer": {
+   "name": "Feiticeiro",
+   "desc": "Frágil, mas domina o fogo, a energia e a morte.",
+   "trait": "Em breve.",
+   "unlockCost": 2500,
+   "portrait": "portrait_sorcerer",
+   "soon": true
+  },
+  "druid": {
+   "name": "Druida",
+   "desc": "Comanda a terra e a natureza; se cura sozinho.",
+   "trait": "Em breve.",
+   "unlockCost": 2500,
+   "portrait": "portrait_druid",
+   "soon": true
+  }
+ },
+ "REGIONS": {
+  "karhyn_sewers": {
+   "name": "Karhyn e seus Esgotos",
+   "town": true,
+   "desc": "Comece na Cidadela de Karhyn; desça ao esgoto pelo bueiro quando quiser. Túneis úmidos sob a cidade. Ratos e morcegos por toda parte.",
+   "pos": [
+    505,
+    294
+   ],
+   "tier": 1,
+   "playable": true
+  },
+  "goblin_slope": {
+   "name": "Encosta dos Goblins",
+   "desc": "A montanha a oeste da cidade, cheia de tocas de goblins. Oito andares de trilhas e tocas até o acampamento do Líder Goblin.",
+   "pos": [
+    117,
+    240
+   ],
+   "tier": 2,
+   "after": "karhyn_sewers",
+   "playable": true,
+   "floors": 8,
+   "cave": true,
+   "theme": "slope",
+   "boss": "goblin_leader",
+   "escort": "goblin"
+  },
+  "orc_camp": {
+   "name": "Acampamento Orc",
+   "desc": "Paliçadas e fogueiras ao norte, no caminho da torre.",
+   "pos": [
+    348,
+    138
+   ],
+   "tier": 3,
+   "after": "goblin_slope"
+  },
+  "amazon_tower": {
+   "name": "Torre das Amazonas",
+   "desc": "A torre guardada por amazonas, valquírias e bruxas.",
+   "pos": [
+    564,
+    66
+   ],
+   "tier": 4,
+   "after": "orc_camp"
+  },
+  "ghostlands": {
+   "name": "Terras Espectrais",
+   "desc": "Campos mortos a leste, cobertos de teias. Espectros vagam pela névoa.",
+   "pos": [
+    810,
+    183
+   ],
+   "tier": 5,
+   "after": "amazon_tower"
+  },
+  "ghostlands_pit": {
+   "name": "Fosso Espectral",
+   "desc": "O buraco nas Terras Espectrais leva ao Ossuário, onde o chefe final espera.",
+   "pos": [
+    822,
+    381
+   ],
+   "tier": 6,
+   "after": "ghostlands"
+  }
+ },
+ "MON_ANIM": {
+  "rat": [
+   70,
+   "am_rat_walk_v2",
+   "am_rat_attack",
+   "am_rat_death",
+   0.6
+  ],
+  "bat": [
+   92,
+   "am_bat_fly_v2",
+   "am_bat_attack",
+   "am_bat_death",
+   0.6
+  ],
+  "slime": [
+   100,
+   "am_slime_walk_v2",
+   "am_slime_attack",
+   "am_slime_death",
+   0.5
+  ],
+  "skeleton": [
+   200,
+   "am_skeleton_walk_v2",
+   "am_skeleton_attack",
+   "am_skeleton_death",
+   0.42
+  ],
+  "cave_rat": [
+   72,
+   "am_cave_rat",
+   "am_cave_rat_attack",
+   "am_cave_rat_death",
+   0.7
+  ],
+  "giant_rat": [
+   108,
+   "am_giant_rat",
+   "am_giant_rat_attack",
+   "am_giant_rat_death",
+   0.85
+  ],
+  "goblin": [
+   50,
+   "am_goblin",
+   "am_goblin_attack",
+   "am_goblin_death",
+   1.2
+  ],
+  "goblin_scavenger": [
+   50,
+   "am_goblin_scavenger",
+   "am_goblin_scavenger_attack",
+   "am_goblin_scavenger_death",
+   1.25
+  ],
+  "goblin_assassin": [
+   50,
+   "am_goblin_assassin",
+   "am_goblin_assassin_attack",
+   "am_goblin_assassin_death",
+   1.25
+  ],
+  "goblin_leader": [
+   68,
+   "am_goblin_leader",
+   "am_goblin_leader_attack",
+   "am_goblin_leader_death",
+   1.3
+  ],
+  "spider": [
+   198,
+   "am_spider_walk",
+   "am_spider_attack",
+   "am_spider_death",
+   0.32
+  ],
+  "poison_spider": [
+   198,
+   "am_spider_walk",
+   "am_spider_attack",
+   "am_spider_death",
+   0.34
+  ],
+  "giant_spider": [
+   198,
+   "am_spider_walk",
+   "am_spider_attack",
+   "am_spider_death",
+   0.34
+  ]
+ },
+ "MONSTERS": {
+  "rat": {
+   "name": "Rato",
+   "tex": "m_rat",
+   "anim": "am_rat",
+   "hp": 148,
+   "arm": 1.8,
+   "dmg": 9,
+   "step": 0.59,
+   "atk": 2.2,
+   "xp": 14
+  },
+  "cave_rat": {
+   "name": "Rato da Caverna",
+   "plural": "Ratos da Caverna",
+   "tex": "m_cave_rat",
+   "anim": "am_cave_rat",
+   "scale": 0.7,
+   "hp": 216,
+   "arm": 2.7,
+   "dmg": 10.8,
+   "step": 0.49,
+   "atk": 2,
+   "xp": 22
+  },
+  "bat": {
+   "name": "Morcego",
+   "tex": "m_bat",
+   "anim": "am_bat",
+   "hp": 64,
+   "arm": 0.9,
+   "dmg": 5.4,
+   "step": 0.3,
+   "atk": 1.6,
+   "xp": 10,
+   "fly": true
+  },
+  "slime": {
+   "name": "Lodo",
+   "tex": "m_slime",
+   "anim": "am_slime",
+   "hp": 202,
+   "arm": 3.6,
+   "dmg": 9.9,
+   "step": 0.8,
+   "atk": 2.2,
+   "xp": 24
+  },
+  "skeleton": {
+   "name": "Esqueleto",
+   "tex": "m_skeleton",
+   "anim": "am_skeleton",
+   "hp": 324,
+   "arm": 4.5,
+   "dmg": 13.5,
+   "step": 0.55,
+   "atk": 2,
+   "xp": 40
+  },
+  "spider": {
+   "name": "Aranha",
+   "tex": "am_spider_walk",
+   "hp": 175,
+   "arm": 2,
+   "dmg": 11,
+   "step": 0.36,
+   "atk": 1.9,
+   "xp": 26
+  },
+  "poison_spider": {
+   "name": "Aranha Venenosa",
+   "plural": "Aranhas Venenosas",
+   "tex": "am_spider_walk",
+   "tint": 10477690,
+   "hp": 205,
+   "arm": 2.5,
+   "dmg": 9,
+   "step": 0.4,
+   "atk": 2,
+   "xp": 34,
+   "poison": {
+    "pct": 0.03,
+    "dur": 5
+   }
+  },
+  "giant_spider": {
+   "name": "Aranha Gigante",
+   "plural": "Aranhas Gigantes",
+   "tex": "am_spider_walk",
+   "tint": 7319626,
+   "hp": 3075,
+   "arm": 4,
+   "dmg": 40,
+   "step": 0.275,
+   "atk": 1.6,
+   "xp": 600,
+   "gold": 80,
+   "elite": true,
+   "poison": {
+    "pct": 0.04,
+    "dur": 5
+   }
+  },
+  "goblin": {
+   "name": "Goblin",
+   "tex": "am_goblin",
+   "hp": 538,
+   "arm": 5,
+   "dmg": 24,
+   "step": 0.5,
+   "atk": 1.9,
+   "xp": 52
+  },
+  "goblin_scavenger": {
+   "name": "Goblin Saqueador",
+   "plural": "Goblins Saqueadores",
+   "tex": "am_goblin_scavenger",
+   "hp": 650,
+   "arm": 6,
+   "dmg": 22,
+   "step": 0.56,
+   "atk": 2.1,
+   "xp": 60,
+   "gold": 4
+  },
+  "goblin_assassin": {
+   "name": "Goblin Assassino",
+   "plural": "Goblins Assassinos",
+   "tex": "am_goblin_assassin",
+   "hp": 450,
+   "arm": 4,
+   "dmg": 32,
+   "step": 0.36,
+   "atk": 1.5,
+   "xp": 66
+  },
+  "goblin_leader": {
+   "name": "Líder Goblin",
+   "plural": "Líderes Goblins",
+   "tex": "am_goblin_leader",
+   "hp": 8000,
+   "arm": 12,
+   "dmg": 75,
+   "step": 0.42,
+   "atk": 1.7,
+   "xp": 1400,
+   "gold": 250,
+   "elite": true
+  },
+  "giant_rat": {
+   "name": "Rato Gigante",
+   "plural": "Ratos Gigantes",
+   "tex": "m_giant_rat",
+   "anim": "am_giant_rat",
+   "scale": 0.85,
+   "hp": 2500,
+   "arm": 6,
+   "dmg": 34,
+   "step": 0.45,
+   "atk": 1.8,
+   "xp": 300,
+   "gold": 60,
+   "elite": true
+  }
+ },
+ "FLOOR_MONSTERS": {
+  "1": [
+   [
+    "rat",
+    70
+   ],
+   [
+    "bat",
+    30
+   ]
+  ],
+  "2": [
+   [
+    "rat",
+    25
+   ],
+   [
+    "cave_rat",
+    25
+   ],
+   [
+    "bat",
+    15
+   ],
+   [
+    "slime",
+    15
+   ],
+   [
+    "spider",
+    14
+   ],
+   [
+    "poison_spider",
+    6
+   ]
+  ],
+  "3": [
+   [
+    "cave_rat",
+    28
+   ],
+   [
+    "skeleton",
+    20
+   ],
+   [
+    "slime",
+    15
+   ],
+   [
+    "bat",
+    12
+   ],
+   [
+    "spider",
+    15
+   ],
+   [
+    "poison_spider",
+    10
+   ]
+  ],
+  "4": [
+   [
+    "cave_rat",
+    28
+   ],
+   [
+    "skeleton",
+    28
+   ],
+   [
+    "slime",
+    10
+   ],
+   [
+    "bat",
+    10
+   ],
+   [
+    "spider",
+    12
+   ],
+   [
+    "poison_spider",
+    12
+   ]
+  ],
+  "5": [
+   [
+    "skeleton",
+    32
+   ],
+   [
+    "cave_rat",
+    28
+   ],
+   [
+    "slime",
+    10
+   ],
+   [
+    "bat",
+    8
+   ],
+   [
+    "spider",
+    10
+   ],
+   [
+    "poison_spider",
+    12
+   ]
+  ]
+ },
+ "ITEMS": {
+  "gold": {
+   "icon": "i_gold_coin",
+   "name": "moedas de ouro"
+  },
+  "silver": {
+   "icon": "i_silver_coin",
+   "name": "moedas de prata"
+  },
+  "apple": {
+   "icon": "i_apple",
+   "name": "maçã",
+   "heal": 10
+  },
+  "bread": {
+   "icon": "i_bread",
+   "name": "pão",
+   "heal": 18
+  },
+  "meat": {
+   "icon": "i_meat",
+   "name": "carne",
+   "heal": 32
+  },
+  "health_potion": {
+   "icon": "i_health_potion",
+   "name": "poção de vida",
+   "healPct": 0.5
+  },
+  "blue_gem": {
+   "icon": "i_blue_gem",
+   "name": "gema da alma",
+   "xp": 18
+  },
+  "red_gem": {
+   "icon": "i_red_gem",
+   "name": "rubi",
+   "gold": 30
+  },
+  "bronze_key": {
+   "icon": "i_bronze_key",
+   "name": "chave de bronze"
+  },
+  "scroll": {
+   "icon": "i_scroll",
+   "name": "pergaminho antigo"
+  },
+  "eq_karhyn_sword": {
+   "icon": "eq_karhyn_sword",
+   "name": "Espada de Karhyn",
+   "gear": "karhyn_sword"
+  },
+  "eq_crimson_sword": {
+   "icon": "eq_crimson_sword",
+   "name": "Espada Carmesim",
+   "gear": "crimson_sword"
+  },
+  "eq_broadsword": {
+   "icon": "eq_broadsword",
+   "name": "Espada Larga",
+   "gear": "broadsword"
+  },
+  "eq_serpent_sword": {
+   "icon": "eq_serpent_sword",
+   "name": "Espada da Serpente",
+   "gear": "serpent_sword"
+  },
+  "eq_crystal_sword": {
+   "icon": "eq_crystal_sword",
+   "name": "Espada de Cristal",
+   "gear": "crystal_sword"
+  },
+  "eq_avenger": {
+   "icon": "eq_avenger",
+   "name": "Espada Vingadora",
+   "gear": "avenger"
+  },
+  "eq_fire_sword": {
+   "icon": "eq_fire_sword",
+   "name": "Espada de Fogo",
+   "gear": "fire_sword"
+  },
+  "eq_emerald_sword": {
+   "icon": "eq_emerald_sword",
+   "name": "Espada Esmeralda",
+   "gear": "emerald_sword"
+  },
+  "eq_demon_sword": {
+   "icon": "eq_demon_sword",
+   "name": "Espada Demoníaca",
+   "gear": "demon_sword"
+  },
+  "eq_magic_longsword": {
+   "icon": "eq_magic_longsword",
+   "name": "Espada Longa Mágica",
+   "gear": "magic_longsword"
+  },
+  "eq_dragon_sword": {
+   "icon": "eq_dragon_sword",
+   "name": "Espada do Dragão",
+   "gear": "dragon_sword"
+  },
+  "eq_wooden_shield": {
+   "icon": "eq_wooden_shield",
+   "name": "Escudo de Madeira",
+   "gear": "wooden_shield"
+  },
+  "eq_copper_shield": {
+   "icon": "eq_copper_shield",
+   "name": "Escudo de Cobre",
+   "gear": "copper_shield"
+  },
+  "eq_battle_shield": {
+   "icon": "eq_battle_shield",
+   "name": "Escudo de Batalha",
+   "gear": "battle_shield"
+  },
+  "eq_guardian_shield": {
+   "icon": "eq_guardian_shield",
+   "name": "Escudo do Guardião",
+   "gear": "guardian_shield"
+  },
+  "eq_medusa_shield": {
+   "icon": "eq_medusa_shield",
+   "name": "Escudo da Medusa",
+   "gear": "medusa_shield"
+  },
+  "eq_dragon_shield": {
+   "icon": "eq_dragon_shield",
+   "name": "Escudo do Dragão",
+   "gear": "dragon_shield"
+  },
+  "eq_demon_shield": {
+   "icon": "eq_demon_shield",
+   "name": "Escudo Demoníaco",
+   "gear": "demon_shield"
+  },
+  "eq_magic_shield": {
+   "icon": "eq_magic_shield",
+   "name": "Escudo Mágico",
+   "gear": "magic_shield"
+  },
+  "eq_blessed_shield": {
+   "icon": "eq_blessed_shield",
+   "name": "Escudo Abençoado",
+   "gear": "blessed_shield"
+  },
+  "eq_wooden_helmet": {
+   "icon": "eq_wooden_helmet",
+   "name": "Elmo de Madeira",
+   "gear": "wooden_helmet"
+  },
+  "eq_chain_helmet": {
+   "icon": "eq_chain_helmet",
+   "name": "Elmo de Malha",
+   "gear": "chain_helmet"
+  },
+  "eq_copper_helmet": {
+   "icon": "eq_copper_helmet",
+   "name": "Elmo de Cobre",
+   "gear": "copper_helmet"
+  },
+  "eq_steel_helmet": {
+   "icon": "eq_steel_helmet",
+   "name": "Elmo de Aço",
+   "gear": "steel_helmet"
+  },
+  "eq_dark_helmet": {
+   "icon": "eq_dark_helmet",
+   "name": "Elmo Sombrio",
+   "gear": "dark_helmet"
+  },
+  "eq_crusader_helmet": {
+   "icon": "eq_crusader_helmet",
+   "name": "Elmo do Cruzado",
+   "gear": "crusader_helmet"
+  },
+  "eq_royal_helmet": {
+   "icon": "eq_royal_helmet",
+   "name": "Elmo Real",
+   "gear": "royal_helmet"
+  },
+  "eq_demon_helmet": {
+   "icon": "eq_demon_helmet",
+   "name": "Elmo Demoníaco",
+   "gear": "demon_helmet"
+  },
+  "eq_golden_helmet": {
+   "icon": "eq_golden_helmet",
+   "name": "Elmo Dourado",
+   "gear": "golden_helmet"
+  },
+  "eq_dragon_helmet": {
+   "icon": "eq_dragon_helmet",
+   "name": "Elmo de Escamas de Dragão",
+   "gear": "dragon_helmet"
+  },
+  "eq_wooden_armor": {
+   "icon": "eq_wooden_armor",
+   "name": "Armadura de Madeira",
+   "gear": "wooden_armor"
+  },
+  "eq_leather_armor": {
+   "icon": "eq_leather_armor",
+   "name": "Armadura de Couro",
+   "gear": "leather_armor"
+  },
+  "eq_chain_armor": {
+   "icon": "eq_chain_armor",
+   "name": "Armadura de Malha",
+   "gear": "chain_armor"
+  },
+  "eq_plate_armor": {
+   "icon": "eq_plate_armor",
+   "name": "Armadura de Placas",
+   "gear": "plate_armor"
+  },
+  "eq_dark_armor": {
+   "icon": "eq_dark_armor",
+   "name": "Armadura Sombria",
+   "gear": "dark_armor"
+  },
+  "eq_knight_armor": {
+   "icon": "eq_knight_armor",
+   "name": "Armadura de Cavaleiro",
+   "gear": "knight_armor"
+  },
+  "eq_golden_armor": {
+   "icon": "eq_golden_armor",
+   "name": "Armadura Dourada",
+   "gear": "golden_armor"
+  },
+  "eq_magic_plate": {
+   "icon": "eq_magic_plate",
+   "name": "Armadura de Placas Mágica",
+   "gear": "magic_plate"
+  },
+  "eq_dragon_mail": {
+   "icon": "eq_dragon_mail",
+   "name": "Malha de Escamas de Dragão",
+   "gear": "dragon_mail"
+  },
+  "eq_leather_legs": {
+   "icon": "eq_leather_legs",
+   "name": "Calça de Couro",
+   "gear": "leather_legs"
+  },
+  "eq_wooden_legs": {
+   "icon": "eq_wooden_legs",
+   "name": "Calça de Madeira",
+   "gear": "wooden_legs"
+  },
+  "eq_chain_legs": {
+   "icon": "eq_chain_legs",
+   "name": "Calça de Malha",
+   "gear": "chain_legs"
+  },
+  "eq_plate_legs": {
+   "icon": "eq_plate_legs",
+   "name": "Calça de Placas",
+   "gear": "plate_legs"
+  },
+  "eq_knight_legs": {
+   "icon": "eq_knight_legs",
+   "name": "Calça de Cavaleiro",
+   "gear": "knight_legs"
+  },
+  "eq_golden_legs": {
+   "icon": "eq_golden_legs",
+   "name": "Calça Dourada",
+   "gear": "golden_legs"
+  },
+  "eq_magic_legs": {
+   "icon": "eq_magic_legs",
+   "name": "Calça Mágica",
+   "gear": "magic_legs"
+  },
+  "eq_dragon_legs": {
+   "icon": "eq_dragon_legs",
+   "name": "Calça de Escamas de Dragão",
+   "gear": "dragon_legs"
+  },
+  "eq_leather_boots": {
+   "icon": "eq_leather_boots",
+   "name": "Botas de Couro",
+   "gear": "leather_boots"
+  },
+  "eq_chain_boots": {
+   "icon": "eq_chain_boots",
+   "name": "Botas de Malha",
+   "gear": "chain_boots"
+  },
+  "eq_sandals": {
+   "icon": "eq_sandals",
+   "name": "Sandálias",
+   "gear": "sandals"
+  },
+  "eq_crocodile_boots": {
+   "icon": "eq_crocodile_boots",
+   "name": "Botas de Crocodilo",
+   "gear": "crocodile_boots"
+  },
+  "eq_golden_boots": {
+   "icon": "eq_golden_boots",
+   "name": "Botas Douradas",
+   "gear": "golden_boots"
+  },
+  "eq_guardian_boots": {
+   "icon": "eq_guardian_boots",
+   "name": "Botas do Guardião",
+   "gear": "guardian_boots"
+  },
+  "eq_bow": {
+   "icon": "eq_bow",
+   "name": "Arco",
+   "gear": "bow"
+  },
+  "eq_elvish_bow": {
+   "icon": "eq_elvish_bow",
+   "name": "Arco Élfico",
+   "gear": "elvish_bow"
+  },
+  "eq_icicle_bow": {
+   "icon": "eq_icicle_bow",
+   "name": "Arco de Gelo",
+   "gear": "icicle_bow"
+  },
+  "eq_musician_bow": {
+   "icon": "eq_musician_bow",
+   "name": "Arco do Músico",
+   "gear": "musician_bow"
+  },
+  "eq_refined_bow": {
+   "icon": "eq_refined_bow",
+   "name": "Arco Refinado",
+   "gear": "refined_bow"
+  },
+  "eq_silkweaver_bow": {
+   "icon": "eq_silkweaver_bow",
+   "name": "Arco Tecelão de Seda",
+   "gear": "silkweaver_bow"
+  },
+  "eq_umbral_bow": {
+   "icon": "eq_umbral_bow",
+   "name": "Arco Umbral",
+   "gear": "umbral_bow"
+  },
+  "eq_destruction_bow": {
+   "icon": "eq_destruction_bow",
+   "name": "Arco da Destruição",
+   "gear": "destruction_bow"
+  },
+  "eq_magic_bow": {
+   "icon": "eq_magic_bow",
+   "name": "Arco Mágico",
+   "gear": "magic_bow"
+  },
+  "eq_dragon_bow": {
+   "icon": "eq_dragon_bow",
+   "name": "Arco do Dragão",
+   "gear": "dragon_bow"
+  },
+  "eq_quiver": {
+   "icon": "eq_quiver",
+   "name": "Aljava",
+   "gear": "quiver"
+  },
+  "eq_red_quiver": {
+   "icon": "eq_red_quiver",
+   "name": "Aljava Vermelha",
+   "gear": "red_quiver"
+  },
+  "eq_leather_quiver": {
+   "icon": "eq_leather_quiver",
+   "name": "Aljava de Couro",
+   "gear": "leather_quiver"
+  },
+  "eq_pearl_quiver": {
+   "icon": "eq_pearl_quiver",
+   "name": "Aljava de Pérolas",
+   "gear": "pearl_quiver"
+  },
+  "eq_emerald_quiver": {
+   "icon": "eq_emerald_quiver",
+   "name": "Aljava de Esmeralda",
+   "gear": "emerald_quiver"
+  },
+  "eq_diamond_quiver": {
+   "icon": "eq_diamond_quiver",
+   "name": "Aljava de Diamante",
+   "gear": "diamond_quiver"
+  },
+  "eq_dragon_quiver": {
+   "icon": "eq_dragon_quiver",
+   "name": "Aljava do Dragão",
+   "gear": "dragon_quiver"
+  },
+  "eq_magic_quiver": {
+   "icon": "eq_magic_quiver",
+   "name": "Aljava Mágica",
+   "gear": "magic_quiver"
+  },
+  "eq_blessed_quiver": {
+   "icon": "eq_blessed_quiver",
+   "name": "Aljava Abençoada",
+   "gear": "blessed_quiver"
+  },
+  "eq_dragon_boots": {
+   "icon": "eq_dragon_boots",
+   "name": "Botas de Escamas de Dragão",
+   "gear": "dragon_boots"
+  },
+  "eq_lantern": {
+   "icon": "eq_lantern",
+   "name": "Lampião",
+   "gear": "lantern"
+  },
+  "eq_goddess_pendant": {
+   "icon": "eq_goddess_pendant",
+   "name": "Pingente da Deusa",
+   "gear": "goddess_pendant"
+  },
+  "boss_essence": {
+   "icon": "i_red_gem",
+   "tint": 16751152,
+   "name": "Essência de chefe"
+  }
+ },
+ "LOOT": [
+  [
+   "gold",
+   34
+  ],
+  [
+   "silver",
+   20
+  ],
+  [
+   "apple",
+   9
+  ],
+  [
+   "bread",
+   7
+  ],
+  [
+   "meat",
+   9
+  ],
+  [
+   "blue_gem",
+   8
+  ],
+  [
+   "red_gem",
+   3
+  ],
+  [
+   "none",
+   29
+  ]
+ ],
+ "BREAKABLE": {
+  "barrel": 2,
+  "crate_intact": 2,
+  "pot": 1,
+  "urn": 1
+ },
+ "SKILLS": {
+  "sword": {
+   "name": "Sword",
+   "start": 10,
+   "base": 30,
+   "growth": 1.12,
+   "desc": "base do dano corpo a corpo"
+  },
+  "shield": {
+   "name": "Shield",
+   "start": 10,
+   "base": 24,
+   "growth": 1.12,
+   "desc": "defesa e chance de bloqueio"
+  },
+  "distance": {
+   "name": "Distance",
+   "start": 10,
+   "base": 30,
+   "growth": 1.12,
+   "desc": "base do dano a distância"
+  },
+  "dodge": {
+   "name": "Dodge",
+   "start": 10,
+   "base": 24,
+   "growth": 1.12,
+   "desc": "chance de esquivar (Arqueiro, que não usa escudo)"
+  }
+ },
+ "FURY_MAX": 100,
+ "ML_BASE": 400,
+ "ML_MULT": {
+  "knight": 3,
+  "archer": 1.4,
+  "sorcerer": 1.1,
+  "druid": 1.1
+ },
+ "FIST_ATTACK": 20,
+ "POTIONS": {
+  "health": {
+   "name": "Poção de vida",
+   "icon": "i_health_potion",
+   "cd": 10,
+   "price": 30,
+   "desc": "Cura 40% da vida máxima."
+  },
+  "fury": {
+   "name": "Poção de fúria",
+   "icon": "i_health_potion",
+   "tint": 16747056,
+   "cd": 15,
+   "price": 45,
+   "desc": "Enche toda a Fúria (ou a Mana do Arqueiro).",
+   "voc": [
+    "knight",
+    "archer"
+   ]
+  },
+  "mana": {
+   "name": "Poção de mana",
+   "icon": "i_mana_potion",
+   "cd": 10,
+   "price": 30,
+   "desc": "Recupera 60% da mana máxima.",
+   "voc": [
+    "archer",
+    "sorcerer",
+    "druid"
+   ]
+  },
+  "berserker": {
+   "name": "Poção do berserker",
+   "icon": "i_health_potion",
+   "tint": 12591136,
+   "cd": 60,
+   "dur": 30,
+   "price": 160,
+   "desc": "+10 de Sword por 30 s."
+  },
+  "mage": {
+   "name": "Poção do mago",
+   "icon": "i_mana_potion",
+   "tint": 11563263,
+   "cd": 60,
+   "dur": 30,
+   "price": 160,
+   "desc": "+10 de magic level por 30 s."
+  },
+  "hunter": {
+   "name": "Poção do caçador",
+   "icon": "i_health_potion",
+   "tint": 7393392,
+   "cd": 60,
+   "dur": 30,
+   "price": 160,
+   "desc": "+10 de Distance por 30 s.",
+   "voc": [
+    "archer"
+   ]
+  },
+  "luck": {
+   "name": "Poção da sorte",
+   "icon": "i_health_potion",
+   "tint": 16764992,
+   "cd": 300,
+   "dur": 10,
+   "price": 200,
+   "desc": "+50% de ouro coletado por 10 s."
+  }
+ },
+ "POTION_FILL": 600,
+ "POT_CD": 5,
+ "PROMOTION": {
+  "knight": {
+   "level": 20,
+   "name": "Cavaleiro de Elite",
+   "regenMult": 3,
+   "dmgMult": 1.15
+  },
+  "archer": {
+   "level": 20,
+   "name": "Patrulheiro Real",
+   "regenMult": 1,
+   "dmgMult": 1.15
+  }
+ },
+ "SPELLS": {
+  "heal": {
+   "name": "Exura",
+   "key": "G",
+   "icon": "icon_exura",
+   "level": 1,
+   "fury": 0,
+   "cd": 6,
+   "desc": "Magia global, sem custo: cura 25% da vida máxima."
+  },
+  "front": {
+   "name": "Golpe Frontal",
+   "key": "1",
+   "icon": "icon_front_v2",
+   "level": 1,
+   "fury": 25,
+   "cd": 2.5,
+   "desc": "Um corte à frente que acerta até 2 inimigos em linha."
+  },
+  "quake": {
+   "name": "Tremor de Terra",
+   "key": "2",
+   "icon": "icon_area",
+   "level": 6,
+   "fury": 40,
+   "cd": 7,
+   "dur": 3,
+   "desc": "Crava a espada no chão: o tremor se espalha por 2 casas em volta, causa 3× o dano ao longo de 2 s (50% a mais que o Golpe Frontal) e deixa os inimigos lentos (−50%) por 3 s."
+  },
+  "guard": {
+   "name": "Égide",
+   "key": "3",
+   "icon": "i_shield",
+   "level": 10,
+   "fury": 45,
+   "cd": 14,
+   "dur": 6,
+   "desc": "Por 6 s: uma aura protetora dá +54% de defesa e devolve 10% do dano recebido a quem atacou."
+  },
+  "aura": {
+   "name": "Aura Sagrada",
+   "key": "4",
+   "icon": "icon_aura_v2",
+   "level": 16,
+   "fury": 60,
+   "cd": 12,
+   "dur": 5,
+   "desc": "Por 5 s: fere quem chega perto, regenera vida e ilumina uma área maior."
+  },
+  "slasher": {
+   "name": "Slasher",
+   "key": "5",
+   "icon": "icon_front_v2",
+   "level": 20,
+   "fury": 40,
+   "cd": 7,
+   "desc": "Um grande corte único à frente (3 casas): 120% a mais que o Golpe Frontal, sempre crítico, com +15% de dano crítico."
+  },
+  "kberserk": {
+   "name": "Modo Berserker",
+   "key": "6",
+   "icon": "icon_berserk",
+   "level": 24,
+   "fury": 60,
+   "cd": 20,
+   "dur": 8,
+   "desc": "Por 8 s, uma aura vermelha: +40% de dano em tudo, cada golpe cura 25% do dano base e o ataque básico acerta os 3 primeiros inimigos à frente."
+  },
+  "xcut": {
+   "name": "Corte em X",
+   "key": "7",
+   "icon": "icon_area",
+   "level": 28,
+   "fury": 50,
+   "cd": 10,
+   "desc": "Um corte em cruz à frente: 180% do dano do Golpe Frontal e sangramento de 30% da vida atual do monstro em 5 s (10% em chefes)."
+  }
+ },
+ "ARCHER_SPELLS": {
+  "heal": {
+   "name": "Exura",
+   "key": "G",
+   "icon": "icon_exura",
+   "level": 1,
+   "fury": 0,
+   "cd": 6,
+   "desc": "Magia global, sem custo: cura (10 + 6 por magic level) × 85%."
+  },
+  "holy": {
+   "name": "Flecha Sagrada",
+   "key": "1",
+   "icon": "icon_front_v2",
+   "level": 1,
+   "fury": 25,
+   "cd": 2.5,
+   "desc": "Uma flecha de luz sagrada que acerta o alvo escolhido com 2× o dano."
+  },
+  "missile": {
+   "name": "Míssil Sagrado",
+   "key": "2",
+   "icon": "icon_front_v2",
+   "level": 6,
+   "fury": 35,
+   "cd": 5,
+   "desc": "Uma grande flecha de luz em linha reta: atravessa até 3 monstros, empurra-os 1 casa e causa 80% a mais que a Flecha Sagrada."
+  },
+  "volley": {
+   "name": "Saraivada",
+   "key": "3",
+   "icon": "icon_area",
+   "level": 10,
+   "fury": 40,
+   "cd": 8,
+   "dur": 3,
+   "desc": "Uma chuva de flechas na área do alvo (3×3): dano e marca os inimigos, que ficam lentos (−50%) por 3 s."
+  },
+  "frenzy": {
+   "name": "Berserker",
+   "key": "4",
+   "icon": "icon_berserk",
+   "level": 16,
+   "fury": 50,
+   "cd": 16,
+   "dur": 5,
+   "desc": "Por 5 s: +60% de dano de ataque e +15% de crítico; a flecha do ataque básico ricocheteia em até 3 inimigos e explode em luz sagrada."
+  },
+  "flee": {
+   "name": "Aura do Vento",
+   "key": "5",
+   "icon": "icon_spear",
+   "level": 12,
+   "fury": 30,
+   "cd": 12,
+   "dur": 4,
+   "desc": "Por 4 s: uma aura de energia contorna o arqueiro: +40% de velocidade, +40% de velocidade de ataque e atravessa os monstros."
+  },
+  "farsight": {
+   "name": "Visão Além do Alcance",
+   "key": "6",
+   "icon": "icon_aura_v2",
+   "level": 20,
+   "fury": 45,
+   "cd": 22,
+   "dur": 10,
+   "desc": "Por 10 s: alcance máximo e flechas básicas sagradas. A cada 3 acertos no mesmo monstro, a marca explode: ele perde 50% de todo o dano que recebeu nesse tempo como dano verdadeiro."
+  },
+  "barrier": {
+   "name": "Barreira de Luz",
+   "key": "7",
+   "icon": "i_shield",
+   "level": 24,
+   "fury": 40,
+   "cd": 18,
+   "dur": 7,
+   "desc": "Ergue uma barreira de luz de 3 casas à frente por 7 s: suas flechas atravessam, os monstros não passam."
+  }
+ },
+ "WORLD_SCALE": 0.78,
+ "PROP_H": {
+  "forest_bush": 46,
+  "forest_stump": 44,
+  "forest_mushrooms": 30,
+  "forest_log": 32,
+  "forest_deadtree": 86,
+  "forest_sign": 52,
+  "decor_rat_nest": 44,
+  "slope_burrow": 72,
+  "slope_tent": 92,
+  "slope_totem": 84,
+  "slope_campfire": 44,
+  "slope_barricade": 50,
+  "slope_palisade": 56,
+  "slope_weapon_rack": 52,
+  "slope_stakes": 40,
+  "slope_cairn": 40,
+  "barrel": 40,
+  "crate_intact": 32,
+  "crate_damaged": 32,
+  "chest_closed": 28,
+  "chest_open": 28,
+  "pot": 27,
+  "urn": 36,
+  "torch_stand": 62,
+  "pillar": 92
+ },
+ "ELEMENTS": {
+  "physical": {
+   "name": "Físico",
+   "color": "#f4ece0"
+  },
+  "fire": {
+   "name": "Fogo",
+   "color": "#ff9a3a"
+  },
+  "ice": {
+   "name": "Gelo",
+   "color": "#9ae4ff"
+  },
+  "earth": {
+   "name": "Terra",
+   "color": "#9fe060"
+  },
+  "energy": {
+   "name": "Raio",
+   "color": "#c8a0ff"
+  },
+  "holy": {
+   "name": "Sagrado",
+   "color": "#ffe680"
+  }
+ },
+ "MONSTER_RES": {
+  "rat": {
+   "earth": 0.2,
+   "fire": -0.1
+  },
+  "cave_rat": {
+   "earth": 0.25,
+   "ice": -0.1
+  },
+  "bat": {
+   "energy": -0.2,
+   "earth": 0.1
+  },
+  "slime": {
+   "physical": 0.15,
+   "earth": 0.6,
+   "fire": -0.3,
+   "ice": -0.1
+  },
+  "skeleton": {
+   "physical": 0.1,
+   "earth": 0.8,
+   "ice": 0.3,
+   "holy": -0.5,
+   "fire": -0.1
+  },
+  "spider": {
+   "fire": -0.25,
+   "earth": 0.2
+  },
+  "poison_spider": {
+   "earth": 1,
+   "fire": -0.25,
+   "ice": -0.1
+  },
+  "giant_rat": {
+   "physical": 0.1,
+   "earth": 0.3,
+   "fire": -0.15
+  }
+ },
+ "MONSTER_ELEMENT": {
+  "poison_spider": "earth",
+  "slime": "earth"
+ },
+ "ARROWS": {
+  "normal": {
+   "price": 1,
+   "el": "physical",
+   "mult": 1,
+   "color": 15261904
+  },
+  "fire": {
+   "price": 25,
+   "el": "fire",
+   "mult": 1.15,
+   "color": 16747056
+  },
+  "ice": {
+   "price": 25,
+   "el": "ice",
+   "mult": 1.15,
+   "color": 10151167
+  },
+  "earth": {
+   "price": 25,
+   "el": "earth",
+   "mult": 1.15,
+   "color": 10477664
+  },
+  "energy": {
+   "price": 25,
+   "el": "energy",
+   "mult": 1.15,
+   "color": 13148415
+  },
+  "explosive": {
+   "price": 150,
+   "el": "physical",
+   "mult": 1.2,
+   "area": true,
+   "color": 16756832
+  },
+  "holy": {
+   "price": 1000,
+   "el": "holy",
+   "mult": 1.5,
+   "area": true,
+   "color": 16773280
+  }
+ },
+ "EQUIP": {
+  "karhyn_sword": {
+   "slot": "weapon",
+   "name": "Espada de Karhyn",
+   "atk": 24,
+   "lvl": 1,
+   "voc": [
+    "knight"
+   ],
+   "price": 0,
+   "desc": "A lâmina da forja da cidade. Simples e fiel.",
+   "art": {
+    "f": "sword",
+    "m": "iron",
+    "hilt": "leather",
+    "gem": "#c8a030"
+   },
+   "rank": 0
+  },
+  "crimson_sword": {
+   "slot": "weapon",
+   "name": "Espada Carmesim",
+   "atk": 28,
+   "lvl": 6,
+   "voc": [
+    "knight"
+   ],
+   "price": 120,
+   "art": {
+    "f": "sword",
+    "m": "crimson",
+    "hilt": "dark",
+    "gem": "#ff4040"
+   },
+   "rank": 0.1
+  },
+  "broadsword": {
+   "slot": "weapon",
+   "name": "Espada Larga",
+   "atk": 37,
+   "lvl": 11,
+   "voc": [
+    "knight"
+   ],
+   "twoH": true,
+   "price": 260,
+   "desc": "Duas mãos: não dá para usar escudo.",
+   "art": {
+    "f": "sword",
+    "m": "iron",
+    "hilt": "leather",
+    "wide": 1,
+    "long": 1
+   },
+   "rank": 0.2
+  },
+  "serpent_sword": {
+   "slot": "weapon",
+   "name": "Espada da Serpente",
+   "atk": 35,
+   "lvl": 16,
+   "voc": [
+    "knight"
+   ],
+   "el": "earth",
+   "elDmg": 6,
+   "poison": {
+    "pct": 0.25,
+    "dur": 4
+   },
+   "price": 340,
+   "desc": "Envenena o alvo.",
+   "art": {
+    "f": "sword",
+    "m": "serpent",
+    "hilt": "serpent",
+    "wavy": 1,
+    "gem": "#e0e040"
+   },
+   "rank": 0.3
+  },
+  "crystal_sword": {
+   "slot": "weapon",
+   "name": "Espada de Cristal",
+   "atk": 38,
+   "lvl": 21,
+   "voc": [
+    "knight"
+   ],
+   "el": "ice",
+   "elDmg": 4,
+   "price": 450,
+   "art": {
+    "f": "sword",
+    "m": "crystal",
+    "hilt": "iron",
+    "gem": "#d0f4ff"
+   },
+   "rank": 0.4
+  },
+  "avenger": {
+   "slot": "weapon",
+   "name": "Espada Vingadora",
+   "atk": 50,
+   "lvl": 26,
+   "voc": [
+    "knight"
+   ],
+   "twoH": true,
+   "price": 700,
+   "desc": "Duas mãos: não dá para usar escudo.",
+   "art": {
+    "f": "sword",
+    "m": "steel",
+    "hilt": "gold",
+    "wide": 1,
+    "long": 1,
+    "gem": "#4080ff"
+   },
+   "rank": 0.5
+  },
+  "fire_sword": {
+   "slot": "weapon",
+   "name": "Espada de Fogo",
+   "atk": 46,
+   "lvl": 30,
+   "voc": [
+    "knight"
+   ],
+   "el": "fire",
+   "elDmg": 12,
+   "price": 820,
+   "art": {
+    "f": "sword",
+    "m": "fire",
+    "hilt": "dark",
+    "flame": 1
+   },
+   "rank": 0.6
+  },
+  "emerald_sword": {
+   "slot": "weapon",
+   "name": "Espada Esmeralda",
+   "atk": 49,
+   "lvl": 35,
+   "voc": [
+    "knight"
+   ],
+   "crit": 0.02,
+   "price": 1100,
+   "art": {
+    "f": "sword",
+    "m": "emerald",
+    "hilt": "gold",
+    "gem": "#40ff90"
+   },
+   "rank": 0.7
+  },
+  "demon_sword": {
+   "slot": "weapon",
+   "name": "Espada Demoníaca",
+   "atk": 53,
+   "lvl": 40,
+   "voc": [
+    "knight"
+   ],
+   "el": "fire",
+   "elDmg": 6,
+   "price": 1500,
+   "art": {
+    "f": "sword",
+    "m": "demon",
+    "hilt": "dark",
+    "spikes": 1,
+    "gem": "#ff2020"
+   },
+   "rank": 0.8
+  },
+  "magic_longsword": {
+   "slot": "weapon",
+   "name": "Espada Longa Mágica",
+   "atk": 60,
+   "lvl": 50,
+   "voc": [
+    "knight"
+   ],
+   "el": "energy",
+   "magic": 1,
+   "ml": 1,
+   "price": 3000,
+   "desc": "Ataque mágico extra (cresce com o magic level).",
+   "art": {
+    "f": "sword",
+    "m": "magic",
+    "hilt": "gold",
+    "long": 1,
+    "glow": "#a8a0ff",
+    "gem": "#b070ff"
+   },
+   "rank": 1
+  },
+  "dragon_sword": {
+   "slot": "weapon",
+   "name": "Espada do Dragão",
+   "atk": 56,
+   "lvl": 45,
+   "voc": [
+    "knight"
+   ],
+   "el": "fire",
+   "elDmg": 10,
+   "price": 2100,
+   "art": {
+    "f": "sword",
+    "m": "dragon",
+    "hilt": "gold",
+    "wide": 1,
+    "wings": 1,
+    "gem": "#ff6020"
+   },
+   "rank": 0.9
+  },
+  "wooden_shield": {
+   "slot": "shield",
+   "name": "Escudo de Madeira",
+   "def": 1,
+   "lvl": 1,
+   "voc": [
+    "knight"
+   ],
+   "price": 0,
+   "art": {
+    "f": "round",
+    "m": "wood",
+    "rim": "iron"
+   },
+   "rank": 0
+  },
+  "copper_shield": {
+   "slot": "shield",
+   "name": "Escudo de Cobre",
+   "def": 1.6,
+   "lvl": 7,
+   "voc": [
+    "knight"
+   ],
+   "price": 110,
+   "art": {
+    "f": "round",
+    "m": "copper",
+    "rim": "copper",
+    "boss": 1
+   },
+   "rank": 0.125
+  },
+  "battle_shield": {
+   "slot": "shield",
+   "name": "Escudo de Batalha",
+   "def": 2.3,
+   "lvl": 13,
+   "voc": [
+    "knight"
+   ],
+   "price": 240,
+   "art": {
+    "f": "heater",
+    "m": "wood",
+    "rim": "iron",
+    "emb": "bar"
+   },
+   "rank": 0.25
+  },
+  "guardian_shield": {
+   "slot": "shield",
+   "name": "Escudo do Guardião",
+   "def": 2.9,
+   "lvl": 19,
+   "voc": [
+    "knight"
+   ],
+   "block": 0.02,
+   "price": 420,
+   "art": {
+    "f": "heater",
+    "m": "guardian",
+    "rim": "steel",
+    "emb": "cross"
+   },
+   "rank": 0.375
+  },
+  "medusa_shield": {
+   "slot": "shield",
+   "name": "Escudo da Medusa",
+   "def": 3.5,
+   "lvl": 26,
+   "voc": [
+    "knight"
+   ],
+   "res": {
+    "earth": 0.15
+   },
+   "price": 700,
+   "art": {
+    "f": "round",
+    "m": "stone",
+    "rim": "serpent",
+    "emb": "medusa"
+   },
+   "rank": 0.5
+  },
+  "dragon_shield": {
+   "slot": "shield",
+   "name": "Escudo do Dragão",
+   "def": 5.4,
+   "lvl": 44,
+   "voc": [
+    "knight"
+   ],
+   "res": {
+    "fire": 0.15
+   },
+   "price": 1900,
+   "art": {
+    "f": "kite",
+    "m": "dragon",
+    "rim": "gold",
+    "emb": "scales"
+   },
+   "rank": 0.875
+  },
+  "demon_shield": {
+   "slot": "shield",
+   "name": "Escudo Demoníaco",
+   "def": 4.1,
+   "lvl": 32,
+   "voc": [
+    "knight"
+   ],
+   "crit": 0.02,
+   "res": {
+    "holy": -0.1,
+    "fire": 0.1
+   },
+   "price": 1000,
+   "art": {
+    "f": "kite",
+    "m": "demon",
+    "rim": "dark",
+    "emb": "horns"
+   },
+   "rank": 0.625
+  },
+  "magic_shield": {
+   "slot": "shield",
+   "name": "Escudo Mágico",
+   "def": 6,
+   "lvl": 50,
+   "voc": [
+    "knight"
+   ],
+   "ml": 1,
+   "res": {
+    "energy": 0.15
+   },
+   "price": 2800,
+   "art": {
+    "f": "round",
+    "m": "magic",
+    "rim": "gold",
+    "emb": "rune"
+   },
+   "rank": 1
+  },
+  "blessed_shield": {
+   "slot": "shield",
+   "name": "Escudo Abençoado",
+   "def": 4.8,
+   "lvl": 38,
+   "voc": [
+    "knight"
+   ],
+   "block": 0.04,
+   "hpReg": 1,
+   "res": {
+    "holy": 0.2
+   },
+   "price": 1400,
+   "art": {
+    "f": "tower",
+    "m": "holy",
+    "rim": "gold",
+    "emb": "sun"
+   },
+   "rank": 0.75
+  },
+  "wooden_helmet": {
+   "slot": "helmet",
+   "name": "Elmo de Madeira",
+   "def": 0.5,
+   "lvl": 1,
+   "price": 30,
+   "art": {
+    "f": "cap",
+    "m": "wood",
+    "trim": "leather"
+   },
+   "rank": 0
+  },
+  "chain_helmet": {
+   "slot": "helmet",
+   "name": "Elmo de Malha",
+   "def": 0.8,
+   "lvl": 6,
+   "price": 80,
+   "art": {
+    "f": "cap",
+    "m": "chain",
+    "trim": "iron"
+   },
+   "rank": 0.1111111111111111
+  },
+  "copper_helmet": {
+   "slot": "helmet",
+   "name": "Elmo de Cobre",
+   "def": 1.1,
+   "lvl": 12,
+   "price": 130,
+   "art": {
+    "f": "nasal",
+    "m": "copper",
+    "trim": "copper"
+   },
+   "rank": 0.2222222222222222
+  },
+  "steel_helmet": {
+   "slot": "helmet",
+   "name": "Elmo de Aço",
+   "def": 1.5,
+   "lvl": 17,
+   "price": 260,
+   "art": {
+    "f": "closed",
+    "m": "steel",
+    "trim": "iron"
+   },
+   "rank": 0.3333333333333333
+  },
+  "dark_helmet": {
+   "slot": "helmet",
+   "name": "Elmo Sombrio",
+   "def": 1.8,
+   "lvl": 23,
+   "res": {
+    "holy": -0.05,
+    "earth": 0.05
+   },
+   "price": 380,
+   "art": {
+    "f": "closed",
+    "m": "dark",
+    "trim": "dark",
+    "spikes": 1
+   },
+   "rank": 0.4444444444444444
+  },
+  "crusader_helmet": {
+   "slot": "helmet",
+   "name": "Elmo do Cruzado",
+   "def": 2.1,
+   "lvl": 28,
+   "res": {
+    "holy": 0.05
+   },
+   "price": 520,
+   "art": {
+    "f": "great",
+    "m": "steel",
+    "trim": "gold",
+    "cross": 1
+   },
+   "rank": 0.5555555555555556
+  },
+  "royal_helmet": {
+   "slot": "helmet",
+   "name": "Elmo Real",
+   "def": 2.4,
+   "lvl": 34,
+   "ml": 1,
+   "price": 760,
+   "art": {
+    "f": "closed",
+    "m": "gold",
+    "trim": "crimson",
+    "crown": 1
+   },
+   "rank": 0.6666666666666666
+  },
+  "demon_helmet": {
+   "slot": "helmet",
+   "name": "Elmo Demoníaco",
+   "def": 2.8,
+   "lvl": 39,
+   "res": {
+    "fire": 0.08
+   },
+   "price": 1200,
+   "art": {
+    "f": "closed",
+    "m": "dark",
+    "trim": "demon",
+    "horns": 1
+   },
+   "rank": 0.7777777777777778
+  },
+  "golden_helmet": {
+   "slot": "helmet",
+   "name": "Elmo Dourado",
+   "def": 3.1,
+   "lvl": 45,
+   "ml": 1,
+   "hpReg": 0.5,
+   "price": 1700,
+   "art": {
+    "f": "great",
+    "m": "gold",
+    "trim": "gold",
+    "wingsH": 1
+   },
+   "rank": 0.8888888888888888
+  },
+  "dragon_helmet": {
+   "slot": "helmet",
+   "name": "Elmo de Escamas de Dragão",
+   "def": 3.4,
+   "lvl": 50,
+   "res": {
+    "fire": 0.1,
+    "earth": 0.05
+   },
+   "price": 2400,
+   "art": {
+    "f": "closed",
+    "m": "dscale",
+    "trim": "gold",
+    "crest": 1
+   },
+   "rank": 1
+  },
+  "wooden_armor": {
+   "slot": "armor",
+   "name": "Armadura de Madeira",
+   "def": 1,
+   "lvl": 1,
+   "price": 40,
+   "art": {
+    "f": "armor",
+    "m": "wood",
+    "trim": "leather"
+   },
+   "rank": 0
+  },
+  "leather_armor": {
+   "slot": "armor",
+   "name": "Armadura de Couro",
+   "def": 1.6,
+   "lvl": 7,
+   "price": 70,
+   "art": {
+    "f": "armor",
+    "m": "leather",
+    "trim": "leather",
+    "stitch": 1
+   },
+   "rank": 0.125
+  },
+  "chain_armor": {
+   "slot": "armor",
+   "name": "Armadura de Malha",
+   "def": 2.2,
+   "lvl": 13,
+   "price": 180,
+   "art": {
+    "f": "armor",
+    "m": "chain",
+    "trim": "leather"
+   },
+   "rank": 0.25
+  },
+  "plate_armor": {
+   "slot": "armor",
+   "name": "Armadura de Placas",
+   "def": 2.8,
+   "lvl": 19,
+   "price": 360,
+   "art": {
+    "f": "armor",
+    "m": "steel",
+    "trim": "iron",
+    "plates": 1
+   },
+   "rank": 0.375
+  },
+  "dark_armor": {
+   "slot": "armor",
+   "name": "Armadura Sombria",
+   "def": 3.4,
+   "lvl": 26,
+   "res": {
+    "earth": 0.05
+   },
+   "price": 500,
+   "art": {
+    "f": "armor",
+    "m": "dark",
+    "trim": "dark",
+    "plates": 1
+   },
+   "rank": 0.5
+  },
+  "knight_armor": {
+   "slot": "armor",
+   "name": "Armadura de Cavaleiro",
+   "def": 4,
+   "lvl": 32,
+   "voc": [
+    "knight"
+   ],
+   "price": 760,
+   "art": {
+    "f": "armor",
+    "m": "guardian",
+    "trim": "gold",
+    "plates": 1
+   },
+   "rank": 0.625
+  },
+  "golden_armor": {
+   "slot": "armor",
+   "name": "Armadura Dourada",
+   "def": 4.6,
+   "lvl": 38,
+   "price": 1200,
+   "art": {
+    "f": "armor",
+    "m": "gold",
+    "trim": "gold",
+    "plates": 1
+   },
+   "rank": 0.75
+  },
+  "magic_plate": {
+   "slot": "armor",
+   "name": "Armadura de Placas Mágica",
+   "def": 5.2,
+   "lvl": 44,
+   "ml": 1,
+   "res": {
+    "energy": 0.1
+   },
+   "price": 1800,
+   "art": {
+    "f": "armor",
+    "m": "gold",
+    "trim": "magic",
+    "plates": 1,
+    "rune": 1
+   },
+   "rank": 0.875
+  },
+  "dragon_mail": {
+   "slot": "armor",
+   "name": "Malha de Escamas de Dragão",
+   "def": 5.8,
+   "lvl": 50,
+   "res": {
+    "fire": 0.12,
+    "earth": 0.06
+   },
+   "price": 2600,
+   "art": {
+    "f": "armor",
+    "m": "dscale",
+    "trim": "gold",
+    "scales": 1
+   },
+   "rank": 1
+  },
+  "leather_legs": {
+   "slot": "legs",
+   "name": "Calça de Couro",
+   "def": 0.5,
+   "lvl": 1,
+   "price": 35,
+   "art": {
+    "f": "legs",
+    "m": "leather",
+    "trim": "leather",
+    "stitch": 1
+   },
+   "rank": 0
+  },
+  "wooden_legs": {
+   "slot": "legs",
+   "name": "Calça de Madeira",
+   "def": 1,
+   "lvl": 8,
+   "price": 60,
+   "art": {
+    "f": "legs",
+    "m": "wood",
+    "trim": "leather"
+   },
+   "rank": 0.14285714285714285
+  },
+  "chain_legs": {
+   "slot": "legs",
+   "name": "Calça de Malha",
+   "def": 1.4,
+   "lvl": 15,
+   "price": 150,
+   "art": {
+    "f": "legs",
+    "m": "chain",
+    "trim": "leather"
+   },
+   "rank": 0.2857142857142857
+  },
+  "plate_legs": {
+   "slot": "legs",
+   "name": "Calça de Placas",
+   "def": 1.9,
+   "lvl": 22,
+   "price": 320,
+   "art": {
+    "f": "legs",
+    "m": "steel",
+    "trim": "iron",
+    "plates": 1
+   },
+   "rank": 0.42857142857142855
+  },
+  "knight_legs": {
+   "slot": "legs",
+   "name": "Calça de Cavaleiro",
+   "def": 2.4,
+   "lvl": 29,
+   "voc": [
+    "knight"
+   ],
+   "price": 650,
+   "art": {
+    "f": "legs",
+    "m": "guardian",
+    "trim": "gold",
+    "plates": 1
+   },
+   "rank": 0.5714285714285714
+  },
+  "golden_legs": {
+   "slot": "legs",
+   "name": "Calça Dourada",
+   "def": 2.9,
+   "lvl": 36,
+   "price": 1100,
+   "art": {
+    "f": "legs",
+    "m": "gold",
+    "trim": "gold",
+    "plates": 1
+   },
+   "rank": 0.7142857142857143
+  },
+  "magic_legs": {
+   "slot": "legs",
+   "name": "Calça Mágica",
+   "def": 3.3,
+   "lvl": 43,
+   "ml": 1,
+   "price": 1600,
+   "art": {
+    "f": "legs",
+    "m": "magic",
+    "trim": "gold",
+    "rune": 1
+   },
+   "rank": 0.8571428571428571
+  },
+  "dragon_legs": {
+   "slot": "legs",
+   "name": "Calça de Escamas de Dragão",
+   "def": 3.8,
+   "lvl": 50,
+   "res": {
+    "fire": 0.08
+   },
+   "price": 2300,
+   "art": {
+    "f": "legs",
+    "m": "dscale",
+    "trim": "gold",
+    "scales": 1
+   },
+   "rank": 1
+  },
+  "leather_boots": {
+   "slot": "boots",
+   "name": "Botas de Couro",
+   "def": 0.4,
+   "lvl": 1,
+   "price": 30,
+   "art": {
+    "f": "boots",
+    "m": "leather",
+    "trim": "leather"
+   },
+   "rank": 0
+  },
+  "chain_boots": {
+   "slot": "boots",
+   "name": "Botas de Malha",
+   "def": 0.8,
+   "lvl": 9,
+   "price": 140,
+   "art": {
+    "f": "boots",
+    "m": "chain",
+    "trim": "leather"
+   },
+   "rank": 0.16666666666666666
+  },
+  "sandals": {
+   "slot": "boots",
+   "name": "Sandálias",
+   "def": 0.1,
+   "lvl": 17,
+   "hpReg": 1,
+   "manaReg": 1,
+   "price": 220,
+   "desc": "As mais fracas, mas aceleram a regeneração de vida e mana.",
+   "art": {
+    "f": "sandals",
+    "m": "leather",
+    "trim": "leather"
+   },
+   "rank": 0.3333333333333333
+  },
+  "crocodile_boots": {
+   "slot": "boots",
+   "name": "Botas de Crocodilo",
+   "def": 1.5,
+   "lvl": 26,
+   "res": {
+    "earth": 0.06
+   },
+   "price": 380,
+   "art": {
+    "f": "boots",
+    "m": "croc",
+    "trim": "leather",
+    "scales": 1
+   },
+   "rank": 0.5
+  },
+  "golden_boots": {
+   "slot": "boots",
+   "name": "Botas Douradas",
+   "def": 1.9,
+   "lvl": 34,
+   "speed": 0.06,
+   "price": 1000,
+   "art": {
+    "f": "boots",
+    "m": "gold",
+    "trim": "gold"
+   },
+   "rank": 0.6666666666666666
+  },
+  "guardian_boots": {
+   "slot": "boots",
+   "name": "Botas do Guardião",
+   "def": 2.2,
+   "lvl": 42,
+   "block": 0.02,
+   "hpReg": 0.5,
+   "price": 1500,
+   "art": {
+    "f": "boots",
+    "m": "guardian",
+    "trim": "steel",
+    "plates": 1
+   },
+   "rank": 0.8333333333333334
+  },
+  "bow": {
+   "slot": "weapon",
+   "name": "Arco",
+   "voc": [
+    "archer"
+   ],
+   "twoH": true,
+   "bow": true,
+   "price": 0,
+   "desc": "Arco simples de teixo.",
+   "art": {
+    "f": "sword",
+    "m": "wood"
+   },
+   "rank": 0,
+   "lvl": 1,
+   "atk": 22
+  },
+  "elvish_bow": {
+   "slot": "weapon",
+   "name": "Arco Élfico",
+   "voc": [
+    "archer"
+   ],
+   "twoH": true,
+   "bow": true,
+   "crit": 0.02,
+   "price": 140,
+   "art": {
+    "f": "sword",
+    "m": "wood"
+   },
+   "rank": 0.1111111111111111,
+   "lvl": 6,
+   "atk": 26
+  },
+  "icicle_bow": {
+   "slot": "weapon",
+   "name": "Arco de Gelo",
+   "voc": [
+    "archer"
+   ],
+   "twoH": true,
+   "bow": true,
+   "el": "ice",
+   "elDmg": 5,
+   "price": 300,
+   "art": {
+    "f": "sword",
+    "m": "crystal"
+   },
+   "rank": 0.2222222222222222,
+   "lvl": 12,
+   "atk": 30
+  },
+  "musician_bow": {
+   "slot": "weapon",
+   "name": "Arco do Músico",
+   "voc": [
+    "archer"
+   ],
+   "twoH": true,
+   "bow": true,
+   "el": "energy",
+   "elDmg": 6,
+   "price": 420,
+   "art": {
+    "f": "sword",
+    "m": "iron"
+   },
+   "rank": 0.3333333333333333,
+   "lvl": 17,
+   "atk": 33
+  },
+  "refined_bow": {
+   "slot": "weapon",
+   "name": "Arco Refinado",
+   "voc": [
+    "archer"
+   ],
+   "twoH": true,
+   "bow": true,
+   "crit": 0.04,
+   "price": 600,
+   "art": {
+    "f": "sword",
+    "m": "iron"
+   },
+   "rank": 0.4444444444444444,
+   "lvl": 23,
+   "atk": 37
+  },
+  "silkweaver_bow": {
+   "slot": "weapon",
+   "name": "Arco Tecelão de Seda",
+   "voc": [
+    "archer"
+   ],
+   "twoH": true,
+   "bow": true,
+   "el": "earth",
+   "elDmg": 6,
+   "poison": {
+    "pct": 0.25,
+    "dur": 4
+   },
+   "price": 800,
+   "desc": "Envenena o alvo.",
+   "art": {
+    "f": "sword",
+    "m": "iron"
+   },
+   "rank": 0.5555555555555556,
+   "lvl": 28,
+   "atk": 41
+  },
+  "umbral_bow": {
+   "slot": "weapon",
+   "name": "Arco Umbral",
+   "voc": [
+    "archer"
+   ],
+   "twoH": true,
+   "bow": true,
+   "crit": 0.06,
+   "price": 1100,
+   "art": {
+    "f": "sword",
+    "m": "iron"
+   },
+   "rank": 0.6666666666666666,
+   "lvl": 34,
+   "atk": 45
+  },
+  "destruction_bow": {
+   "slot": "weapon",
+   "name": "Arco da Destruição",
+   "voc": [
+    "archer"
+   ],
+   "twoH": true,
+   "bow": true,
+   "el": "fire",
+   "elDmg": 10,
+   "price": 1600,
+   "art": {
+    "f": "sword",
+    "m": "crimson"
+   },
+   "rank": 0.7777777777777778,
+   "lvl": 39,
+   "atk": 48
+  },
+  "magic_bow": {
+   "slot": "weapon",
+   "name": "Arco Mágico",
+   "voc": [
+    "archer"
+   ],
+   "twoH": true,
+   "bow": true,
+   "el": "energy",
+   "elDmg": 9,
+   "ml": 2,
+   "price": 2200,
+   "art": {
+    "f": "sword",
+    "m": "crystal"
+   },
+   "rank": 0.8888888888888888,
+   "lvl": 45,
+   "atk": 52
+  },
+  "dragon_bow": {
+   "slot": "weapon",
+   "name": "Arco do Dragão",
+   "voc": [
+    "archer"
+   ],
+   "twoH": true,
+   "bow": true,
+   "el": "fire",
+   "elDmg": 12,
+   "crit": 0.05,
+   "price": 3200,
+   "art": {
+    "f": "sword",
+    "m": "crimson"
+   },
+   "rank": 1,
+   "lvl": 50,
+   "atk": 56
+  },
+  "quiver": {
+   "slot": "shield",
+   "name": "Aljava",
+   "voc": [
+    "archer"
+   ],
+   "quiver": 800,
+   "price": 0,
+   "art": {
+    "f": "round",
+    "m": "wood",
+    "rim": "iron"
+   },
+   "rank": 0,
+   "lvl": 1,
+   "def": 0.3,
+   "dodge": 1
+  },
+  "red_quiver": {
+   "slot": "shield",
+   "name": "Aljava Vermelha",
+   "voc": [
+    "archer"
+   ],
+   "quiver": 875,
+   "price": 120,
+   "art": {
+    "f": "round",
+    "m": "wood",
+    "rim": "iron"
+   },
+   "rank": 0.125,
+   "lvl": 7,
+   "def": 0.5,
+   "dodge": 1
+  },
+  "leather_quiver": {
+   "slot": "shield",
+   "name": "Aljava de Couro",
+   "voc": [
+    "archer"
+   ],
+   "quiver": 950,
+   "price": 260,
+   "art": {
+    "f": "round",
+    "m": "wood",
+    "rim": "iron"
+   },
+   "rank": 0.25,
+   "lvl": 13,
+   "def": 0.7,
+   "dodge": 2
+  },
+  "pearl_quiver": {
+   "slot": "shield",
+   "name": "Aljava de Pérolas",
+   "voc": [
+    "archer"
+   ],
+   "quiver": 1025,
+   "manaReg": 0.5,
+   "price": 420,
+   "art": {
+    "f": "round",
+    "m": "wood",
+    "rim": "iron"
+   },
+   "rank": 0.375,
+   "lvl": 19,
+   "def": 0.9,
+   "dodge": 2
+  },
+  "emerald_quiver": {
+   "slot": "shield",
+   "name": "Aljava de Esmeralda",
+   "voc": [
+    "archer"
+   ],
+   "quiver": 1100,
+   "res": {
+    "earth": 0.05
+   },
+   "price": 600,
+   "art": {
+    "f": "round",
+    "m": "wood",
+    "rim": "iron"
+   },
+   "rank": 0.5,
+   "lvl": 26,
+   "def": 1.2,
+   "dodge": 3
+  },
+  "diamond_quiver": {
+   "slot": "shield",
+   "name": "Aljava de Diamante",
+   "voc": [
+    "archer"
+   ],
+   "quiver": 1200,
+   "res": {
+    "ice": 0.05
+   },
+   "price": 850,
+   "art": {
+    "f": "round",
+    "m": "wood",
+    "rim": "iron"
+   },
+   "rank": 0.625,
+   "lvl": 32,
+   "def": 1.4,
+   "dodge": 3
+  },
+  "dragon_quiver": {
+   "slot": "shield",
+   "name": "Aljava do Dragão",
+   "voc": [
+    "archer"
+   ],
+   "quiver": 1300,
+   "res": {
+    "fire": 0.08
+   },
+   "price": 1300,
+   "art": {
+    "f": "round",
+    "m": "wood",
+    "rim": "iron"
+   },
+   "rank": 0.75,
+   "lvl": 38,
+   "def": 1.6,
+   "dodge": 4
+  },
+  "magic_quiver": {
+   "slot": "shield",
+   "name": "Aljava Mágica",
+   "voc": [
+    "archer"
+   ],
+   "quiver": 1400,
+   "ml": 1,
+   "manaReg": 1,
+   "price": 2000,
+   "art": {
+    "f": "round",
+    "m": "wood",
+    "rim": "iron"
+   },
+   "rank": 0.875,
+   "lvl": 44,
+   "def": 1.8,
+   "dodge": 4
+  },
+  "blessed_quiver": {
+   "slot": "shield",
+   "name": "Aljava Abençoada",
+   "voc": [
+    "archer"
+   ],
+   "quiver": 1500,
+   "res": {
+    "holy": 0.1
+   },
+   "hpReg": 1,
+   "price": 3000,
+   "art": {
+    "f": "round",
+    "m": "wood",
+    "rim": "iron"
+   },
+   "rank": 1,
+   "lvl": 50,
+   "def": 2,
+   "dodge": 5
+  },
+  "dragon_boots": {
+   "slot": "boots",
+   "name": "Botas de Escamas de Dragão",
+   "def": 2.6,
+   "lvl": 50,
+   "res": {
+    "fire": 0.06
+   },
+   "speed": 0.04,
+   "price": 2200,
+   "art": {
+    "f": "boots",
+    "m": "dscale",
+    "trim": "gold",
+    "scales": 1
+   },
+   "rank": 1
+  },
+  "lantern": {
+   "slot": "light",
+   "name": "Lampião",
+   "lvl": 1,
+   "price": 0,
+   "rank": 0,
+   "light": {
+    "r": 2.4,
+    "tint": 16761690,
+    "fuel": false
+   },
+   "art": {
+    "f": "lantern"
+   },
+   "desc": "Luz amarelada em volta de você. Nunca se apaga."
+  },
+  "goddess_pendant": {
+   "slot": "light",
+   "name": "Pingente da Deusa",
+   "lvl": 1,
+   "price": 0,
+   "rank": 0,
+   "light": {
+    "r": 3.4,
+    "tint": 14213887
+   },
+   "res": {
+    "holy": 0.05
+   },
+   "hpReg": 0.3,
+   "art": {
+    "f": "pendant"
+   },
+   "desc": "Prata com uma pequena harpa. Brilha sozinho, sem óleo."
+  }
+ },
+ "RARITY": [
+  {
+   "name": "Normal",
+   "color": "#d8d0c0",
+   "hex": 9076848,
+   "mult": 1
+  },
+  {
+   "name": "Incomum",
+   "color": "#6ad86a",
+   "hex": 3840570,
+   "mult": 1.1
+  },
+  {
+   "name": "Raro",
+   "color": "#5aa8ff",
+   "hex": 2779856,
+   "mult": 1.22
+  },
+  {
+   "name": "Ultra raro",
+   "color": "#c878ff",
+   "hex": 9059024,
+   "mult": 1.36
+  },
+  {
+   "name": "Lendário",
+   "color": "#ffa030",
+   "hex": 13660176,
+   "mult": 1.55
+  }
+ ],
+ "ARROW_IDS": [
+  "normal",
+  "fire",
+  "ice",
+  "earth",
+  "energy",
+  "explosive",
+  "holy"
+ ]
+}

@@ -1,40 +1,36 @@
-; Engine configuration file.
-; It's best edited using the editor UI and not directly,
-; since the parameters that go here are not all obvious.
-;
-; Format:
-;   [section] ; section goes between []
-;   param=value ; assign values to parameters
-
+; Vitula — versão Godot (migração do Phaser, até os esgotos)
 config_version=5
 
 [application]
-
-config/name="Vitula (Godot)"
-run/main_scene="res://main.tscn"
+config/name="Vitula"
+run/main_scene="res://menu.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://assets/waypoint.png"
 
 [autoload]
-
+D="*res://scripts/data.gd"
+Save="*res://scripts/save.gd"
+A="*res://scripts/anim.gd"
+Sfx="*res://scripts/sfx.gd"
+Keys="*res://scripts/keys.gd"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
 
 [display]
-
 window/size/viewport_width=960
 window/size/viewport_height=540
+window/size/window_width_override=1920
+window/size/window_height_override=1080
 window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
 
 [editor_plugins]
-
 enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg", "res://addons/gloot/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
 
-[internationalization]
-
-locale/translations_pot_files=PackedStringArray("res://dialogue/oraculo.dialogue")
+[input_devices]
+pointing/emulate_touch_from_mouse=false
 
 [rendering]
-
-textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=0
