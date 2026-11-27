@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vitula survivors · balanceamento da Rook Forest</title>
+<style>
+:root{--s:#191919;--t:#efefef;--t2:#9c9c9c;--g:#2e2e2e;--a:#e76624;--d:#338ced}
+body{margin:0;background:#111;color:var(--t);font:15px/1.5 system-ui,sans-serif}
+main{max-width:1000px;margin:auto;padding:28px 18px}
+h1{font-size:24px;margin:0 0 6px}h2{font-size:17px;margin:28px 0 4px}p{color:var(--t2);margin:4px 0 10px}
+.card{background:var(--s);border-radius:10px;padding:16px 16px 10px;margin:10px 0;position:relative}
+.leg{display:flex;gap:16px;font-size:13px;color:var(--t2);margin-bottom:6px}.leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+svg text{fill:var(--t2);font-size:12px}.tip{position:fixed;pointer-events:none;background:#000d;border:1px solid #444;border-radius:6px;padding:6px 9px;font-size:13px;display:none}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{padding:5px 8px;border-bottom:1px solid #2a2a2a;text-align:left}th{color:var(--t2);font-weight:500}
+.ok{color:#5cd07a}.warn{color:#f2a600}
+</style></head><body><main>
+<h1>Balanceamento da Rook Forest (protótipo survivors-like)</h1>
+<p>Números calculados pelo modelo <code>balance/model.js</code> a partir do <code>config.js</code>, antes e depois do ajuste. As metas são as propostas para o gênero; ajuste-as se quiser outro ritmo.</p>
+<div class="leg"><span><i style="background:var(--a)"></i>Antes</span><span><i style="background:var(--d)"></i>Depois</span></div>
+<h2>Tempo para matar o Rato Gigante (s) · meta 45–90 s</h2><p>Com a build esperada aos 8 minutos (todas as armas da classe no nível 4).</p><div class="card" id="boss"></div>
+<h2>Dano em grupo por habilidade, nível 6 (dano/s numa horda média)</h2><p>Terremoto e Saraivada dominavam; Míssil e Flecha Sagrada ficavam para trás. As áreas continuam na frente na horda, mas não com o dobro do resto.</p><div class="card" id="wep"></div>
+<h2>Gemas acumuladas para alcançar cada nível · meta: nível 20–25 aos 10 min</h2><p>No bot, cerca de 70 a 170 abates por minuto: antes o nível 20 pedia 2.779 gemas (fora de alcance); agora pede 1.174.</p><div class="card" id="xp"></div>
+<h2>Mordida em % da vida do Arqueiro · meta ≤ 15% no fim</h2><p>O dano dos monstros crescia +0,4%/s (×3,2 aos 9 min); agora +0,15%/s.</p><div class="card" id="bite"></div>
+<h2>Tabela</h2><div class="card"><table id="tab"></table></div>
+<div class="tip" id="tip"></div>
+<script>
+const D={"wep": [{"n": "Corte", "voc": "knight", "a": 178.1, "d": 242.9, "sa": 75.7, "sd": 103.2}, {"n": "Golpe Frontal", "voc": "knight", "a": 251.2, "d": 335.8, "sa": 46.8, "sd": 62.6}, {"n": "Terremoto", "voc": "knight", "a": 867.9, "d": 590.1, "sa": 34.4, "sd": 23.4}, {"n": "Aura Sagrada", "voc": "knight", "a": 227.7, "d": 341.5, "sa": 41.3, "sd": 61.9}, {"n": "Flecha", "voc": "archer", "a": 275.3, "d": 275.3, "sa": 275.3, "sd": 275.3}, {"n": "Flecha Sagrada", "voc": "archer", "a": 176, "d": 236.6, "sa": 70.4, "sd": 94.6}, {"n": "Saraivada", "voc": "archer", "a": 674.6, "d": 441.1, "sa": 17.9, "sd": 11.7}, {"n": "Míssil Sagrado", "voc": "archer", "a": 137.6, "d": 264.7, "sa": 68.8, "sd": 88.2}], "boss": {"knight": {"a": 18.3, "d": 64.9}, "archer": {"a": 11.2, "d": 45.3}}, "xp": [{"l": 1, "a": 5, "d": 5}, {"l": 2, "a": 19, "d": 14}, {"l": 3, "a": 44, "d": 28}, {"l": 4, "a": 82, "d": 47}, {"l": 5, "a": 133, "d": 72}, {"l": 6, "a": 198, "d": 102}, {"l": 7, "a": 278, "d": 138}, {"l": 8, "a": 372, "d": 180}, {"l": 9, "a": 482, "d": 228}, {"l": 10, "a": 607, "d": 282}, {"l": 11, "a": 748, "d": 342}, {"l": 12, "a": 905, "d": 409}, {"l": 13, "a": 1079, "d": 482}, {"l": 14, "a": 1270, "d": 561}, {"l": 15, "a": 1478, "d": 647}, {"l": 16, "a": 1703, "d": 739}, {"l": 17, "a": 1945, "d": 838}, {"l": 18, "a": 2205, "d": 943}, {"l": 19, "a": 2483, "d": 1055}, {"l": 20, "a": 2779, "d": 1174}, {"l": 21, "a": 3093, "d": 1299}, {"l": 22, "a": 3425, "d": 1431}, {"l": 23, "a": 3775, "d": 1570}, {"l": 24, "a": 4144, "d": 1716}, {"l": 25, "a": 4532, "d": 1869}, {"l": 26, "a": 4939, "d": 2029}, {"l": 27, "a": 5365, "d": 2195}, {"l": 28, "a": 5810, "d": 2368}, {"l": 29, "a": 6274, "d": 2548}, {"l": 30, "a": 6757, "d": 2735}], "bite": [{"k": "rat@0", "a": 7.8, "d": 7.8}, {"k": "rat@5", "a": 17.2, "d": 11.3}, {"k": "rat@9", "a": 24.7, "d": 14.2}, {"k": "cave_rat@5", "a": 23, "d": 15.1}, {"k": "cave_rat@9", "a": 33, "d": 18.9}, {"k": "giant_rat@9", "a": 60.5, "d": 34.6}]}, A="#e76624", B="#338ced", tip=document.getElementById("tip");
+const show=(e,h)=>{tip.innerHTML=h;tip.style.display="block";tip.style.left=e.clientX+14+"px";tip.style.top=e.clientY+10+"px"}, hide=()=>tip.style.display="none";
+function bars(id, rows, max, unit, band){
+  const el=document.getElementById(id), w=el.clientWidth-32, rh=34, lw=165, H=rows.length*rh+24, sc=v=>(w-lw-60)*v/max;
+  let s=`<svg width="${w}" height="${H}">`;
+  if(band) s+=`<rect x="${lw+sc(band[0])}" y="0" width="${sc(band[1])-sc(band[0])}" height="${H-20}" fill="#5cd07a" opacity=".08"/><text x="${lw+sc(band[0])+4}" y="${H-6}">meta</text>`;
+  rows.forEach((r,i)=>{const y=i*rh;
+    s+=`<text x="0" y="${y+20}" style="fill:#efefef">${r.n}</text>`;
+    s+=`<rect class="h" data-t="${r.n} · antes: ${r.a} ${unit}" x="${lw}" y="${y+4}" width="${Math.max(2,sc(r.a))}" height="11" rx="3" fill="${A}"/>`;
+    s+=`<rect class="h" data-t="${r.n} · depois: ${r.d} ${unit}" x="${lw}" y="${y+17}" width="${Math.max(2,sc(r.d))}" height="11" rx="3" fill="${B}"/>`;
+    s+=`<text x="${lw+sc(r.d)+6}" y="${y+27}">${r.d}</text>`;});
+  el.innerHTML=s+"</svg>";
+  el.querySelectorAll(".h").forEach(n=>{n.onmousemove=e=>show(e,n.dataset.t);n.onmouseleave=hide});
+}
+bars("boss",[{n:"Cavaleiro",a:D.boss.knight.a,d:D.boss.knight.d},{n:"Arqueiro",a:D.boss.archer.a,d:D.boss.archer.d}],100,"s",[45,90]);
+bars("wep",D.wep.map(r=>({n:r.n,a:r.a,d:r.d})),900,"dano/s");
+bars("bite",D.bite.map(r=>({n:r.k.replace("@"," · min ").replace("cave_rat","Rato da Caverna").replace("giant_rat","Rato Gigante").replace("rat","Rato"),a:r.a,d:r.d})),65,"%",[0,15]);
+// linha: gemas por nível
+{const el=document.getElementById("xp"), w=el.clientWidth-32, h=240, pl=52, pb=28, mx=30, my=5200;
+ const X=l=>pl+(w-pl-10)*(l-1)/(mx-1), Y=v=>h-pb-(h-pb-10)*v/my;
+ let s=`<svg width="${w}" height="${h}">`;
+ for(const v of [0,1000,2000,3000,4000,5000]) s+=`<line x1="${pl}" x2="${w-10}" y1="${Y(v)}" y2="${Y(v)}" stroke="#2e2e2e"/><text x="${pl-8}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
+ for(const l of [1,5,10,15,20,25,30]) s+=`<text x="${X(l)}" y="${h-8}" text-anchor="middle">${l}</text>`;
+ s+=`<rect x="${X(20)}" y="10" width="${X(25)-X(20)}" height="${h-pb-10}" fill="#5cd07a" opacity=".08"/>`;
+ for(const [k,c] of [["a",A],["d",B]]) s+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${D.xp.map(r=>X(r.l)+","+Y(r[k])).join(" ")}"/>`;
+ s+=`<line id="cx" y1="10" y2="${h-pb}" stroke="#666" style="display:none"/></svg>`;
+ el.innerHTML=s; const sv=el.querySelector("svg"), cx=el.querySelector("#cx");
+ sv.onmousemove=e=>{const r=sv.getBoundingClientRect(), l=Math.max(1,Math.min(mx,Math.round(1+(e.clientX-r.left-pl)/(w-pl-10)*(mx-1)))), p=D.xp[l-1];
+   cx.setAttribute("x1",X(l));cx.setAttribute("x2",X(l));cx.style.display="";show(e,`Nível ${l}<br>antes: ${p.a} gemas<br>depois: ${p.d} gemas`)};
+ sv.onmouseleave=()=>{cx.style.display="none";hide()};}
+document.getElementById("tab").innerHTML="<tr><th>Habilidade</th><th>Classe</th><th>Dano em grupo (antes → depois)</th><th>Dano num alvo (antes → depois)</th></tr>"+D.wep.map(r=>`<tr><td>${r.n}</td><td>${r.voc==="knight"?"Cavaleiro":"Arqueiro"}</td><td>${r.a} → ${r.d}</td><td>${r.sa} → ${r.sd}</td></tr>`).join("");
+</script></main></body></html>

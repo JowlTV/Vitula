@@ -1,0 +1,1256 @@
+{
+ "weapons": {
+  "slash": {
+   "voc": "knight",
+   "rows": [
+    {
+     "lv": 1,
+     "dmg": 30,
+     "cd": 1,
+     "singleDps": 32.4,
+     "crowdDps": 33.9
+    },
+    {
+     "lv": 2,
+     "dmg": 36.6,
+     "cd": 0.92,
+     "singleDps": 43,
+     "crowdDps": 54.4
+    },
+    {
+     "lv": 3,
+     "dmg": 43.2,
+     "cd": 0.85,
+     "singleDps": 55.1,
+     "crowdDps": 83
+    },
+    {
+     "lv": 4,
+     "dmg": 49.8,
+     "cd": 0.78,
+     "singleDps": 69.1,
+     "crowdDps": 122.1
+    },
+    {
+     "lv": 5,
+     "dmg": 56.4,
+     "cd": 0.72,
+     "singleDps": 85,
+     "crowdDps": 174.3
+    },
+    {
+     "lv": 6,
+     "dmg": 63,
+     "cd": 0.66,
+     "singleDps": 103.2,
+     "crowdDps": 242.9
+    }
+   ]
+  },
+  "front": {
+   "voc": "knight",
+   "rows": [
+    {
+     "lv": 1,
+     "dmg": 40,
+     "cd": 2.2,
+     "singleDps": 19.6,
+     "crowdDps": 46.8
+    },
+    {
+     "lv": 2,
+     "dmg": 48.8,
+     "cd": 2.02,
+     "singleDps": 26,
+     "crowdDps": 75.2
+    },
+    {
+     "lv": 3,
+     "dmg": 57.6,
+     "cd": 1.86,
+     "singleDps": 33.4,
+     "crowdDps": 114.7
+    },
+    {
+     "lv": 4,
+     "dmg": 66.4,
+     "cd": 1.71,
+     "singleDps": 41.9,
+     "crowdDps": 168.7
+    },
+    {
+     "lv": 5,
+     "dmg": 75.2,
+     "cd": 1.58,
+     "singleDps": 51.5,
+     "crowdDps": 240.9
+    },
+    {
+     "lv": 6,
+     "dmg": 84,
+     "cd": 1.45,
+     "singleDps": 62.6,
+     "crowdDps": 335.8
+    }
+   ]
+  },
+  "quake": {
+   "voc": "knight",
+   "rows": [
+    {
+     "lv": 1,
+     "dmg": 34,
+     "cd": 5,
+     "singleDps": 7.3,
+     "crowdDps": 82.3
+    },
+    {
+     "lv": 2,
+     "dmg": 41.5,
+     "cd": 4.6,
+     "singleDps": 9.7,
+     "crowdDps": 132.1
+    },
+    {
+     "lv": 3,
+     "dmg": 49,
+     "cd": 4.23,
+     "singleDps": 12.5,
+     "crowdDps": 201.7
+    },
+    {
+     "lv": 4,
+     "dmg": 56.4,
+     "cd": 3.89,
+     "singleDps": 15.7,
+     "crowdDps": 296.6
+    },
+    {
+     "lv": 5,
+     "dmg": 63.9,
+     "cd": 3.58,
+     "singleDps": 19.3,
+     "crowdDps": 423.4
+    },
+    {
+     "lv": 6,
+     "dmg": 71.4,
+     "cd": 3.3,
+     "singleDps": 23.4,
+     "crowdDps": 590.1
+    }
+   ]
+  },
+  "aura": {
+   "voc": "knight",
+   "rows": [
+    {
+     "lv": 1,
+     "dmg": 9,
+     "cd": 0.5,
+     "singleDps": 19.4,
+     "crowdDps": 47.6
+    },
+    {
+     "lv": 2,
+     "dmg": 11,
+     "cd": 0.46,
+     "singleDps": 25.8,
+     "crowdDps": 76.4
+    },
+    {
+     "lv": 3,
+     "dmg": 13,
+     "cd": 0.42,
+     "singleDps": 33.1,
+     "crowdDps": 116.7
+    },
+    {
+     "lv": 4,
+     "dmg": 14.9,
+     "cd": 0.39,
+     "singleDps": 41.4,
+     "crowdDps": 171.6
+    },
+    {
+     "lv": 5,
+     "dmg": 16.9,
+     "cd": 0.36,
+     "singleDps": 51,
+     "crowdDps": 245
+    },
+    {
+     "lv": 6,
+     "dmg": 18.9,
+     "cd": 0.33,
+     "singleDps": 61.9,
+     "crowdDps": 341.5
+    }
+   ]
+  },
+  "arrow": {
+   "voc": "archer",
+   "rows": [
+    {
+     "lv": 1,
+     "dmg": 20,
+     "cd": 0.75,
+     "singleDps": 28.8,
+     "crowdDps": 28.8
+    },
+    {
+     "lv": 2,
+     "dmg": 24.4,
+     "cd": 0.69,
+     "singleDps": 38.2,
+     "crowdDps": 38.2
+    },
+    {
+     "lv": 3,
+     "dmg": 28.8,
+     "cd": 0.63,
+     "singleDps": 98,
+     "crowdDps": 98
+    },
+    {
+     "lv": 4,
+     "dmg": 33.2,
+     "cd": 0.58,
+     "singleDps": 122.8,
+     "crowdDps": 122.8
+    },
+    {
+     "lv": 5,
+     "dmg": 37.6,
+     "cd": 0.54,
+     "singleDps": 226.7,
+     "crowdDps": 226.7
+    },
+    {
+     "lv": 6,
+     "dmg": 42,
+     "cd": 0.49,
+     "singleDps": 275.3,
+     "crowdDps": 275.3
+    }
+   ]
+  },
+  "holy": {
+   "voc": "archer",
+   "rows": [
+    {
+     "lv": 1,
+     "dmg": 55,
+     "cd": 2,
+     "singleDps": 29.7,
+     "crowdDps": 74.3
+    },
+    {
+     "lv": 2,
+     "dmg": 67.1,
+     "cd": 1.84,
+     "singleDps": 39.4,
+     "crowdDps": 98.5
+    },
+    {
+     "lv": 3,
+     "dmg": 79.2,
+     "cd": 1.69,
+     "singleDps": 50.5,
+     "crowdDps": 126.3
+    },
+    {
+     "lv": 4,
+     "dmg": 91.3,
+     "cd": 1.56,
+     "singleDps": 63.3,
+     "crowdDps": 158.3
+    },
+    {
+     "lv": 5,
+     "dmg": 103.4,
+     "cd": 1.43,
+     "singleDps": 77.9,
+     "crowdDps": 194.9
+    },
+    {
+     "lv": 6,
+     "dmg": 115.5,
+     "cd": 1.32,
+     "singleDps": 94.6,
+     "crowdDps": 236.6
+    }
+   ]
+  },
+  "volley": {
+   "voc": "archer",
+   "rows": [
+    {
+     "lv": 1,
+     "dmg": 17,
+     "cd": 5,
+     "singleDps": 3.7,
+     "crowdDps": 61.5
+    },
+    {
+     "lv": 2,
+     "dmg": 20.7,
+     "cd": 4.6,
+     "singleDps": 4.9,
+     "crowdDps": 98.7
+    },
+    {
+     "lv": 3,
+     "dmg": 24.5,
+     "cd": 4.23,
+     "singleDps": 6.2,
+     "crowdDps": 150.7
+    },
+    {
+     "lv": 4,
+     "dmg": 28.2,
+     "cd": 3.89,
+     "singleDps": 7.8,
+     "crowdDps": 221.7
+    },
+    {
+     "lv": 5,
+     "dmg": 32,
+     "cd": 3.58,
+     "singleDps": 9.6,
+     "crowdDps": 316.5
+    },
+    {
+     "lv": 6,
+     "dmg": 35.7,
+     "cd": 3.3,
+     "singleDps": 11.7,
+     "crowdDps": 441.1
+    }
+   ]
+  },
+  "missile": {
+   "voc": "archer",
+   "rows": [
+    {
+     "lv": 1,
+     "dmg": 40,
+     "cd": 2.6,
+     "singleDps": 16.6,
+     "crowdDps": 49.8
+    },
+    {
+     "lv": 2,
+     "dmg": 48.8,
+     "cd": 2.39,
+     "singleDps": 22,
+     "crowdDps": 66.1
+    },
+    {
+     "lv": 3,
+     "dmg": 57.6,
+     "cd": 2.2,
+     "singleDps": 37.7,
+     "crowdDps": 113.1
+    },
+    {
+     "lv": 4,
+     "dmg": 66.4,
+     "cd": 2.02,
+     "singleDps": 47.2,
+     "crowdDps": 141.7
+    },
+    {
+     "lv": 5,
+     "dmg": 75.2,
+     "cd": 1.86,
+     "singleDps": 72.7,
+     "crowdDps": 218
+    },
+    {
+     "lv": 6,
+     "dmg": 84,
+     "cd": 1.71,
+     "singleDps": 88.2,
+     "crowdDps": 264.7
+    }
+   ]
+  }
+ },
+ "ttk": {
+  "rat": [
+   {
+    "min": 0,
+    "hp": 18,
+    "slashHits": 0.59,
+    "arrowHits": 0.89
+   },
+   {
+    "min": 1,
+    "hp": 24,
+    "slashHits": 0.81,
+    "arrowHits": 1.21
+   },
+   {
+    "min": 2,
+    "hp": 31,
+    "slashHits": 0.83,
+    "arrowHits": 1.25
+   },
+   {
+    "min": 3,
+    "hp": 37,
+    "slashHits": 1.01,
+    "arrowHits": 1.51
+   },
+   {
+    "min": 4,
+    "hp": 43,
+    "slashHits": 1,
+    "arrowHits": 1.5
+   },
+   {
+    "min": 5,
+    "hp": 50,
+    "slashHits": 1.15,
+    "arrowHits": 1.73
+   },
+   {
+    "min": 6,
+    "hp": 56,
+    "slashHits": 1.13,
+    "arrowHits": 1.69
+   },
+   {
+    "min": 7,
+    "hp": 63,
+    "slashHits": 1.26,
+    "arrowHits": 1.88
+   },
+   {
+    "min": 8,
+    "hp": 69,
+    "slashHits": 1.22,
+    "arrowHits": 1.83
+   },
+   {
+    "min": 9,
+    "hp": 75,
+    "slashHits": 1.34,
+    "arrowHits": 2
+   },
+   {
+    "min": 10,
+    "hp": 82,
+    "slashHits": 1.3,
+    "arrowHits": 1.95
+   }
+  ],
+  "bat": [
+   {
+    "min": 0,
+    "hp": 8,
+    "slashHits": 0.26,
+    "arrowHits": 0.38
+   },
+   {
+    "min": 1,
+    "hp": 10,
+    "slashHits": 0.35,
+    "arrowHits": 0.52
+   },
+   {
+    "min": 2,
+    "hp": 13,
+    "slashHits": 0.36,
+    "arrowHits": 0.54
+   },
+   {
+    "min": 3,
+    "hp": 16,
+    "slashHits": 0.44,
+    "arrowHits": 0.65
+   },
+   {
+    "min": 4,
+    "hp": 19,
+    "slashHits": 0.43,
+    "arrowHits": 0.65
+   },
+   {
+    "min": 5,
+    "hp": 22,
+    "slashHits": 0.5,
+    "arrowHits": 0.75
+   },
+   {
+    "min": 6,
+    "hp": 24,
+    "slashHits": 0.49,
+    "arrowHits": 0.73
+   },
+   {
+    "min": 7,
+    "hp": 27,
+    "slashHits": 0.54,
+    "arrowHits": 0.81
+   },
+   {
+    "min": 8,
+    "hp": 30,
+    "slashHits": 0.53,
+    "arrowHits": 0.79
+   },
+   {
+    "min": 9,
+    "hp": 33,
+    "slashHits": 0.58,
+    "arrowHits": 0.87
+   },
+   {
+    "min": 10,
+    "hp": 35,
+    "slashHits": 0.56,
+    "arrowHits": 0.84
+   }
+  ],
+  "cave_rat": [
+   {
+    "min": 0,
+    "hp": 26,
+    "slashHits": 0.86,
+    "arrowHits": 1.3
+   },
+   {
+    "min": 1,
+    "hp": 35,
+    "slashHits": 1.18,
+    "arrowHits": 1.76
+   },
+   {
+    "min": 2,
+    "hp": 45,
+    "slashHits": 1.22,
+    "arrowHits": 1.83
+   },
+   {
+    "min": 3,
+    "hp": 54,
+    "slashHits": 1.47,
+    "arrowHits": 2.21
+   },
+   {
+    "min": 4,
+    "hp": 63,
+    "slashHits": 1.46,
+    "arrowHits": 2.2
+   },
+   {
+    "min": 5,
+    "hp": 73,
+    "slashHits": 1.68,
+    "arrowHits": 2.52
+   },
+   {
+    "min": 6,
+    "hp": 82,
+    "slashHits": 1.64,
+    "arrowHits": 2.47
+   },
+   {
+    "min": 7,
+    "hp": 91,
+    "slashHits": 1.83,
+    "arrowHits": 2.75
+   },
+   {
+    "min": 8,
+    "hp": 101,
+    "slashHits": 1.78,
+    "arrowHits": 2.67
+   },
+   {
+    "min": 9,
+    "hp": 110,
+    "slashHits": 1.95,
+    "arrowHits": 2.92
+   },
+   {
+    "min": 10,
+    "hp": 119,
+    "slashHits": 1.89,
+    "arrowHits": 2.84
+   }
+  ]
+ },
+ "xp": [
+  {
+   "lvl": 1,
+   "need": 5,
+   "total": 5
+  },
+  {
+   "lvl": 2,
+   "need": 9,
+   "total": 14
+  },
+  {
+   "lvl": 3,
+   "need": 14,
+   "total": 28
+  },
+  {
+   "lvl": 4,
+   "need": 19,
+   "total": 47
+  },
+  {
+   "lvl": 5,
+   "need": 25,
+   "total": 72
+  },
+  {
+   "lvl": 6,
+   "need": 30,
+   "total": 102
+  },
+  {
+   "lvl": 7,
+   "need": 36,
+   "total": 138
+  },
+  {
+   "lvl": 8,
+   "need": 42,
+   "total": 180
+  },
+  {
+   "lvl": 9,
+   "need": 48,
+   "total": 228
+  },
+  {
+   "lvl": 10,
+   "need": 54,
+   "total": 282
+  },
+  {
+   "lvl": 11,
+   "need": 60,
+   "total": 342
+  },
+  {
+   "lvl": 12,
+   "need": 67,
+   "total": 409
+  },
+  {
+   "lvl": 13,
+   "need": 73,
+   "total": 482
+  },
+  {
+   "lvl": 14,
+   "need": 79,
+   "total": 561
+  },
+  {
+   "lvl": 15,
+   "need": 86,
+   "total": 647
+  },
+  {
+   "lvl": 16,
+   "need": 92,
+   "total": 739
+  },
+  {
+   "lvl": 17,
+   "need": 99,
+   "total": 838
+  },
+  {
+   "lvl": 18,
+   "need": 105,
+   "total": 943
+  },
+  {
+   "lvl": 19,
+   "need": 112,
+   "total": 1055
+  },
+  {
+   "lvl": 20,
+   "need": 119,
+   "total": 1174
+  },
+  {
+   "lvl": 21,
+   "need": 125,
+   "total": 1299
+  },
+  {
+   "lvl": 22,
+   "need": 132,
+   "total": 1431
+  },
+  {
+   "lvl": 23,
+   "need": 139,
+   "total": 1570
+  },
+  {
+   "lvl": 24,
+   "need": 146,
+   "total": 1716
+  },
+  {
+   "lvl": 25,
+   "need": 153,
+   "total": 1869
+  },
+  {
+   "lvl": 26,
+   "need": 160,
+   "total": 2029
+  },
+  {
+   "lvl": 27,
+   "need": 166,
+   "total": 2195
+  },
+  {
+   "lvl": 28,
+   "need": 173,
+   "total": 2368
+  },
+  {
+   "lvl": 29,
+   "need": 180,
+   "total": 2548
+  },
+  {
+   "lvl": 30,
+   "need": 187,
+   "total": 2735
+  },
+  {
+   "lvl": 31,
+   "need": 195,
+   "total": 2930
+  },
+  {
+   "lvl": 32,
+   "need": 202,
+   "total": 3132
+  },
+  {
+   "lvl": 33,
+   "need": 209,
+   "total": 3341
+  },
+  {
+   "lvl": 34,
+   "need": 216,
+   "total": 3557
+  },
+  {
+   "lvl": 35,
+   "need": 223,
+   "total": 3780
+  },
+  {
+   "lvl": 36,
+   "need": 230,
+   "total": 4010
+  },
+  {
+   "lvl": 37,
+   "need": 237,
+   "total": 4247
+  },
+  {
+   "lvl": 38,
+   "need": 245,
+   "total": 4492
+  },
+  {
+   "lvl": 39,
+   "need": 252,
+   "total": 4744
+  },
+  {
+   "lvl": 40,
+   "need": 259,
+   "total": 5003
+  }
+ ],
+ "boss": {
+  "knight": {
+   "hp": 10913,
+   "buildDps": 168.1,
+   "seconds": 64.9
+  },
+  "archer": {
+   "hp": 10913,
+   "buildDps": 241.1,
+   "seconds": 45.3
+  }
+ },
+ "contact": {
+  "knight": {
+   "rat@0": 4.4,
+   "rat@5": 6.9,
+   "rat@9": 8.9,
+   "bat@0": 2.1,
+   "bat@5": 3.6,
+   "bat@9": 4.9,
+   "cave_rat@0": 6.3,
+   "cave_rat@5": 9.6,
+   "cave_rat@9": 12.3,
+   "giant_rat@0": 12.5,
+   "giant_rat@5": 18.7,
+   "giant_rat@9": 23.6
+  },
+  "archer": {
+   "rat@0": 7.8,
+   "rat@5": 11.3,
+   "rat@9": 14.2,
+   "bat@0": 4.7,
+   "bat@5": 6.8,
+   "bat@9": 8.5,
+   "cave_rat@0": 10.4,
+   "cave_rat@5": 15.1,
+   "cave_rat@9": 18.9,
+   "giant_rat@0": 19.1,
+   "giant_rat@5": 27.7,
+   "giant_rat@9": 34.6
+  }
+ },
+ "sim": {
+  "knight": [
+   {
+    "t": 2,
+    "lvl": 1,
+    "kills": 0,
+    "mons": 1,
+    "hp": 160
+   },
+   {
+    "t": 6,
+    "lvl": 1,
+    "kills": 0,
+    "mons": 5,
+    "hp": 160
+   },
+   {
+    "t": 8,
+    "lvl": 1,
+    "kills": 1,
+    "mons": 6,
+    "hp": 160
+   },
+   {
+    "t": 10,
+    "lvl": 1,
+    "kills": 1,
+    "mons": 7,
+    "hp": 160
+   },
+   {
+    "t": 12,
+    "lvl": 1,
+    "kills": 2,
+    "mons": 9,
+    "hp": 160
+   },
+   {
+    "t": 14,
+    "lvl": 1,
+    "kills": 2,
+    "mons": 11,
+    "hp": 160
+   },
+   {
+    "t": 18,
+    "lvl": 1,
+    "kills": 2,
+    "mons": 15,
+    "hp": 160
+   },
+   {
+    "t": 30,
+    "lvl": 1,
+    "kills": 4,
+    "mons": 29,
+    "hp": 160
+   },
+   {
+    "t": 37,
+    "lvl": 1,
+    "kills": 4,
+    "mons": 40,
+    "hp": 160
+   },
+   {
+    "t": 43,
+    "lvl": 2,
+    "kills": 7,
+    "mons": 47,
+    "hp": 160
+   },
+   {
+    "t": 50,
+    "lvl": 3,
+    "kills": 28,
+    "mons": 38,
+    "hp": 160
+   },
+   {
+    "t": 60,
+    "lvl": 3,
+    "kills": 35,
+    "mons": 51,
+    "hp": 160
+   },
+   {
+    "t": 64,
+    "lvl": 3,
+    "kills": 48,
+    "mons": 74,
+    "hp": 160
+   },
+   {
+    "t": 70,
+    "lvl": 3,
+    "kills": 50,
+    "mons": 85,
+    "hp": 160
+   },
+   {
+    "t": 76,
+    "lvl": 3,
+    "kills": 52,
+    "mons": 99,
+    "hp": 160
+   },
+   {
+    "t": 86,
+    "lvl": 3,
+    "kills": 52,
+    "mons": 122,
+    "hp": 160
+   },
+   {
+    "t": 90,
+    "lvl": 3,
+    "kills": 55,
+    "mons": 132,
+    "hp": 160
+   },
+   {
+    "t": 98,
+    "lvl": 3,
+    "kills": 56,
+    "mons": 152,
+    "hp": 160
+   },
+   {
+    "t": 105,
+    "lvl": 3,
+    "kills": 57,
+    "mons": 173,
+    "hp": 160
+   },
+   {
+    "t": 111,
+    "lvl": 3,
+    "kills": 61,
+    "mons": 187,
+    "hp": 160
+   },
+   {
+    "t": 116,
+    "lvl": 4,
+    "kills": 67,
+    "mons": 197,
+    "hp": 160
+   },
+   {
+    "t": 119,
+    "lvl": 4,
+    "kills": 82,
+    "mons": 193,
+    "hp": 160
+   },
+   {
+    "t": 123,
+    "lvl": 4,
+    "kills": 112,
+    "mons": 208,
+    "hp": 128
+   },
+   {
+    "t": 129,
+    "lvl": 5,
+    "kills": 136,
+    "mons": 204,
+    "hp": 119
+   },
+   {
+    "t": 134,
+    "lvl": 5,
+    "kills": 143,
+    "mons": 216,
+    "hp": 121
+   },
+   {
+    "t": 139,
+    "lvl": 5,
+    "kills": 161,
+    "mons": 216,
+    "hp": 117
+   },
+   {
+    "t": 145,
+    "lvl": 5,
+    "kills": 172,
+    "mons": 220,
+    "hp": 119
+   },
+   {
+    "t": 147,
+    "lvl": 5,
+    "kills": 174,
+    "mons": 220,
+    "hp": 120
+   },
+   {
+    "t": 155,
+    "lvl": 5,
+    "kills": 184,
+    "mons": 220,
+    "hp": 123
+   },
+   {
+    "t": 157,
+    "lvl": 5,
+    "kills": 187,
+    "mons": 220,
+    "hp": 124
+   }
+  ],
+  "archer": [
+   {
+    "t": 3,
+    "lvl": 1,
+    "kills": 1,
+    "mons": 1,
+    "hp": 115
+   },
+   {
+    "t": 5,
+    "lvl": 1,
+    "kills": 2,
+    "mons": 2,
+    "hp": 115
+   },
+   {
+    "t": 8,
+    "lvl": 1,
+    "kills": 5,
+    "mons": 2,
+    "hp": 115
+   },
+   {
+    "t": 10,
+    "lvl": 1,
+    "kills": 7,
+    "mons": 2,
+    "hp": 115
+   },
+   {
+    "t": 13,
+    "lvl": 1,
+    "kills": 10,
+    "mons": 2,
+    "hp": 115
+   },
+   {
+    "t": 15,
+    "lvl": 2,
+    "kills": 12,
+    "mons": 2,
+    "hp": 115
+   },
+   {
+    "t": 20,
+    "lvl": 2,
+    "kills": 17,
+    "mons": 3,
+    "hp": 115
+   },
+   {
+    "t": 29,
+    "lvl": 3,
+    "kills": 25,
+    "mons": 7,
+    "hp": 115
+   },
+   {
+    "t": 37,
+    "lvl": 3,
+    "kills": 35,
+    "mons": 8,
+    "hp": 115
+   },
+   {
+    "t": 43,
+    "lvl": 3,
+    "kills": 41,
+    "mons": 12,
+    "hp": 115
+   },
+   {
+    "t": 48,
+    "lvl": 3,
+    "kills": 51,
+    "mons": 12,
+    "hp": 115
+   },
+   {
+    "t": 54,
+    "lvl": 4,
+    "kills": 64,
+    "mons": 11,
+    "hp": 115
+   },
+   {
+    "t": 60,
+    "lvl": 4,
+    "kills": 75,
+    "mons": 39,
+    "hp": 115
+   },
+   {
+    "t": 67,
+    "lvl": 4,
+    "kills": 96,
+    "mons": 32,
+    "hp": 115
+   },
+   {
+    "t": 74,
+    "lvl": 4,
+    "kills": 120,
+    "mons": 26,
+    "hp": 115
+   },
+   {
+    "t": 81,
+    "lvl": 5,
+    "kills": 139,
+    "mons": 22,
+    "hp": 115
+   },
+   {
+    "t": 87,
+    "lvl": 5,
+    "kills": 160,
+    "mons": 18,
+    "hp": 115
+   },
+   {
+    "t": 95,
+    "lvl": 5,
+    "kills": 176,
+    "mons": 24,
+    "hp": 115
+   },
+   {
+    "t": 102,
+    "lvl": 5,
+    "kills": 202,
+    "mons": 19,
+    "hp": 115
+   },
+   {
+    "t": 109,
+    "lvl": 5,
+    "kills": 222,
+    "mons": 20,
+    "hp": 108
+   },
+   {
+    "t": 114,
+    "lvl": 6,
+    "kills": 233,
+    "mons": 28,
+    "hp": 109
+   },
+   {
+    "t": 121,
+    "lvl": 6,
+    "kills": 254,
+    "mons": 58,
+    "hp": 111
+   },
+   {
+    "t": 125,
+    "lvl": 6,
+    "kills": 268,
+    "mons": 60,
+    "hp": 90
+   },
+   {
+    "t": 133,
+    "lvl": 6,
+    "kills": 302,
+    "mons": 53,
+    "hp": 92
+   },
+   {
+    "t": 137,
+    "lvl": 6,
+    "kills": 313,
+    "mons": 57,
+    "hp": 93
+   },
+   {
+    "t": 141,
+    "lvl": 6,
+    "kills": 333,
+    "mons": 52,
+    "hp": 93
+   },
+   {
+    "t": 145,
+    "lvl": 6,
+    "kills": 358,
+    "mons": 44,
+    "hp": 94
+   },
+   {
+    "t": 151,
+    "lvl": 6,
+    "kills": 375,
+    "mons": 51,
+    "hp": 95
+   },
+   {
+    "t": 158,
+    "lvl": 6,
+    "kills": 408,
+    "mons": 45,
+    "hp": 97
+   },
+   {
+    "t": 165,
+    "lvl": 6,
+    "kills": 449,
+    "mons": 33,
+    "hp": 98
+   }
+  ]
+ }
+}
