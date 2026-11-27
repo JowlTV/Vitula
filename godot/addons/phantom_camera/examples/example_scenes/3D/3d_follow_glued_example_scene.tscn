@@ -1,0 +1,204 @@
+[gd_scene format=3 uid="uid://d2lx45noxq685"]
+
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_7a3wq"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_158c0"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_ganw1"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_kig2n"]
+[ext_resource type="PackedScene" uid="uid://cb83in8f0tbb1" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="5_caky3"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="6_kkbaa"]
+[ext_resource type="Texture2D" uid="uid://bj7h2fc5jx4ax" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="7_i1dbs"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="8_vs2gh"]
+
+[sub_resource type="Resource" id="Resource_ucp3e"]
+script = ExtResource("3_ganw1")
+
+[sub_resource type="Resource" id="Resource_ab013"]
+script = ExtResource("4_kig2n")
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2h36r"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w3olp"]
+albedo_color = Color(0.227451, 0.337255, 0.576471, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cw102"]
+albedo_color = Color(0.227451, 0.337255, 0.576471, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_auy8m"]
+albedo_texture = ExtResource("7_i1dbs")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vs2gh"]
+albedo_color = Color(0.67256236, 0.67256236, 0.67256236, 1)
+albedo_texture = ExtResource("7_i1dbs")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[node name="Node3D" type="Node3D" unique_id=1076404251]
+
+[node name="MainCamera3D" type="Camera3D" parent="." unique_id=252983972]
+unique_name_in_owner = true
+physics_interpolation_mode = 2
+transform = Transform3D(0.9999541, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, 0, 6.39, 3.9704785)
+top_level = true
+
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D" unique_id=1417776682]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("1_7a3wq")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=766669551]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+metadata/_edit_lock_ = true
+
+[node name="Player" type="Node" parent="." unique_id=2078614777]
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" unique_id=179044235 node_paths=PackedStringArray("follow_target")]
+unique_name_in_owner = true
+transform = Transform3D(0.9999541, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, 0, 6.39, 3.9704785)
+top_level = true
+script = ExtResource("2_158c0")
+priority = 5
+follow_mode = 1
+follow_target = NodePath("../PlayerCharacterBody3D")
+tween_resource = SubResource("Resource_ucp3e")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_ab013")
+follow_damping = true
+follow_damping_value = Vector3(0.05, 0.05, 0.05)
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+
+[node name="PlayerCharacterBody3D" parent="Player" unique_id=166554407 instance=ExtResource("5_caky3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.39, 3.9704785)
+enable_gravity = false
+
+[node name="PlayerVisual" parent="Player/PlayerCharacterBody3D" index="2"]
+visible = false
+
+[node name="NPCs" type="Node" parent="." unique_id=975251538]
+
+[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="NPCs" unique_id=232281334]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.519, 1)
+mesh = SubResource("CapsuleMesh_2h36r")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_w3olp")
+
+[node name="PlayerMeshInstance3D2" type="MeshInstance3D" parent="NPCs" unique_id=1857378224]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.519, 1)
+mesh = SubResource("CapsuleMesh_2h36r")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_cw102")
+
+[node name="Environment" type="Node" parent="." unique_id=15613531]
+
+[node name="Floor" parent="Environment" unique_id=353104284 instance=ExtResource("6_kkbaa")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
+
+[node name="CSGCylinder3D5" type="CSGCylinder3D" parent="Environment" unique_id=1125350585]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 3.741, 1)
+use_collision = true
+radius = 1.0
+height = 6.0
+sides = 32
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGCylinder3D6" type="CSGCylinder3D" parent="Environment" unique_id=1752050466]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 3.741, 1)
+use_collision = true
+radius = 1.0
+height = 6.0
+sides = 32
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Environment" unique_id=1432371223]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.498, 6.539, -8)
+use_collision = true
+size = Vector3(178.429, 14.0773, 1)
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="Environment" unique_id=1709908140]
+transform = Transform3D(1.4383678, 0, 0, 0, 1, 0, 0, 0, 1.4383678, -9.5, -1.698, -8.395)
+use_collision = true
+radius = 3.34732
+radial_segments = 32
+rings = 32
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGSphere3D2" type="CSGSphere3D" parent="Environment" unique_id=1565212692]
+transform = Transform3D(1.4383678, 0, 0, 0, 1, 0, 0, 0, 1.4383678, 9.5, -1.698, -8.395)
+use_collision = true
+radius = 3.34732
+radial_segments = 32
+rings = 32
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGSphere3D3" type="CSGSphere3D" parent="Environment" unique_id=1039546405]
+transform = Transform3D(1.4383678, 0, 0, 0, 1, 0, 0, 0, 1.4383678, -8.5, -1.698, 11.605)
+use_collision = true
+radius = 3.34732
+radial_segments = 32
+rings = 32
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGSphere3D4" type="CSGSphere3D" parent="Environment" unique_id=128788527]
+transform = Transform3D(1.4383678, 0, 0, 0, 1, 0, 0, 0, 1.4383678, 10.5, -1.698, 11.605)
+use_collision = true
+radius = 3.34732
+radial_segments = 32
+rings = 32
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="Environment" unique_id=89713092]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 0, 1)
+use_collision = true
+size = Vector3(5, 2, 3)
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGBox3D10" type="CSGBox3D" parent="Environment" unique_id=1553087799]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 0, 1)
+use_collision = true
+size = Vector3(5, 2, 3)
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="Environment" unique_id=2128670234]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 3, 2)
+use_collision = true
+size = Vector3(1, 7, 21)
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="Environment" unique_id=599383572]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 3, 2)
+use_collision = true
+size = Vector3(1, 7, 20)
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGBox3D9" type="CSGBox3D" parent="Environment" unique_id=189404370]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1, 3, 12)
+use_collision = true
+size = Vector3(1, 7, 20)
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="Environment" unique_id=2077811979]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+use_collision = true
+size = Vector3(1, 1, 20)
+material = SubResource("StandardMaterial3D_vs2gh")
+
+[node name="NPCDescriptionLabel" type="Label3D" parent="Environment" unique_id=1210589074]
+transform = Transform3D(0.9999989, 0, 0, 0, 0.9999999, -7.1054274e-15, 0, -3.5527137e-15, 0.9999989, 0.008592129, 1.3240263, -6.926002)
+pixel_size = 0.0075
+text = "Camera is glued to a floating CharacterBody3D"
+font = ExtResource("8_vs2gh")
+font_size = 64
+
+[node name="NPCDescriptionLabel2" type="Label3D" parent="Environment" unique_id=2005024557]
+transform = Transform3D(0.9999989, 0, 0, 0, 0.9999999, -7.1054274e-15, 0, -3.5527137e-15, 0.9999989, 0.008592129, 2.0157459, -6.926002)
+pixel_size = 0.01
+modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
+text = "Glued Follow 3D Example"
+font = ExtResource("8_vs2gh")
+font_size = 64
+
+[editable path="Player/PlayerCharacterBody3D"]

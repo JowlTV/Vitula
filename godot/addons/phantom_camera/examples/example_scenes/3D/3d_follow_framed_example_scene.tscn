@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://cx7x48cpi8gcd"]
+
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_6uslv"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_5cpe8"]
+[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_3d_tween.tres" id="3_422w7"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_4qurp"]
+[ext_resource type="PackedScene" uid="uid://cb83in8f0tbb1" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="5_uw36d"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="6_i060b"]
+[ext_resource type="Texture2D" uid="uid://bj7h2fc5jx4ax" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="7_iyghi"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="8_r5lxj"]
+
+[sub_resource type="Resource" id="Resource_wg1pr"]
+script = ExtResource("4_4qurp")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_auy8m"]
+albedo_texture = ExtResource("7_iyghi")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[node name="Root" type="Node3D" unique_id=1151129643]
+
+[node name="MainCamera3D" type="Camera3D" parent="." unique_id=1927784242]
+unique_name_in_owner = true
+physics_interpolation_mode = 2
+transform = Transform3D(0.99990976, 0, 0, 0, 0.90614694, 0.42255905, 0, -0.4225433, 0.90618074, 0, 3.0353544, 5.437084)
+top_level = true
+
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D" unique_id=1268403883]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("1_6uslv")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=821325773]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+metadata/_edit_lock_ = true
+
+[node name="Player" type="Node" parent="." unique_id=1881269844]
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" unique_id=1159366693 node_paths=PackedStringArray("follow_target")]
+unique_name_in_owner = true
+transform = Transform3D(0.99990976, 0, 0, 0, 0.90614694, 0.42255905, 0, -0.4225433, 0.90618074, 0, 3.0353544, 5.437084)
+top_level = true
+script = ExtResource("2_5cpe8")
+follow_mode = 5
+follow_target = NodePath("../PlayerCharacterBody3D")
+tween_resource = ExtResource("3_422w7")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_wg1pr")
+follow_distance = 6.0
+dead_zone_width = Vector2(0.45246506, 0.45246506)
+dead_zone_height = Vector2(0.91612995, 0.15598777)
+dead_zone_depth = Vector2(2, 1)
+show_viewfinder_in_play = true
+spring_length = 6.0
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+
+[node name="PlayerCharacterBody3D" parent="Player" unique_id=1441377097 instance=ExtResource("5_uw36d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="Environment" type="Node" parent="." unique_id=157343086]
+
+[node name="Floor" parent="Environment" unique_id=1628211664 instance=ExtResource("6_i060b")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
+
+[node name="Wall" type="CSGBox3D" parent="Environment" unique_id=1291619890]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.52545, 6.53866, -12.6331)
+use_collision = true
+size = Vector3(178.429, 14.0773, 1)
+material = SubResource("StandardMaterial3D_auy8m")
+metadata/_edit_lock_ = true
+
+[node name="NPCDescriptionLabelHeader" type="Label3D" parent="Environment" unique_id=1866832201]
+transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0, 3.2187152, -4.805066)
+pixel_size = 0.01
+modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
+text = "Framed Follow 3D Example"
+font = ExtResource("8_r5lxj")
+font_size = 64
+
+[node name="NPCDescriptionLabelDesc" type="Label3D" parent="Environment" unique_id=1165505618]
+transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0, 2.8569698, -4.805066)
+pixel_size = 0.0075
+text = "Camera only moves when the target
+touches the dead zone"
+font = ExtResource("8_r5lxj")
+font_size = 64
+vertical_alignment = 0
+
+[node name="NPCDescriptionLabelHint" type="Label3D" parent="Environment" unique_id=2011883832]
+transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0, 1.326, -4.805)
+modulate = Color(0.8172654, 0.8172654, 0.8172654, 1)
+text = "You can drag the dead zone edges to adjust them.
+Holding CTRL will adjust individual edges."
+font = ExtResource("8_r5lxj")
+font_size = 64
+vertical_alignment = 0

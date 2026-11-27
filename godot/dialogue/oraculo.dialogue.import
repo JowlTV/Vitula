@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=18
+type="Resource"
+uid="uid://btt5epr5jwmv0"
+path="res://.godot/imported/oraculo.dialogue-dee39afbf65ecc66fd32b8f5ec9deb62.tres"
+
+[deps]
+
+source_file="res://dialogue/oraculo.dialogue"
+dest_files=["res://.godot/imported/oraculo.dialogue-dee39afbf65ecc66fd32b8f5ec9deb62.tres"]
+
+[params]
+
+defaults=true

@@ -1,0 +1,6 @@
+{
+    "maca": { "name": "Maçã", "image": "res://assets/i_apple.png", "size": "Vector2i(1, 1)", "max_stack_size": 10 },
+    "pao": { "name": "Pão", "image": "res://assets/i_bread.png", "size": "Vector2i(1, 1)", "max_stack_size": 10 },
+    "ouro": { "name": "Moeda de ouro", "image": "res://assets/i_gold_coin.png", "size": "Vector2i(1, 1)", "max_stack_size": 99 },
+    "gema": { "name": "Gema azul", "image": "res://assets/i_blue_gem.png", "size": "Vector2i(1, 1)", "max_stack_size": 5 }
+}

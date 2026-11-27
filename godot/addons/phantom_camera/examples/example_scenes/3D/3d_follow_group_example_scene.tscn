@@ -1,0 +1,100 @@
+[gd_scene format=3 uid="uid://cqy81q5p0tsda"]
+
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_3iw7y"]
+[ext_resource type="PackedScene" uid="uid://cb83in8f0tbb1" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="2_m6p13"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_65wck"]
+[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_3d_tween.tres" id="4_b0eay"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_i3ale"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="6_5hq8j"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_ayhbu"]
+
+[sub_resource type="Resource" id="Resource_1iman"]
+script = ExtResource("5_i3ale")
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2h36r"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w3olp"]
+albedo_color = Color(0.227451, 0.337255, 0.576471, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cw102"]
+albedo_color = Color(0.227451, 0.337255, 0.576471, 1)
+
+[node name="Node3D" type="Node3D" unique_id=2024105518]
+
+[node name="MainCamera3D" type="Camera3D" parent="." unique_id=475806084]
+unique_name_in_owner = true
+physics_interpolation_mode = 2
+transform = Transform3D(0.999954, 0, 0, 0, 0.621285, 0.783464, 0, -0.783416, 0.621322, 0.23178625, 6.213041, 6.510429)
+top_level = true
+
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D" unique_id=1867931549]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("1_3iw7y")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1553387657]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+metadata/_edit_lock_ = true
+
+[node name="Player" type="Node" parent="." unique_id=1535598560]
+
+[node name="PlayerCharacterBody3D" parent="Player" unique_id=945188602 instance=ExtResource("2_m6p13")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.083587, 0.5, 2.05493)
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" unique_id=629956068 node_paths=PackedStringArray("follow_targets")]
+unique_name_in_owner = true
+transform = Transform3D(0.999954, 0, 0, 0, 0.621285, 0.783464, 0, -0.783416, 0.621322, 0.23178625, 6.213041, 6.510429)
+top_level = true
+script = ExtResource("3_65wck")
+priority = 5
+follow_mode = 3
+follow_targets = [NodePath("../PlayerCharacterBody3D"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")]
+tween_resource = ExtResource("4_b0eay")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_1iman")
+follow_distance = 5.0
+auto_follow_distance = true
+auto_follow_distance_min = 5.0
+auto_follow_distance_max = 15.0
+auto_follow_distance_divisor = 20.0
+follow_lookahead_time = Vector3(0.565, 0.565, 0.565)
+follow_lookahead_acceleration = 0.37
+spring_length = 5.0
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+
+[node name="NPCs" type="Node" parent="." unique_id=298228137]
+
+[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="NPCs" unique_id=991987477]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0481138, 0.519002, 1.919604)
+mesh = SubResource("CapsuleMesh_2h36r")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_w3olp")
+
+[node name="PlayerMeshInstance3D2" type="MeshInstance3D" parent="NPCs" unique_id=1920104447]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5116863, 0.519, 2.041045)
+mesh = SubResource("CapsuleMesh_2h36r")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_cw102")
+
+[node name="Environment" type="Node" parent="." unique_id=1950491989]
+
+[node name="Floor" parent="Environment" unique_id=1752560564 instance=ExtResource("6_5hq8j")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
+
+[node name="NPCDescriptionHeader" type="Label3D" parent="." unique_id=2129575952]
+transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0.008592129, 2.0157459, -2.3039699)
+pixel_size = 0.01
+modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
+text = "Group Follow 3D Example"
+font = ExtResource("7_ayhbu")
+font_size = 64
+
+[node name="NPCDescriptionDesc" type="Label3D" parent="." unique_id=901517896]
+transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0.008592129, 1.3240263, -2.3039699)
+pixel_size = 0.0075
+text = "Camera follows the center position of its targets"
+font = ExtResource("7_ayhbu")
+font_size = 64
