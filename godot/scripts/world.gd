@@ -52,6 +52,7 @@ var recall_cd := 0.0
 var drink_buffs := {}
 signal floor_built
 signal tut(ev: String)
+signal loot(icon: Texture2D, text: String, col: Color, sum: int)
 var flow := PackedInt32Array()
 var floor_n := 1
 var time_ := 0.0
@@ -114,7 +115,41 @@ func _hero_lights() -> void:
 	else: lamp_light.enabled = false
 
 ## monta (ou remonta) o andar atual
+var floor_mem := {}
+var built_floor := -1
+const FLOOR_MEM_MS := 5 * 60 * 1000
 func build_floor(arrive := "start") -> void:
+	if built_floor >= 0 and explored.size():   # guarda o andar que está sendo deixado
+		var mons := []
+		for m in monsters:
+			if not m.dead: mons.append({"kind": m.kind, "x": m.x, "y": m.y, "hp": m.hp, "max": m.max_hp, "ch": m.champion})
+		var pks := []
+		for c in pickups: pks.append({"c": c, "item": pickups[c].item, "gear": pickups[c].get("gear")})
+		floor_mem[built_floor] = {"t": Time.get_ticks_msec(), "mons": mons, "pks": pks, "exp": explored.duplicate()}
+	var mem = floor_mem.get(floor_n)
+	var fresh: bool = mem != null and Time.get_ticks_msec() - mem.t < FLOOR_MEM_MS
+	if mem != null and not fresh: floor_mem.erase(floor_n); seeds.erase(floor_n)
+	_build_floor_now(arrive)
+	built_floor = floor_n
+	if fresh: _restore_floor(mem)
+
+func _restore_floor(mem: Dictionary) -> void:
+	for m in monsters: m.queue_free()
+	monsters = []; occ = {}
+	for c in pickups: pickups[c].spr.queue_free()
+	pickups = {}
+	for s in mem.mons:
+		if s.x == hero.x and s.y == hero.y: continue
+		var m = spawn_monster(s.kind, s.x, s.y); m.max_hp = s.max; m.hp = s.hp
+		if s.ch: m.champion = true
+	for p in mem.pks: drop(p.c, p.item, p.gear)
+	if mem.exp.size() == explored.size():
+		explored = mem.exp
+		for i in explored.size():
+			if explored[i]: fog_img.set_pixel(i % gen.w, i / gen.w, Color(0, 0, 0, 0))
+		fog_tex.update(fog_img)
+
+func _build_floor_now(arrive: String) -> void:
 	for n in ground.get_children(): n.queue_free()
 	for n in ents.get_children():
 		if n != hero: n.queue_free()
@@ -251,9 +286,9 @@ func restat() -> void:
 	hero.max_hp = stats.maxHp + old; hero.hp = min(hero.hp, hero.max_hp)
 func attacks_per_sec() -> float: return stats.get("atkSpeed", 1.0) / stats.cooldown
 func attr(id: String) -> int: return Save.voc(voc).attr.get(id, 0)
-func sword_eff() -> float: return attr("weapon") + Save.skill(voc, "distance" if ranged else "sword").lvl
+func sword_eff() -> float: return attr("weapon") + Save.skill(voc, "distance" if ranged else "sword").lvl + (10 if buff_on("hunter" if ranged else "berserker") else 0)
 func shield_lvl() -> float: return Save.skill(voc, "shield").lvl + attr("shield")
-func ml_eff() -> float: return Save.voc(voc).ml.lvl + attr("ml") + stats.gearMl
+func ml_eff() -> float: return Save.voc(voc).ml.lvl + attr("ml") + stats.gearMl + (10 if buff_on("mage") else 0)
 func defense_value() -> float:
 	var v: float = stats.armor + stats.gearDef + 0.25 * (shield_lvl() - D.SKILLS.shield.start)
 	return v * 1.54 if hero.guard_t > 0 else v        # Égide: +54% de defesa
@@ -290,9 +325,10 @@ func _physics_process(raw_dt: float) -> void:
 	update_traps(dt)
 	update_lights(dt)
 	update_recall(dt)
-	for k in drink_buffs.keys():
-		drink_buffs[k] -= dt
-		if drink_buffs[k] <= 0: drink_buffs.erase(k)
+	for k in hero.buffs.keys():
+		hero.buffs[k] -= dt
+		if hero.buffs[k] <= 0: hero.buffs.erase(k)
+	tick_monster_poison(dt)
 
 func input_dir() -> Vector2i:
 	if bot: return bot_dir()
@@ -398,6 +434,7 @@ func melee_attack() -> void:
 			fx("basic_slash", Vector2(t.px, t.py - 22), 0.9, t.x < h.x, 45.0 * sy * sx if sx != 0 and sy != 0 else 0.0)
 			var crit := randf() < crit_chance()
 			damage_monster(t, base_damage() * randf_range(0.85, 1.15) * (crit_mult() if crit else 1.0))
+			weapon_element(t)
 			if h.kber_t > 0: berserk_cleave(t)
 			hit_fx(t, crit)
 			add_fury(9); train_skill("sword"); Sfx.play("hit", 0.3)
@@ -499,15 +536,57 @@ func shoot_arrow(from: Vector2, to: Vector2, on_hit: Callable, speed := 900.0) -
 		if is_instance_valid(a): a.queue_free()
 		if not finished: on_hit.call())
 
-func arrow_hit(t, mult: float, el := "physical") -> void:
+func arrow_hit(t, mult: float, el := "physical", kind := "normal") -> void:
 	if not is_instance_valid(t) or t.dead: return
+	var A: Dictionary = D.db.ARROWS.get(kind, D.db.ARROWS.normal)
+	if kind != "normal": el = A.el
 	var crit := randf() < crit_chance()
 	var far: bool = hero.far_t > 0
 	var hp0: float = t.hp
-	var dmg := base_damage() * mult * randf_range(0.85, 1.15) * (crit_mult() if crit else 1.0)
+	var dmg: float = base_damage() * mult * A.mult * randf_range(0.85, 1.15) * (crit_mult() if crit else 1.0)
 	damage_monster(t, dmg, "holy" if far else el)
 	hit_fx(t, crit)
-	if far: far_mark(t, hp0)
+	if A.get("area", false):
+		for d in D.DIRS8:
+			var m = occ.get(Vector2i(t.x + d.x, t.y + d.y))
+			if m and not m.dead: damage_monster(m, dmg * 0.7, A.el)
+		fx("heal" if kind == "holy" else "explosion", Vector2(t.px, t.py - 20), 0.9 if kind == "holy" else 0.75)
+		Sfx.play("explode", 0.25)
+	if far and is_instance_valid(t): far_mark(t, hp0)
+
+# ---------------------------------------------------------------- flechas (a normal é infinita)
+func arrow_type() -> String:
+	var d := Save.voc(voc); var sel: String = d.get("arrowSel", "normal")
+	return sel if sel != "normal" and int(d.arrows.get(sel, 0)) > 0 else "normal"
+func spend_arrow() -> String:
+	var d := Save.voc(voc); var k := arrow_type()
+	if k == "normal": return k
+	d.arrows[k] = int(d.arrows[k]) - 1
+	if d.arrows[k] <= 0 and d.get("arrowSel") == k: emit_signal("msg", D.t("arrows_out_type", {"name": D.t("arrow_" + k)}))
+	return k
+func cycle_arrow() -> void:
+	if not ranged: return
+	var d := Save.voc(voc); var have := []
+	for k in D.db.ARROW_IDS:
+		if k == "normal" or int(d.arrows.get(k, 0)) > 0: have.append(k)
+	d.arrowSel = have[(have.find(d.get("arrowSel", "normal")) + 1) % have.size()]; Save.save()
+	emit_signal("msg", D.t("arrow_selected", {"name": D.t("arrow_" + d.arrowSel), "n": D.t("infinite") if d.arrowSel == "normal" else str(int(d.arrows.get(d.arrowSel, 0)))}))
+
+## arma com elemento, magia ou veneno (corpo a corpo)
+func weapon_element(t) -> void:
+	var W = stats.get("weapon")
+	if W == null or ranged or t.dead: return
+	if W.has("el") and W.get("elDmg", 0): damage_monster(t, W.elDmg * randf_range(0.8, 1.2), W.el)
+	if W.get("magic", false) and not t.dead: damage_monster(t, (5 + 1.5 * ml_eff()) * randf_range(0.8, 1.2), "energy")
+	if W.has("poison") and not t.dead: t.set_meta("poison", [float(W.poison.dur), max(1.0, base_damage() * W.poison.pct), 0.0])
+func tick_monster_poison(dt: float) -> void:
+	for m in monsters:
+		if m.dead or not m.has_meta("poison"): continue
+		var p: Array = m.get_meta("poison")
+		p[0] -= dt; p[2] += dt
+		if p[2] >= 1: p[2] -= 1; damage_monster(m, p[1], "earth", true)
+		if p[0] <= 0: m.remove_meta("poison")
+func buff_on(id: String) -> bool: return hero.buffs.get(id, 0.0) > 0
 
 func archer_attack(dt: float) -> void:
 	var h = hero
@@ -516,6 +595,7 @@ func archer_attack(dt: float) -> void:
 	h.atk_queued = 0
 	var t = ranged_target(true)
 	if not t: return
+	var kind := spend_arrow()
 	h.atk_t = 1.1 / 1.25 * stats.cooldown / stats.atkSpeed * (0.5 if h.eagle_t > 0 else 1.0) / (1.4 if h.flee_t > 0 else 1.0)
 	var dx := signi(t.x - h.x); var dy := signi(t.y - h.y)
 	h.facing = Vector2i(dx, dy)
@@ -525,7 +605,7 @@ func archer_attack(dt: float) -> void:
 	if h.dead or finished: return
 	shoot_arrow(Vector2(h.px, h.py - 40), Vector2(t.px, t.py - 24), func():
 		if t.dead or finished: return
-		arrow_hit(t, 1.0)
+		arrow_hit(t, 1.0, "physical", kind)
 		if h.frenzy_t > 0: berserk_hit(t)
 		add_fury(8); train_skill("distance"); Sfx.play("hit", 0.25))
 	Sfx.play("pickup", 0.15)
@@ -1181,6 +1261,7 @@ func collect(c: Vector2i) -> void:
 		pickups.erase(c); pk.spr.queue_free()
 		d.gear.append(pk.gear); Save.save(); Sfx.play("gem", 0.4)
 		float_text(at, Equip.gear_name(pk.gear), Equip.rarity_color(int(pk.gear.r)), 11)
+		loot.emit(Equip.icon(pk.gear.id), Equip.gear_name(pk.gear), Equip.rarity_color(int(pk.gear.r)), 0)
 		emit_signal("msg", D.t("got_item", {"name": Equip.gear_name(pk.gear), "rarity": Equip.rarity_name(int(pk.gear.r))}))
 		return
 	if pk.item == "boss_essence":
@@ -1188,9 +1269,13 @@ func collect(c: Vector2i) -> void:
 		float_text(at, "+1 " + D.ITEMS.boss_essence.name if D.ITEMS.has("boss_essence") else "+1 Essência", Color("ffa030")); return
 	pickups.erase(c); pk.spr.queue_free(); tut.emit("loot")
 	var info: Dictionary = D.ITEMS[pk.item]
+	if not pk.item in ["gold", "silver"]:
+		var nm: String = info.name
+		loot.emit(A.tex("res://assets/art/%s.png" % info.icon), nm.substr(0, 1).to_upper() + nm.substr(1), Color("c8e0a0"), 0)
 	match pk.item:
 		"gold", "silver":
-			gold_run += pk.amount; float_text(at, D.t("gold_float", {"n": pk.amount}), Color(D.COLORS.gold)); Sfx.play("pickup", 0.35)
+			if buff_on("luck"): pk.amount = roundi(pk.amount * 1.5)
+			gold_run += pk.amount; loot.emit(Equip.item_icon("i_gold_coin"), "", Color(D.COLORS.gold), pk.amount); float_text(at, D.t("gold_float", {"n": pk.amount}), Color(D.COLORS.gold)); Sfx.play("pickup", 0.35)
 		"red_gem":
 			gold_run += info.gold; float_text(at, D.t("gold_float", {"n": info.gold}), Color(D.COLORS.gold)); Sfx.play("gem")
 		"blue_gem":
@@ -1519,11 +1604,12 @@ func update_recall(dt: float) -> void:
 	recall_t -= dt
 	if recall_t <= 0: recall_cd = 60; leave_to_town("recall")
 
-## poções de efeito (berserker, mago, sorte): 10 min
+## poções de efeito (berserker, mago, caçador, sorte): bebidas pela mochila
 func drink_buff(id: String) -> void:
-	var d := Save.voc(voc)
+	var d := Save.voc(voc); var P: Dictionary = D.db.POTIONS.get(id, {})
+	if P.is_empty() or not P.has("dur") or hero.dead: return
+	if hero.pot_cd.get(id, 0.0) > 0: emit_signal("msg", D.t("pot_cd", {"name": P.name, "s": ceili(hero.pot_cd[id])})); return
 	if int(d.potions.get(id, 0)) <= 0: return
-	d.potions[id] -= 1; Save.save()
-	var P: Dictionary = D.db.POTIONS[id]
-	hero.buffs[P.get("buff", id)] = float(P.get("dur", 600))
-	pot_glow(Color("ffa030")); emit_signal("msg", P.name)
+	d.potions[id] -= 1; hero.pot_cd[id] = float(P.cd); hero.buffs[id] = float(P.dur); Save.save()
+	emit_signal("msg", "%s: %s" % [P.name, P.desc]); Sfx.play("gem", 0.4)
+	pot_glow(Color("ffa030"))

@@ -23,6 +23,13 @@ var leaving := false
 var lore_n := {}
 var _dir_t0 := -1.0
 var map_box: Control
+var day: CanvasModulate
+var lamp_lights: Array = []
+var sky_lbl: Label
+var bolt: ColorRect
+var bolt_t := 10.0
+var rain: CPUParticles2D
+var freed := false
 
 func _ready() -> void:
 	voc = Save.reg.get("vocation", "knight")
@@ -30,7 +37,7 @@ func _ready() -> void:
 	var d := Save.voc(voc)
 	Equip.starter_gear(voc)
 	world = Node2D.new(); add_child(world)
-	var cm := CanvasModulate.new(); cm.color = Color(0.86, 0.87, 0.93); add_child(cm)
+	day = CanvasModulate.new(); day.color = Color(0.86, 0.87, 0.93); add_child(day)
 	_build()
 	_spawn_hero()
 	dlg = load("res://scripts/dialog.gd").new(); add_child(dlg)
@@ -72,7 +79,7 @@ func _build() -> void:
 	for o in objs:
 		if o.k == "k2_lamp":
 			var l := PointLight2D.new(); l.texture = A.light_tex; l.texture_scale = 3.2; l.energy = 0.7; l.color = Color(1, 0.72, 0.4)
-			l.position = Vector2(o.x, o.y - 40); world.add_child(l)
+			l.position = Vector2(o.x, o.y - 40); world.add_child(l); lamp_lights.append(l)
 	var wp := Sprite2D.new(); wp.texture = load("res://assets/waypoint.png")
 	wp.position = Vector2(WP_TOWN.x * T + T / 2.0, WP_TOWN.y * T + T / 2.0); wp.scale = Vector2.ONE * (T * 0.82 / wp.texture.get_width())
 	wp.z_index = WP_TOWN.y * T; world.add_child(wp)
@@ -134,6 +141,7 @@ func _process(dt0: float) -> void:
 	h.spr.flip_h = dir == "side" and h.look_left
 	_place()
 	cam.position = hero.position + Vector2(0, -24)
+	_sky(dt)
 	var z = zone_here()
 	hint.text = "" if z == null or z.get("step", false) or busy else "E · " + zone_name(z)
 
@@ -218,9 +226,18 @@ func lore(kind: String, title: String, back: Callable) -> Array:
 		var i: int = lore_n.get(kind, 0) % L.size(); lore_n[kind] = lore_n.get(kind, 0) + 1
 		say(kind, title, L[i], [[D.t("lore_more") if lore_n[kind] % L.size() else D.t("lore_restart"), func(): lore(kind, title, back)[1].call()], [D.t("lore_back"), back]])]
 
+const NPC_TUT := ["smith", "inn", "potions", "depot", "locker", "lodging"]
 func use(z) -> void:
 	var d := Save.voc(voc)
 	var kind: String = z.kind
+	if kind == "hall" and not d.get("oracleSeen", false):
+		d.oracleSeen = true; Save.save(); Sfx.play("levelup", 0.25); _harp_first(); return
+	if not Save.data.has("npcTut"): Save.data.npcTut = {}
+	if kind in NPC_TUT and not Save.data.npcTut.get(kind, false):
+		Save.data.npcTut[kind] = true; Save.save()
+		if ROOM.has(kind): dlg.show_room("res://assets/interior/%s.jpg" % ROOM[kind])
+		say(kind, D.t("npct_title_" + kind), D.t("npct_" + kind), [[D.t("npct_ok"), func(): dlg.close(); use(z)]])
+		return
 	if ROOM.has(kind): dlg.show_room("res://assets/interior/%s.jpg" % ROOM[kind])
 	match kind:
 		"gate":
@@ -291,6 +308,22 @@ func _build_ui() -> void:
 	var c := UI.lbl(D.t("town_controls_touch") if Touch.enabled else D.t("town_controls"), 12); c.position = Vector2(14, 514); hud.add_child(c)
 	hint = UI.lbl("", 16); hint.position = Vector2(0, 460); hint.size = Vector2(960, 24); hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; hud.add_child(hint)
 	Touch.attach(hud, self)
+	sky_lbl = UI.lbl("", 12); sky_lbl.position = Vector2(700, 32); sky_lbl.size = Vector2(246, 16); sky_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT; hud.add_child(sky_lbl)
+	# chuva na tela inteira (em Karhyn chove sempre, até o Rei Rato cair) e relâmpagos à noite
+	freed = false
+	for k in Save.data.cleared:
+		if k.begins_with("karhyn_sewers:"): freed = true
+	var veil := ColorRect.new(); veil.color = Color(0.06, 0.08, 0.12, 0.0 if freed else 0.18); veil.size = Vector2(960, 540); veil.mouse_filter = Control.MOUSE_FILTER_IGNORE; hud.add_child(veil); hud.move_child(veil, 0)
+	if not freed:
+		rain = CPUParticles2D.new(); rain.amount = 260; rain.lifetime = 0.9; rain.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+		rain.emission_rect_extents = Vector2(540, 4); rain.position = Vector2(500, -20); rain.direction = Vector2(-0.13, 1); rain.spread = 2
+		rain.initial_velocity_min = 520; rain.initial_velocity_max = 680; rain.gravity = Vector2.ZERO
+		var img := Image.create(1, 12, false, Image.FORMAT_RGBA8); img.fill(Color(0.71, 0.77, 0.86, 0.4)); rain.texture = ImageTexture.create_from_image(img)
+		rain.rotation = 0.0; hud.add_child(rain); hud.move_child(rain, 1)
+	bolt = ColorRect.new(); bolt.color = Color(0.87, 0.91, 1, 0); bolt.size = Vector2(960, 540); bolt.mouse_filter = Control.MOUSE_FILTER_IGNORE; hud.add_child(bolt)
+	# feixe de luz na estátua da Oráculo depois do primeiro chefe
+	if Save.voc(voc).get("firstBoss", false):
+		var bl := PointLight2D.new(); bl.texture = A.light_tex; bl.color = Color("fff0c8"); bl.texture_scale = 2.4; bl.energy = 1.2; bl.position = Vector2(39 * T, 7 * T); world.add_child(bl)
 
 func _refresh_gold() -> void:
 	if gold_lbl: gold_lbl.text = "%s · %d de ouro · Nv %d" % [D.VOCATIONS[voc].name, Save.gold(voc), Save.level(voc)]
@@ -350,3 +383,42 @@ func _teste() -> void:
 func _shot(p: String) -> void:
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png(p)
+
+# ------------------------------------------------------------ hora do dia (ciclo de 6 min; a hora continua entre visitas)
+func _sky(dt: float) -> void:
+	var tc: float = fmod(Save.reg.get("townClock", 0.32) + dt / 360.0, 1.0); Save.reg.townClock = tc
+	var d := 1.0 if tc < 0.18 else (1 - (tc - 0.18) / 0.12 if tc < 0.30 else (0.0 if tc < 0.62 else ((tc - 0.62) / 0.13 if tc < 0.75 else 1.0)))
+	var dusk := 0.0
+	if tc > 0.6 and tc < 0.78: dusk = 1 - abs(tc - 0.69) / 0.09
+	elif tc > 0.16 and tc < 0.32: dusk = 1 - abs(tc - 0.24) / 0.08
+	var c := Color8(118, 126, 142).lerp(Color8(44, 52, 92), d).lerp(Color8(150, 110, 100), dusk * 0.3)
+	if freed: c = c.lerp(Color8(236, 222, 188), 1 - d * 0.6)
+	elif rain: c = c * 0.85
+	# o véu do Phaser multiplica a cor da arte; aqui a arte já vem do Phaser sem ele, então clareio um pouco
+	day.color = Color(min(1.0, c.r * 1.75), min(1.0, c.g * 1.75), min(1.0, c.b * 1.6))
+	var now := Time.get_ticks_msec() / 1000.0
+	for i in lamp_lights.size(): lamp_lights[i].energy = (0.45 + 0.75 * d) * (0.85 + 0.15 * sin(now * 9 + i))
+	if hero: hero.light.energy = 0.35 + 0.6 * d
+	var night := d > 0.5
+	var hour := int(tc * 24) % 24; var mins := int(tc * 24 * 60) % 60
+	var per := D.t("sky_night") if night else ((D.t("sky_dawn") if tc < 0.5 else D.t("sky_dusk")) if dusk > 0.4 else D.t("sky_day"))
+	sky_lbl.text = "%s%s  %02d:%02d" % [per, (" · " + D.t("sky_rain")) if rain else "", hour, mins - mins % 10]
+	if night and rain:
+		bolt_t -= dt
+		if bolt_t <= 0:
+			bolt_t = randf_range(9, 26)
+			var tw := create_tween()
+			for k in randi_range(2, 3): tw.tween_property(bolt, "color:a", 0.55, 0.02); tw.tween_property(bolt, "color:a", 0.0, 0.12); tw.tween_interval(randf_range(0.04, 0.11))
+
+## primeira passagem pela Oráculo: a Deusa cobre a tela e o herói diz a frase
+func _harp_first() -> void:
+	var c := Control.new(); c.size = Vector2(960, 540); c.modulate.a = 0; hud.add_child(c)
+	var bk := ColorRect.new(); bk.color = Color("050406"); bk.size = Vector2(960, 540); c.add_child(bk)
+	var img := TextureRect.new(); img.texture = UI.tex("res://assets/townx/vk_goddess_art.png"); img.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED; img.size = Vector2(960, 540); img.pivot_offset = Vector2(480, 270); c.add_child(img)
+	var tx := UI.lbl(D.t("harp_first"), 18, Color("f0d888"), true); tx.position = Vector2(0, 450); tx.size = Vector2(960, 40); tx.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; tx.modulate.a = 0; c.add_child(tx)
+	leaving = true
+	var tw := create_tween(); tw.tween_property(c, "modulate:a", 1.0, 0.6)
+	create_tween().tween_property(img, "scale", Vector2(1.08, 1.08), 4.5)
+	create_tween().tween_property(tx, "modulate:a", 1.0, 0.7).set_delay(0.7)
+	tw.tween_interval(3.4); tw.tween_property(c, "modulate:a", 0.0, 0.6); tw.tween_callback(func(): c.queue_free(); leaving = false)

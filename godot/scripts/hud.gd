@@ -101,6 +101,7 @@ func setup(w) -> void:
 	if touch: _touch_controls()
 	on_floor()
 	w.tut.connect(tut_event)
+	w.loot.connect(loot_log)
 	if not Save.voc(w.voc).get("tutSewer", false) and not "teste" in OS.get_cmdline_user_args(): tut_start()
 
 func _slot(id: String, icon: String, key: String) -> Control:
@@ -149,7 +150,7 @@ func _process(dt: float) -> void:
 			var cd: float = h.cds.get(id, 0.0)
 			frac = clampf(cd / max(0.01, sp.cd * world.stats.cooldown), 0, 1)
 			dim = not world.spell_unlocked(id) or h.fury < sp.fury
-			s.cost.text = ("Nv%d" % int(sp.level)) if not world.spell_unlocked(id) else (str(int(sp.fury)) if sp.fury > 0 else "")
+			s.cost.text = (("Nv%d" % int(sp.level)) if h.level < int(sp.level) else "Teia") if not world.spell_unlocked(id) else (str(int(sp.fury)) if sp.fury > 0 else "")
 		s.shade.size.y = 38 * frac; s.shade.position.y = 38 * (1 - frac)
 		s.icon.modulate.a = 0.35 if dim else 1.0
 	# Battle List: monstros acordados mais perto
@@ -162,6 +163,13 @@ func _process(dt: float) -> void:
 			r.row.visible = true; r.name.text = m.data.name; r.hp.max_value = m.max_hp; r.hp.value = m.hp
 			r.name.add_theme_color_override("font_color", Color("ff6a5a") if m == h.target else Color("e8dcc0"))
 		else: r.row.visible = false
+	var info := []
+	if world.ranged:
+		var k: String = world.arrow_type()
+		info.append(D.t("arrow_" + k) + (" (%d)" % int(Save.voc(world.voc).arrows.get(k, 0)) if k != "normal" else "") + " · X")
+	for b in h.buffs: info.append("%s %ds" % [D.db.POTIONS[b].name if D.db.POTIONS.has(b) else b, ceili(h.buffs[b])])
+	if world.recall_t > 0: info.append("Voltando à cidade… %ds" % ceili(world.recall_t))
+	floor_lbl.text = D.t("floor_display", {"name": world.region.name, "n": world.floor_n, "total": world.floors}) + ("\n" + "  ·  ".join(info) if info.size() else "")
 	mini_t -= dt
 	if mini_t <= 0: mini_t = 0.25; _mini_update()
 	if msg_t > 0:
@@ -298,3 +306,23 @@ func tut_end() -> void:
 	tut_step = TUT.size()
 	if tut_box: tut_box.queue_free(); tut_box = null
 	var d := Save.voc(world.voc); d.tutSewer = true; Save.save()
+
+# ---------------------------------------------------------------- relatório de saque (lado esquerdo)
+var loot_rows: Array = []
+func loot_log(icon: Texture2D, text: String, col: Color, sum: int) -> void:
+	loot_rows = loot_rows.filter(func(r): return is_instance_valid(r.c))
+	if sum > 0 and loot_rows.size() and loot_rows[-1].sum > 0 and loot_rows[-1].age < 3.0:
+		var r = loot_rows[-1]; r.n += sum; r.l.text = D.t("loot_gold", {"n": r.n}); r.age = 0.0; r.c.modulate.a = 1; return
+	var c := Control.new(); add_child(c)
+	var bg := UI.box(Rect2(0, -12, 180, 24), Color(0.05, 0.035, 0.03, 0.72), Color("4a3a2a")); c.add_child(bg)
+	c.add_child(UI.icon(icon, Vector2(13, 0), 18))
+	var l := UI.lbl(D.t("loot_gold", {"n": sum}) if sum > 0 else text, 11, col); l.position = Vector2(28, -9); l.size.x = 150; l.clip_text = true; c.add_child(l)
+	c.position = Vector2(-260, 0)
+	var row := {"c": c, "l": l, "age": 0.0, "sum": sum, "n": sum}
+	loot_rows.append(row)
+	if loot_rows.size() > 6: loot_rows[0].c.queue_free(); loot_rows.pop_front()
+	for i in loot_rows.size():
+		var target := Vector2(12, 330 - (loot_rows.size() - 1 - i) * 28)
+		if loot_rows[i].c == c: c.position.y = target.y; create_tween().tween_property(c, "position:x", 12.0, 0.18).set_trans(Tween.TRANS_BACK)
+		else: loot_rows[i].c.position.y = target.y
+	var tw := c.create_tween(); tw.tween_interval(4.0); tw.tween_property(c, "modulate:a", 0.0, 0.8); tw.tween_callback(c.queue_free)

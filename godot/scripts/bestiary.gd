@@ -36,7 +36,9 @@ func is_open() -> bool: return box != null
 func close() -> void:
 	if box: box.queue_free(); box = null
 	if host and host.has_method("set_paused"): host.set_paused(false)
+var opened_frame := -1
 func _unhandled_input(e: InputEvent) -> void:
+	if Engine.get_process_frames() - opened_frame < 2: return
 	if box and e is InputEventKey and e.pressed and not e.echo and e.keycode in [KEY_ESCAPE, KEY_N]: close(); get_viewport().set_input_as_handled()
 
 func _live() -> Dictionary:
@@ -44,6 +46,7 @@ func _live() -> Dictionary:
 	return {}
 
 func open(h, sel := "") -> void:
+	opened_frame = Engine.get_process_frames()
 	host = h
 	if h and h.has_method("set_paused"): h.set_paused(true)
 	if box: box.queue_free()

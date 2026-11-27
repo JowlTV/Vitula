@@ -13,6 +13,7 @@ func _init() -> void: layer = 25; process_mode = Node.PROCESS_MODE_ALWAYS
 func is_open() -> bool: return box != null
 
 func open(h, v: String, _in_town := false) -> void:
+	opened_frame = Engine.get_process_frames()
 	host = h; voc = v
 	if h.get("world") and h.world and h.world.get("hero"): calc = h.world
 	else:
@@ -30,7 +31,9 @@ func close() -> void:
 	calc = null
 	if host and host.has_method("set_paused"): host.set_paused(false)
 
+var opened_frame := -1
 func _unhandled_input(e: InputEvent) -> void:
+	if Engine.get_process_frames() - opened_frame < 2: return
 	if box and e is InputEventKey and e.pressed and not e.echo and e.keycode in [KEY_ESCAPE, KEY_I, KEY_B]:
 		close(); get_viewport().set_input_as_handled()
 

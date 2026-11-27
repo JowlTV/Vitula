@@ -11,6 +11,7 @@ var sel := 0
 var opened_at := 0
 var sending := false
 var window: Control = null    # janela própria aberta (loja, baú...)
+var room_tw: Tween
 
 func _init() -> void: layer = 20
 
@@ -25,8 +26,12 @@ func is_open() -> bool: return root != null or window != null
 func show_room(path: String) -> void:
 	var t := UI.tex(path)
 	if t == null: return
-	room.texture = t; room.visible = true; room.modulate.a = 0
-	create_tween().tween_property(room, "modulate:a", 1.0, 0.22)
+	if room_tw: room_tw.kill()
+	var was := room.visible and room.texture == t
+	room.texture = t; room.visible = true
+	if was: room.modulate.a = 1.0; return
+	room.modulate.a = 0
+	room_tw = create_tween(); room_tw.tween_property(room, "modulate:a", 1.0, 0.22)
 
 func say(title: String, body: String, buttons: Array, face: Texture2D = null) -> void:
 	if window: window.queue_free(); window = null
@@ -127,7 +132,8 @@ func close() -> void:
 	var was := is_open()
 	_clear()
 	if room.visible:
-		var tw := create_tween(); tw.tween_property(room, "modulate:a", 0.0, 0.2); tw.tween_callback(func(): if not is_open(): room.visible = false)
+		if room_tw: room_tw.kill()
+		room_tw = create_tween(); room_tw.tween_interval(0.05); room_tw.tween_property(room, "modulate:a", 0.0, 0.2); room_tw.tween_callback(func(): if not is_open(): room.visible = false)
 	if was: closed.emit()
 
 func _unhandled_input(e: InputEvent) -> void:

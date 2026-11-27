@@ -126,6 +126,22 @@ func _teste() -> void:
 					await get_tree().create_timer(0.4).timeout
 				await get_tree().create_timer(2.0).timeout; await _shot(dir + "/g_portal.png")
 				break
+	if "flechas" in args:
+		var d := Save.voc(world.voc); d.arrows.explosive = 3; d.arrowSel = "explosive"; d.potions.hunter = 1
+		world.drink_buff("hunter"); world.hero.target = null
+		await get_tree().create_timer(3.0).timeout; await _shot(dir + "/j_flechas.png")
+		print("TESTE FLECHAS restam=", d.arrows.explosive, " buff=", world.hero.buffs)
+	if "mochila" in args:
+		var ev := InputEventKey.new(); ev.keycode = KEY_I; ev.physical_keycode = KEY_I; ev.pressed = true
+		Input.parse_input_event(ev); await get_tree().create_timer(0.4).timeout
+		print("TESTE MOCHILA aberta=", Bag.is_open()); await _shot(dir + "/h_mochila.png")
+		Save.voc(world.voc).gear.append(Equip.gear_new("chain_armor", 1)); Bag._build(); await get_tree().create_timer(0.2).timeout
+		var b: Button = null
+		for c in Bag.box.get_children():
+			if c is Button and c.icon == Equip.icon("chain_armor"): b = c
+		if b: b.pressed.emit()
+		await get_tree().create_timer(0.3).timeout
+		print("TESTE VESTIU armor=", Save.voc(world.voc).equip.get("armor")); await _shot(dir + "/i_vestiu.png")
 	print("TESTE voc=%s nivel=%d andar=%d vida=%d/%d kills=%d monstros=%d ouro=%d gear=%d" % [world.voc, world.hero.level, world.floor_n, world.hero.hp, world.hero.max_hp, world.kills, world.monsters.size(), world.gold_run, Save.voc(world.voc).gear.size()])
 	get_tree().quit()
 

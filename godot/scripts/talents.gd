@@ -108,6 +108,7 @@ func fx_text(f: Dictionary) -> String:
 func is_open() -> bool: return box != null
 
 func open(h, v: String, as_respec: bool) -> void:
+	opened_frame = Engine.get_process_frames()
 	if box: return
 	host = h; voc = v; respec = as_respec; undo = []; hover = ""
 	if h and h.has_method("set_paused"): h.set_paused(true)
@@ -156,7 +157,9 @@ func close() -> void:
 	if host and host.has_method("set_paused"): host.set_paused(false)
 	if host and host.has_method("on_talents_closed"): host.on_talents_closed()
 
+var opened_frame := -1
 func _unhandled_input(e: InputEvent) -> void:
+	if Engine.get_process_frames() - opened_frame < 2: return
 	if box == null: return
 	if e is InputEventKey and e.pressed and not e.echo:
 		match e.keycode:
